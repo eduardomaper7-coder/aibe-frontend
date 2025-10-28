@@ -1,7 +1,22 @@
+// next.config.ts
 import type { NextConfig } from "next";
 
+const API = process.env.NEXT_PUBLIC_API_URL?.replace(/\/+$/, "");
+const isLocalLoop =
+  API?.includes("localhost:3010") ||
+  API?.includes("127.0.0.1:3010") ||
+  API?.includes("localhost:3000") ||
+  API?.includes("127.0.0.1:3000");
+
 const nextConfig: NextConfig = {
-  /* config options here */
+  async rewrites() {
+    // si no hay API o detectamos que apunta al mismo Next, no reescribas
+    if (!API || isLocalLoop) return [];
+    return [
+      { source: "/api/:path*", destination: `${API}/:path*` },
+    ];
+  },
 };
 
 export default nextConfig;
+
