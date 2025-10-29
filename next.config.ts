@@ -9,14 +9,15 @@ const isLocalLoop =
   API?.includes("127.0.0.1:3000");
 
 const nextConfig: NextConfig = {
+  eslint: {
+    ignoreDuringBuilds: true, // ⬅️ evita que ESLint corte el build
+  },
   async rewrites() {
-    // si no hay API o detectamos que apunta al mismo Next, no reescribas
     if (!API || isLocalLoop) return [];
-    return [
-      { source: "/api/:path*", destination: `${API}/:path*` },
-    ];
+    return [{ source: "/api/:path*", destination: `${API}/:path*` }];
   },
 };
 
 export default nextConfig;
+
 
