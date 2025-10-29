@@ -1,115 +1,95 @@
-'use client'
+'use client';
 
-import { useEffect, useMemo, useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { supabase } from '@/lib/supabase'
+import { Suspense, useEffect, useMemo, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { supabase } from '@/lib/supabase';
 
 function cx(...classes: (string | false | undefined)[]) {
-  return classes.filter(Boolean).join(' ')
+  return classes.filter(Boolean).join(' ');
 }
 
-export default function RegistroPage() {
-  const router = useRouter()
-  const qs = useSearchParams()
-  const plan = qs.get('plan') || 'basic'
+function RegistroInner() {
+  const router = useRouter();
+  const qs = useSearchParams();
+  const plan = qs.get('plan') || 'basic';
 
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [errorMsg, setErrorMsg] = useState<string | null>(null)
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  const canSubmit = email.length > 5 && password.length >= 6
+  const canSubmit = email.length > 5 && password.length >= 6;
 
-  // Si ya hay sesión, saltar a /pago
   useEffect(() => {
-    let isMounted = true
+    let isMounted = true;
     supabase.auth.getSession().then(({ data }) => {
-      if (!isMounted) return
-      if (data.session) {
-        router.replace(`/pago?plan=${encodeURIComponent(plan)}`)
-      }
-    })
-    return () => {
-      isMounted = false
-    }
-  }, [plan, router])
+      if (!isMounted) return;
+      if (data.session) router.replace(`/pago?plan=${encodeURIComponent(plan)}`);
+    });
+    return () => { isMounted = false; };
+  }, [plan, router]);
 
   async function handleEmailSignup(e: React.FormEvent) {
-    e.preventDefault()
-    if (!canSubmit) return
-    setLoading(true)
-    setErrorMsg(null)
-
+    e.preventDefault();
+    if (!canSubmit) return;
+    setLoading(true);
+    setErrorMsg(null);
     try {
-      // Registro por email + contraseña
       const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          // tras registrarse, vuelve a /pago con el plan elegido
           emailRedirectTo: `${window.location.origin}/pago?plan=${encodeURIComponent(plan)}`,
         },
-      })
+      });
+      if (error) throw error;
 
-      if (error) throw error
-
-      // Si no hay sesión aún, intentar iniciar sesión
-      const { data: sessionData } = await supabase.auth.getSession()
+      const { data: sessionData } = await supabase.auth.getSession();
       if (!sessionData.session) {
-        const { error: signInErr } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        })
+        const { error: signInErr } = await supabase.auth.signInWithPassword({ email, password });
         if (signInErr) {
-          setLoading(false)
-          setErrorMsg('Revisa tu correo para confirmar la cuenta antes de continuar.')
-          return
+          setLoading(false);
+          setErrorMsg('Revisa tu correo para confirmar la cuenta antes de continuar.');
+          return;
         }
       }
-
-      router.replace(`/pago?plan=${encodeURIComponent(plan)}`)
-    } catch (err: any) {
-      setErrorMsg(err?.message ?? 'No se pudo completar el registro')
-      setLoading(false)
+      router.replace(`/pago?plan=${encodeURIComponent(plan)}`);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'No se pudo completar el registro';
+      setErrorMsg(msg);
+      setLoading(false);
     }
   }
 
   async function handleGoogle() {
-    setLoading(true)
-    setErrorMsg(null)
+    setLoading(true);
+    setErrorMsg(null);
     try {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
-        options: {
-          redirectTo: `${window.location.origin}/pago?plan=${encodeURIComponent(plan)}`,
-        },
-      })
-      if (error) throw error
-      // Redirige a Google automáticamente
-    } catch (err: any) {
-      setErrorMsg(err?.message ?? 'No se pudo iniciar con Google')
-      setLoading(false)
+        options: { redirectTo: `${window.location.origin}/pago?plan=${encodeURIComponent(plan)}` },
+      });
+      if (error) throw error;
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'No se pudo iniciar con Google';
+      setErrorMsg(msg);
+      setLoading(false);
     }
   }
 
-  const title = useMemo(() => 'Regístrate', [])
+  const title = useMemo(() => 'Regístrate', []);
 
   return (
     <div className="min-h-[100dvh] bg-[hsl(250,60%,98%)]">
       <header className="mx-auto max-w-5xl px-4 py-6">
-        <button
-          className="inline-flex items-center gap-2 text-sm text-indigo-700 hover:underline"
-          onClick={() => history.back()}
-        >
+        <button className="inline-flex items-center gap-2 text-sm text-indigo-700 hover:underline" onClick={() => history.back()}>
           <span className="text-xl">←</span> Volver
         </button>
       </header>
 
       <main className="mx-auto max-w-xl px-4 pb-16">
         <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-10">
-          <h1 className="text-center text-4xl font-extrabold tracking-tight text-slate-900">
-            {title}
-          </h1>
+          <h1 className="text-center text-4xl font-extrabold tracking-tight text-slate-900">{title}</h1>
 
           <div className="mt-6">
             <button
@@ -175,10 +155,7 @@ export default function RegistroPage() {
 
           <p className="mt-6 text-center text-sm text-slate-600">
             ¿Ya tienes una cuenta?{' '}
-            <a
-              className="font-semibold text-indigo-700 hover:underline"
-              href={`/pago?plan=${encodeURIComponent(plan)}`}
-            >
+            <a className="font-semibold text-indigo-700 hover:underline" href={`/pago?plan=${encodeURIComponent(plan)}`}>
               Ir al pago
             </a>
           </p>
@@ -189,5 +166,15 @@ export default function RegistroPage() {
         </section>
       </main>
     </div>
-  )
+  );
 }
+
+export default function Page() {
+  return (
+    <Suspense fallback={<div className="p-8 text-center">cargando…</div>}>
+      <RegistroInner />
+    </Suspense>
+  );
+}
+
+export const dynamic = 'force-dynamic';
