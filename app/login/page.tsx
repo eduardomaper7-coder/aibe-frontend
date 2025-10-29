@@ -1,55 +1,57 @@
-'use client'
+'use client';
 
-import { useMemo, useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { supabase } from '@/lib/supabase'
+import { Suspense, useMemo, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { supabase } from '@/lib/supabase';
 
 function cx(...classes: (string | false | undefined)[]) {
-  return classes.filter(Boolean).join(' ')
+  return classes.filter(Boolean).join(' ');
 }
 
-export default function LoginPage() {
-  const router = useRouter()
-  const qs = useSearchParams()
-  const redirectTo = qs.get('redirect') || '/'
+/** Componente que usa useSearchParams: debe ir dentro de <Suspense> */
+function LoginInner() {
+  const router = useRouter();
+  const qs = useSearchParams();
+  const redirectTo = qs.get('redirect') || '/';
 
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [errorMsg, setErrorMsg] = useState<string | null>(null)
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  const canSubmit = email.length > 5 && password.length >= 6
-  const title = useMemo(() => 'Inicia sesión', [])
+  const canSubmit = email.length > 5 && password.length >= 6;
+  const title = useMemo(() => 'Inicia sesión', []);
 
   async function handleEmailLogin(e: React.FormEvent) {
-    e.preventDefault()
-    if (!canSubmit) return
+    e.preventDefault();
+    if (!canSubmit) return;
 
-    setLoading(true)
-    setErrorMsg(null)
+    setLoading(true);
+    setErrorMsg(null);
     try {
-      const { error } = await supabase.auth.signInWithPassword({ email, password })
-      if (error) throw error
-      router.replace(redirectTo)
-    } catch (err: any) {
-      setErrorMsg(err?.message ?? 'No se pudo iniciar sesión')
-      setLoading(false)
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+      router.replace(redirectTo);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'No se pudo iniciar sesión';
+      setErrorMsg(msg);
+      setLoading(false);
     }
   }
 
   async function handleGoogle() {
-    setLoading(true)
-    setErrorMsg(null)
+    setLoading(true);
+    setErrorMsg(null);
     try {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: { redirectTo: `${window.location.origin}${redirectTo}` },
-      })
-      if (error) throw error
-      // Redirige a Google automáticamente
-    } catch (err: any) {
-      setErrorMsg(err?.message ?? 'No se pudo iniciar con Google')
-      setLoading(false)
+      });
+      if (error) throw error;
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'No se pudo iniciar con Google';
+      setErrorMsg(msg);
+      setLoading(false);
     }
   }
 
@@ -137,5 +139,17 @@ export default function LoginPage() {
         </section>
       </main>
     </div>
-  )
+  );
 }
+
+/** Página que envuelve con Suspense */
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="p-8 text-center">cargando…</div>}>
+      <LoginInner />
+    </Suspense>
+  );
+}
+
+// evita prerender estático si aún lo necesitas
+export const dynamic = 'force-dynamic';
