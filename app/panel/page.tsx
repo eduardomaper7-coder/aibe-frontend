@@ -89,7 +89,7 @@ function PanelUI() {
   const API = process.env.NEXT_PUBLIC_API_URL! // ej. https://web-production-52c49.up.railway.app
 
   // Debe coincidir con FRONTEND_ORIGIN del backend para postMessage
-  const FRONT_ORIGIN = 'https://aibetech.es'
+  const FRONT_ORIGIN = 'https://www.aibetech.es';
   const DEV_ORIGIN = 'http://localhost:3000'
   const isAllowedOrigin = (origin: string) => origin === FRONT_ORIGIN || origin === DEV_ORIGIN
 
