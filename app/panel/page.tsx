@@ -4,7 +4,7 @@ import { useEffect, useState, useMemo } from 'react'
 import { supabase } from '@/lib/supabase'
 import {
   BarChart3, LineChart, Bell, TrendingUp, Star, MessageSquare,
-  Settings, Users, FileText, LogIn, CheckCircle2, PlugZap,
+  FileText, LogIn, CheckCircle2, PlugZap,
 } from 'lucide-react'
 import {
   LineChart as RLineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer,
@@ -16,6 +16,7 @@ import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { useRouter } from 'next/navigation'
 
+/** ----- Gate de acceso (tu lógica de suscripción) ----- */
 function useAllowPanel() {
   const router = useRouter()
   const [allowed, setAllowed] = useState<null | boolean>(null)
@@ -71,6 +72,7 @@ function useAllowPanel() {
   return allowed
 }
 
+/** ====== Página ====== */
 export default function AIBEPrimaryDashboard() {
   const allowed = useAllowPanel()
   if (allowed === null) return <div className="min-h-screen grid place-items-center"><p className="text-slate-600">Cargando…</p></div>
@@ -78,25 +80,33 @@ export default function AIBEPrimaryDashboard() {
   return <PanelUI />
 }
 
+/** ----- Panel principal ----- */
 function PanelUI() {
   const [isConnected, setIsConnected] = useState(false)
   const [isConnecting, setIsConnecting] = useState(false)
 
-  const API = process.env.NEXT_PUBLIC_API_URL!; // p.ej. https://web-production-XXXX.up.railway.app
-  const FRONT_ORIGIN = 'https://aibetech.es'    // debe coincidir con FRONTEND_ORIGIN del backend
+  // Backend URL (Railway) — asegúrate de tenerla en Vercel
+  const API = process.env.NEXT_PUBLIC_API_URL! // ej. https://web-production-52c49.up.railway.app
+
+  // Debe coincidir con FRONTEND_ORIGIN del backend para postMessage
+  const FRONT_ORIGIN = 'https://aibetech.es'
+  const DEV_ORIGIN = 'http://localhost:3000'
+  const isAllowedOrigin = (origin: string) => origin === FRONT_ORIGIN || origin === DEV_ORIGIN
 
   async function openGooglePopup() {
     const { data } = await supabase.auth.getSession()
     const email = data.session?.user?.email?.toLowerCase()
-    if (!email) { alert('No hay sesión'); return }
+    if (!email) { alert('No hay sesión de usuario.'); return }
 
     const w = window.open(
       `${API}/auth/google/login?email=${encodeURIComponent(email)}`,
       'google_oauth',
       'width=480,height=640,menubar=no,toolbar=no,resizable=yes,scrollbars=yes'
     )
+
     const handler = (e: MessageEvent) => {
-      if (e.origin !== FRONT_ORIGIN) return
+      // console.log('postMessage:', e.origin, e.data)  // útil para depurar
+      if (!isAllowedOrigin(e.origin)) return
       if (e.data?.type === 'oauth-complete') {
         setIsConnecting(false)
         setIsConnected(!!e.data.ok)
@@ -104,7 +114,9 @@ function PanelUI() {
         try { w?.close() } catch {}
       }
     }
+
     window.addEventListener('message', handler)
+    setIsConnecting(true)
   }
 
   // Comprobar si ya está conectado (consulta directa al backend)
@@ -114,7 +126,6 @@ function PanelUI() {
         const { data } = await supabase.auth.getSession()
         const email = data.session?.user?.email?.toLowerCase()
         if (!email) return
-
         const r = await fetch(`${API}/integrations/google/status`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -123,12 +134,13 @@ function PanelUI() {
         })
         const j = await r.json()
         if (j?.connected) setIsConnected(true)
-      } catch {
-        /* no-op */
+      } catch (e) {
+        console.error('status check failed', e)
       }
     })()
   }, [API])
 
+  // Datos demo
   const ratingSeries = useMemo(() => [
     { name: 'May', rating: 4.0 },
     { name: 'Jun', rating: 4.1 },
@@ -172,7 +184,7 @@ function PanelUI() {
                 id="btn-google-card"
                 className="gap-2"
                 disabled={isConnecting}
-                onClick={() => { setIsConnecting(true); openGooglePopup() }}
+                onClick={openGooglePopup}
               >
                 <LogIn className="h-4 w-4" />
                 {isConnecting ? 'Conectando…' : 'Conectar Google OAuth'}
