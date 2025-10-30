@@ -82,56 +82,31 @@ function PanelUI() {
   const [isConnected, setIsConnected] = useState(false)
   const [isConnecting, setIsConnecting] = useState(false)
 
-  // === GOOGLE OAUTH (GIS POPUP) — con refresh_token ===
-  useEffect(() => {
-    const hasGIS = !!(window as any).google?.accounts?.oauth2
+ const API = process.env.NEXT_PUBLIC_API_URL!; // ej. https://web-production-52c49.up.railway.app
 
-    const ensureInit = () => {
-      const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID
-      if (!clientId) { console.error('Falta NEXT_PUBLIC_GOOGLE_CLIENT_ID'); return }
-
-      const codeClient = (window as any).google.accounts.oauth2.initCodeClient({
-        client_id: clientId,
-        scope: 'openid email profile',
-        ux_mode: 'popup',
-        state: crypto.randomUUID(),
-        access_type: 'offline',
-        prompt: 'consent',
-        callback: async (resp: any) => {
-          if (!resp?.code) { setIsConnecting(false); alert('No se pudo obtener el código de Google.'); return }
-          try {
-            const r = await fetch('/api/auth/google', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              credentials: 'include',
-              body: JSON.stringify({ code: resp.code }),
-            })
-            if (!r.ok) throw new Error('Intercambio de código fallido')
-            setIsConnected(true)
-          } catch (e) {
-            console.error(e); alert('Error al conectar con Google.')
-          } finally {
-            setIsConnecting(false)
-          }
-        },
-      })
-
-      const trigger = () => { setIsConnecting(true); codeClient.requestCode() }
-
-      const cardBtn = document.getElementById('btn-google-card')
-      cardBtn?.addEventListener('click', trigger)
-      return () => { cardBtn?.removeEventListener('click', trigger) }
+function openGooglePopup() {
+  const w = window.open(
+    `${API}/auth/google/login`,
+    "google_oauth",
+    "width=480,height=640,menubar=no,toolbar=no,resizable=yes,scrollbars=yes"
+  );
+  const handler = (e: MessageEvent) => {
+    if (e.origin !== "https://aibetech.es") return;
+    if (e.data?.type === "oauth-complete") {
+      setIsConnecting(false);
+      if (e.data.ok) {
+        setIsConnected(true);
+      } else {
+        console.error("OAuth error:", e.data.error);
+        alert("Error al conectar con Google.");
+      }
+      window.removeEventListener("message", handler);
+      try { w?.close(); } catch {}
     }
+  };
+  window.addEventListener("message", handler);
+}
 
-    if (hasGIS) return ensureInit()
-
-    const script = document.createElement('script')
-    script.src = 'https://accounts.google.com/gsi/client'
-    script.async = true
-    script.defer = true
-    script.onload = () => ensureInit()
-    document.body.appendChild(script)
-  }, [])
 
   // Comprobar si ya está conectado
   useEffect(() => {
@@ -194,10 +169,16 @@ function PanelUI() {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <Button id="btn-google-card" className="gap-2" disabled={isConnecting}>
-                <LogIn className="h-4 w-4" />
-                {isConnecting ? 'Conectando…' : 'Conectar Google OAuth'}
-              </Button>
+              <Button
+  id="btn-google-card"
+  className="gap-2"
+  disabled={isConnecting}
+  onClick={() => { setIsConnecting(true); openGooglePopup(); }}
+>
+  <LogIn className="h-4 w-4" />
+  {isConnecting ? 'Conectando…' : 'Conectar Google OAuth'}
+</Button>
+
               <Button variant="outline">Saber más</Button>
             </div>
           </CardContent>
