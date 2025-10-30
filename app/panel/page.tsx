@@ -82,41 +82,40 @@ function PanelUI() {
   const [isConnected, setIsConnected] = useState(false)
   const [isConnecting, setIsConnecting] = useState(false)
 
- const API = process.env.NEXT_PUBLIC_API_URL!; // ej. https://web-production-52c49.up.railway.app
+  const API = process.env.NEXT_PUBLIC_API_URL!; // p.ej. https://web-production-XXXX.up.railway.app
+  const FRONT_ORIGIN = 'https://aibetech.es'    // debe coincidir con FRONTEND_ORIGIN del backend
 
-function openGooglePopup() {
-  const w = window.open(
-    `${API}/auth/google/login`,
-    "google_oauth",
-    "width=480,height=640,menubar=no,toolbar=no,resizable=yes,scrollbars=yes"
-  );
-  const handler = (e: MessageEvent) => {
-    if (e.origin !== "https://aibetech.es") return;
-    if (e.data?.type === "oauth-complete") {
-      setIsConnecting(false);
-      if (e.data.ok) {
-        setIsConnected(true);
-      } else {
-        console.error("OAuth error:", e.data.error);
-        alert("Error al conectar con Google.");
+  async function openGooglePopup() {
+    const { data } = await supabase.auth.getSession()
+    const email = data.session?.user?.email?.toLowerCase()
+    if (!email) { alert('No hay sesión'); return }
+
+    const w = window.open(
+      `${API}/auth/google/login?email=${encodeURIComponent(email)}`,
+      'google_oauth',
+      'width=480,height=640,menubar=no,toolbar=no,resizable=yes,scrollbars=yes'
+    )
+    const handler = (e: MessageEvent) => {
+      if (e.origin !== FRONT_ORIGIN) return
+      if (e.data?.type === 'oauth-complete') {
+        setIsConnecting(false)
+        setIsConnected(!!e.data.ok)
+        window.removeEventListener('message', handler)
+        try { w?.close() } catch {}
       }
-      window.removeEventListener("message", handler);
-      try { w?.close(); } catch {}
     }
-  };
-  window.addEventListener("message", handler);
-}
+    window.addEventListener('message', handler)
+  }
 
-
-  // Comprobar si ya está conectado
+  // Comprobar si ya está conectado (consulta directa al backend)
   useEffect(() => {
     (async () => {
       try {
         const { data } = await supabase.auth.getSession()
-        const email = data.session?.user?.email
+        const email = data.session?.user?.email?.toLowerCase()
         if (!email) return
 
-        const r = await fetch('/api/integrations/google/status', {
+        const r = await fetch(`${API}/integrations/google/status`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email }),
@@ -128,7 +127,7 @@ function openGooglePopup() {
         /* no-op */
       }
     })()
-  }, [])
+  }, [API])
 
   const ratingSeries = useMemo(() => [
     { name: 'May', rating: 4.0 },
@@ -170,15 +169,14 @@ function openGooglePopup() {
             </div>
             <div className="flex items-center gap-2">
               <Button
-  id="btn-google-card"
-  className="gap-2"
-  disabled={isConnecting}
-  onClick={() => { setIsConnecting(true); openGooglePopup(); }}
->
-  <LogIn className="h-4 w-4" />
-  {isConnecting ? 'Conectando…' : 'Conectar Google OAuth'}
-</Button>
-
+                id="btn-google-card"
+                className="gap-2"
+                disabled={isConnecting}
+                onClick={() => { setIsConnecting(true); openGooglePopup() }}
+              >
+                <LogIn className="h-4 w-4" />
+                {isConnecting ? 'Conectando…' : 'Conectar Google OAuth'}
+              </Button>
               <Button variant="outline">Saber más</Button>
             </div>
           </CardContent>
