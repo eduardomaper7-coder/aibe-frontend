@@ -3,10 +3,11 @@ import type { ReactNode } from 'react'
 
 export default function PanelLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="min-h-[100dvh] bg-slate-50">
-      {/* Topbar */}
+    // Full-bleed: sin fondo gris, ocupa todo el ancho
+    <div className="min-h-[100dvh] bg-white">
+      {/* Topbar full-bleed */}
       <header className="sticky top-0 z-30 border-b bg-white/80 backdrop-blur">
-        <div className="mx-auto max-w-7xl px-4 py-3 flex items-center justify-between">
+        <div className="w-full px-4 py-3 flex items-center justify-between">
           {/* Izquierda: logo + marca + tagline */}
           <Link href="/panel" className="flex items-center gap-3">
             <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-slate-900 text-white font-bold">
@@ -44,8 +45,8 @@ export default function PanelLayout({ children }: { children: ReactNode }) {
         </div>
       </header>
 
-      {/* Contenido sin sidebar */}
-      <main className="mx-auto max-w-7xl px-4 py-6">
+      {/* Contenido full-bleed (solo padding lateral) */}
+      <main className="w-full px-4 sm:px-6 lg:px-8 py-6">
         {children}
       </main>
     </div>
