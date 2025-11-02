@@ -2,17 +2,9 @@
 
 import { useEffect, useState, useMemo } from 'react'
 import { supabase } from '@/lib/supabase'
-import {
-  BarChart3, LineChart, Bell, TrendingUp, Star, MessageSquare,
-  FileText, LogIn, CheckCircle2, PlugZap,
-} from 'lucide-react'
-import {
-  LineChart as RLineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer,
-  CartesianGrid, AreaChart, Area,
-} from 'recharts'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { LogIn, CheckCircle2 } from 'lucide-react'
+import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { useRouter } from 'next/navigation'
 
@@ -105,7 +97,6 @@ function PanelUI() {
     )
 
     const handler = (e: MessageEvent) => {
-      // console.log('postMessage:', e.origin, e.data)  // útil para depurar
       if (!isAllowedOrigin(e.origin)) return
       if (e.data?.type === 'oauth-complete') {
         setIsConnecting(false)
@@ -140,33 +131,36 @@ function PanelUI() {
     })()
   }, [API])
 
-  // Datos demo
-  const ratingSeries = useMemo(() => [
-    { name: 'May', rating: 4.0 },
-    { name: 'Jun', rating: 4.1 },
-    { name: 'Jul', rating: 3.9 },
-    { name: 'Ago', rating: 4.2 },
-    { name: 'Sep', rating: 4.3 },
-    { name: 'Oct', rating: 4.3 },
-  ], [])
+  /** ===================== NUEVO LAYOUT ===================== **/
+  type PeriodKey = '7d' | '30d' | '3m' | '1y' | 'all'
+  const [period, setPeriod] = useState<PeriodKey>('7d')
+  const [customFrom, setCustomFrom] = useState<string>('')
+  const [customTo, setCustomTo] = useState<string>('')
 
-  const reviewsSeries = useMemo(() => [
-    { name: 'Sem 1', count: 22 },
-    { name: 'Sem 2', count: 28 },
-    { name: 'Sem 3', count: 35 },
-    { name: 'Sem 4', count: 43 },
-    { name: 'Sem 5', count: 0 },
-  ], [])
+  const { startLabel, endLabel } = useMemo(() => {
+    // Si hay personalizado completo, usarlo; si no, calcular por período.
+    const fmt = (d: Date) => d.toISOString().slice(0, 10)
 
-  const alerts = [
-    { title: 'Pico de reseñas negativas', text: "Detectamos un aumento de reseñas con quejas sobre 'tiempos de espera' en la última semana." },
-    { title: 'Competencia al alza', text: "Tu competidor directo 'Café Río' incrementó un 25% su volumen de reseñas este mes." },
-    { title: 'Oportunidad', text: 'Las menciones de “desayuno” correlacionan con mayor puntuación (+0.4⭐).' },
-  ]
+    if (customFrom && customTo) {
+      return { startLabel: customFrom, endLabel: customTo }
+    }
+
+    const end = new Date()
+    let start = new Date()
+    switch (period) {
+      case '7d': start.setDate(end.getDate() - 7); break
+      case '30d': start.setDate(end.getDate() - 30); break
+      case '3m': start.setMonth(end.getMonth() - 3); break
+      case '1y': start.setFullYear(end.getFullYear() - 1); break
+      case 'all':
+        return { startLabel: 'histórico', endLabel: fmt(end) }
+    }
+    return { startLabel: fmt(start), endLabel: fmt(end) }
+  }, [period, customFrom, customTo])
 
   return (
     <div className="pb-12">
-      {/* Card de conexión si no está conectado */}
+      {/* Card de conexión si no está conectado (NO TOCAR flujo OAuth) */}
       {!isConnected && (
         <Card className="mb-4 border-dashed">
           <CardContent className="flex flex-col gap-4 p-4 md:flex-row md:items-center md:justify-between">
@@ -195,128 +189,87 @@ function PanelUI() {
         </Card>
       )}
 
-      {/* Encabezado principal */}
-      <div className="mb-2 flex items-center justify-between">
-        <div>
-          <h1 className="text-xl font-semibold">Bienvenido</h1>
-          <p className="text-sm opacity-70">Estado de tus reseñas y rendimiento reciente</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Input type="date" className="h-9 w-[160px]" />
-          <Button variant="outline">Periodo</Button>
-          <Button className="gap-2">
-            <FileText className="h-4 w-4" /> Ver informe
-          </Button>
-        </div>
-      </div>
+      {/* CONTENIDO PRINCIPAL */}
+      <div className="relative">
+        {/* Si NO conectado, difuminar todo el contenido y mostrar mensaje */}
+        {!isConnected && (
+          <div className="pointer-events-none absolute inset-0 z-10 grid place-items-center rounded-xl bg-white/70 backdrop-blur-sm">
+            <div className="text-center">
+              <p className="text-base font-medium">Todavía no podemos extraer información de tu negocio</p>
+              <p className="mt-1 text-sm opacity-70">Conecta Google OAuth (tiempo estimado 2 minutos)</p>
+            </div>
+          </div>
+        )}
 
-      {/* KPIs */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {[
-          { title: 'Rating promedio', value: '4.3', delta: '+0.2', icon: <Star className="h-5 w-5" /> },
-          { title: 'Reseñas nuevas (30d)', value: '128', delta: '+12%', icon: <MessageSquare className="h-5 w-5" /> },
-          { title: 'Sentimiento positivo', value: '76%', delta: '+4pp', icon: <TrendingUp className="h-5 w-5" /> },
-          { title: 'Respuestas IA enviadas', value: '121', delta: '+100%', icon: <PlugZap className="h-5 w-5" /> },
-        ].map(k => (
-          <Card key={k.title} className="overflow-hidden">
-            <CardHeader className="pb-2">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-sm font-medium opacity-80">{k.title}</CardTitle>
-                <div className="rounded-xl bg-muted p-2">{k.icon}</div>
-              </div>
-            </CardHeader>
-            <CardContent className="pt-0">
-              <div className="flex items-end justify-between">
-                <div className="text-2xl font-semibold">{k.value}</div>
-                <Badge variant="outline">{k.delta}</Badge>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      {/* Gráficos */}
-      <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-5">
-        <Card className="lg:col-span-3">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-sm font-semibold">
-              <LineChart className="h-4 w-4" /> Evolución del rating (6 meses)
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <RLineChart data={ratingSeries} margin={{ top: 10, right: 16, bottom: 0, left: -8 }}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-                <YAxis domain={[3.0, 5.0]} tick={{ fontSize: 12 }} />
-                <Tooltip />
-                <Line type="monotone" dataKey="rating" dot={false} strokeWidth={2} />
-              </RLineChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-sm font-semibold">
-              <BarChart3 className="h-4 w-4" /> Reseñas por semana (últimas 5)
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={reviewsSeries} margin={{ top: 10, right: 16, bottom: 0, left: -8 }}>
-                <defs>
-                  <linearGradient id="fillCount" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopOpacity={0.3} />
-                    <stop offset="95%" stopOpacity={0.05} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-                <YAxis tick={{ fontSize: 12 }} />
-                <Tooltip />
-                <Area type="monotone" dataKey="count" strokeWidth={2} fill="url(#fillCount)" />
-              </AreaChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Dos columnas */}
-      <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-5">
-        <Card className="lg:col-span-3">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-sm font-semibold">
-              <Bell className="h-4 w-4" /> Alertas inteligentes
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="flex flex-col gap-3">
-            {alerts.map(a => (
-              <div key={a.title} className="rounded-xl border p-3">
-                <div className="text-sm font-semibold">{a.title}</div>
-                <div className="text-sm opacity-70">{a.text}</div>
-              </div>
+        <div className={!isConnected ? 'blur-sm select-none opacity-60' : ''}>
+          {/* ===== Menú superior ===== */}
+          <nav className="mb-4 flex flex-wrap items-center gap-3 rounded-xl border bg-background p-2 text-sm">
+            {['Temas detectados','Sentimiento','Plan de acción','Media y volumen','Respuestas IA'].map((item) => (
+              <button
+                key={item}
+                className="rounded-xl px-3 py-1.5 hover:bg-muted"
+                type="button"
+              >
+                {item}
+              </button>
             ))}
-          </CardContent>
-        </Card>
+          </nav>
 
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-sm font-semibold">
-              <MessageSquare className="h-4 w-4" /> Últimas respuestas automáticas
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="flex flex-col gap-3">
-            {[1, 2, 3].map(i => (
-              <div key={i} className="rounded-xl border p-3">
-                <div className="mb-1 text-[13px] font-medium opacity-70">Reseña #{i}</div>
-                <div className="text-sm">
-                  <span className="font-medium">IA:</span> ¡Gracias por tu visita! Nos alegra que disfrutaras de la experiencia. Tu comentario nos ayuda a mejorar.
-                </div>
+          {/* ===== Bienvenida + Selectores de periodo ===== */}
+          <div className="mb-4 flex flex-col justify-between gap-3 md:flex-row md:items-center">
+            <p className="text-lg font-semibold">Te damos la bienvenida Hotel RIU Gran Canaria.</p>
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+              {/* Selector de Periodo */}
+              <div className="flex items-center gap-2">
+                <label className="text-sm opacity-70">Selector de Periodo</label>
+                <select
+                  className="h-9 rounded-md border bg-background px-2 text-sm"
+                  value={period}
+                  onChange={(e) => setPeriod(e.target.value as any)}
+                >
+                  <option value="7d">últimos 7 días</option>
+                  <option value="30d">30 días</option>
+                  <option value="3m">3 meses</option>
+                  <option value="1y">1 año</option>
+                  <option value="all">histórico</option>
+                </select>
               </div>
-            ))}
-          </CardContent>
-        </Card>
+
+              {/* Selector Personalizado */}
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-sm opacity-70">Personalizado</span>
+                <Input
+                  type="date"
+                  className="h-9 w-[160px]"
+                  value={customFrom}
+                  onChange={(e) => setCustomFrom(e.target.value)}
+                />
+                <span className="text-sm">a</span>
+                <Input
+                  type="date"
+                  className="h-9 w-[160px]"
+                  value={customTo}
+                  onChange={(e) => setCustomTo(e.target.value)}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* ===== Encabezados de sección ===== */}
+          <div className="mb-1">
+            <h2 className="text-base font-semibold">Análisis inteligente de reseñas google</h2>
+            <p className="mt-1 text-xs opacity-70">Analizando reseñas del {startLabel} al {endLabel}.</p>
+          </div>
+
+          {/* ===== Contenido placeholder (sin métricas ni gráficos) ===== */}
+          <div className="mt-4 rounded-xl border p-6">
+            <p className="text-sm opacity-70">
+              Aquí verás el contenido del análisis (temas, sentimiento, plan de acción, medios/volumen y respuestas IA)
+              sin mostrar gráficos ni tarjetas de estadísticas. Este espacio se rellenará con los resultados
+              de tus reseñas cuando la cuenta esté conectada y existan datos.
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   )
