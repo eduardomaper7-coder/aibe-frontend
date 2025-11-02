@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useMemo } from 'react'
 import { supabase } from '@/lib/supabase'
-import { LogIn, CheckCircle2 } from 'lucide-react'
+import { LogIn, CheckCircle2, ChevronDown } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -67,7 +67,11 @@ function useAllowPanel() {
 /** ====== Página ====== */
 export default function AIBEPrimaryDashboard() {
   const allowed = useAllowPanel()
-  if (allowed === null) return <div className="min-h-screen grid place-items-center"><p className="text-slate-600">Cargando…</p></div>
+  if (allowed === null) return (
+    <div className="min-h-screen grid place-items-center bg-gradient-to-b from-white to-slate-50">
+      <p className="text-slate-600">Cargando…</p>
+    </div>
+  )
   if (allowed === false) return null
   return <PanelUI />
 }
@@ -131,38 +135,34 @@ function PanelUI() {
     })()
   }, [API])
 
-  /** ===================== NUEVO LAYOUT ===================== **/
+  /** ===================== NUEVO LAYOUT MODERNO ===================== **/
   type PeriodKey = '7d' | '30d' | '3m' | '1y' | 'all'
   const [period, setPeriod] = useState<PeriodKey>('7d')
   const [customFrom, setCustomFrom] = useState<string>('')
   const [customTo, setCustomTo] = useState<string>('')
+  const [showCustom, setShowCustom] = useState(false)
 
   const { startLabel, endLabel } = useMemo(() => {
-    // Si hay personalizado completo, usarlo; si no, calcular por período.
     const fmt = (d: Date) => d.toISOString().slice(0, 10)
-
-    if (customFrom && customTo) {
-      return { startLabel: customFrom, endLabel: customTo }
-    }
-
-    const end = new Date()
-    let start = new Date()
+    if (customFrom && customTo) { return { startLabel: customFrom, endLabel: customTo } }
+    const end = new Date(); let start = new Date()
     switch (period) {
       case '7d': start.setDate(end.getDate() - 7); break
       case '30d': start.setDate(end.getDate() - 30); break
       case '3m': start.setMonth(end.getMonth() - 3); break
       case '1y': start.setFullYear(end.getFullYear() - 1); break
-      case 'all':
-        return { startLabel: 'histórico', endLabel: fmt(end) }
+      case 'all': return { startLabel: 'histórico', endLabel: fmt(end) }
     }
     return { startLabel: fmt(start), endLabel: fmt(end) }
   }, [period, customFrom, customTo])
 
+  const menu = ['Temas detectados','Sentimiento','Plan de acción','Media y volumen','Respuestas IA']
+
   return (
-    <div className="pb-12">
+    <div className="pb-12 bg-gradient-to-b from-white to-slate-50">
       {/* Card de conexión si no está conectado (NO TOCAR flujo OAuth) */}
       {!isConnected && (
-        <Card className="mb-4 border-dashed">
+        <Card className="mb-4 border-dashed shadow-sm">
           <CardContent className="flex flex-col gap-4 p-4 md:flex-row md:items-center md:justify-between">
             <div className="flex items-start gap-3">
               <div className="mt-1">
@@ -176,14 +176,14 @@ function PanelUI() {
             <div className="flex items-center gap-2">
               <Button
                 id="btn-google-card"
-                className="gap-2"
+                className="gap-2 rounded-2xl shadow-sm"
                 disabled={isConnecting}
                 onClick={openGooglePopup}
               >
                 <LogIn className="h-4 w-4" />
                 {isConnecting ? 'Conectando…' : 'Conectar Google OAuth'}
               </Button>
-              <Button variant="outline">Saber más</Button>
+              <Button variant="outline" className="rounded-2xl">Saber más</Button>
             </div>
           </CardContent>
         </Card>
@@ -193,7 +193,7 @@ function PanelUI() {
       <div className="relative">
         {/* Si NO conectado, difuminar todo el contenido y mostrar mensaje */}
         {!isConnected && (
-          <div className="pointer-events-none absolute inset-0 z-10 grid place-items-center rounded-xl bg-white/70 backdrop-blur-sm">
+          <div className="pointer-events-none absolute inset-0 z-10 grid place-items-center rounded-2xl bg-white/70 backdrop-blur-sm">
             <div className="text-center">
               <p className="text-base font-medium">Todavía no podemos extraer información de tu negocio</p>
               <p className="mt-1 text-sm opacity-70">Conecta Google OAuth (tiempo estimado 2 minutos)</p>
@@ -201,13 +201,13 @@ function PanelUI() {
           </div>
         )}
 
-        <div className={!isConnected ? 'blur-sm select-none opacity-60' : ''}>
-          {/* ===== Menú superior ===== */}
-          <nav className="mb-4 flex flex-wrap items-center gap-3 rounded-xl border bg-background p-2 text-sm">
-            {['Temas detectados','Sentimiento','Plan de acción','Media y volumen','Respuestas IA'].map((item) => (
+        <div className={(!isConnected ? 'blur-sm select-none opacity-60 ' : '') + 'rounded-2xl border bg-white/60 p-4 shadow-sm'}>
+          {/* ===== Menú superior (píldoras) ===== */}
+          <nav className="mb-5 flex flex-wrap items-center gap-2">
+            {menu.map((item, idx) => (
               <button
                 key={item}
-                className="rounded-xl px-3 py-1.5 hover:bg-muted"
+                className="rounded-2xl border bg-white px-4 py-1.5 text-sm font-medium text-slate-700 shadow-sm transition hover:bg-slate-50"
                 type="button"
               >
                 {item}
@@ -216,14 +216,18 @@ function PanelUI() {
           </nav>
 
           {/* ===== Bienvenida + Selectores de periodo ===== */}
-          <div className="mb-4 flex flex-col justify-between gap-3 md:flex-row md:items-center">
-            <p className="text-lg font-semibold">Te damos la bienvenida Hotel RIU Gran Canaria.</p>
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <div className="mb-6 flex flex-col justify-between gap-3 md:flex-row md:items-center">
+            <div>
+              <h1 className="text-2xl font-semibold tracking-tight text-slate-900">Te damos la bienvenida Hotel RIU Gran Canaria.</h1>
+              <p className="mt-1 text-sm text-slate-600">Gestiona y analiza tus reseñas con IA.</p>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2">
               {/* Selector de Periodo */}
-              <div className="flex items-center gap-2">
-                <label className="text-sm opacity-70">Selector de Periodo</label>
+              <div className="flex items-center gap-2 rounded-2xl border bg-white p-1 pl-2 shadow-sm">
+                <span className="text-xs font-medium text-slate-600">Periodo</span>
                 <select
-                  className="h-9 rounded-md border bg-background px-2 text-sm"
+                  className="h-9 rounded-xl bg-transparent px-2 text-sm focus:outline-none"
                   value={period}
                   onChange={(e) => setPeriod(e.target.value as any)}
                 >
@@ -235,42 +239,54 @@ function PanelUI() {
                 </select>
               </div>
 
-              {/* Selector Personalizado */}
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="text-sm opacity-70">Personalizado</span>
-                <Input
-                  type="date"
-                  className="h-9 w-[160px]"
-                  value={customFrom}
-                  onChange={(e) => setCustomFrom(e.target.value)}
-                />
-                <span className="text-sm">a</span>
-                <Input
-                  type="date"
-                  className="h-9 w-[160px]"
-                  value={customTo}
-                  onChange={(e) => setCustomTo(e.target.value)}
-                />
+              {/* Botón único: Personalizado */}
+              <div className="relative">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="rounded-2xl"
+                  onClick={() => setShowCustom(v => !v)}
+                >
+                  Personalizado <ChevronDown className="ml-1 h-4 w-4" />
+                </Button>
+                {showCustom && (
+                  <div className="absolute right-0 z-20 mt-2 w-[320px] rounded-2xl border bg-white p-3 shadow-lg">
+                    <div className="flex items-center gap-2">
+                      <Input
+                        type="date"
+                        className="h-9"
+                        value={customFrom}
+                        onChange={(e) => setCustomFrom(e.target.value)}
+                      />
+                      <span className="text-sm text-slate-500">a</span>
+                      <Input
+                        type="date"
+                        className="h-9"
+                        value={customTo}
+                        onChange={(e) => setCustomTo(e.target.value)}
+                      />
+                    </div>
+                    <div className="mt-3 flex justify-end gap-2">
+                      <Button size="sm" variant="outline" className="rounded-xl" onClick={() => { setCustomFrom(''); setCustomTo(''); setShowCustom(false) }}>Cancelar</Button>
+                      <Button size="sm" className="rounded-xl" onClick={() => setShowCustom(false)}>Aplicar</Button>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
 
           {/* ===== Encabezados de sección ===== */}
-          <div className="mb-1">
-            <h2 className="text-base font-semibold">Análisis inteligente de reseñas google</h2>
-            <p className="mt-1 text-xs opacity-70">Analizando reseñas del {startLabel} al {endLabel}.</p>
+          <div className="mb-3">
+            <h2 className="text-lg font-semibold text-slate-900">Análisis inteligente de reseñas google</h2>
+            <p className="mt-1 text-xs text-slate-500">Analizando reseñas del {startLabel} al {endLabel}.</p>
           </div>
 
-          {/* ===== Contenido placeholder (sin métricas ni gráficos) ===== */}
-          <div className="mt-4 rounded-xl border p-6">
-            <p className="text-sm opacity-70">
-              Aquí verás el contenido del análisis (temas, sentimiento, plan de acción, medios/volumen y respuestas IA)
-              sin mostrar gráficos ni tarjetas de estadísticas. Este espacio se rellenará con los resultados
-              de tus reseñas cuando la cuenta esté conectada y existan datos.
-            </p>
-          </div>
+          {/* ===== Contenedor vacío (sin texto placeholder) ===== */}
+          <div className="min-h-[220px] rounded-2xl border border-dashed bg-white/40" />
         </div>
       </div>
     </div>
   )
 }
+
