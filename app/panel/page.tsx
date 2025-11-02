@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useRouter } from 'next/navigation'
 
-/** ----- Gate de acceso (tu lógica de suscripción) ----- */
 function useAllowPanel() {
   const router = useRouter()
   const [allowed, setAllowed] = useState<null | boolean>(null)
@@ -64,7 +63,6 @@ function useAllowPanel() {
   return allowed
 }
 
-/** ====== Página ====== */
 export default function AIBEPrimaryDashboard() {
   const allowed = useAllowPanel()
   if (allowed === null) return (
@@ -76,15 +74,11 @@ export default function AIBEPrimaryDashboard() {
   return <PanelUI />
 }
 
-/** ----- Panel principal ----- */
 function PanelUI() {
   const [isConnected, setIsConnected] = useState(false)
   const [isConnecting, setIsConnecting] = useState(false)
 
-  // Backend URL (Railway) — asegúrate de tenerla en Vercel
-  const API = process.env.NEXT_PUBLIC_API_URL! // ej. https://web-production-52c49.up.railway.app
-
-  // Debe coincidir con FRONTEND_ORIGIN del backend para postMessage
+  const API = process.env.NEXT_PUBLIC_API_URL!
   const FRONT_ORIGIN = 'https://www.aibetech.es';
   const DEV_ORIGIN = 'http://localhost:3000'
   const isAllowedOrigin = (origin: string) => origin === FRONT_ORIGIN || origin === DEV_ORIGIN
@@ -114,7 +108,6 @@ function PanelUI() {
     setIsConnecting(true)
   }
 
-  // Comprobar si ya está conectado (consulta directa al backend)
   useEffect(() => {
     (async () => {
       try {
@@ -135,7 +128,6 @@ function PanelUI() {
     })()
   }, [API])
 
-  /** ===================== NUEVO LAYOUT MODERNO ===================== **/
   type PeriodKey = '7d' | '30d' | '3m' | '1y' | 'all'
   const [period, setPeriod] = useState<PeriodKey>('7d')
   const [customFrom, setCustomFrom] = useState<string>('')
@@ -160,7 +152,6 @@ function PanelUI() {
 
   return (
     <div className="pb-12 bg-gradient-to-b from-white to-slate-50">
-      {/* Card de conexión si no está conectado (NO TOCAR flujo OAuth) */}
       {!isConnected && (
         <Card className="mb-4 border-dashed shadow-sm">
           <CardContent className="flex flex-col gap-4 p-4 md:flex-row md:items-center md:justify-between">
@@ -174,12 +165,7 @@ function PanelUI() {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <Button
-                id="btn-google-card"
-                className="gap-2 rounded-2xl shadow-sm"
-                disabled={isConnecting}
-                onClick={openGooglePopup}
-              >
+              <Button id="btn-google-card" className="gap-2 rounded-2xl shadow-sm" disabled={isConnecting} onClick={openGooglePopup}>
                 <LogIn className="h-4 w-4" />
                 {isConnecting ? 'Conectando…' : 'Conectar Google OAuth'}
               </Button>
@@ -189,9 +175,7 @@ function PanelUI() {
         </Card>
       )}
 
-      {/* CONTENIDO PRINCIPAL */}
       <div className="relative">
-        {/* Si NO conectado, difuminar todo el contenido y mostrar mensaje */}
         {!isConnected && (
           <div className="pointer-events-none absolute inset-0 z-10 grid place-items-center rounded-2xl bg-white/70 backdrop-blur-sm">
             <div className="text-center">
@@ -201,21 +185,17 @@ function PanelUI() {
           </div>
         )}
 
-        <div className={(!isConnected ? 'blur-sm select-none opacity-60 ' : '') + 'rounded-2xl border bg-white/60 p-4 shadow-sm'}>
-          {/* ===== Menú superior (píldoras) ===== */}
-          <nav className="mb-5 flex flex-wrap items-center gap-2">
-            {menu.map((item, idx) => (
-              <button
-                key={item}
-                className="rounded-2xl border bg-white px-4 py-1.5 text-sm font-medium text-slate-700 shadow-sm transition hover:bg-slate-50"
-                type="button"
-              >
-                {item}
-              </button>
-            ))}
+        <div className={( !isConnected ? 'blur-sm select-none opacity-60 ' : '' ) + 'rounded-2xl bg-white/70 p-6 shadow-[0_1px_0_0_rgba(15,23,42,0.06),0_8px_24px_-12px_rgba(15,23,42,0.15)]'}>
+          <nav className="mb-6 w-full">
+            <div className="mx-auto flex max-w-4xl items-center justify-center gap-6">
+              {menu.map((item) => (
+                <button key={item} className="px-2 py-2 text-[15px] font-medium text-slate-700 border-b-2 border-transparent hover:border-slate-300 transition-colors" type="button">
+                  {item}
+                </button>
+              ))}
+            </div>
           </nav>
 
-          {/* ===== Bienvenida + Selectores de periodo ===== */}
           <div className="mb-6 flex flex-col justify-between gap-3 md:flex-row md:items-center">
             <div>
               <h1 className="text-2xl font-semibold tracking-tight text-slate-900">Te damos la bienvenida Hotel RIU Gran Canaria.</h1>
@@ -223,14 +203,9 @@ function PanelUI() {
             </div>
 
             <div className="flex flex-wrap items-center gap-2">
-              {/* Selector de Periodo */}
               <div className="flex items-center gap-2 rounded-2xl border bg-white p-1 pl-2 shadow-sm">
                 <span className="text-xs font-medium text-slate-600">Periodo</span>
-                <select
-                  className="h-9 rounded-xl bg-transparent px-2 text-sm focus:outline-none"
-                  value={period}
-                  onChange={(e) => setPeriod(e.target.value as any)}
-                >
+                <select className="h-9 rounded-xl bg-transparent px-2 text-sm focus:outline-none" value={period} onChange={(e) => setPeriod(e.target.value as any)}>
                   <option value="7d">últimos 7 días</option>
                   <option value="30d">30 días</option>
                   <option value="3m">3 meses</option>
@@ -239,32 +214,16 @@ function PanelUI() {
                 </select>
               </div>
 
-              {/* Botón único: Personalizado */}
               <div className="relative">
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="rounded-2xl"
-                  onClick={() => setShowCustom(v => !v)}
-                >
+                <Button type="button" variant="outline" className="rounded-2xl" onClick={() => setShowCustom(v => !v)}>
                   Personalizado <ChevronDown className="ml-1 h-4 w-4" />
                 </Button>
                 {showCustom && (
                   <div className="absolute right-0 z-20 mt-2 w-[320px] rounded-2xl border bg-white p-3 shadow-lg">
                     <div className="flex items-center gap-2">
-                      <Input
-                        type="date"
-                        className="h-9"
-                        value={customFrom}
-                        onChange={(e) => setCustomFrom(e.target.value)}
-                      />
+                      <Input type="date" className="h-9" value={customFrom} onChange={(e) => setCustomFrom(e.target.value)} />
                       <span className="text-sm text-slate-500">a</span>
-                      <Input
-                        type="date"
-                        className="h-9"
-                        value={customTo}
-                        onChange={(e) => setCustomTo(e.target.value)}
-                      />
+                      <Input type="date" className="h-9" value={customTo} onChange={(e) => setCustomTo(e.target.value)} />
                     </div>
                     <div className="mt-3 flex justify-end gap-2">
                       <Button size="sm" variant="outline" className="rounded-xl" onClick={() => { setCustomFrom(''); setCustomTo(''); setShowCustom(false) }}>Cancelar</Button>
@@ -276,18 +235,17 @@ function PanelUI() {
             </div>
           </div>
 
-          {/* ===== Encabezados de sección ===== */}
           <div className="mb-3">
             <h2 className="text-lg font-semibold text-slate-900">Análisis inteligente de reseñas google</h2>
             <p className="mt-1 text-xs text-slate-500">Analizando reseñas del {startLabel} al {endLabel}.</p>
           </div>
 
-          {/* ===== Contenedor vacío (sin texto placeholder) ===== */}
-          <div className="min-h-[220px] rounded-2xl border border-dashed bg-white/40" />
+          <div className="min-h-[220px] rounded-2xl bg-white/60 shadow-inner" />
         </div>
       </div>
     </div>
   )
 }
+
 
 
