@@ -7,6 +7,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useRouter } from 'next/navigation'
+import TemasSection from './analisis/temas/TemasSection'
 
 function useAllowPanel() {
   const router = useRouter()
@@ -186,6 +187,7 @@ function PanelUI() {
         )}
 
         <div className={( !isConnected ? 'blur-sm select-none opacity-60 ' : '' ) + 'px-4 sm:px-6 lg:px-8'}>
+          {/* Menú superior */}
           <nav className="mb-6 w-full">
             <div className="flex items-center justify-center gap-6">
               {menu.map((item) => (
@@ -200,12 +202,14 @@ function PanelUI() {
             </div>
           </nav>
 
+          {/* Encabezado */}
           <div className="mb-6 flex flex-col justify-between gap-3 md:flex-row md:items-center">
             <div>
               <p className="text-sm font-medium text-slate-500">Te damos la bienvenida,</p>
               <h1 className="text-3xl font-semibold tracking-tight text-slate-900">Hotel RIU Gran Canaria</h1>
             </div>
 
+            {/* Controles de periodo */}
             <div className="flex flex-wrap items-center gap-3">
               <div className="flex items-center gap-2">
                 <span className="text-xs font-medium text-slate-600">Periodo</span>
@@ -263,18 +267,23 @@ function PanelUI() {
             </div>
           </div>
 
+          {/* Encabezados de sección */}
           <div className="mb-3">
             <h2 className="text-lg font-semibold text-slate-900">Análisis inteligente de reseñas google</h2>
             <p className="mt-1 text-xs text-slate-500">Analizando reseñas del {startLabel} al {endLabel}.</p>
           </div>
 
-          {/* Sin recuadro */}
-          <div className="min-h-[220px]" />
+          {/* (opcional) placeholder */}
+          {/* <div className="min-h-[220px]" /> */}
+
+          {/* === Temas detectados: renderizado debajo del dashboard === */}
+          <TemasSection />
         </div>
       </div>
     </div>
   )
 }
+
 
 
 
