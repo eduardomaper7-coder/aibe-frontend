@@ -34,66 +34,20 @@ export default function PanelLayout({ children }: { children: ReactNode }) {
             >
               {/* avatar genérico */}
               <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
-                <path fill="currentColor" d="M12 12a5 5 0 1 0-5-5a5 5 0 0 0 5 5Zm0 2c-4.418 0-8 2.239-8 5v1h16v-1c0-2.761-3.582-5-8-5Z"/>
+                <path
+                  fill="currentColor"
+                  d="M12 12a5 5 0 1 0-5-5a5 5 0 0 0 5 5Zm0 2c-4.418 0-8 2.239-8 5v1h16v-1c0-2.761-3.582-5-8-5Z"
+                />
               </svg>
             </button>
           </div>
         </div>
       </header>
 
-      {/* Layout con sidebar único + contenido */}
-      <div className="mx-auto max-w-7xl px-4 py-6 grid grid-cols-12 gap-6">
-        {/* Sidebar único */}
-        <aside className="col-span-12 md:col-span-3 lg:col-span-2">
-          <nav className="sticky top-[76px] rounded-2xl border bg-white p-4">
-            <div className="mb-2 text-xs font-medium uppercase tracking-wider text-slate-500">
-              Navegación
-            </div>
-            <ul className="space-y-1 text-sm">
-              <li>
-                <Link
-                  href="/panel"
-                  className="block rounded-xl px-3 py-2 hover:bg-slate-100 transition-colors"
-                >
-                  Visión general
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/panel/analisis"
-                  className="block rounded-xl px-3 py-2 hover:bg-slate-100 transition-colors"
-                >
-                  Análisis de reseñas
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/panel/competidores"
-                  className="block rounded-xl px-3 py-2 hover:bg-slate-100 transition-colors"
-                >
-                  Competencia
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/panel/configuracion"
-                  className="block rounded-xl px-3 py-2 hover:bg-slate-100 transition-colors"
-                >
-                  Configuración
-                </Link>
-              </li>
-            </ul>
-          </nav>
-        </aside>
-
-        {/* Contenido */}
-        <main className="col-span-12 md:col-span-9 lg:col-span-10">
-          {children}
-        </main>
-      </div>
+      {/* Contenido sin sidebar */}
+      <main className="mx-auto max-w-7xl px-4 py-6">
+        {children}
+      </main>
     </div>
   )
 }
-
-
-
