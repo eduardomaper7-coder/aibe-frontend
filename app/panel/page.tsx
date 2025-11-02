@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useMemo } from 'react'
 import { supabase } from '@/lib/supabase'
-import { LogIn, CheckCircle2, ChevronDown } from 'lucide-react'
+import { LogIn, CheckCircle2, ChevronDown, Calendar } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -66,7 +66,7 @@ function useAllowPanel() {
 export default function AIBEPrimaryDashboard() {
   const allowed = useAllowPanel()
   if (allowed === null) return (
-    <div className="min-h-screen grid place-items-center bg-gradient-to-b from-white to-slate-50">
+    <div className="min-h-screen grid place-items-center bg-white">
       <p className="text-slate-600">Cargando…</p>
     </div>
   )
@@ -151,7 +151,8 @@ function PanelUI() {
   const menu = ['Temas detectados','Sentimiento','Plan de acción','Media y volumen','Respuestas IA']
 
   return (
-    <div className="pb-12 bg-gradient-to-b from-white to-slate-50">
+    <div className="min-h-screen w-full pb-12 bg-white">
+      {/* Card de conexión si no está conectado */}
       {!isConnected && (
         <Card className="mb-4 border-dashed shadow-sm">
           <CardContent className="flex flex-col gap-4 p-4 md:flex-row md:items-center md:justify-between">
@@ -176,8 +177,9 @@ function PanelUI() {
       )}
 
       <div className="relative">
+        {/* Overlay informativo si no está conectado */}
         {!isConnected && (
-          <div className="pointer-events-none absolute inset-0 z-10 grid place-items-center rounded-2xl bg-white/70 backdrop-blur-sm">
+          <div className="pointer-events-none absolute inset-0 z-10 grid place-items-center bg-transparent">
             <div className="text-center">
               <p className="text-base font-medium">Todavía no podemos extraer información de tu negocio</p>
               <p className="mt-1 text-sm opacity-70">Conecta Google OAuth (tiempo estimado 2 minutos)</p>
@@ -185,49 +187,106 @@ function PanelUI() {
           </div>
         )}
 
-        <div className={( !isConnected ? 'blur-sm select-none opacity-60 ' : '' ) + 'rounded-2xl bg-white/70 p-6 shadow-[0_1px_0_0_rgba(15,23,42,0.06),0_8px_24px_-12px_rgba(15,23,42,0.15)]'}>
+        {/* Contenido full-bleed con padding lateral */}
+        <div className={( !isConnected ? 'blur-sm select-none opacity-60 ' : '' ) + 'px-4 sm:px-6 lg:px-8'}>
+          {/* Menú superior centrado */}
           <nav className="mb-6 w-full">
-            <div className="mx-auto flex max-w-4xl items-center justify-center gap-6">
+            <div className="flex items-center justify-center gap-6">
               {menu.map((item) => (
-                <button key={item} className="px-2 py-2 text-[15px] font-medium text-slate-700 border-b-2 border-transparent hover:border-slate-300 transition-colors" type="button">
+                <button
+                  key={item}
+                  className="px-2 py-2 text-[15px] font-medium text-slate-700 border-b-2 border-transparent hover:border-slate-300 transition-colors"
+                  type="button"
+                >
                   {item}
                 </button>
               ))}
             </div>
           </nav>
 
+          {/* Encabezado en dos líneas */}
           <div className="mb-6 flex flex-col justify-between gap-3 md:flex-row md:items-center">
             <div>
-              <h1 className="text-2xl font-semibold tracking-tight text-slate-900">Te damos la bienvenida Hotel RIU Gran Canaria.</h1>
-              <p className="mt-1 text-sm text-slate-600">Gestiona y analiza tus reseñas con IA.</p>
+              <p className="text-sm font-medium text-slate-500">Te damos la bienvenida,</p>
+              <h1 className="text-3xl font-semibold tracking-tight text-slate-900">Hotel RIU Gran Canaria</h1>
             </div>
 
-            <div className="flex flex-wrap items-center gap-2">
-              <div className="flex items-center gap-2 rounded-2xl border bg-white p-1 pl-2 shadow-sm">
+            {/* Controles de periodo */}
+            <div className="flex flex-wrap items-center gap-3">
+              {/* Segmented control de periodo */}
+              <div className="flex items-center gap-2">
                 <span className="text-xs font-medium text-slate-600">Periodo</span>
-                <select className="h-9 rounded-xl bg-transparent px-2 text-sm focus:outline-none" value={period} onChange={(e) => setPeriod(e.target.value as any)}>
-                  <option value="7d">últimos 7 días</option>
-                  <option value="30d">30 días</option>
-                  <option value="3m">3 meses</option>
-                  <option value="1y">1 año</option>
-                  <option value="all">histórico</option>
-                </select>
+                <div className="inline-flex rounded-2xl border bg-white p-1 shadow-sm">
+                  {[
+                    { key: '7d', label: '7 días' },
+                    { key: '30d', label: '30 días' },
+                    { key: '3m', label: '3 meses' },
+                    { key: '1y', label: '1 año' },
+                    { key: 'all', label: 'Histórico' },
+                  ].map((opt) => (
+                    <button
+                      key={opt.key}
+                      onClick={() => setPeriod(opt.key as PeriodKey)}
+                      className={`px-3 py-1.5 text-sm rounded-xl transition ${
+                        period === (opt.key as PeriodKey)
+                          ? 'bg-slate-900 text-white shadow-sm'
+                          : 'text-slate-700 hover:bg-slate-50'
+                      }`}
+                      type="button"
+                      aria-pressed={period === (opt.key as PeriodKey)}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
               </div>
 
+              {/* Botón único: Personalizado */}
               <div className="relative">
-                <Button type="button" variant="outline" className="rounded-2xl" onClick={() => setShowCustom(v => !v)}>
-                  Personalizado <ChevronDown className="ml-1 h-4 w-4" />
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="rounded-2xl border-slate-300 bg-white hover:bg-slate-50 gap-2"
+                  onClick={() => setShowCustom(v => !v)}
+                >
+                  <Calendar className="h-4 w-4" />
+                  Personalizado
+                  <ChevronDown className="ml-1 h-4 w-4" />
                 </Button>
                 {showCustom && (
-                  <div className="absolute right-0 z-20 mt-2 w-[320px] rounded-2xl border bg-white p-3 shadow-lg">
+                  <div className="absolute right-0 z-20 mt-2 w-[340px] rounded-2xl border bg-white p-4 shadow-xl">
+                    <div className="mb-3 text-sm font-medium text-slate-700">Rango personalizado</div>
                     <div className="flex items-center gap-2">
-                      <Input type="date" className="h-9" value={customFrom} onChange={(e) => setCustomFrom(e.target.value)} />
+                      <Input
+                        type="date"
+                        className="h-9"
+                        value={customFrom}
+                        onChange={(e) => setCustomFrom(e.target.value)}
+                      />
                       <span className="text-sm text-slate-500">a</span>
-                      <Input type="date" className="h-9" value={customTo} onChange={(e) => setCustomTo(e.target.value)} />
+                      <Input
+                        type="date"
+                        className="h-9"
+                        value={customTo}
+                        onChange={(e) => setCustomTo(e.target.value)}
+                      />
                     </div>
-                    <div className="mt-3 flex justify-end gap-2">
-                      <Button size="sm" variant="outline" className="rounded-xl" onClick={() => { setCustomFrom(''); setCustomTo(''); setShowCustom(false) }}>Cancelar</Button>
-                      <Button size="sm" className="rounded-xl" onClick={() => setShowCustom(false)}>Aplicar</Button>
+                    <div className="mt-4 flex justify-end gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="rounded-xl"
+                        onClick={() => { setCustomFrom(''); setCustomTo(''); setShowCustom(false) }}
+                      >
+                        Cancelar
+                      </Button>
+                      <Button
+                        size="sm"
+                        className="rounded-xl"
+                        onClick={() => setShowCustom(false)}
+                      >
+                        Aplicar
+                      </Button>
                     </div>
                   </div>
                 )}
@@ -235,17 +294,20 @@ function PanelUI() {
             </div>
           </div>
 
+          {/* Encabezados de sección */}
           <div className="mb-3">
             <h2 className="text-lg font-semibold text-slate-900">Análisis inteligente de reseñas google</h2>
             <p className="mt-1 text-xs text-slate-500">Analizando reseñas del {startLabel} al {endLabel}.</p>
           </div>
 
-          <div className="min-h-[220px] rounded-2xl bg-white/60 shadow-inner" />
+          {/* Zona de contenido futuro */}
+          <div className="min-h-[220px]" />
         </div>
       </div>
     </div>
   )
 }
+
 
 
 
