@@ -12,7 +12,9 @@ function cx(...classes: (string | false | undefined)[]) {
 function LoginInner() {
   const router = useRouter();
   const qs = useSearchParams();
-  const redirectTo = qs.get('redirect') || '/';
+
+  // Si no viene, por defecto enviamos al panel
+  const redirectParam = qs.get('redirect') || '/panel';
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -22,6 +24,18 @@ function LoginInner() {
   const canSubmit = email.length > 5 && password.length >= 6;
   const title = useMemo(() => 'Inicia sesión', []);
 
+  async function checkSubscriptionActive() {
+    // Tu endpoint debe devolver { active: boolean }
+    const r = await fetch('/api/stripe/subscription-status', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      cache: 'no-store',
+    });
+    if (!r.ok) return false;
+    const j = await r.json();
+    return !!j?.active;
+  }
+
   async function handleEmailLogin(e: React.FormEvent) {
     e.preventDefault();
     if (!canSubmit) return;
@@ -29,13 +43,30 @@ function LoginInner() {
     setLoading(true);
     setErrorMsg(null);
     try {
+      // 1) Login
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
-      router.replace(redirectTo);
+
+      // 2) Asegura que hay sesión en el cliente
+      const { data: s } = await supabase.auth.getSession();
+      if (!s.session) throw new Error('No se pudo crear la sesión');
+
+      // 3) Comprueba suscripción en tu backend
+      const active = await checkSubscriptionActive();
+      if (!active) {
+        setErrorMsg(
+          'Tu suscripción no está activa. Si crees que es un error, contacta con soporte o reactiva tu plan.'
+        );
+        return; // no redirigimos
+      }
+
+      // 4) Adelante
+      router.replace(redirectParam);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'No se pudo iniciar sesión';
       setErrorMsg(msg);
-      setLoading(false);
+    } finally {
+      setLoading(false); // nunca te quedas en “Entrando…”
     }
   }
 
@@ -43,11 +74,21 @@ function LoginInner() {
     setLoading(true);
     setErrorMsg(null);
     try {
+      // Importante: usamos un callback en servidor para asentar cookies
+      const callbackUrl = `${window.location.origin}/auth/callback?redirect=${encodeURIComponent(
+        redirectParam
+      )}`;
+
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
-        options: { redirectTo: `${window.location.origin}${redirectTo}` },
+        options: {
+          redirectTo: callbackUrl,
+          // scopes: 'email profile openid', // opcional
+        },
       });
       if (error) throw error;
+
+      // El navegador será redirigido al callback, no seguimos aquí
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'No se pudo iniciar con Google';
       setErrorMsg(msg);
@@ -116,7 +157,9 @@ function LoginInner() {
               />
             </div>
 
-            {errorMsg && <p className="text-sm text-red-600">{errorMsg}</p>}
+            {errorMsg && (
+              <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{errorMsg}</p>
+            )}
 
             <button
               type="submit"
@@ -153,3 +196,4 @@ export default function LoginPage() {
 
 // evita prerender estático si aún lo necesitas
 export const dynamic = 'force-dynamic';
+
