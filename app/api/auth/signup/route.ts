@@ -1,6 +1,7 @@
-// app/api/auth/signup/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { supabaseAdmin } from "@/lib/supabaseAdmin";
+import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
+
+export const runtime = "nodejs"; // asegúrate de no ejecutar en Edge
 
 export async function POST(req: NextRequest) {
   try {
@@ -10,15 +11,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Faltan datos" }, { status: 400 });
     }
 
-    // Crea el usuario ya confirmado (ignora la política de confirmación del proyecto)
-    const { data, error } = await supabaseAdmin.auth.admin.createUser({
+    const supabase = getSupabaseAdmin(); // ← crea/recupera el cliente en runtime
+
+    // Crea el usuario ya confirmado (ignora confirmación por email)
+    const { data, error } = await supabase.auth.admin.createUser({
       email,
       password,
       email_confirm: true,
     });
 
     if (error) {
-      // Si ya existe, devolvemos 200 para que el flujo continúe con el signIn
+      // Si ya existe, devolvemos 200 para que el flujo continue con signIn
       if (error.message?.toLowerCase().includes("already registered")) {
         return NextResponse.json({ ok: true, alreadyExists: true });
       }
@@ -27,9 +30,11 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ ok: true, userId: data.user?.id });
   } catch (e: any) {
+    // También captura el caso de env vars ausentes en runtime
     return NextResponse.json(
       { error: e?.message ?? "Error creando usuario" },
       { status: 500 }
     );
   }
 }
+

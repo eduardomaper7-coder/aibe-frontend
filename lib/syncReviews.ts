@@ -1,5 +1,5 @@
 // lib/syncReviews.ts
-import { supabaseAdmin } from "@/lib/supabaseAdmin";
+import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 import { google } from "googleapis";
 
 function sleep(ms: number) {
@@ -16,15 +16,25 @@ function getOAuthClient() {
   if (!clientId || !clientSecret || !redirectUri) {
     throw new Error("Faltan variables de entorno de Google OAuth");
   }
-  return new google.auth.OAuth2({
-    clientId,
-    clientSecret,
-    redirectUri,
-  });
+  return new google.auth.OAuth2({ clientId, clientSecret, redirectUri });
+}
+
+// Convierte posibles enums de Google a número 1–5
+function toStars(v: unknown): number | null {
+  if (v == null) return null;
+  if (typeof v === "number") return v;
+  if (typeof v === "string") {
+    const map: Record<string, number> = { ONE: 1, TWO: 2, THREE: 3, FOUR: 4, FIVE: 5 };
+    if (map[v]) return map[v];
+    const n = parseInt(v, 10);
+    return Number.isFinite(n) ? n : null;
+  }
+  return null;
 }
 
 async function getGMBClient(userId: string) {
-  const { data: tok, error } = await supabaseAdmin
+  const supabase = getSupabaseAdmin();
+  const { data: tok, error } = await supabase
     .from("oauth_google_tokens")
     .select("*")
     .eq("user_id", userId)
@@ -39,25 +49,34 @@ async function getGMBClient(userId: string) {
     expiry_date: tok.expiry_date ? new Date(tok.expiry_date).getTime() : undefined,
   });
 
-  // @ts-ignore - paquete gmb (mybusiness v4) en googleapis
-  const mybusiness = google.mybusiness({ version: "v4", auth: oauth2 });
+  // Fallback defensivo si tu versión de googleapis no trae mybusiness v4
+  const anyGoogle = google as any;
+  if (!anyGoogle.mybusiness) {
+    throw new Error(
+      "La API google.mybusiness v4 no está disponible en tu versión de 'googleapis'. " +
+      "Pinea una versión compatible o migra a Business Profile API."
+    );
+  }
+
+  const mybusiness = anyGoogle.mybusiness({ version: "v4", auth: oauth2 });
   return { mybusiness };
 }
 
 async function upsertReview(location_id: string, r: any) {
+  const supabase = getSupabaseAdmin();
   const review_id = r.reviewId || r.name;
   const payload = {
     review_id,
     location_id,
     reviewer: r.reviewer ?? null,
-    star_rating: r.starRating ? parseInt(r.starRating, 10) : null,
+    star_rating: toStars(r.starRating),
     comment: r.comment ?? null,
     create_time: r.createTime ?? null,
     update_time: r.updateTime ?? null,
     review_json: r,
   };
 
-  const { error } = await supabaseAdmin
+  const { error } = await supabase
     .from("gmb_reviews")
     .upsert(payload, { onConflict: "review_id,location_id" });
 
@@ -94,8 +113,8 @@ export async function backfillLocationReviews(params: { userId: string; location
     await sleep(150); // respeta rate limits
   } while (pageToken);
 
-  // Guarda estado de sync
-  await supabaseAdmin.from("gmb_sync_state").upsert({
+  const supabase = getSupabaseAdmin();
+  await supabase.from("gmb_sync_state").upsert({
     location_id: locationName,
     last_full_backfill_at: new Date().toISOString(),
     // arranca incremental desde 0 (se actualizará en la primera corrida)
@@ -109,14 +128,15 @@ export async function syncIncrementalLocation(params: { userId: string; location
   const { accountId, locationIdNum } = splitIds(locationName);
   const { mybusiness } = await getGMBClient(userId);
 
-  const { data: state, error: stateErr } = await supabaseAdmin
+  const supabase = getSupabaseAdmin();
+  const { data: state, error: stateErr } = await supabase
     .from("gmb_sync_state")
     .select("*")
     .eq("location_id", locationName)
     .single();
 
   if (stateErr && stateErr.code !== "PGRST116") {
-    // ignora "no rows" (PGRST116), pero propaga otros errores
+    // ignora "no rows" (PGRST116), pero propaga otros errores reales
     throw stateErr;
   }
 
@@ -137,8 +157,8 @@ export async function syncIncrementalLocation(params: { userId: string; location
 
     for (const r of reviews) {
       const ut = parseDate(r.updateTime);
-      if (ut <= since) {
-        stop = true; // ya llegamos a lo viejo
+      if (ut <= since) { // ya llegamos a lo viejo
+        stop = true;
         break;
       }
       if (ut > maxUpdate) maxUpdate = ut;
@@ -150,8 +170,7 @@ export async function syncIncrementalLocation(params: { userId: string; location
     await sleep(150);
   } while (pageToken);
 
-  // Actualiza cursor
-  await supabaseAdmin.from("gmb_sync_state").upsert({
+  await supabase.from("gmb_sync_state").upsert({
     location_id: locationName,
     last_incremental_cursor: maxUpdate.toISOString(),
   });
