@@ -1,3 +1,22 @@
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
-export const supabase = createClientComponentClient();
+// lib/supabase.ts
+'use client';
+import { createClient } from '@supabase/supabase-js';
 
+export const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+  {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true,
+      storageKey: 'aibe-auth', // 👈 MUY IMPORTANTE: único y consistente
+    },
+  }
+);
+
+// útil para depurar
+if (typeof window !== 'undefined') {
+  // @ts-ignore
+  window.supabase = supabase;
+}

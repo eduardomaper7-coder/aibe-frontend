@@ -1,1 +1,185 @@
-@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* tus estilos globales debajo */
+:root {
+  --container-max: 1280px;
+  --pad-x: clamp(4px, 0.6vw, 14px);
+  --content-x: clamp(0px, 0.1vw, 8px);
+  --title-size: clamp(40px, 8vw, 92px);
+  --subtitle-size: clamp(16px, 2.2vw, 22px);
+  --title-height: 1px;
+  --topbar-h: 64px;
+
+  /* offsets de la parte baja del hero */
+  --subtitle-bottom: clamp(48px, 8vh, 100px);
+  --cta-bottom: clamp(16px, 4vh, 40px);
+}
+
+* { box-sizing: border-box; }
+
+html, body { height: 100%; }
+
+body {
+  margin: 0;
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-weight: 300;
+  color: #fff;
+  background: #000;
+  overflow-x: hidden;
+}
+
+/* HERO */
+.hero {
+  position: relative;
+  height: 100vh;         /* el hero ocupa toda la pantalla */
+  isolation: isolate;
+  overflow: hidden;
+}
+.hero video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;     /* cubre todo el hero */
+  z-index: -2;
+  /* (sin filtro de brillo) */
+}
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  /* overlay sutil para legibilidad, sin oscurecer tanto */
+  background:
+    radial-gradient(80% 60% at 20% 20%, rgba(0,0,0,.05), rgba(0,0,0,.25) 70%),
+    linear-gradient(to top, rgba(0,0,0,.18), rgba(0,0,0,0) 40%);
+}
+
+.shell {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: 16px var(--pad-x);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* TOPBAR */
+.topbar { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 8px 0; }
+.brand { display: flex; align-items: center; gap: 12px; }
+.logo {
+  width: 28px; height: 28px; border-radius: 8px;
+  background: linear-gradient(145deg, #22d3ee, #7c3aed);
+  display: grid; place-items: center;
+  box-shadow: 0 0 0 3px rgba(255,255,255,.08) inset;
+}
+.logo span { font-size: 14px; font-weight: 800; }
+.brand-text { display: flex; flex-direction: column; line-height: 1; }
+.brand-text strong { font-weight: 700; }
+.brand-text small { opacity: .8; font-weight: 400; }
+
+.nav { display: flex; gap: 28px; align-items: center; margin-left: min(3vw, 32px); margin-right: min(3vw, 32px); }
+.nav a { color: #cde3ff; text-decoration: none; font-weight: 400; opacity: .95; }
+.nav a:hover { opacity: 1; text-decoration: underline; }
+
+.actions { display: flex; align-items: center; gap: 18px; }
+.link { background: none; border: none; color: #e7e7e7; font-weight: 400; cursor: pointer; }
+
+.btn {
+  appearance: none;
+  border: 1.5px solid rgba(255,255,255,.25);
+  background: #fff; color: #111;
+  padding: 12px 18px; border-radius: 999px;
+  font-weight: 600; cursor: pointer;
+  transition: transform .2s ease, background .2s ease, border-color .2s ease;
+}
+.btn.secondary { background: transparent; color: #fff; border-color: rgba(255,255,255,.45); }
+.btn:hover { transform: translateY(-1px); background: #f3f3f3; }
+
+a.btn,
+a.btn:link,
+a.btn:visited,
+a.btn:hover,
+a.btn:active,
+.actions a.btn { text-decoration: none !important; }
+
+/* CENTRO / HERO PRINCIPAL */
+.center {
+  position: relative;
+  height: 100%;                 /* llena el alto del hero */
+  display: flex; flex-direction: column; justify-content: flex-start;
+  padding-top: clamp(110px, 22vh, 300px);  /* como tenías antes */
+  padding-left: var(--content-x);
+  padding-right: var(--pad-x);
+  z-index: 1;                   /* por encima del video */
+}
+
+/* Título */
+.title-slot { height: var(--title-height); position: relative; }
+.title {
+  font-size: var(--title-size); line-height: .94; letter-spacing: -.01em;
+  margin: 0; font-weight: 300; font-variation-settings: "wght" 300;
+}
+.title-layer { position: absolute; inset: 0; display: flex; align-items: flex-start; }
+
+/* Subtítulo (anclado cerca del borde inferior) */
+.subtitle {
+  position: absolute;
+  left: var(--content-x);
+  right: var(--pad-x);
+  bottom: var(--subtitle-bottom);
+  font-size: var(--subtitle-size);
+  max-width: 52ch; opacity: .92; font-weight: 300; margin: 0;
+}
+
+/* CTA sobre el video, bajo el subtítulo */
+.cta {
+  position: absolute;
+  left: var(--content-x);
+  bottom: var(--cta-bottom);
+}
+.cta .btn {
+  padding: 18px 30px;
+  font-size: clamp(15px, 1.4vw, 20px);
+  border-width: 2px;
+  background: #fff; color: #000; font-weight: 700;
+  border-radius: 999px;
+  transition: transform .2s ease, background .2s ease;
+}
+.cta .btn:hover { background: #f3f3f3; transform: translateY(-2px); }
+
+/* Animaciones */
+.fade-enter { opacity: 0; transform: translateY(8px) scale(.99); }
+.fade-enter-active {
+  opacity: 1; transform: translateY(0) scale(1);
+  transition: opacity .7s ease, transform .7s ease;
+}
+.fade-exit { opacity: 1; transform: translateY(0) scale(1); }
+.fade-exit-active {
+  opacity: 0; transform: translateY(-6px) scale(.99);
+  transition: opacity .55s ease, transform .55s ease;
+}
+
+/* La antigua sección debajo del hero ya no se usa 
+   (si existiera por compatibilidad, la mantenemos neutral) */
+.below-fold { display: none; }
+
+/* RESPONSIVE */
+@media (max-width: 960px) {
+  .nav { display: none; }
+  .center { padding-top: 20vh; padding-left: var(--content-x); }
+}
+
+@media (max-width: 520px) {
+  .center { padding-top: 18vh; padding-left: var(--content-x); }
+  .subtitle {
+    left: var(--content-x); right: var(--content-x);
+    max-width: 100%;
+    bottom: clamp(56px, 7vh, 80px); /* un poco más alto para dejar hueco al botón */
+  }
+  .cta { left: var(--content-x); bottom: clamp(12px, 4vh, 36px); }
+}

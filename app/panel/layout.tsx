@@ -4,23 +4,15 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import React, { useEffect, useRef, useState } from "react";
-import { createClient, SupabaseClient } from "@supabase/supabase-js";
+import { supabase } from "@/lib/supabase"; // 👈 usa el cliente unificado
+
+type View = "menu" | "help" | "subscription" | "confirm-cancel";
 
 /* =========================
    Componente AccountMenu
    ========================= */
-const fallbackSupabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-const fallbackSupabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
-const fallbackClient: SupabaseClient | null =
-  fallbackSupabaseUrl && fallbackSupabaseAnonKey
-    ? createClient(fallbackSupabaseUrl, fallbackSupabaseAnonKey)
-    : null;
-
-type View = "menu" | "help" | "subscription" | "confirm-cancel";
-
-function AccountMenu({ supabase }: { supabase?: SupabaseClient }) {
+function AccountMenu() {
   const router = useRouter();
-  const client = supabase || fallbackClient;
 
   const [open, setOpen] = useState(false);
   const [view, setView] = useState<View>("menu");
@@ -39,18 +31,13 @@ function AccountMenu({ supabase }: { supabase?: SupabaseClient }) {
   useEffect(() => {
     let mounted = true;
     (async () => {
-      if (!client) {
-        setLoadingEmail(false);
-        setError("Supabase no está configurado");
-        return;
-      }
       try {
         setLoadingEmail(true);
         setError(null);
         const {
           data: { user },
           error: userError,
-        } = await client.auth.getUser();
+        } = await supabase.auth.getUser();
         if (userError) throw userError;
         if (!mounted) return;
         setEmail(user?.email ?? null);
@@ -71,7 +58,7 @@ function AccountMenu({ supabase }: { supabase?: SupabaseClient }) {
     return () => {
       mounted = false;
     };
-  }, [client]);
+  }, []);
 
   // Cerrar al hacer click fuera o con Esc
   useEffect(() => {
@@ -105,7 +92,7 @@ function AccountMenu({ supabase }: { supabase?: SupabaseClient }) {
   async function handleSignOut() {
     // Cierra sesión y redirige SIEMPRE a la página comercial
     try {
-      if (client) await client.auth.signOut();
+      await supabase.auth.signOut();
     } catch (e) {
       console.error("Error al cerrar sesión:", e);
     } finally {
@@ -262,23 +249,52 @@ function AccountMenu({ supabase }: { supabase?: SupabaseClient }) {
 
   function ConfirmCancelView() {
     async function onYes() {
-      try {
-        setLoadingCancel(true);
-        // Si quieres llamar a tu API aquí, hazlo antes de redirigir.
-        // await fetch("/api/stripe/cancel-subscription", { method: "POST" });
+  try {
+    setLoadingCancel(true);
 
-        setOpen(false);
-        setView("menu");
-        router.push("/panel/cuenta/suscripcion-cancelada"); // <-- redirección a otra página
-      } finally {
-        setLoadingCancel(false);
-      }
+    // 1️⃣ Obtener el token actual del usuario
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      router.push("/login");
+      return;
     }
+
+    // 2️⃣ Llamar al endpoint de cancelación
+    const res = await fetch("/api/stripe/cancel-subscription", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${session.access_token}`,
+      },
+      // Si quisieras cancelar inmediatamente:
+      // fetch("/api/stripe/cancel-subscription?immediate=1", { ... })
+    });
+
+    const json = await res.json();
+
+    if (!json?.ok) {
+      console.error("Error cancelando:", json);
+      alert("No se pudo cancelar la suscripción. Intenta más tarde.");
+      return;
+    }
+
+    // 3️⃣ Opcional: cerrar sesión para bloquear el acceso de inmediato
+    await supabase.auth.signOut();
+
+    setOpen(false);
+    setView("menu");
+
+    // 4️⃣ Redirigir a una página de confirmación o a /pago
+    router.push("/panel/cuenta/suscripcion-cancelada");
+  } finally {
+    setLoadingCancel(false);
+  }
+}
+
 
     function onNo() {
       setOpen(false);
       setView("menu");
-      router.push("/panel"); // vuelve al panel
+      router.push("/panel");
     }
 
     return (
@@ -345,9 +361,59 @@ function AccountMenu({ supabase }: { supabase?: SupabaseClient }) {
 }
 
 /* =========================
-   Layout del Panel
+   Layout del Panel (con guard)
    ========================= */
-export default function PanelLayout({ children }: { children: ReactNode }) {
+export default function PanelLayout({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
+  const [checking, setChecking] = useState(true);
+
+  useEffect(() => {
+    let mounted = true;
+
+    (async () => {
+      // 1) intenta leer la sesión actual
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!mounted) return;
+
+      if (session) {
+        setChecking(false);
+        return;
+      }
+
+      // 2) si aún no hay, espera un cambio breve (hidratación post-login/OAuth)
+      const { data: sub } = supabase.auth.onAuthStateChange((_evt, newSession) => {
+        if (!mounted) return;
+        if (newSession) {
+          setChecking(false);
+        } else {
+          router.replace("/login");
+        }
+      });
+
+      // 3) plan B por si no llega el evento
+      const t = setTimeout(() => {
+        if (!mounted) return;
+        router.replace("/login");
+      }, 600);
+
+      return () => {
+        clearTimeout(t);
+        sub.subscription.unsubscribe();
+      };
+    })();
+
+    return () => { mounted = false; };
+  }, [router]);
+
+  if (checking) {
+    return (
+      <div className="min-h-screen grid place-items-center">
+        <p className="text-sm text-neutral-600">Cargando…</p>
+      </div>
+    );
+  }
+
+  // ✅ Con sesión: renderiza el panel
   return (
     <div className="min-h-[100dvh] bg-white">
       <header className="sticky top-0 z-30 border-b bg-white/80 backdrop-blur">
@@ -367,7 +433,7 @@ export default function PanelLayout({ children }: { children: ReactNode }) {
 
           {/* Derecha: icono persona -> pop-up “Mi Cuenta” */}
           <div className="flex items-center gap-3">
-            <AccountMenu /* supabase={supabase} si ya tienes cliente */ />
+            <AccountMenu />
           </div>
         </div>
       </header>
@@ -376,5 +442,3 @@ export default function PanelLayout({ children }: { children: ReactNode }) {
     </div>
   );
 }
-
-
