@@ -2,10 +2,12 @@
 
 import { useEffect, useMemo, useState } from 'react';
 
-// DEMO · Análisis de reseñas Google (Tailwind + React)
+// ---- Tipos ----
+type Tend = "up" | "down" | "flat";
+interface Row { tema: string; menciones: number; sentimiento: number; tendencia: Tend }
 
-// Datos de ejemplo (puedes inyectar los tuyos vía prop)
-const dataDemo = [
+// ---- Datos de ejemplo (ya tipados como Row[]) ----
+const dataDemo: Row[] = [
   { tema: "Atención al cliente", menciones: 184, sentimiento: 0.62, tendencia: "up" },
   { tema: "Rapidez del servicio", menciones: 156, sentimiento: 0.54, tendencia: "up" },
   { tema: "Calidad del producto", menciones: 201, sentimiento: 0.48, tendencia: "flat" },
@@ -15,16 +17,16 @@ const dataDemo = [
   { tema: "Limpieza", menciones: 109, sentimiento: 0.27, tendencia: "down" },
 ];
 
-type Tend = "up" | "down" | "flat";
-interface Row { tema: string; menciones: number; sentimiento: number; tendencia: Tend }
-
+// ---- Utils ----
 function pct(x: number) { return Math.max(0, Math.min(100, Math.round((x + 1) * 50))); }
 function fmtSent(x: number) { return `${x > 0 ? "+" : ""}${x.toFixed(2)}`; }
 
+// ---- UI ----
 function Trend({ value }: { value: Tend }) {
-  const classes = value === "up" ? "text-emerald-600 dark:text-emerald-400"
-    : value === "down" ? "text-red-600 dark:text-red-400"
-    : "text-slate-500 dark:text-slate-400";
+  const classes =
+    value === "up" ? "text-emerald-600 dark:text-emerald-400" :
+    value === "down" ? "text-red-600 dark:text-red-400" :
+    "text-slate-500 dark:text-slate-400";
   const label = value === "up" ? "Al alza" : value === "down" ? "A la baja" : "Estable";
   return (
     <span className={`inline-flex items-center gap-2 font-semibold ${classes}`}>
@@ -48,49 +50,50 @@ function Trend({ value }: { value: Tend }) {
   );
 }
 
+// ---- Página ----
 export default function AnalisisResenasMejorado({ data = dataDemo }: { data?: Row[] }) {
-  // dejamos 'dark' por si en el futuro vuelves a activar modo oscuro;
-  // ahora mismo no hay botón que lo cambie, así que se verá en claro.
+  // dejamos 'dark' por si en el futuro vuelves a activar modo oscuro
   const [dark] = useState(false);
   const [q, setQ] = useState("");
-  const [orden, setOrden] = useState<"menciones"|"sentimiento"|"tema">("menciones");
-  const [tend, setTend] = useState<"all"|Tend>("all");
+  const [orden, setOrden] = useState<"menciones" | "sentimiento" | "tema">("menciones");
+  const [tend, setTend] = useState<"all" | Tend>("all");
   const [prompt, setPrompt] = useState("");
 
-  const rows = useMemo(()=> data as Row[], [data]);
+  // Si llega data por props, úsala; si no, dataDemo
+  const rows = useMemo<Row[]>(() => data ?? dataDemo, [data]);
 
-  const filteredSorted = useMemo(()=>{
+  const filteredSorted = useMemo(() => {
     const f = rows.filter(r =>
       (!q || r.tema.toLowerCase().includes(q.toLowerCase())) &&
       (tend === "all" || r.tendencia === tend)
     );
-    const s = [...f].sort((a,b)=>{
-      if(orden === "menciones") return b.menciones - a.menciones;
-      if(orden === "sentimiento") return b.sentimiento - a.sentimiento;
+    const s = [...f].sort((a, b) => {
+      if (orden === "menciones") return b.menciones - a.menciones;
+      if (orden === "sentimiento") return b.sentimiento - a.sentimiento;
       return a.tema.localeCompare(b.tema, "es");
     });
     return s;
   }, [rows, q, orden, tend]);
 
-  const { total, avg, trendTxt } = useMemo(()=>{
-    const total = rows.reduce((s,d)=>s+d.menciones,0);
-    const avg = rows.reduce((s,d)=>s+d.sentimiento*d.menciones,0) / Math.max(1,total);
-    const score = rows.reduce((s,d)=> s + (d.tendencia==='up'?1: d.tendencia==='down'?-1:0), 0);
-    const trendTxt = score>0? 'al alza' : score<0? 'a la baja' : 'estable';
+  const { total, avg, trendTxt } = useMemo(() => {
+    const total = rows.reduce((s, d) => s + d.menciones, 0);
+    const avg = rows.reduce((s, d) => s + d.sentimiento * d.menciones, 0) / Math.max(1, total);
+    const score = rows.reduce((s, d) => s + (d.tendencia === 'up' ? 1 : d.tendencia === 'down' ? -1 : 0), 0);
+    const trendTxt = score > 0 ? 'al alza' : score < 0 ? 'a la baja' : 'estable';
     return { total, avg, trendTxt };
   }, [rows]);
 
-  function genPrompt(aleatorio=false){
+  function genPrompt(aleatorio = false) {
     const variantes = [
       `Con la tabla de "Temas y Categorías Detectadas", redacta ~50 palabras que sinteticen el sentimiento global (${fmtSent(avg)}), resalten los temas con más menciones y la tendencia predominante (${trendTxt}). Indica un riesgo clave y una acción prioritaria para elevar la satisfacción en el próximo ciclo.`,
       `Resume en ~50 palabras el tono de las reseñas (media ${fmtSent(avg)}), los focos principales y la dirección general (${trendTxt}). Señala un riesgo crítico y propone una acción inmediata de alto impacto.`,
       `Elabora un resumen conciso (~50 palabras) del promedio (${fmtSent(avg)}), picos de mención y tendencia (${trendTxt}). Sugiere corrección prioritaria y un refuerzo a mantener.`
     ];
-    const idx = aleatorio ? Math.floor(Math.random()*variantes.length) : 0;
+    const idx = aleatorio ? Math.floor(Math.random() * variantes.length) : 0;
     setPrompt(variantes[idx]);
   }
 
-  useEffect(()=>{ genPrompt(false); }, [avg, trendTxt]);
+  useEffect(() => { genPrompt(false); }, [avg, trendTxt]);
 
   return (
     <div className={`${dark ? 'dark' : ''}`}>
@@ -108,7 +111,7 @@ export default function AnalisisResenasMejorado({ data = dataDemo }: { data?: Ro
                 <span className="text-xs text-slate-500 dark:text-slate-400 mb-1">Buscar tema</span>
                 <input
                   value={q}
-                  onChange={e=>setQ(e.target.value)}
+                  onChange={e => setQ(e.target.value)}
                   placeholder="Escribe para filtrar…"
                   className="h-10 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 focus:outline-none focus:ring-2 focus:ring-indigo-300"
                 />
@@ -117,7 +120,7 @@ export default function AnalisisResenasMejorado({ data = dataDemo }: { data?: Ro
                 <span className="text-xs text-slate-500 dark:text-slate-400 mb-1">Ordenar por</span>
                 <select
                   value={orden}
-                  onChange={e=>setOrden(e.target.value as any)}
+                  onChange={e => setOrden(e.target.value as "menciones" | "sentimiento" | "tema")}
                   className="h-10 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 focus:outline-none focus:ring-2 focus:ring-indigo-300"
                 >
                   <option value="menciones">Menciones (desc.)</option>
@@ -129,7 +132,7 @@ export default function AnalisisResenasMejorado({ data = dataDemo }: { data?: Ro
                 <span className="text-xs text-slate-500 dark:text-slate-400 mb-1">Filtrar tendencia</span>
                 <select
                   value={tend}
-                  onChange={e=>setTend(e.target.value as any)}
+                  onChange={e => setTend(e.target.value as "all" | Tend)}
                   className="h-10 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 focus:outline-none focus:ring-2 focus:ring-indigo-300"
                 >
                   <option value="all">Todas</option>
@@ -156,7 +159,9 @@ export default function AnalisisResenasMejorado({ data = dataDemo }: { data?: Ro
                 <tbody>
                   {filteredSorted.length === 0 && (
                     <tr>
-                      <td colSpan={4} className="px-4 py-10 text-center text-slate-500 dark:text-slate-400">No hay resultados para los filtros actuales.</td>
+                      <td colSpan={4} className="px-4 py-10 text-center text-slate-500 dark:text-slate-400">
+                        No hay resultados para los filtros actuales.
+                      </td>
                     </tr>
                   )}
                   {filteredSorted.map((d, i) => (
@@ -198,18 +203,18 @@ export default function AnalisisResenasMejorado({ data = dataDemo }: { data?: Ro
                 <textarea
                   className="w-full min-h-[120px] bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-indigo-300"
                   value={prompt}
-                  onChange={(e)=>setPrompt(e.target.value)}
+                  onChange={(e) => setPrompt(e.target.value)}
                   spellCheck={false}
                 />
                 <div className="flex flex-wrap gap-2 mt-3">
                   <button
-                    onClick={()=>navigator.clipboard.writeText(prompt)}
+                    onClick={() => navigator.clipboard.writeText(prompt)}
                     className="px-3 py-2 rounded-lg border border-indigo-300 bg-indigo-100 hover:bg-indigo-200 text-slate-900 font-semibold dark:bg-indigo-900/40 dark:border-indigo-700 dark:hover:bg-indigo-900"
                   >
                     Copiar prompt
                   </button>
                   <button
-                    onClick={()=>genPrompt(true)}
+                    onClick={() => genPrompt(true)}
                     className="px-3 py-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-semibold dark:text-slate-100 dark:bg-slate-800 dark:border-slate-700 dark:hover:bg-slate-700"
                   >
                     Regenerar con otros matices
@@ -230,7 +235,7 @@ export default function AnalisisResenasMejorado({ data = dataDemo }: { data?: Ro
                   </div>
                   <div className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-3">
                     <div className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">Tendencia global</div>
-                    <div className="text-2xl font-bold tabular-nums mt-1">{trendTxt[0].toUpperCase()+trendTxt.slice(1)}</div>
+                    <div className="text-2xl font-bold tabular-nums mt-1">{trendTxt[0].toUpperCase() + trendTxt.slice(1)}</div>
                   </div>
                 </div>
               </aside>
