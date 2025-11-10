@@ -90,7 +90,18 @@ export default function PlanDeAccionDemo() {
   );
 }
 
-function Categoria({ categoria, dato, oportunidad, reseñas }) {
+function Categoria({
+  categoria,
+  dato,
+  oportunidad,
+  reseñas,
+}: {
+  categoria: string;
+  dato: any;
+  oportunidad: any;
+  reseñas: any[];
+}) {
+
   return (
     <section className="rounded-2xl bg-white p-5 md:p-6 shadow-sm ring-1 ring-black/5">
       <div className="flex items-center justify-between gap-4 mb-6">
