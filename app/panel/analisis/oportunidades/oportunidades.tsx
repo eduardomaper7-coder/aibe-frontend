@@ -165,7 +165,7 @@ function Categoria({
   );
 }
 
-function ReviewCard({ autor, texto }) {
+function ReviewCard({ autor, texto }: { autor: string; texto: string }) {
   return (
     <article className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
       <div className="flex items-center justify-between">
