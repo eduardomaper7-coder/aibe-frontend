@@ -2,16 +2,15 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import type { ReactNode } from "react";
 import React, { useEffect, useRef, useState } from "react";
-import { supabase } from "@/lib/supabase"; // 👈 usa el cliente unificado
+import { supabase } from "@/lib/supabase"; // cliente unificado de Supabase
 
 type View = "menu" | "help" | "subscription" | "confirm-cancel";
 
 /* =========================
-   Componente AccountMenu
+   Componente AccountMenu (export nombrado)
    ========================= */
-function AccountMenu() {
+export function AccountMenu() {
   const router = useRouter();
 
   const [open, setOpen] = useState(false);
@@ -40,6 +39,7 @@ function AccountMenu() {
         } = await supabase.auth.getUser();
         if (userError) throw userError;
         if (!mounted) return;
+
         setEmail(user?.email ?? null);
 
         const metaPlan =
@@ -90,7 +90,6 @@ function AccountMenu() {
   }, [open]);
 
   async function handleSignOut() {
-    // Cierra sesión y redirige SIEMPRE a la página comercial
     try {
       await supabase.auth.signOut();
     } catch (e) {
@@ -186,10 +185,7 @@ function AccountMenu() {
         <div className="space-y-3 text-sm text-gray-800">
           <p>
             <span className="font-medium">Gmail:</span>{" "}
-            <a
-              href="mailto:aibe.technologies7@gmail.com"
-              className="text-blue-600 hover:underline"
-            >
+            <a href="mailto:aibe.technologies7@gmail.com" className="text-blue-600 hover:underline">
               aibe.technologies7@gmail.com
             </a>
           </p>
@@ -199,6 +195,7 @@ function AccountMenu() {
               href="https://wa.me/34699301819"
               target="_blank"
               className="text-blue-600 hover:underline"
+              rel="noreferrer"
             >
               699 301 819
             </a>
@@ -249,47 +246,48 @@ function AccountMenu() {
 
   function ConfirmCancelView() {
     async function onYes() {
-  try {
-    setLoadingCancel(true);
+      try {
+        setLoadingCancel(true);
 
-    // 1️⃣ Obtener el token actual del usuario
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      router.push("/login");
-      return;
+        // 1) Obtener el token actual del usuario
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+        if (!session) {
+          router.push("/login");
+          return;
+        }
+
+        // 2) Llamar al endpoint de cancelación
+        const res = await fetch("/api/stripe/cancel-subscription", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${session.access_token}`,
+          },
+          // Para cancelación inmediata:
+          // fetch("/api/stripe/cancel-subscription?immediate=1", { ... })
+        });
+
+        const json = await res.json();
+
+        if (!json?.ok) {
+          console.error("Error cancelando:", json);
+          alert("No se pudo cancelar la suscripción. Intenta más tarde.");
+          return;
+        }
+
+        // 3) Opcional: cerrar sesión para bloquear acceso inmediato
+        await supabase.auth.signOut();
+
+        setOpen(false);
+        setView("menu");
+
+        // 4) Redirigir a confirmación
+        router.push("/panel/cuenta/suscripcion-cancelada");
+      } finally {
+        setLoadingCancel(false);
+      }
     }
-
-    // 2️⃣ Llamar al endpoint de cancelación
-    const res = await fetch("/api/stripe/cancel-subscription", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${session.access_token}`,
-      },
-      // Si quisieras cancelar inmediatamente:
-      // fetch("/api/stripe/cancel-subscription?immediate=1", { ... })
-    });
-
-    const json = await res.json();
-
-    if (!json?.ok) {
-      console.error("Error cancelando:", json);
-      alert("No se pudo cancelar la suscripción. Intenta más tarde.");
-      return;
-    }
-
-    // 3️⃣ Opcional: cerrar sesión para bloquear el acceso de inmediato
-    await supabase.auth.signOut();
-
-    setOpen(false);
-    setView("menu");
-
-    // 4️⃣ Redirigir a una página de confirmación o a /pago
-    router.push("/panel/cuenta/suscripcion-cancelada");
-  } finally {
-    setLoadingCancel(false);
-  }
-}
-
 
     function onNo() {
       setOpen(false);
@@ -300,9 +298,7 @@ function AccountMenu() {
     return (
       <>
         <Header title="Confirmar" />
-        <p className="text-sm font-medium">
-          ¿Estás seguro que deseas cancelar tu suscripción?
-        </p>
+        <p className="text-sm font-medium">¿Estás seguro que deseas cancelar tu suscripción?</p>
         <div className="mt-4 flex items-center gap-3">
           <button
             disabled={loadingCancel}
@@ -372,7 +368,9 @@ export default function PanelLayout({ children }: { children: React.ReactNode })
 
     (async () => {
       // 1) intenta leer la sesión actual
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       if (!mounted) return;
 
       if (session) {
@@ -380,7 +378,7 @@ export default function PanelLayout({ children }: { children: React.ReactNode })
         return;
       }
 
-      // 2) si aún no hay, espera un cambio breve (hidratación post-login/OAuth)
+      // 2) escucha cambios de sesión (post-login/OAuth)
       const { data: sub } = supabase.auth.onAuthStateChange((_evt, newSession) => {
         if (!mounted) return;
         if (newSession) {
@@ -402,7 +400,9 @@ export default function PanelLayout({ children }: { children: React.ReactNode })
       };
     })();
 
-    return () => { mounted = false; };
+    return () => {
+      mounted = false;
+    };
   }, [router]);
 
   if (checking) {

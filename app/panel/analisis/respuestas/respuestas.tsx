@@ -1,20 +1,23 @@
 'use client';
 
-import React from "react";
+import React, { ReactNode } from "react";
 
 // DEMO: Análisis de reseñas Google — Sección: Respuestas IA personalizadas
-// - Usa TailwindCSS, fondo claro, estilo moderno, sin emojis
-// - Métricas de gestión y tiempo: Tiempo de respuesta promedio, % respondidas, Frecuencia de revisión
-// - Métricas de calidad: Personalización, Tono y lenguaje, Extensión adecuada, Estructura clara
-// - Últimas respuestas automáticas: 3 respuestas en una fila
 
-const Pill = ({ children }) => (
+type PillProps = { children: ReactNode };
+const Pill = ({ children }: PillProps) => (
   <span className="inline-flex items-center rounded-full border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-700 shadow-sm">
     {children}
   </span>
 );
 
-const StatCard = ({ title, value, subtitle, helper }) => (
+type StatCardProps = {
+  title: string;
+  value: string;
+  subtitle?: string;
+  helper?: ReactNode;
+};
+const StatCard = ({ title, value, subtitle, helper }: StatCardProps) => (
   <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
     <div className="flex items-start justify-between">
       <div>
@@ -27,7 +30,7 @@ const StatCard = ({ title, value, subtitle, helper }) => (
   </div>
 );
 
-const Progress = ({ value }) => (
+const Progress = ({ value }: { value: number }) => (
   <div className="h-2 w-full overflow-hidden rounded-full bg-slate-200">
     <div
       className="h-full rounded-full bg-slate-900 transition-all"
@@ -36,7 +39,8 @@ const Progress = ({ value }) => (
   </div>
 );
 
-const QualityRow = ({ label, value, hint }) => (
+type QualityRowProps = { label: string; value: number; hint?: string };
+const QualityRow = ({ label, value, hint }: QualityRowProps) => (
   <div className="space-y-1">
     <div className="flex items-center justify-between text-sm">
       <span className="text-slate-700">{label}</span>
@@ -47,7 +51,8 @@ const QualityRow = ({ label, value, hint }) => (
   </div>
 );
 
-const AutoReplyCard = ({ title, content, meta }) => (
+type AutoReplyCardProps = { title: string; content: string; meta: string };
+const AutoReplyCard = ({ title, content, meta }: AutoReplyCardProps) => (
   <div className="flex h-full flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
     <h4 className="text-sm font-semibold text-slate-900">{title}</h4>
     <p className="mt-2 line-clamp-5 text-sm leading-6 text-slate-700">{content}</p>
@@ -60,7 +65,8 @@ const AutoReplyCard = ({ title, content, meta }) => (
   </div>
 );
 
-const Trend = ({ label, value }) => (
+type TrendProps = { label: string; value: string };
+const Trend = ({ label, value }: TrendProps) => (
   <div className="flex items-center gap-2 text-xs">
     <Pill>{label}</Pill>
     <span className="font-medium text-slate-900">{value}</span>
@@ -82,7 +88,7 @@ export default function DemoAnalisisResenasGoogle() {
     clearStructure: 72,
   };
 
-  const lastAutoReplies = [
+  const lastAutoReplies: AutoReplyCardProps[] = [
     {
       title: "Respuesta automática — 30 oct, 12:14",
       content:
