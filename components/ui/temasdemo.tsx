@@ -1,216 +1,201 @@
-'use client';
+"use client";
 
-import { useEffect, useMemo, useState } from 'react';
-import type { ReactNode } from 'react';
+import { useMemo, useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { ArrowUpRight, ArrowDownRight, Minus, Search, SortAsc } from "lucide-react";
 
-// ————————————————————————————————————————————————
-// Shell de portátil (mockup) con cámara más sutil
-function LaptopShell({ children }: { children: ReactNode }) {
-  return (
-    <div className="mx-auto w-full max-w-5xl">
-      <div className="relative mx-auto rounded-[18px] bg-zinc-900 p-3 ring-1 ring-white/10 shadow-2xl">
-        {/* Cámara sutil */}
-        <div className="absolute left-1/2 top-2 -translate-x-1/2">
-          <div className="mx-auto flex items-center gap-2 rounded-full bg-zinc-800/60 px-2 py-[2px] shadow-inner">
-            <div className="h-2 w-2 rounded-full bg-zinc-500 ring-1 ring-white/20" />
-          </div>
-        </div>
-        {/* Pantalla */}
-        <div className="overflow-hidden rounded-[12px] border border-zinc-800 bg-white shadow-inner">
-          {children}
-        </div>
-        {/* Bisagra/base */}
-        <div className="mx-auto mt-3 h-1.5 w-40 rounded-full bg-zinc-800" />
-        <div className="mx-auto mt-1 h-1 w-[92%] rounded-full bg-gradient-to-r from-zinc-800 via-zinc-700 to-zinc-800" />
-      </div>
-    </div>
-  );
-}
+// ——— Tipos ——————————————————————————————————
+export type Tend = "up" | "down" | "flat";
 
-// ————————————————————————————————————————————————
-// Datos demo y utilidades
-const dataDemo = [
-  { tema: 'Atención al cliente', menciones: 184, sentimiento: 0.62, tendencia: 'up' },
-  { tema: 'Rapidez del servicio', menciones: 156, sentimiento: 0.54, tendencia: 'up' },
-  { tema: 'Calidad del producto', menciones: 201, sentimiento: 0.48, tendencia: 'flat' },
-  { tema: 'Relación calidad-precio', menciones: 122, sentimiento: 0.31, tendencia: 'flat' },
-  { tema: 'Ambiente', menciones: 97, sentimiento: 0.44, tendencia: 'up' },
-  { tema: 'Ubicación', menciones: 83, sentimiento: 0.12, tendencia: 'down' },
-  { tema: 'Limpieza', menciones: 109, sentimiento: 0.27, tendencia: 'down' },
+export type Row = {
+  tema: string;
+  menciones: number;      // total menciones
+  sentimiento: number;    // 0–100 (positivo)
+  tendencia: Tend;        // dirección de la tendencia
+};
+
+// ——— Datos demo (usa Tend, no string) —————————
+const dataDemo: Row[] = [
+  { tema: "Atención al cliente", menciones: 321, sentimiento: 72, tendencia: "up" },
+  { tema: "Precio",               menciones: 278, sentimiento: 45, tendencia: "down" },
+  { tema: "Calidad del producto", menciones: 198, sentimiento: 81, tendencia: "up" },
+  { tema: "Envío",                menciones: 167, sentimiento: 58, tendencia: "flat" },
+  { tema: "Devoluciones",         menciones: 142, sentimiento: 36, tendencia: "down" },
+  { tema: "Sostenibilidad",       menciones: 88,  sentimiento: 69, tendencia: "flat" },
 ];
 
-type Tend = 'up' | 'down' | 'flat';
-interface Row { tema: string; menciones: number; sentimiento: number; tendencia: Tend }
+// ——— Utils UI ————————————————————————————————
+const TrendIcon = ({ t }: { t: Tend }) => {
+  if (t === "up")   return <ArrowUpRight className="h-4 w-4 text-emerald-500" aria-label="al alza" />;
+  if (t === "down") return <ArrowDownRight className="h-4 w-4 text-rose-500" aria-label="a la baja" />;
+  return <Minus className="h-4 w-4 text-slate-400" aria-label="estable" />;
+};
 
-function pct(x: number) { return Math.max(0, Math.min(100, Math.round((x + 1) * 50))); }
-function fmtSent(x: number) { return `${x > 0 ? '+' : ''}${x.toFixed(2)}`; }
+const badgeBySent = (v: number) =>
+  v >= 70 ? "bg-emerald-500/15 text-emerald-300 ring-1 ring-emerald-500/30" :
+  v >= 50 ? "bg-amber-500/15 text-amber-300 ring-1 ring-amber-500/30" :
+            "bg-rose-500/15 text-rose-300 ring-1 ring-rose-500/30";
 
-function Trend({ value }: { value: Tend }) {
-  const classes = value === 'up' ? 'text-emerald-600'
-    : value === 'down' ? 'text-red-600'
-    : 'text-slate-500';
-  const label = value === 'up' ? 'Al alza' : value === 'down' ? 'A la baja' : 'Estable';
-  return (
-    <span className={`inline-flex items-center gap-2 font-semibold ${classes}`}>
-      {value === 'up' && (
-        <svg viewBox="0 0 24 24" className="h-4 w-4 fill-current" aria-hidden="true">
-          <path d="M12 5l6 6h-4v8h-4v-8H6l6-6z" />
-        </svg>
-      )}
-      {value === 'down' && (
-        <svg viewBox="0 0 24 24" className="h-4 w-4 fill-current" aria-hidden="true">
-          <path d="M12 19l-6-6h4V5h4v8h4l-6 6z" />
-        </svg>
-      )}
-      {value === 'flat' && (
-        <svg viewBox="0 0 24 24" className="h-4 w-4 fill-current" aria-hidden="true">
-          <path d="M4 12h16v2H4z" />
-        </svg>
-      )}
-      <span className="sr-only">Tendencia: </span>{label}
-    </span>
-  );
-}
-
-// ————————————————————————————————————————————————
-export default function SeccionAnalisisPorTemas() {
-  useEffect(() => {
-    const h2s = Array.from(document.querySelectorAll('h2'));
-    const target = h2s.find((n) => n.textContent?.trim() === 'Análisis IA avanzada');
-    if (target) {
-      const section = target.closest('section');
-      if (section) (section as HTMLElement).style.display = 'none';
-    }
-  }, []);
-
-  return (
-    <div className="bg-black text-slate-100">
-      <section className="relative isolate px-4 py-16 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-6xl">
-          <header className="mb-8">
-            <h1 className="text-left font-sans text-white text-[32px] sm:text-[36px] md:text-[40px] font-semibold tracking-tight">
-              Analizamos su negocio por temas
-            </h1>
-          </header>
-
-          <div className="relative overflow-hidden rounded-3xl p-6 md:p-8 ring-1 ring-white/10 shadow-[0_0_50px_-12px_rgba(30,58,138,0.6)] bg-gradient-to-br from-[#0B1430] via-[#0A1537] to-[#081025]">
-            <div className="pointer-events-none absolute -top-28 -left-20 h-72 w-72 rounded-full bg-indigo-500/20 blur-3xl" />
-            <div className="pointer-events-none absolute -bottom-28 -right-24 h-72 w-72 rounded-full bg-blue-400/10 blur-3xl" />
-            <div className="pointer-events-none absolute top-16 left-1/4 h-48 w-48 rounded-full bg-white/10 blur-2xl" />
-            <div className="pointer-events-none absolute bottom-12 right-1/3 h-56 w-56 rounded-full bg-white/5 blur-3xl" />
-            <div className="pointer-events-none absolute top-1/3 right-10 h-40 w-40 rounded-full bg-white/[0.07] blur-2xl" />
-
-            <LaptopShell>
-              <AnalisisResenasMejorado />
-            </LaptopShell>
-          </div>
-        </div>
-      </section>
-    </div>
-  );
-}
-
-// ————————————————————————————————————————————————
+// ——— Componente ——————————————————————————————
 export function AnalisisResenasMejorado({ data = dataDemo }: { data?: Row[] }) {
-  const [q, setQ] = useState('');
-  const [orden, setOrden] = useState<'menciones'|'sentimiento'|'tema'>('menciones');
-  const [tend, setTend] = useState<'all'|Tend>('all');
+  const [q, setQ] = useState("");
+  const [orden, setOrden] = useState<"menciones" | "sentimiento" | "tema">("menciones");
+  const [tend, setTend] = useState<"all" | Tend>("all");
 
-  const rows = useMemo(()=> data as Row[], [data]);
+  const rows = useMemo(() => {
+    let filtered = data;
 
-  const filteredSorted = useMemo(()=>{
-    const f = rows.filter(r =>
-      (!q || r.tema.toLowerCase().includes(q.toLowerCase())) &&
-      (tend === 'all' || r.tendencia === tend)
-    );
-    const s = [...f].sort((a,b)=>{
-      if(orden === 'menciones') return b.menciones - a.menciones;
-      if(orden === 'sentimiento') return b.sentimiento - a.sentimiento;
-      return a.tema.localeCompare(b.tema, 'es');
+    if (q.trim()) {
+      const s = q.toLowerCase();
+      filtered = filtered.filter(r => r.tema.toLowerCase().includes(s));
+    }
+
+    if (tend !== "all") {
+      filtered = filtered.filter(r => r.tendencia === tend);
+    }
+
+    const sorted = [...filtered].sort((a, b) => {
+      if (orden === "tema") return a.tema.localeCompare(b.tema);
+      if (orden === "menciones") return b.menciones - a.menciones;
+      return b.sentimiento - a.sentimiento;
     });
-    return s;
-  }, [rows, q, orden, tend]);
+
+    return sorted;
+  }, [data, q, tend, orden]);
 
   return (
-    <div className="bg-white text-slate-900">
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 px-4 py-3">
-        <input
-          value={q}
-          onChange={(e)=>setQ(e.target.value)}
-          placeholder="Filtrar por tema…"
-          className="w-64 max-w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-indigo-500"
-        />
-        <div className="flex items-center gap-2 text-sm">
-          <label className="text-slate-600">Ordenar por</label>
-          <select
-            value={orden}
-            onChange={(e)=>setOrden(e.target.value as 'menciones'|'sentimiento'|'tema')}
-            className="rounded-md border border-slate-300 bg-white px-2 py-1"
-          >
-            <option value="menciones">Menciones</option>
-            <option value="sentimiento">Sentimiento</option>
-            <option value="tema">Tema</option>
-          </select>
-          <label className="ml-4 text-slate-600">Tendencia</label>
-          <select
-            value={tend}
-            onChange={(e)=>setTend(e.target.value as 'all'|Tend)}
-            className="rounded-md border border-slate-300 bg-white px-2 py-1"
-          >
-            <option value="all">Todas</option>
-            <option value="up">Al alza</option>
-            <option value="flat">Estable</option>
-            <option value="down">A la baja</option>
-          </select>
-        </div>
-      </div>
+    <section className="w-full">
+      <Card className="border-white/10 bg-gradient-to-b from-[#0a0f0d] to-[#0b1914] text-slate-100">
+        <CardContent className="p-4 md:p-6">
+          <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <h3 className="text-lg font-semibold">Temas en reseñas</h3>
+            <div className="flex flex-col items-stretch gap-2 sm:flex-row sm:items-center">
+              <div className="relative">
+                <Search className="pointer-events-none absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                <Input
+                  value={q}
+                  onChange={(e) => setQ(e.target.value)}
+                  placeholder="Buscar tema…"
+                  className="pl-8 bg-white/5 border-white/10 text-slate-100 placeholder:text-slate-400"
+                />
+              </div>
 
-      <div className="p-4">
-        <div className="overflow-x-auto">
-          <table className="w-full border-separate [border-spacing:0_10px]" aria-label="Tabla de temas estática">
-            <thead>
-              <tr className="bg-white">
-                <th className="px-4 py-2 text-left text-xs uppercase tracking-wider text-slate-500">Tema</th>
-                <th className="px-4 py-2 text-left text-xs uppercase tracking-wider text-slate-500">N.º de menciones</th>
-                <th className="px-4 py-2 text-left text-xs uppercase tracking-wider text-slate-500">Sentimiento promedio</th>
-                <th className="px-4 py-2 text-left text-xs uppercase tracking-wider text-slate-500">Tendencia</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredSorted.length === 0 && (
-                <tr>
-                  <td colSpan={4} className="px-4 py-10 text-center text-slate-500">No hay resultados para los filtros actuales.</td>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  className={`border-white/10 bg-white/5 ${orden === "menciones" ? "ring-1 ring-white/20" : ""}`}
+                  onClick={() => setOrden("menciones")}
+                >
+                  <SortAsc className="mr-2 h-4 w-4" />
+                  Menciones
+                </Button>
+                <Button
+                  variant="outline"
+                  className={`border-white/10 bg-white/5 ${orden === "sentimiento" ? "ring-1 ring-white/20" : ""}`}
+                  onClick={() => setOrden("sentimiento")}
+                >
+                  <SortAsc className="mr-2 h-4 w-4" />
+                  Sentimiento
+                </Button>
+                <Button
+                  variant="outline"
+                  className={`border-white/10 bg-white/5 ${orden === "tema" ? "ring-1 ring-white/20" : ""}`}
+                  onClick={() => setOrden("tema")}
+                >
+                  <SortAsc className="mr-2 h-4 w-4" />
+                  Tema
+                </Button>
+              </div>
+
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  className={`border-white/10 bg-white/5 ${tend === "all" ? "ring-1 ring-white/20" : ""}`}
+                  onClick={() => setTend("all")}
+                >
+                  Todas
+                </Button>
+                <Button
+                  variant="outline"
+                  className={`border-white/10 bg-white/5 ${tend === "up" ? "ring-1 ring-emerald-400/30" : ""}`}
+                  onClick={() => setTend("up")}
+                >
+                  <ArrowUpRight className="mr-1 h-4 w-4 text-emerald-400" />
+                  Al alza
+                </Button>
+                <Button
+                  variant="outline"
+                  className={`border-white/10 bg-white/5 ${tend === "flat" ? "ring-1 ring-slate-400/30" : ""}`}
+                  onClick={() => setTend("flat")}
+                >
+                  <Minus className="mr-1 h-4 w-4 text-slate-300" />
+                  Estable
+                </Button>
+                <Button
+                  variant="outline"
+                  className={`border-white/10 bg-white/5 ${tend === "down" ? "ring-1 ring-rose-400/30" : ""}`}
+                  onClick={() => setTend("down")}
+                >
+                  <ArrowDownRight className="mr-1 h-4 w-4 text-rose-400" />
+                  A la baja
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          <div className="overflow-hidden rounded-xl border border-white/10">
+            <table className="min-w-full divide-y divide-white/10">
+              <thead className="bg-white/5">
+                <tr className="text-left text-sm text-slate-300">
+                  <th className="px-4 py-3 font-medium">Tema</th>
+                  <th className="px-4 py-3 font-medium">Menciones</th>
+                  <th className="px-4 py-3 font-medium">Sentimiento</th>
+                  <th className="px-4 py-3 font-medium">Tendencia</th>
                 </tr>
-              )}
-              {filteredSorted.map((d, i) => (
-                <tr key={i} className="overflow-hidden rounded-xl border border-slate-200 bg-white transition-shadow hover:shadow-md">
-                  <td className="px-4 py-3 font-semibold">{d.tema}</td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-2">
-                      <span className="min-w-[42px] rounded-full border border-indigo-200 bg-indigo-50 px-2 py-1 text-center text-slate-800">
-                        {d.menciones}
+              </thead>
+              <tbody className="divide-y divide-white/10">
+                {rows.map((r) => (
+                  <tr key={r.tema} className="text-sm hover:bg-white/[0.03]">
+                    <td className="px-4 py-3">{r.tema}</td>
+                    <td className="px-4 py-3 tabular-nums">{r.menciones.toLocaleString()}</td>
+                    <td className="px-4 py-3">
+                      <span
+                        className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium ${badgeBySent(
+                          r.sentimiento
+                        )}`}
+                        title={`${r.sentimiento}% positivo`}
+                      >
+                        {r.sentimiento}% positivo
                       </span>
-                      <span className="text-slate-500">menciones</span>
-                    </div>
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-3">
-                      <div className="h-2 w-full overflow-hidden rounded-full border border-slate-200 bg-slate-100">
-                        <span
-                          className="block h-full bg-gradient-to-r from-red-500 via-amber-500 to-emerald-500"
-                          style={{ width: `${pct(d.sentimiento)}%` }}
-                        />
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="inline-flex items-center gap-1">
+                        <TrendIcon t={r.tendencia} />
+                        <span className="text-slate-300">
+                          {r.tendencia === "up" ? "Al alza" : r.tendencia === "down" ? "A la baja" : "Estable"}
+                        </span>
                       </div>
-                      <div className="tabular-nums font-bold">{fmtSent(d.sentimiento)}</div>
-                    </div>
-                  </td>
-                  <td className="px-4 py-3"><Trend value={d.tendencia} /></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
+                    </td>
+                  </tr>
+                ))}
+
+                {rows.length === 0 && (
+                  <tr>
+                    <td colSpan={4} className="px-4 py-6 text-center text-slate-400">
+                      No se encontraron resultados.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
+    </section>
   );
 }
+
+export default AnalisisResenasMejorado;
+
