@@ -206,7 +206,7 @@ function Avatar() {
   );
 }
 
-function Dot(props) {
+function Dot(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg viewBox="0 0 8 8" {...props}>
       <circle cx="4" cy="4" r="4" />
