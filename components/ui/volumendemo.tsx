@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Line,
   Bar,
@@ -17,10 +17,10 @@ import { motion, useInView } from "framer-motion";
 type Punto = { mes: string; puntuacion: number; resenas: number };
 
 const data: Punto[] = [
-  { mes: "ago 2025", puntuacion: 4.2, resenas: 1000 },
+  { mes: "ago 2025",  puntuacion: 4.2, resenas: 1000 },
   { mes: "sept 2025", puntuacion: 2.8, resenas: 650 },
-  { mes: "oct 2025", puntuacion: 4.4, resenas: 1100 },
-  { mes: "nov 2025", puntuacion: 4.0, resenas: 80 },
+  { mes: "oct 2025",  puntuacion: 4.4, resenas: 1100 },
+  { mes: "nov 2025",  puntuacion: 4.0, resenas: 80 },
 ];
 
 export default function GraficoPuntuacionVsVolumen() {
@@ -44,8 +44,7 @@ export default function GraficoPuntuacionVsVolumen() {
             Puntuación media vs Volumen de reseñas
           </h2>
           <p className="mt-2 max-w-3xl text-sm text-slate-300">
-            Comparativa mensual de la valoración media (0–5) frente al total de
-            reseñas.
+            Comparativa mensual de la valoración media (0–5) frente al total de reseñas.
           </p>
         </div>
 
@@ -60,7 +59,7 @@ export default function GraficoPuntuacionVsVolumen() {
           <div className="pointer-events-none absolute -bottom-28 -right-24 h-72 w-72 rounded-full bg-green-400/10 blur-3xl" />
           <div className="pointer-events-none absolute top-16 left-1/4 h-48 w-48 rounded-full bg-white/10 blur-2xl" />
           <div className="pointer-events-none absolute bottom-12 right-1/3 h-56 w-56 rounded-full bg-white/5 blur-3xl" />
-          <div className="pointer-events-none absolute top-1/3 right-10 h-40 w-40 rounded-full bg-white/7 blur-2xl" />
+          <div className="pointer-events-none absolute top-1/3 right-10 h-40 w-40 rounded-full bg-white/[0.07] blur-2xl" />
 
           <div className="h-[380px] w-full">
             <ResponsiveContainer width="100%" height="100%">
