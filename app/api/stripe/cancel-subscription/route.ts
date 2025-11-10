@@ -95,9 +95,11 @@ export async function POST(req: NextRequest) {
       const patch = {
         stripe_subscription_id: canceled.id,
         subscription_status: canceled.status, // 'active' | 'trialing' | 'canceled' | 'past_due' | ...
-        current_period_end: canceled.current_period_end
-          ? new Date(canceled.current_period_end * 1000).toISOString()
-          : null,
+        // @ts-ignore
+        current_period_end: (canceled as any).current_period_end
+        ? new Date((canceled as any).current_period_end * 1000).toISOString()
+        : null,
+
       };
 
       await admin.from("profiles").update(patch).eq("id", user.id);
