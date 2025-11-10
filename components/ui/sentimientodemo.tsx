@@ -112,7 +112,7 @@ export default function SeccionGraficasAvanzadas() {
     </defs>
   );
 
-  // 👇 forma correcta de “agrandar” solo el sector activo
+  // Agrandar solo el sector activo
   const activeShape = (props: any) => {
     const { outerRadius = 150 } = props;
     return <Sector {...props} outerRadius={outerRadius + 10} />;
@@ -168,8 +168,10 @@ export default function SeccionGraficasAvanzadas() {
                     <ResponsiveContainer>
                       <PieChart>
                         {defs}
-                        <Tooltip formatter={(value: number, name: string) => [porcentaje(value as number), name]} />
+                        <Tooltip formatter={(value: number, name: string) => [`${value}%`, name]} />
                         <Pie
+                          // inyecta activeIndex solo cuando hay valor → evita el error de tipos
+                          {...(activeIndex != null ? { activeIndex } : {})}
                           data={dataSentimiento}
                           dataKey="value"
                           nameKey="name"
@@ -184,9 +186,8 @@ export default function SeccionGraficasAvanzadas() {
                           animationBegin={100}
                           animationDuration={900}
                           animationEasing="ease-out"
-                          onMouseEnter={(_, i) => setActiveIndex(i)}
+                          onMouseEnter={(_, i: number) => setActiveIndex(i)}
                           onMouseLeave={() => setActiveIndex(null)}
-                          activeIndex={activeIndex ?? -1}
                           activeShape={activeShape}
                         >
                           {dataSentimiento.map((_, index) => (
@@ -259,7 +260,7 @@ export default function SeccionGraficasAvanzadas() {
                           <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#0f2f27" />
                           <XAxis dataKey="mes" tickLine={false} axisLine={false} fontSize={12} stroke="#9CA3AF" />
                           <YAxis domain={[3.5, 5]} tickLine={false} axisLine={false} allowDecimals fontSize={12} stroke="#9CA3AF" />
-                          <Tooltip formatter={(value: number) => `${value.toFixed(1)}★`} labelFormatter={(l) => `Mes: ${l}`} />
+                          <Tooltip formatter={(value: number) => `${(value as number).toFixed(1)}★`} labelFormatter={(l) => `Mes: ${l}`} />
                           <Line type="monotone" dataKey="rating" strokeWidth={2} dot={{ r: 2 }} activeDot={{ r: 4 }} isAnimationActive={inView} animationDuration={700} stroke="#22c55e" />
                         </LineChart>
                       </ResponsiveContainer>
