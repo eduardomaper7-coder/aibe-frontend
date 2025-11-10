@@ -109,9 +109,11 @@ export async function POST(req: NextRequest) {
       ok: true,
       status: canceled.status,
       cancel_at_period_end: canceled.cancel_at_period_end ?? null,
-      current_period_end: canceled.current_period_end
-        ? new Date(canceled.current_period_end * 1000).toISOString()
-        : null,
+      // @ts-ignore - Stripe types omit current_period_end in latest API, but the field still exists
+current_period_end: (canceled as any).current_period_end
+  ? new Date((canceled as any).current_period_end * 1000).toISOString()
+  : null,
+
     });
   } catch (e: any) {
     return NextResponse.json({ ok: false, error: e?.message ?? String(e) }, { status: 500 });
