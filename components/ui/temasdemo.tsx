@@ -1,10 +1,11 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import type { ReactNode } from 'react';
 
 // ————————————————————————————————————————————————
 // Shell de portátil (mockup) con cámara más sutil
-function LaptopShell({ children }: { children: React.ReactNode }) {
+function LaptopShell({ children }: { children: ReactNode }) {
   return (
     <div className="mx-auto w-full max-w-5xl">
       <div className="relative mx-auto rounded-[18px] bg-zinc-900 p-3 ring-1 ring-white/10 shadow-2xl">
@@ -97,7 +98,7 @@ export default function SeccionAnalisisPorTemas() {
             <div className="pointer-events-none absolute -bottom-28 -right-24 h-72 w-72 rounded-full bg-blue-400/10 blur-3xl" />
             <div className="pointer-events-none absolute top-16 left-1/4 h-48 w-48 rounded-full bg-white/10 blur-2xl" />
             <div className="pointer-events-none absolute bottom-12 right-1/3 h-56 w-56 rounded-full bg-white/5 blur-3xl" />
-            <div className="pointer-events-none absolute top-1/3 right-10 h-40 w-40 rounded-full bg-white/7 blur-2xl" />
+            <div className="pointer-events-none absolute top-1/3 right-10 h-40 w-40 rounded-full bg-white/[0.07] blur-2xl" />
 
             <LaptopShell>
               <AnalisisResenasMejorado />
@@ -118,7 +119,10 @@ export function AnalisisResenasMejorado({ data = dataDemo }: { data?: Row[] }) {
   const rows = useMemo(()=> data as Row[], [data]);
 
   const filteredSorted = useMemo(()=>{
-    const f = rows.filter(r => (!q || r.tema.toLowerCase().includes(q.toLowerCase())) && (tend === 'all' || r.tendencia === tend));
+    const f = rows.filter(r =>
+      (!q || r.tema.toLowerCase().includes(q.toLowerCase())) &&
+      (tend === 'all' || r.tendencia === tend)
+    );
     const s = [...f].sort((a,b)=>{
       if(orden === 'menciones') return b.menciones - a.menciones;
       if(orden === 'sentimiento') return b.sentimiento - a.sentimiento;
@@ -140,7 +144,7 @@ export function AnalisisResenasMejorado({ data = dataDemo }: { data?: Row[] }) {
           <label className="text-slate-600">Ordenar por</label>
           <select
             value={orden}
-            onChange={(e)=>setOrden(e.target.value as any)}
+            onChange={(e)=>setOrden(e.target.value as 'menciones'|'sentimiento'|'tema')}
             className="rounded-md border border-slate-300 bg-white px-2 py-1"
           >
             <option value="menciones">Menciones</option>
@@ -150,7 +154,7 @@ export function AnalisisResenasMejorado({ data = dataDemo }: { data?: Row[] }) {
           <label className="ml-4 text-slate-600">Tendencia</label>
           <select
             value={tend}
-            onChange={(e)=>setTend(e.target.value as any)}
+            onChange={(e)=>setTend(e.target.value as 'all'|Tend)}
             className="rounded-md border border-slate-300 bg-white px-2 py-1"
           >
             <option value="all">Todas</option>
@@ -192,7 +196,10 @@ export function AnalisisResenasMejorado({ data = dataDemo }: { data?: Row[] }) {
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
                       <div className="h-2 w-full overflow-hidden rounded-full border border-slate-200 bg-slate-100">
-                        <span className="block h-full bg-gradient-to-r from-red-500 via-amber-500 to-emerald-500" style={{ width: `${pct(d.sentimiento)}%` }} />
+                        <span
+                          className="block h-full bg-gradient-to-r from-red-500 via-amber-500 to-emerald-500"
+                          style={{ width: `${pct(d.sentimiento)}%` }}
+                        />
                       </div>
                       <div className="tabular-nums font-bold">{fmtSent(d.sentimiento)}</div>
                     </div>

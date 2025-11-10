@@ -1,54 +1,65 @@
+"use client";
+
 import React, { useEffect, useMemo, useRef, useState } from "react";
 
-const LOCAL_IMAGES = [
+const LOCAL_IMAGES: string[] = [
   "/imagenes/pexels-kindelmedia-6994314.jpg",
   "/imagenes/pexels-olly-926390.jpg",
   "/imagenes/pexels-reneterp-1581384.jpg",
 ];
 
-function useInterval(callback, delay) {
+// Hook con tipos
+function useInterval(callback: () => void, delay: number | null) {
   const savedCallback = useRef(callback);
-  useEffect(() => { savedCallback.current = callback; }, [callback]);
+  useEffect(() => {
+    savedCallback.current = callback;
+  }, [callback]);
+
   useEffect(() => {
     if (delay === null) return;
-    const id = setInterval(() => savedCallback.current(), delay);
+    const id: ReturnType<typeof setInterval> = setInterval(() => {
+      savedCallback.current();
+    }, delay);
     return () => clearInterval(id);
   }, [delay]);
 }
 
-export default function SeccionResenasIA({ images = LOCAL_IMAGES }) {
-  const [start, setStart] = useState(0);
-  const [sliding, setSliding] = useState(false);
-  const trackRef = useRef(null);
+type Props = {
+  images?: string[];
+};
 
-  const normalized = useMemo(() => {
-    if (!images || images.length < 6) {
-      return [...images, ...images, ...images];
+export default function SeccionResenasIA({ images = LOCAL_IMAGES }: Props) {
+  const [start, setStart] = useState<number>(0);
+  const [sliding, setSliding] = useState<boolean>(false);
+  const trackRef = useRef<HTMLDivElement | null>(null);
+
+  const normalized = useMemo<string[]>(() => {
+    const src = images && images.length > 0 ? images : LOCAL_IMAGES;
+    if (src.length < 6) {
+      // duplica para tener scroll fluido
+      return [...src, ...src, ...src];
     }
-    return images;
+    return src;
   }, [images]);
 
-  const currentSet = useMemo(
-    () => [0, 1, 2].map(i => normalized[(start + i) % normalized.length]),
+  const currentSet = useMemo<string[]>(
+    () => [0, 1, 2].map((i) => normalized[(start + i) % normalized.length]),
     [normalized, start]
   );
 
-  const nextSet = useMemo(
-    () => [0, 1, 2].map(i => normalized[(start + 3 + i) % normalized.length]),
+  const nextSet = useMemo<string[]>(
+    () => [0, 1, 2].map((i) => normalized[(start + 3 + i) % normalized.length]),
     [normalized, start]
   );
 
-  const widthClasses = [
-    "md:w-[44%] w-full",
-    "md:w-[34%] w-full",
-    "md:w-[22%] w-full"
-  ];
+  const widthClasses: string[] = ["md:w-[44%] w-full", "md:w-[34%] w-full", "md:w-[22%] w-full"];
 
   useInterval(() => setSliding(true), 8000);
 
   const handleTransitionEnd = () => {
     setSliding(false);
-    setStart(prev => (prev + 3) % normalized.length);
+    // avanzar 3 posiciones (una “página”)
+    setStart((prev) => (prev + 3) % normalized.length);
   };
 
   return (
@@ -86,9 +97,9 @@ export default function SeccionResenasIA({ images = LOCAL_IMAGES }) {
             >
               {[currentSet, nextSet].map((set, pageIdx) => (
                 <div key={pageIdx} className="w-1/2 flex items-center gap-4 p-0">
-                  {set.map((src, i) => (
+                  {set.map((src: string, i: number) => (
                     <div
-                      key={i}
+                      key={`${pageIdx}-${i}-${src}`}
                       className={`${widthClasses[i % widthClasses.length]} h-[360px] rounded-3xl overflow-hidden`}
                     >
                       <img
@@ -96,6 +107,7 @@ export default function SeccionResenasIA({ images = LOCAL_IMAGES }) {
                         alt="Imagen de reseñas"
                         className="h-full w-full object-cover select-none transition-transform duration-700 ease-out hover:scale-[1.02]"
                         loading="lazy"
+                        draggable={false}
                       />
                     </div>
                   ))}
