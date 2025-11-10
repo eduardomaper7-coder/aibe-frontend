@@ -44,10 +44,12 @@ export default function Home() {
     slotEl.style.setProperty('--title-height', Math.ceil(max + 8) + 'px');
 
     let i = 0;
-    function show(index: number) {
-      const nextText = TITLES[index % TITLES.length];
-      titleEl.classList.remove('fade-enter', 'fade-enter-active');
-      titleEl.classList.add('fade-exit');
+  function show(index: number) {
+  const nextText = TITLES[index % TITLES.length];
+  if (!titleEl) return; // ✅ evita usarlo si aún no existe
+  titleEl.classList.remove('fade-enter', 'fade-enter-active');
+  titleEl.classList.add('fade-exit');
+
       requestAnimationFrame(() => {
         titleEl.classList.add('fade-exit-active');
         setTimeout(() => {
