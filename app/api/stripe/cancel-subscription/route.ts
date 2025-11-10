@@ -41,7 +41,8 @@ export async function POST(req: NextRequest) {
     if (!process.env.STRIPE_SECRET_KEY) {
       return NextResponse.json({ ok: false, error: "no-stripe-secret" }, { status: 500 });
     }
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2024-06-20" });
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+
 
     // Si no tenemos subscription_id guardado, intentamos localizarlo por customer
     let subscription: Stripe.Subscription | null = null;
