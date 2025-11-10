@@ -1,5 +1,6 @@
 // lib/syncReviews.ts
-import { supabase } from '@/lib/supabaseServer'; // cliente con SERVICE_ROLE en backend
+import { createSupabaseServer } from '@/lib/supabaseServer';
+const supabase = createSupabaseServer();
 import { google } from 'googleapis';
 
 function sleep(ms:number){ return new Promise(r=>setTimeout(r,ms)); }
