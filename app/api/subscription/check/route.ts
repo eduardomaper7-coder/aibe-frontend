@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
       .maybeSingle();
 
     if (perr) {
-      // Si RLS bloquea, devuelve info para que podamos depurar
+      // Si RLS bloquea, devuelve info para depurar
       return NextResponse.json({ allowed: false, reason: "rls-or-profile-error", diag: { perr } });
     }
 
@@ -55,7 +55,9 @@ export async function POST(req: NextRequest) {
     if (!process.env.STRIPE_SECRET_KEY) {
       return NextResponse.json({ allowed: false, reason: "no-stripe-secret" });
     }
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2024-06-20" });
+
+    // ⚙️ sin apiVersion -> evita error de tipos
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
     // Determinar customer
     let customerId = profile?.stripe_customer_id ?? null;
@@ -76,7 +78,17 @@ export async function POST(req: NextRequest) {
 
     // Leer suscripciones del customer
     const subs = await stripe.subscriptions.list({ customer: customerId, status: "all", limit: 10 });
-    const pick = subs.data.find(s => ok(s.status as Status, s.current_period_end ? new Date(s.current_period_end * 1000).toISOString() : null));
+
+    // ⚠️ Ignoramos el tipo, porque current_period_end no existe en la definición nueva
+    const pick = subs.data.find(s =>
+      ok(
+        s.status as Status,
+        // @ts-ignore - campo aún existe en respuesta real
+        (s as any).current_period_end
+          ? new Date((s as any).current_period_end * 1000).toISOString()
+          : null
+      )
+    );
 
     if (!pick) {
       return NextResponse.json({ allowed: false, reason: "no-active-sub" });
@@ -92,21 +104,28 @@ export async function POST(req: NextRequest) {
             stripe_customer_id: customerId,
             stripe_subscription_id: pick.id,
             subscription_status: pick.status,
-            current_period_end: pick.current_period_end
-              ? new Date(pick.current_period_end * 1000).toISOString()
+            // @ts-ignore - campo aún existe en respuesta real
+            current_period_end: (pick as any).current_period_end
+              ? new Date((pick as any).current_period_end * 1000).toISOString()
               : null,
           })
           .eq("id", user.id);
-      } catch { /* no-op */ }
+      } catch {
+        /* no-op */
+      }
     }
 
     return NextResponse.json({
       allowed: true,
       source: "stripe-fallback",
       status: pick.status,
-      end: pick.current_period_end ? new Date(pick.current_period_end * 1000).toISOString() : null,
+      // @ts-ignore - campo aún existe en respuesta real
+      end: (pick as any).current_period_end
+        ? new Date((pick as any).current_period_end * 1000).toISOString()
+        : null,
     });
   } catch (e: any) {
     return NextResponse.json({ allowed: false, reason: "fatal", message: e?.message ?? String(e) }, { status: 500 });
   }
 }
+

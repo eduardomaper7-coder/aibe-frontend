@@ -5,7 +5,7 @@ import Stripe from "stripe";
 export const config = { api: { bodyParser: false } }; // (Next <13) – en App Router no hace falta
 
 export async function POST(req: NextRequest) {
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2023-10-16" });
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
   const sig = req.headers.get("stripe-signature");
   const buf = await req.arrayBuffer();
   const textBody = Buffer.from(buf);
