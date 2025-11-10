@@ -14,6 +14,7 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
+  Sector,
 } from "recharts";
 import { motion, useInView, useMotionValue, useMotionValueEvent, animate } from "framer-motion";
 
@@ -42,17 +43,13 @@ export default function SeccionGraficasAvanzadas() {
 
   const sectionRef = useRef<HTMLDivElement | null>(null);
   const inView = useInView(sectionRef, { once: true, amount: 0.35 });
-
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
-
-  // contador central animado
   const centerValue = useMotionValue(0);
   const [centerDisplay, setCenterDisplay] = useState(0);
 
   useEffect(() => {
     if (inView) {
-      // easeOut como cubic-bezier para evitar error de tipos
-      animate(centerValue, totalResenas, { duration: 1.2, ease: [0.16, 1, 0.3, 1] });
+      animate(centerValue, totalResenas, { duration: 1.2, ease: "easeOut" });
     }
   }, [inView, centerValue]);
 
@@ -60,7 +57,6 @@ export default function SeccionGraficasAvanzadas() {
     setCenterDisplay(Math.round(v));
   });
 
-  // Etiquetas del pie con conector y punto
   const renderLabel = (props: any) => {
     const { cx, cy, midAngle, outerRadius, percent, index } = props;
     const RADIAN = Math.PI / 180;
@@ -73,7 +69,6 @@ export default function SeccionGraficasAvanzadas() {
     const name = dataSentimiento[index].name;
     const val = Math.round(percent * 100);
 
-    // Alineación: Positivas (index 0) siempre start
     let anchor: "start" | "end" = index === 0 ? "start" : vx >= 0 ? "start" : "end";
     let dx = index === 0 ? 6 : anchor === "end" ? -5 : 6;
 
@@ -117,6 +112,12 @@ export default function SeccionGraficasAvanzadas() {
     </defs>
   );
 
+  // 👇 forma correcta de “agrandar” solo el sector activo
+  const activeShape = (props: any) => {
+    const { outerRadius = 150 } = props;
+    return <Sector {...props} outerRadius={outerRadius + 10} />;
+  };
+
   return (
     <section ref={sectionRef} id="graficas-avanzadas" className="relative w-full bg-black text-slate-100">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-16">
@@ -134,24 +135,23 @@ export default function SeccionGraficasAvanzadas() {
           <div className="pointer-events-none absolute -bottom-28 -right-24 h-72 w-72 rounded-full bg-green-400/10 blur-3xl" />
           <div className="pointer-events-none absolute top-16 left-1/4 h-48 w-48 rounded-full bg-white/10 blur-2xl" />
           <div className="pointer-events-none absolute bottom-12 right-1/3 h-56 w-56 rounded-full bg-white/5 blur-3xl" />
-          <div className="pointer-events-none absolute top-1/3 right-10 h-40 w-40 rounded-full bg-white/[0.07] blur-2xl" />
+          <div className="pointer-events-none absolute top-1/3 right-10 h-40 w-40 rounded-full bg-white/7 blur-2xl" />
 
           <Card className="border-0 bg-transparent shadow-none">
             <CardContent className="p-0">
               <div className="grid grid-cols-1 gap-6 md:grid-cols-5">
-                {/* Pie + contador central */}
                 <motion.div
                   className="md:col-span-3 flex items-center justify-center"
                   initial={{ opacity: 0, scale: 0.96, y: 8 }}
                   animate={inView ? { opacity: 1, scale: 1, y: 0 } : {}}
-                  transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                  transition={{ duration: 0.5, ease: "easeOut" }}
                 >
                   <div className="relative h-[420px] w-full md:h-[460px]">
                     <motion.div
                       className="absolute inset-0 flex items-center justify-center"
                       initial={{ rotate: -90 }}
                       animate={inView ? { rotate: 0 } : {}}
-                      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                      transition={{ duration: 0.8, ease: "easeOut" }}
                       aria-hidden
                     >
                       <svg width="100%" height="100%" viewBox="0 0 360 360" className="opacity-70">
@@ -186,14 +186,14 @@ export default function SeccionGraficasAvanzadas() {
                           animationEasing="ease-out"
                           onMouseEnter={(_, i) => setActiveIndex(i)}
                           onMouseLeave={() => setActiveIndex(null)}
+                          activeIndex={activeIndex ?? -1}
+                          activeShape={activeShape}
                         >
                           {dataSentimiento.map((_, index) => (
                             <Cell
                               key={`cell-${index}`}
                               fill={`url(#grad-${index})`}
                               style={{ filter: "url(#dropShadow)" }}
-                              // TS no tipa outerRadius en Cell, lo forzamos
-                              outerRadius={(activeIndex === index ? 160 : 150) as any}
                             />
                           ))}
                         </Pie>
@@ -212,7 +212,6 @@ export default function SeccionGraficasAvanzadas() {
                   </div>
                 </motion.div>
 
-                {/* KPIs derecha */}
                 <div className="md:col-span-2 flex flex-col gap-4">
                   <motion.div
                     className="rounded-2xl border border-white/10 bg-white/5 p-4 shadow-sm backdrop-blur"
@@ -260,39 +259,23 @@ export default function SeccionGraficasAvanzadas() {
                           <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#0f2f27" />
                           <XAxis dataKey="mes" tickLine={false} axisLine={false} fontSize={12} stroke="#9CA3AF" />
                           <YAxis domain={[3.5, 5]} tickLine={false} axisLine={false} allowDecimals fontSize={12} stroke="#9CA3AF" />
-                          <Tooltip formatter={(value: number) => `${(value as number).toFixed(1)}★`} labelFormatter={(l) => `Mes: ${l}`} />
-                          <Line
-                            type="monotone"
-                            dataKey="rating"
-                            strokeWidth={2}
-                            dot={{ r: 2 }}
-                            activeDot={{ r: 4 }}
-                            isAnimationActive={inView}
-                            animationDuration={700}
-                            stroke="#22c55e"
-                          />
+                          <Tooltip formatter={(value: number) => `${value.toFixed(1)}★`} labelFormatter={(l) => `Mes: ${l}`} />
+                          <Line type="monotone" dataKey="rating" strokeWidth={2} dot={{ r: 2 }} activeDot={{ r: 4 }} isAnimationActive={inView} animationDuration={700} stroke="#22c55e" />
                         </LineChart>
                       </ResponsiveContainer>
                     </div>
                     <div className="mt-2 flex items-center justify-between text-xs text-slate-300">
                       <span>
-                        Mejor:{" "}
-                        <strong className="text-white">
-                          {Math.max(...dataEvolucion.map((d) => d.rating)).toFixed(1)}★
-                        </strong>
+                        Mejor: <strong className="text-white">{Math.max(...dataEvolucion.map((d) => d.rating)).toFixed(1)}★</strong>
                       </span>
                       <span>
-                        Peor:{" "}
-                        <strong className="text-white">
-                          {Math.min(...dataEvolucion.map((d) => d.rating)).toFixed(1)}★
-                        </strong>
+                        Peor: <strong className="text-white">{Math.min(...dataEvolucion.map((d) => d.rating)).toFixed(1)}★</strong>
                       </span>
                     </div>
                   </motion.div>
                 </div>
               </div>
 
-              {/* Leyenda compacta */}
               <motion.div
                 className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-3"
                 initial={{ opacity: 0, y: 8 }}
@@ -300,10 +283,7 @@ export default function SeccionGraficasAvanzadas() {
                 transition={{ duration: 0.4, delay: 0.35 }}
               >
                 {dataSentimiento.map((item, i) => (
-                  <div
-                    key={item.name}
-                    className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 p-3 shadow-sm backdrop-blur"
-                  >
+                  <div key={item.name} className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 p-3 shadow-sm backdrop-blur">
                     <span className="h-3 w-3 rounded-full" style={{ backgroundColor: COLORS[i] }} />
                     <div className="flex w-full items-center justify-between text-sm">
                       <span className="text-slate-300">{item.name}</span>
@@ -319,5 +299,3 @@ export default function SeccionGraficasAvanzadas() {
     </section>
   );
 }
-
-
