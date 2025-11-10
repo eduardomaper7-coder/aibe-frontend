@@ -7,8 +7,8 @@
 
 "use client";
 
-import { ArrowRight, ThumbsUp, Share2, Star } from "lucide-react";
-import { motion } from "framer-motion";
+import { ThumbsUp, Share2, Star } from "lucide-react";
+import { motion, type Variants } from "framer-motion";
 
 function RatingStars({ rating }: { rating: number }) {
   return (
@@ -23,10 +23,20 @@ function RatingStars({ rating }: { rating: number }) {
   );
 }
 
-function Avatar({ name, color, textColor = "text-white" }: { name: string; color: string; textColor?: string }) {
+function Avatar({
+  name,
+  color,
+  textColor = "text-white",
+}: {
+  name: string;
+  color: string;
+  textColor?: string;
+}) {
   const initial = name && name.length > 0 ? name[0].toLowerCase() : "?";
   return (
-    <div className={`relative h-10 w-10 shrink-0 overflow-hidden rounded-full ${color} ${textColor} grid place-items-center font-semibold`}>
+    <div
+      className={`relative h-10 w-10 shrink-0 overflow-hidden rounded-full ${color} ${textColor} grid place-items-center font-semibold`}
+    >
       <span className="text-base leading-none">{initial}</span>
       <div className="absolute -bottom-1 -right-1 grid h-4 w-4 place-items-center rounded-full bg-white">
         <Star className="h-3 w-3 fill-orange-400 stroke-orange-500" />
@@ -38,8 +48,14 @@ function Avatar({ name, color, textColor = "text-white" }: { name: string; color
 function ActionBar() {
   return (
     <div className="mt-3 flex gap-6 text-sm text-gray-500">
-      <button className="flex items-center gap-1 hover:text-gray-700"><ThumbsUp className="h-4 w-4"/>Me gusta</button>
-      <button className="flex items-center gap-1 hover:text-gray-700"><Share2 className="h-4 w-4"/>Compartir</button>
+      <button className="flex items-center gap-1 hover:text-gray-700">
+        <ThumbsUp className="h-4 w-4" />
+        Me gusta
+      </button>
+      <button className="flex items-center gap-1 hover:text-gray-700">
+        <Share2 className="h-4 w-4" />
+        Compartir
+      </button>
     </div>
   );
 }
@@ -115,10 +131,29 @@ export default function SeccionResenasIA() {
     },
   ];
 
-  const getVariants = (baseDelay: number) => ({
-    review: { hidden: { opacity: 0, y: 8 }, show: { opacity: 1, y: 0, transition: { delay: baseDelay, duration: 0.35 } } },
-    arrow: { hidden: { pathLength: 0, opacity: 0 }, show: { pathLength: 1, opacity: 1, transition: { delay: baseDelay + 0.45, duration: 0.5, ease: 'easeInOut' } } },
-    ai: { hidden: { opacity: 0, y: 8 }, show: { opacity: 1, y: 0, transition: { delay: baseDelay + 1.0, duration: 0.35 } } },
+  const getVariants = (
+    baseDelay: number
+  ): { review: Variants; arrow: Variants; ai: Variants } => ({
+    review: {
+      hidden: { opacity: 0, y: 8 },
+      show: { opacity: 1, y: 0, transition: { delay: baseDelay, duration: 0.35 } },
+    },
+    arrow: {
+      hidden: { pathLength: 0, opacity: 0 },
+      show: {
+        pathLength: 1,
+        opacity: 1,
+        transition: {
+          delay: baseDelay + 0.45,
+          duration: 0.5,
+          ease: [0.42, 0, 0.58, 1], // cubic-bezier (easeInOut)
+        },
+      },
+    },
+    ai: {
+      hidden: { opacity: 0, y: 8 },
+      show: { opacity: 1, y: 0, transition: { delay: baseDelay + 1.0, duration: 0.35 } },
+    },
   });
 
   return (
@@ -132,16 +167,24 @@ export default function SeccionResenasIA() {
         {rows.map((r, idx) => {
           const v = getVariants(idx * 0.2);
           return (
-            <div key={idx} className="relative overflow-hidden rounded-3xl p-6 md:p-8 ring-1 ring-white/10 shadow-[0_0_50px_-12px_rgba(30,58,138,0.6)] bg-gradient-to-br from-[#0B1430] via-[#0A1537] to-[#081025]">
+            <div
+              key={idx}
+              className="relative overflow-hidden rounded-3xl p-6 md:p-8 ring-1 ring-white/10 shadow-[0_0_50px_-12px_rgba(30,58,138,0.6)] bg-gradient-to-br from-[#0B1430] via-[#0A1537] to-[#081025]"
+            >
               {/* Focos difuminados decorativos */}
               <div className="pointer-events-none absolute -top-28 -left-20 h-72 w-72 rounded-full bg-indigo-500/20 blur-3xl" />
               <div className="pointer-events-none absolute -bottom-28 -right-24 h-72 w-72 rounded-full bg-blue-400/10 blur-3xl" />
               <div className="pointer-events-none absolute top-16 left-1/4 h-48 w-48 rounded-full bg-white/10 blur-2xl" />
               <div className="pointer-events-none absolute bottom-12 right-1/3 h-56 w-56 rounded-full bg-white/5 blur-3xl" />
-              <div className="pointer-events-none absolute top-1/3 right-10 h-40 w-40 rounded-full bg-white/7 blur-2xl" />
+              <div className="pointer-events-none absolute top-1/3 right-10 h-40 w-40 rounded-full bg-white/[0.07] blur-2xl" />
 
               <div className="relative flex flex-col items-center gap-10 md:flex-row md:justify-between">
-                <motion.div initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.4 }} variants={v.review}>
+                <motion.div
+                  initial="hidden"
+                  whileInView="show"
+                  viewport={{ once: true, amount: 0.4 }}
+                  variants={v.review}
+                >
                   <ReviewCard review={r} />
                 </motion.div>
 
@@ -172,7 +215,12 @@ export default function SeccionResenasIA() {
                   />
                 </motion.svg>
 
-                <motion.div initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.4 }} variants={v.ai}>
+                <motion.div
+                  initial="hidden"
+                  whileInView="show"
+                  viewport={{ once: true, amount: 0.4 }}
+                  variants={v.ai}
+                >
                   <AIResponseCard text={r.ai} />
                 </motion.div>
               </div>
