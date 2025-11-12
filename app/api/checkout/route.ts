@@ -6,7 +6,6 @@ export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
   try {
-    // Import dinámico para evitar evaluar el SDK si la env falta en build
     const { default: Stripe } = await import("stripe");
 
     const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
@@ -21,9 +20,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Server misconfigured" }, { status: 500 });
     }
 
-    const stripe = new Stripe(STRIPE_SECRET_KEY, {
-      apiVersion: "2024-06-20",
-    });
+    // ❌ sin apiVersion para evitar choque de tipos
+    const stripe = new Stripe(STRIPE_SECRET_KEY);
 
     const body = await req.json().catch(() => ({}));
     const email: string | undefined = body?.email;
@@ -33,14 +31,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Email requerido" }, { status: 400 });
     }
 
-    // Origin de respaldo si no llega en el body
     const originHeader = req.headers.get("origin") ?? undefined;
-    const fallbackPublicUrl = process.env.NEXT_PUBLIC_SITE_URL; // opcional, configúralo en Vercel
-    const origin =
-      originFromBody ||
-      originHeader ||
-      fallbackPublicUrl ||
-      ""; // Stripe exige URLs absolutas
+    const fallbackPublicUrl = process.env.NEXT_PUBLIC_SITE_URL;
+    const origin = originFromBody || originHeader || fallbackPublicUrl || "";
 
     if (!origin) {
       console.error("No se pudo determinar el origin para las URLs de retorno");
@@ -53,15 +46,8 @@ export async function POST(req: NextRequest) {
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
       customer_email: email,
-      line_items: [
-        {
-          price: PRICE_ID, // 1 €/mes
-          quantity: 1,
-        },
-      ],
-      subscription_data: {
-        trial_period_days: 3, // 3 días gratis
-      },
+      line_items: [{ price: PRICE_ID, quantity: 1 }],
+      subscription_data: { trial_period_days: 3 },
       success_url: `${origin}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/pricing?canceled=1`,
       automatic_tax: { enabled: false },
@@ -77,4 +63,3 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }
-
