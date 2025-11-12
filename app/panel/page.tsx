@@ -1,13 +1,11 @@
 'use client'
 
-
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Calendar, CheckCircle2, LogIn } from 'lucide-react'
-
+import { Calendar, CheckCircle2, LogIn, ChevronDown, X } from 'lucide-react'
 
 import TemasSection from './analisis/temas/TemasSection'
 import SentimientoSection from './analisis/sentimiento/sentimiento'
@@ -15,12 +13,12 @@ import OportunidadesSection from './analisis/oportunidades/oportunidades'
 import VolumenSection from './analisis/volumen/volumen'
 import RespuestasSection from './analisis/respuestas/respuestas'
 
+import Footer from '../Footer' // 👈 Footer
 
-/** -------- Gate de acceso al panel según tu suscripción en Supabase -------- */
+/** -------- Gate de acceso al panel según tu suscripción -------- */
 function useAllowPanel() {
   const router = useRouter()
   const [allowed, setAllowed] = useState<null | boolean>(null)
-
 
   useEffect(() => {
     let cancel = false
@@ -44,10 +42,8 @@ function useAllowPanel() {
     return () => { cancel = true }
   }, [router])
 
-
   return allowed
 }
-
 
 export default function AIBEPrimaryDashboard() {
   const allowed = useAllowPanel()
@@ -62,23 +58,21 @@ export default function AIBEPrimaryDashboard() {
   return <PanelUI />
 }
 
-
-/** -------- Lógica de conexión Google OAuth -------- */
+/** -------- Lógica del panel + UI -------- */
 function PanelUI() {
   const API_BASE = (process.env.NEXT_PUBLIC_API_URL ?? '').replace(/\/+$/, '')
   const [isConnected, setIsConnected] = useState(false)
   const [isConnecting, setIsConnecting] = useState(false)
   const popupRef = useRef<Window | null>(null)
 
-
-  // chequea el estado en el backend (sin cookies → CORS más simple)
+  // Chequear conexión
   const checkStatus = async () => {
     const { data } = await supabase.auth.getSession()
     const email = data.session?.user?.email?.toLowerCase()
     if (!email || !API_BASE) { setIsConnected(false); return }
     const url = `${API_BASE}/auth/google/status?email=${encodeURIComponent(email)}`
     try {
-      const res = await fetch(url, { cache: 'no-store' }) // <- sin credentials
+      const res = await fetch(url, { cache: 'no-store' })
       const json = await res.json().catch(() => ({}))
       setIsConnected(Boolean(json?.connected))
     } catch {
@@ -86,8 +80,6 @@ function PanelUI() {
     }
   }
 
-
-  // al montar y al recuperar foco desde el popup
   useEffect(() => {
     checkStatus()
     const onFocus = () => checkStatus()
@@ -95,14 +87,11 @@ function PanelUI() {
     return () => window.removeEventListener('focus', onFocus)
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-
-  // popup
   const openGooglePopup = async () => {
     const { data } = await supabase.auth.getSession()
     const email = data.session?.user?.email?.toLowerCase()
     if (!email) { alert('No hay sesión de usuario.'); return }
     if (!API_BASE) { alert('Falta NEXT_PUBLIC_API_URL en .env.local'); return }
-
 
     const url = `${API_BASE}/auth/google/login?email=${encodeURIComponent(email)}`
     const w = window.open(
@@ -114,33 +103,23 @@ function PanelUI() {
     if (!w) { alert('Permite las ventanas emergentes para continuar.'); return }
     setIsConnecting(true)
 
-
     const backendOrigin = (() => { try { return new URL(API_BASE).origin } catch { return '' } })()
-
-
     const onMessage = (e: MessageEvent) => {
       if (!e?.data || e.data.type !== 'oauth-complete') return
-      // acepta solo el origin del backend (Railway u otro)
       if (e.origin !== backendOrigin) return
-
-
       try { popupRef.current?.close() } catch {}
       window.removeEventListener('message', onMessage)
       setIsConnecting(false)
       if (e.data.ok) {
         setIsConnected(true)
-        setTimeout(() => checkStatus(), 300) // reconfirma contra backend
+        setTimeout(() => checkStatus(), 300)
       } else {
         setIsConnected(false)
         alert('Error al conectar Google.')
       }
     }
-
-
     window.addEventListener('message', onMessage)
 
-
-    // si el usuario cierra el popup sin postMessage
     const poll = window.setInterval(() => {
       if (!w || w.closed) {
         window.clearInterval(poll)
@@ -151,109 +130,234 @@ function PanelUI() {
     }, 700)
   }
 
-
-  // periodos (visual)
-  type PeriodKey = '7d' | '30d' | '3m' | '1y' | 'all'
+  /** ---------------- Periodos ---------------- */
+  type PeriodKey = '7d' | '30d' | '3m' | '6m' | '1y' | 'all'
   const [period, setPeriod] = useState<PeriodKey>('7d')
-  const [customFrom, setCustomFrom] = useState('')
-  const [customTo, setCustomTo] = useState('')
+  const [customFrom, setCustomFrom] = useState<string>('')
+
+  const [showPeriodMenu, setShowPeriodMenu] = useState(false)
+  const [showCustomMenu, setShowCustomMenu] = useState(false)
+
+  const todayLocal = () => new Date().toLocaleDateString('en-CA')
+
   const { startLabel, endLabel } = useMemo(() => {
-    const fmt = (d: Date) => d.toISOString().slice(0, 10)
-    if (customFrom && customTo) return { startLabel: customFrom, endLabel: customTo }
-    const end = new Date(); let start = new Date()
+    const end = todayLocal()
+    if (customFrom) return { startLabel: customFrom, endLabel: end }
+    const endDate = new Date()
+    const startDate = new Date(endDate)
     switch (period) {
-      case '7d': start.setDate(end.getDate() - 7); break
-      case '30d': start.setDate(end.getDate() - 30); break
-      case '3m': start.setMonth(end.getMonth() - 3); break
-      case '1y': start.setFullYear(end.getFullYear() - 1); break
-      case 'all': return { startLabel: 'histórico', endLabel: fmt(end) }
+      case '7d': startDate.setDate(endDate.getDate() - 7); break
+      case '30d': startDate.setDate(endDate.getDate() - 30); break
+      case '3m': startDate.setMonth(endDate.getMonth() - 3); break
+      case '6m': startDate.setMonth(endDate.getMonth() - 6); break
+      case '1y': startDate.setFullYear(endDate.getFullYear() - 1); break
+      case 'all': return { startLabel: 'histórico', endLabel: end }
     }
-    return { startLabel: fmt(start), endLabel: fmt(end) }
-  }, [period, customFrom, customTo])
+    const fmt = (d: Date) => d.toLocaleDateString('en-CA')
+    return { startLabel: fmt(startDate), endLabel: fmt(endDate) }
+  }, [period, customFrom])
 
+  const selectPeriod = (p: PeriodKey) => {
+    setPeriod(p)
+    setCustomFrom('')
+    setShowPeriodMenu(false)
+  }
 
-  const menu = ['Temas detectados', 'Sentimiento', 'Oportunidades', 'Volumen', 'Respuestas IA']
-
+  const applyCustom = () => { setShowCustomMenu(false) }
+  const clearCustom = () => { setCustomFrom(''); setShowCustomMenu(false) }
 
   return (
-    <div className="min-h-screen w-full pb-12 bg-white">
-      <div className="px-4 sm:px-6 lg:px-8">
-
-
-        {/* Banner para conectar */}
-        {!isConnected && (
-          <Card className="mb-4 border-dashed shadow-sm">
-            <CardContent className="flex flex-col gap-4 p-4 md:flex-row md:items-center md:justify-between">
-              <div className="flex items-start gap-3">
-                <div className="mt-1"><CheckCircle2 className="h-5 w-5 opacity-60" /></div>
-                <div>
-                  <div className="text-sm font-semibold">Conecta tu cuenta de Google para empezar</div>
-                  <p className="text-sm opacity-70">
-                    Importaremos tus reseñas y activaremos las respuestas automáticas de IA.
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <Button
-                  id="btn-google-card"
-                  className="gap-2 rounded-2xl shadow-sm"
-                  disabled={isConnecting}
-                  onClick={openGooglePopup}
-                >
-                  <LogIn className="h-4 w-4" />
-                  {isConnecting ? 'Conectando…' : 'Conectar Google OAuth'}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-
-        {/* Contenido con blur si no está conectado */}
-        <div className="relative">
+    <>
+      <div className="min-h-screen w-full pb-0 bg-white">
+        <div className="px-4 sm:px-6 lg:px-8">
+          {/* Banner para conectar */}
           {!isConnected && (
-            <div className="pointer-events-none absolute inset-0 z-10 grid place-items-center">
-              <div className="text-center text-slate-600">
-                <p className="font-medium">Todavía no podemos extraer información de tu negocio</p>
-                <p className="mt-1 text-sm opacity-70">Conecta Google OAuth (≈2 minutos)</p>
-              </div>
-            </div>
+            <Card className="mb-4 border-dashed shadow-sm">
+              <CardContent className="flex flex-col gap-4 p-4 md:flex-row md:items-center md:justify-between">
+                <div className="flex items-start gap-3">
+                  <div className="mt-1"><CheckCircle2 className="h-5 w-5 opacity-60" /></div>
+                  <div>
+                    <div className="text-sm font-semibold">Conecta tu cuenta de Google para empezar</div>
+                    <p className="text-sm opacity-70">
+                      Importaremos tus reseñas y activaremos las respuestas automáticas de IA.
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button
+                    id="btn-google-card"
+                    className="gap-2 rounded-2xl shadow-sm"
+                    disabled={isConnecting}
+                    onClick={openGooglePopup}
+                  >
+                    <LogIn className="h-4 w-4" />
+                    {isConnecting ? 'Conectando…' : 'Conectar Google OAuth'}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           )}
 
-
-          <div className={!isConnected ? 'blur-sm select-none opacity-60' : ''}>
-            <nav className="mb-6 w-full flex justify-center gap-6">
-              {menu.map((item) => (
-                <button
-                  key={item}
-                  className="px-2 py-2 text-[15px] font-medium text-slate-700 border-b-2 border-transparent hover:border-slate-300 transition"
-                >
-                  {item}
-                </button>
-              ))}
-            </nav>
-
-
-            <div className="mb-6 flex flex-col justify-between gap-3 md:flex-row md:items-center">
-              <div>
-                <p className="text-sm font-medium text-slate-500">Te damos la bienvenida,</p>
-                <h1 className="text-3xl font-semibold text-slate-900">Hotel RIU Gran Canaria</h1>
+          {/* Contenido */}
+          <div className="relative">
+            {!isConnected && (
+              <div className="pointer-events-none absolute inset-0 z-10 grid place-items-center">
+                <div className="text-center text-slate-600">
+                  <p className="font-medium">Todavía no podemos extraer información de tu negocio</p>
+                  <p className="mt-1 text-sm opacity-70">Conecta Google OAuth (≈2 minutos)</p>
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <Calendar className="h-4 w-4" />
-                <span className="text-xs text-slate-600">{startLabel} → {endLabel}</span>
+            )}
+
+            <div className={!isConnected ? 'blur-sm select-none opacity-60' : ''}>
+              {/* Header con botones de periodo */}
+              <div className="mb-4 rounded-2xl bg-slate-50 border border-slate-200 shadow-sm p-5 md:p-6">
+                <div className="flex flex-col justify-between gap-4 md:flex-row md:items-start">
+                  <div>
+                    <p className="text-sm font-medium text-slate-500">Te damos la bienvenida,</p>
+                    <h1 className="text-3xl font-semibold text-slate-900">Restaurante Madrid</h1>
+                    <p className="mt-1 text-sm text-slate-600">
+                      analizando reseñas del{' '}
+                      <span className="font-medium">{startLabel}</span> al{' '}
+                      <span className="font-medium">{endLabel}</span>
+                    </p>
+                  </div>
+
+                  {/* 🎯 Controles de periodo */}
+                  <div className="relative flex flex-wrap items-center gap-2 bg-white rounded-xl p-3 shadow-sm border border-slate-200">
+                    <div className="flex items-center gap-2 text-slate-600">
+                      <Calendar className="h-4 w-4" />
+                      <span className="text-xs">{startLabel} → {endLabel}</span>
+                    </div>
+
+                    {/* --- Botón PERIODO --- */}
+                    <div className="relative">
+                      <Button
+                        variant="outline"
+                        className="rounded-2xl text-slate-800 bg-white border-slate-300"
+                        onClick={() => {
+                          setShowPeriodMenu(v => !v)
+                          setShowCustomMenu(false)
+                        }}
+                      >
+                        {period === '7d' && 'Periodo: 7 días'}
+                        {period === '30d' && 'Periodo: 1 mes'}
+                        {period === '3m' && 'Periodo: 3 meses'}
+                        {period === '6m' && 'Periodo: 6 meses'}
+                        {period === '1y' && 'Periodo: 1 año'}
+                        {period === 'all' && 'Periodo: histórico'}
+                        <ChevronDown className="ml-2 h-4 w-4" />
+                      </Button>
+
+                      {showPeriodMenu && (
+                        <Card className="absolute right-0 z-20 mt-2 w-56 shadow-lg bg-white border border-slate-200">
+    <CardContent className="p-1 text-slate-800">
+                            <ul className="text-sm">
+                              <li><button className="w-full px-3 py-2 text-left hover:bg-slate-100 rounded-lg" onClick={() => selectPeriod('7d')}>Últimos 7 días</button></li>
+                              <li><button className="w-full px-3 py-2 text-left hover:bg-slate-100 rounded-lg" onClick={() => selectPeriod('30d')}>1 mes</button></li>
+                              <li><button className="w-full px-3 py-2 text-left hover:bg-slate-100 rounded-lg" onClick={() => selectPeriod('3m')}>3 meses</button></li>
+                              <li><button className="w-full px-3 py-2 text-left hover:bg-slate-100 rounded-lg" onClick={() => selectPeriod('6m')}>6 meses</button></li>
+                              <li><button className="w-full px-3 py-2 text-left hover:bg-slate-100 rounded-lg" onClick={() => selectPeriod('1y')}>1 año</button></li>
+                              <li><button className="w-full px-3 py-2 text-left hover:bg-slate-100 rounded-lg" onClick={() => selectPeriod('all')}>Histórico</button></li>
+                            </ul>
+                          </CardContent>
+                        </Card>
+                      )}
+                    </div>
+
+                    {/* --- Botón PERSONALIZADO --- */}
+                    <div className="relative">
+                      <Button
+                        variant="outline"
+                        className="rounded-2xl text-slate-800 bg-white border-slate-300"
+                        onClick={() => {
+                          setShowCustomMenu(v => !v)
+                          setShowPeriodMenu(false)
+                        }}
+                      >
+                        {customFrom ? `Personalizado: desde ${customFrom}` : 'Personalizado'}
+                        <ChevronDown className="ml-2 h-4 w-4" />
+                      </Button>
+
+                      {showCustomMenu && (
+                        <Card className="absolute right-0 z-20 mt-2 w-64 shadow-lg bg-white border border-slate-200">
+    <CardContent className="p-3 text-slate-800">
+                            <div className="space-y-3">
+                              <label className="block text-xs font-medium text-slate-600">
+                                Desde (hasta hoy)
+                              </label>
+                              <input
+                                type="date"
+                                className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-800"
+                                value={customFrom}
+                                max={todayLocal()}
+                                onChange={(e) => setCustomFrom(e.target.value)}
+                              />
+                              <div className="flex items-center justify-between">
+                                <Button
+                                  variant="default"
+                                  className="rounded-xl"
+                                  onClick={applyCustom}
+                                  disabled={!customFrom}
+                                >
+                                  Aplicar
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  className="rounded-xl text-slate-600"
+                                  onClick={clearCustom}
+                                >
+                                  <X className="mr-1 h-4 w-4" /> Borrar
+                                </Button>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Secciones */}
+              {/* Temas */}
+<section id="temas" className="mt-8 px-4 sm:px-6 lg:px-8">
+  <TemasSection />
+</section>
+
+{/* Análisis de sentimiento */}
+<section id="sentimiento" className="mt-10 px-4 sm:px-6 lg:px-8">
+  <SentimientoSection />
+</section>
+
+{/* Puntuación media vs Volumen */}
+<section id="volumen" className="mt-8 px-4 sm:px-6 lg:px-8">
+  <VolumenSection />
+</section>
+
+
+
+
+              <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen bg-slate-100">
+                <div className="mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
+                  <section id="oportunidades"><OportunidadesSection /></section>
+                </div>
+              </div>
+
+              <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen bg-blue-100">
+                <div className="mx-auto px-4 sm:px-6 lg:px-8 pt-4 md:pt-6 pb-10">
+                  <section id="respuestas" className="md:mt-0">
+                    <RespuestasSection />
+                  </section>
+                </div>
               </div>
             </div>
-
-
-            <section id="temas"><TemasSection /></section>
-            <section id="sentimiento" className="mt-10"><SentimientoSection /></section>
-            <section id="oportunidades" className="mt-10"><OportunidadesSection /></section>
-            <section id="volumen" className="mt-10"><VolumenSection /></section>
-            <section id="respuestas" className="mt-10"><RespuestasSection /></section>
           </div>
         </div>
       </div>
-    </div>
+
+      {/* 👇 Footer */}
+      <Footer />
+    </>
   )
 }

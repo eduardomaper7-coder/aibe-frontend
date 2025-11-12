@@ -14,7 +14,9 @@ export default function LoginFlow() {
   // Si ya hay sesión, manda al panel
   useEffect(() => {
     (async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       if (session) router.replace("/panel");
     })();
   }, [router]);
@@ -57,13 +59,18 @@ export default function LoginFlow() {
 
   return (
     <div className="min-h-screen w-full grid place-items-center bg-neutral-50 text-neutral-900">
-      <div className="w-full max-w-md px-4">
-        <div className="rounded-2xl bg-white p-6 shadow-2xl ring-1 ring-black/5">
-          <h1 className="text-2xl font-semibold tracking-tight">Inicia sesión</h1>
-          <p className="mt-2 text-sm text-neutral-600">Accede para entrar al panel.</p>
+      <div className="w-full max-w-2xl px-6">
+        <div className="rounded-3xl bg-white p-10 md:p-12 shadow-2xl ring-1 ring-black/5">
+          <h1 className="text-3xl font-bold tracking-tight">Inicia sesión</h1>
+          <p className="mt-3 text-base text-neutral-600">
+            Accede para entrar al panel.
+          </p>
 
-          <form onSubmit={handleLogin} className="mt-6 space-y-3">
-            <label htmlFor="email" className="block text-sm font-medium text-neutral-800">
+          <form onSubmit={handleLogin} className="mt-8 space-y-5">
+            <label
+              htmlFor="email"
+              className="block text-base font-medium text-neutral-800"
+            >
               Correo electrónico
             </label>
             <input
@@ -72,10 +79,13 @@ export default function LoginFlow() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="tu@correo.com"
-              className="w-full rounded-xl border border-neutral-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-neutral-400 focus:ring-2 focus:ring-neutral-200"
+              className="w-full rounded-2xl border border-neutral-300 bg-white px-5 py-4 text-base outline-none transition focus:border-neutral-400 focus:ring-2 focus:ring-neutral-200"
             />
 
-            <label htmlFor="password" className="block text-sm font-medium text-neutral-800">
+            <label
+              htmlFor="password"
+              className="block text-base font-medium text-neutral-800"
+            >
               Contraseña
             </label>
             <input
@@ -84,43 +94,53 @@ export default function LoginFlow() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
-              className="w-full rounded-xl border border-neutral-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-neutral-400 focus:ring-2 focus:ring-neutral-200"
+              className="w-full rounded-2xl border border-neutral-300 bg-white px-5 py-4 text-base outline-none transition focus:border-neutral-400 focus:ring-2 focus:ring-neutral-200"
             />
 
             <button
               type="submit"
               disabled={loading}
-              className="mt-2 inline-flex w-full items-center justify-center rounded-xl bg-black px-4 py-3 text-sm font-semibold text-white transition hover:bg-neutral-800 disabled:opacity-60"
+              className="mt-4 inline-flex w-full items-center justify-center rounded-2xl bg-black px-5 py-4 text-base font-semibold text-white transition hover:bg-neutral-800 disabled:opacity-60"
             >
               {loading ? "Entrando…" : "Iniciar sesión"}
             </button>
           </form>
 
-          <div className="my-6 flex items-center gap-3">
+          <div className="my-8 flex items-center gap-3">
             <div className="h-px flex-1 bg-neutral-200" />
-            <span className="text-xs text-neutral-500">o</span>
+            <span className="text-sm text-neutral-500">o</span>
             <div className="h-px flex-1 bg-neutral-200" />
           </div>
 
           <button
             onClick={handleGoogle}
             disabled={loading}
-            className="inline-flex w-full items-center justify-center gap-3 rounded-xl border border-neutral-300 bg-white px-4 py-3 text-sm font-semibold text-neutral-900 transition hover:bg-neutral-50 disabled:opacity-60"
+            className="inline-flex w-full items-center justify-center gap-4 rounded-2xl border border-neutral-300 bg-white px-5 py-4 text-base font-semibold text-neutral-900 transition hover:bg-neutral-50 disabled:opacity-60"
           >
             Iniciar sesión con Google
           </button>
 
           {error && (
-            <div className="mt-4 rounded-lg bg-rose-500/10 p-3 text-sm text-rose-700 ring-1 ring-rose-500/30">
+            <div className="mt-6 rounded-xl bg-rose-500/10 p-4 text-base text-rose-700 ring-1 ring-rose-500/30">
               {error}
             </div>
           )}
-          <p className="mt-6 text-center text-sm text-neutral-600">
-            ¿No tienes cuenta? <a href="/registro" className="font-medium hover:underline">Regístrate →</a>
+
+          <p className="mt-8 text-center text-base text-neutral-600">
+            ¿No tienes cuenta?{" "}
+            <a
+              href="/registro"
+              className="font-semibold text-neutral-900 hover:underline underline-offset-4"
+            >
+              Regístrate →
+            </a>
           </p>
+        </div>
+
+        <div className="mt-8 text-center text-sm text-neutral-500">
+          Ayuda · Privacidad · Términos
         </div>
       </div>
     </div>
   );
 }
-

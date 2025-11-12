@@ -46,14 +46,12 @@ body {
   height: 100%;
   object-fit: cover;     /* cubre todo el hero */
   z-index: -2;
-  /* (sin filtro de brillo) */
 }
 .hero::after {
   content: "";
   position: absolute;
   inset: 0;
   z-index: -1;
-  /* overlay sutil para legibilidad, sin oscurecer tanto */
   background:
     radial-gradient(80% 60% at 20% 20%, rgba(0,0,0,.05), rgba(0,0,0,.25) 70%),
     linear-gradient(to top, rgba(0,0,0,.18), rgba(0,0,0,0) 40%);
@@ -69,36 +67,73 @@ body {
 }
 
 /* TOPBAR */
-.topbar { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 8px 0; }
-.brand { display: flex; align-items: center; gap: 12px; }
-.logo {
-  width: 28px; height: 28px; border-radius: 8px;
-  background: linear-gradient(145deg, #22d3ee, #7c3aed);
-  display: grid; place-items: center;
-  box-shadow: 0 0 0 3px rgba(255,255,255,.08) inset;
+.topbar { 
+  display: flex; 
+  align-items: center; 
+  justify-content: space-between; 
+  gap: 18px; 
+  padding: 8px 0; 
 }
-.logo span { font-size: 14px; font-weight: 800; }
-.brand-text { display: flex; flex-direction: column; line-height: 1; }
-.brand-text strong { font-weight: 700; }
-.brand-text small { opacity: .8; font-weight: 400; }
 
-.nav { display: flex; gap: 28px; align-items: center; margin-left: min(3vw, 32px); margin-right: min(3vw, 32px); }
-.nav a { color: #cde3ff; text-decoration: none; font-weight: 400; opacity: .95; }
-.nav a:hover { opacity: 1; text-decoration: underline; }
+.brand { 
+  display: flex; 
+  align-items: center; 
+  gap: 12px; 
+}
 
-.actions { display: flex; align-items: center; gap: 18px; }
-.link { background: none; border: none; color: #e7e7e7; font-weight: 400; cursor: pointer; }
+/* NAV */
+.nav { 
+  display: flex; 
+  gap: 28px; 
+  align-items: center; 
+  margin-left: min(3vw, 32px); 
+  margin-right: min(3vw, 32px); 
+}
+.nav a { 
+  color: #cde3ff; 
+  text-decoration: none; 
+  font-weight: 400; 
+  opacity: .95; 
+}
+.nav a:hover { 
+  opacity: 1; 
+  text-decoration: underline; 
+}
+
+/* ACTIONS */
+.actions { 
+  display: flex; 
+  align-items: center; 
+  gap: 18px; 
+}
+.link { 
+  background: none; 
+  border: none; 
+  color: #e7e7e7; 
+  font-weight: 400; 
+  cursor: pointer; 
+}
 
 .btn {
   appearance: none;
   border: 1.5px solid rgba(255,255,255,.25);
-  background: #fff; color: #111;
-  padding: 12px 18px; border-radius: 999px;
-  font-weight: 600; cursor: pointer;
+  background: #fff; 
+  color: #111;
+  padding: 12px 18px; 
+  border-radius: 999px;
+  font-weight: 600; 
+  cursor: pointer;
   transition: transform .2s ease, background .2s ease, border-color .2s ease;
 }
-.btn.secondary { background: transparent; color: #fff; border-color: rgba(255,255,255,.45); }
-.btn:hover { transform: translateY(-1px); background: #f3f3f3; }
+.btn.secondary { 
+  background: transparent; 
+  color: #fff; 
+  border-color: rgba(255,255,255,.45); 
+}
+.btn:hover { 
+  transform: translateY(-1px); 
+  background: #f3f3f3; 
+}
 
 a.btn,
 a.btn:link,
@@ -110,33 +145,47 @@ a.btn:active,
 /* CENTRO / HERO PRINCIPAL */
 .center {
   position: relative;
-  height: 100%;                 /* llena el alto del hero */
-  display: flex; flex-direction: column; justify-content: flex-start;
-  padding-top: clamp(110px, 22vh, 300px);  /* como tenías antes */
+  height: 100%;
+  display: flex; 
+  flex-direction: column; 
+  justify-content: flex-start;
+  padding-top: clamp(110px, 22vh, 300px);
   padding-left: var(--content-x);
   padding-right: var(--pad-x);
-  z-index: 1;                   /* por encima del video */
+  z-index: 1;
 }
 
-/* Título */
+/* Título dinámico */
 .title-slot { height: var(--title-height); position: relative; }
 .title {
-  font-size: var(--title-size); line-height: .94; letter-spacing: -.01em;
-  margin: 0; font-weight: 300; font-variation-settings: "wght" 300;
+  font-size: var(--title-size); 
+  line-height: .94; 
+  letter-spacing: -.01em;
+  margin: 0; 
+  font-weight: 300; 
+  font-variation-settings: "wght" 300;
 }
-.title-layer { position: absolute; inset: 0; display: flex; align-items: flex-start; }
+.title-layer { 
+  position: absolute; 
+  inset: 0; 
+  display: flex; 
+  align-items: flex-start; 
+}
 
-/* Subtítulo (anclado cerca del borde inferior) */
+/* Subtítulo */
 .subtitle {
   position: absolute;
   left: var(--content-x);
   right: var(--pad-x);
   bottom: var(--subtitle-bottom);
   font-size: var(--subtitle-size);
-  max-width: 52ch; opacity: .92; font-weight: 300; margin: 0;
+  max-width: 52ch; 
+  opacity: .92; 
+  font-weight: 300; 
+  margin: 0;
 }
 
-/* CTA sobre el video, bajo el subtítulo */
+/* CTA */
 .cta {
   position: absolute;
   left: var(--content-x);
@@ -146,11 +195,16 @@ a.btn:active,
   padding: 18px 30px;
   font-size: clamp(15px, 1.4vw, 20px);
   border-width: 2px;
-  background: #fff; color: #000; font-weight: 700;
+  background: #fff; 
+  color: #000; 
+  font-weight: 700;
   border-radius: 999px;
   transition: transform .2s ease, background .2s ease;
 }
-.cta .btn:hover { background: #f3f3f3; transform: translateY(-2px); }
+.cta .btn:hover { 
+  background: #f3f3f3; 
+  transform: translateY(-2px); 
+}
 
 /* Animaciones */
 .fade-enter { opacity: 0; transform: translateY(8px) scale(.99); }
@@ -164,11 +218,7 @@ a.btn:active,
   transition: opacity .55s ease, transform .55s ease;
 }
 
-/* La antigua sección debajo del hero ya no se usa 
-   (si existiera por compatibilidad, la mantenemos neutral) */
-.below-fold { display: none; }
-
-/* RESPONSIVE */
+/* Responsive */
 @media (max-width: 960px) {
   .nav { display: none; }
   .center { padding-top: 20vh; padding-left: var(--content-x); }
@@ -177,9 +227,141 @@ a.btn:active,
 @media (max-width: 520px) {
   .center { padding-top: 18vh; padding-left: var(--content-x); }
   .subtitle {
-    left: var(--content-x); right: var(--content-x);
+    left: var(--content-x); 
+    right: var(--content-x);
     max-width: 100%;
-    bottom: clamp(56px, 7vh, 80px); /* un poco más alto para dejar hueco al botón */
+    bottom: clamp(56px, 7vh, 80px);
   }
-  .cta { left: var(--content-x); bottom: clamp(12px, 4vh, 36px); }
+  .cta { 
+    left: var(--content-x); 
+    bottom: clamp(12px, 4vh, 36px); 
+  }
 }
+
+/* === LOGO === */
+
+/* Base para logos (imagen o texto) */
+.brand-logo {
+  display: inline-flex;
+  align-items: center;
+  line-height: 0; /* útil para imágenes */
+}
+
+/* --- Logos con imagen --- */
+.brand-logo img,
+.brand-logo picture {
+  display: block;
+  height: clamp(48px, 6vw, 88px);
+  width: auto;
+  object-fit: contain;
+  max-width: none;
+}
+
+/* --- Logos de texto (AIBE Technologies®) --- */
+.brand-logo--text {
+  line-height: 1;          /* importante: no 0 */
+  align-items: baseline;   /* alinea texto en la misma línea */
+}
+
+.brand-logo--text span {
+  display: inline-block;   /* permite control fino */
+  height: auto;            /* sin clamp */
+}
+
+.brand-logo--text .tech .r {
+  position: absolute;
+  top: -0.45em;
+  right: -0.9em;
+  font-size: 0.45em;        /* antes 0.6em → más sutil */
+  font-weight: 300;
+  font-family: Poppins, sans-serif;
+  opacity: 0.85;            /* un pelín más discreta */
+}
+
+/* ----- Topbar global en portal: capa máxima + transición de fondo ----- */
+#global-topbar.topbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: var(--topbar-h, 64px);
+  z-index: 2147483647;   /* por encima de todo */
+  isolation: isolate;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 clamp(12px, 2vw, 24px);
+
+  background: transparent;            /* transparente en la parte superior */
+  border-bottom: 1px solid transparent;
+  box-shadow: none;
+
+  transition: background .35s ease, border-color .35s ease, box-shadow .35s ease;
+  will-change: background;
+}
+
+#global-topbar.topbar.topbar--solid {
+  background: rgba(0,0,0,1) !important;   /* negro sólido al “pasar del top” */
+  border-bottom-color: rgba(255,255,255,.08);
+  box-shadow: 0 10px 20px rgba(0,0,0,.25);
+}
+
+/* Enlaces al lado del logo (tu estilo “antes”) */
+#global-topbar .nav-inline {
+  display: flex;
+  align-items: center;
+  gap: clamp(14px, 2vw, 22px);
+  white-space: nowrap;
+}
+#global-topbar .nav-link {
+  color: #cde3ff;      /* equivalente a text-cyan-100 */
+  text-decoration: none;
+  font-weight: 400;
+  opacity: .95;
+  font-size: clamp(12px, 1.2vw, 15px);
+}
+#global-topbar .nav-link:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+
+/* ===== Full-bleed sin costuras (laterales y borde inferior) ===== */
+.bleed-black {
+  position: relative;
+  isolation: isolate;              /* para colocar el pseudo detrás sin interferir */
+}
+
+/* Pinta un “tapete” negro infinito alrededor del bloque */
+.bleed-black::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  box-shadow: 0 0 0 100vmax #000;  /* expande negro hacia fuera del contenedor */
+  clip-path: inset(0 -100vmax);    /* evita scroll horizontal */
+  z-index: -1;
+}
+
+/* Si algún navegador aún deja un subpíxel abajo, lo cubrimos */
+.bleed-black::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: -1px;
+  height: 2px;
+  background: #000;
+  z-index: -1;
+}
+
+/* Fondo del documento negro SOLO para cubrir el “detrás” del footer */
+html { background: #000; }         /* no cambia el resto de la página */
+body { background: transparent; }  /* respeta tus fondos blanco/azul */
+
+/* El documento siempre cubre el viewport (evita ver el fondo del navegador) */
+:root, html, body, #__next {
+  min-height: 100dvh;
+}
+
+/* El fondo "detrás" del footer es negro; el resto de la página lo mantiene cada sección */
+html { background: #000; }
+
+/* El body respeta tus fondos (blanco/azul): */
+body { background: transparent; margin: 0; padding: 0; }

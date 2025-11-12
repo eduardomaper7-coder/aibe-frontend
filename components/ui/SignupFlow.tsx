@@ -84,23 +84,26 @@ export default function SignupFlow() {
 
   return (
     <div className="min-h-screen w-full grid place-items-center bg-neutral-50 text-neutral-900">
-      <div className="w-full max-w-5xl px-4">
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+      <div className="w-full max-w-7xl px-8 py-10">
+        <div className="grid grid-cols-1 gap-10 md:grid-cols-3">
           {/* Izquierda: formulario */}
-          <div className="rounded-2xl bg-white p-6 shadow-2xl ring-1 ring-black/5">
-            <div className="mb-2 text-right">
-              <span className="text-xs text-neutral-500">ES • España</span>
+          <div className="rounded-3xl bg-white p-14 md:p-16 shadow-2xl ring-1 ring-black/5 md:col-span-2">
+            <div className="mb-6 text-right">
+              <span className="text-base text-neutral-500">ES • España</span>
             </div>
 
-            <h1 className="text-2xl font-semibold tracking-tight">
+            <h1 className="text-4xl font-bold tracking-tight">
               Comienza tu prueba gratis
             </h1>
-            <p className="mt-2 text-sm text-neutral-600">
-              Disfruta de 3 días gratis y, después, 1€/mes.
+            <p className="mt-4 text-lg text-neutral-600">
+              Disfruta de 3 días gratis y, después, 1 €/mes.
             </p>
 
-            <form onSubmit={handleEmail} className="mt-6 space-y-3">
-              <label htmlFor="email" className="block text-sm font-medium text-neutral-800">
+            <form onSubmit={handleEmail} className="mt-10 space-y-6">
+              <label
+                htmlFor="email"
+                className="block text-lg font-semibold text-neutral-800"
+              >
                 Correo electrónico
               </label>
               <input
@@ -109,10 +112,13 @@ export default function SignupFlow() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="tu@correo.com"
-                className="w-full rounded-xl border border-neutral-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-neutral-400 focus:ring-2 focus:ring-neutral-200"
+                className="w-full rounded-2xl border border-neutral-300 bg-white px-6 py-5 text-lg outline-none transition focus:border-neutral-400 focus:ring-2 focus:ring-neutral-200"
               />
 
-              <label htmlFor="password" className="block text-sm font-medium text-neutral-800">
+              <label
+                htmlFor="password"
+                className="block text-lg font-semibold text-neutral-800"
+              >
                 Contraseña
               </label>
               <input
@@ -121,66 +127,79 @@ export default function SignupFlow() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full rounded-xl border border-neutral-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-neutral-400 focus:ring-2 focus:ring-neutral-200"
+                className="w-full rounded-2xl border border-neutral-300 bg-white px-6 py-5 text-lg outline-none transition focus:border-neutral-400 focus:ring-2 focus:ring-neutral-200"
               />
 
               <button
                 type="submit"
                 disabled={loading}
-                className="mt-2 inline-flex w-full items-center justify-center rounded-xl bg-black px-4 py-3 text-sm font-semibold text-white transition hover:bg-neutral-800 disabled:opacity-60"
+                className="mt-6 inline-flex w-full items-center justify-center rounded-2xl bg-black px-6 py-5 text-lg font-bold text-white transition hover:bg-neutral-800 disabled:opacity-60"
               >
                 {loading ? "Creando cuenta…" : "Registrarse"}
               </button>
             </form>
 
-            <div className="my-6 flex items-center gap-3">
+            <div className="my-10 flex items-center gap-4">
               <div className="h-px flex-1 bg-neutral-200" />
-              <span className="text-xs text-neutral-500">o</span>
+              <span className="text-base text-neutral-500">o</span>
               <div className="h-px flex-1 bg-neutral-200" />
             </div>
 
             <button
               onClick={handleGoogle}
               disabled={loading}
-              className="inline-flex w-full items-center justify-center gap-3 rounded-xl border border-neutral-300 bg-white px-4 py-3 text-sm font-semibold text-neutral-900 transition hover:bg-neutral-50 disabled:opacity-60"
+              className="inline-flex w-full items-center justify-center gap-5 rounded-2xl border border-neutral-300 bg-white px-6 py-5 text-lg font-bold text-neutral-900 transition hover:bg-neutral-50 disabled:opacity-60"
             >
-              <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5">
-                <path d="M24 12.273c0-.818-.073-1.64-.227-2.436H12v4.613h6.748a5.77 5.77 0 0 1-2.5 3.786v3.14h4.04C22.8 19.42 24 16.127 24 12.273z" fill="#4285F4" />
-                <path d="M12 24c3.24 0 5.96-1.067 7.946-2.913l-4.04-3.14c-1.12.752-2.56 1.197-3.906 1.197-2.997 0-5.54-2.02-6.45-4.737H1.39v2.973A12 12 0 0 0 12 24z" fill="#34A853" />
-                <path d="M5.55 14.407a7.2 7.2 0 0 1 0-4.814V6.62H1.39a12 12 0 0 0 0 10.76l4.16-2.973z" fill="#FBBC05" />
-                <path d="M12 4.74c1.76 0 3.34.6 4.58 1.78l3.42-3.42C17.96 1.09 15.24 0 12 0 7.39 0 3.39 2.66 1.39 6.62l4.16 2.973C6.46 6.76 9.003 4.74 12 4.74z" fill="#EA4335" />
+              <svg aria-hidden="true" viewBox="0 0 24 24" className="h-7 w-7">
+                <path
+                  d="M24 12.273c0-.818-.073-1.64-.227-2.436H12v4.613h6.748a5.77 5.77 0 0 1-2.5 3.786v3.14h4.04C22.8 19.42 24 16.127 24 12.273z"
+                  fill="#4285F4"
+                />
+                <path
+                  d="M12 24c3.24 0 5.96-1.067 7.946-2.913l-4.04-3.14c-1.12.752-2.56 1.197-3.906 1.197-2.997 0-5.54-2.02-6.45-4.737H1.39v2.973A12 12 0 0 0 12 24z"
+                  fill="#34A853"
+                />
+                <path
+                  d="M5.55 14.407a7.2 7.2 0 0 1 0-4.814V6.62H1.39a12 12 0 0 0 0 10.76l4.16-2.973z"
+                  fill="#FBBC05"
+                />
+                <path
+                  d="M12 4.74c1.76 0 3.34.6 4.58 1.78l3.42-3.42C17.96 1.09 15.24 0 12 0 7.39 0 3.39 2.66 1.39 6.62l4.16 2.973C6.46 6.76 9.003 4.74 12 4.74z"
+                  fill="#EA4335"
+                />
               </svg>
               Registrarse con Google
             </button>
 
             {/* Enlace a iniciar sesión */}
-            <div className="mt-4 flex items-center justify-center">
-              <span className="text-sm text-neutral-600">¿Ya tienes cuenta?</span>
+            <div className="mt-8 flex items-center justify-center">
+              <span className="text-lg text-neutral-600">
+                ¿Ya tienes cuenta?
+              </span>
               <Link
                 href="/login"
-                className="ml-1 text-sm font-semibold text-neutral-900 underline-offset-4 hover:underline"
+                className="ml-2 text-lg font-bold text-neutral-900 underline-offset-4 hover:underline"
               >
                 Iniciar sesión →
               </Link>
             </div>
 
             {message && (
-              <div className="mt-4 rounded-lg bg-emerald-500/10 p-3 text-sm text-emerald-700 ring-1 ring-emerald-500/30">
+              <div className="mt-8 rounded-2xl bg-emerald-500/10 p-5 text-lg text-emerald-700 ring-1 ring-emerald-500/30">
                 {message}
               </div>
             )}
             {error && (
-              <div className="mt-4 rounded-lg bg-rose-500/10 p-3 text-sm text-rose-700 ring-1 ring-rose-500/30">
+              <div className="mt-8 rounded-2xl bg-rose-500/10 p-5 text-lg text-rose-700 ring-1 ring-rose-500/30">
                 {error}
               </div>
             )}
           </div>
-          {/* ←←← OJO: aquí SÍ cerramos la tarjeta izquierda */}
 
           {/* Derecha: sidebar */}
-          <aside className="rounded-2xl bg-white p-6 shadow-2xl ring-1 ring-black/5 md:sticky md:top-8 h-max">
-            <h2 className="text-xl font-semibold">Tu plan</h2>
-            <ul className="mt-4 space-y-3 text-sm text-neutral-700">
+          <aside className="rounded-3xl bg-white p-12 shadow-2xl ring-1 ring-black/5 md:sticky md:top-10 h-max">
+            <h2 className="text-3xl font-bold">Tu plan</h2>
+            <ul className="mt-8 space-y-5 text-lg text-neutral-700 leading-relaxed">
               <li>✅ <strong>Empieza gratis.</strong></li>
               <li>✅ <strong>Quédate por 1 €.</strong></li>
               <li>📅 <strong>Hoy:</strong> Gratis, prueba de 3 días</li>
@@ -191,7 +210,7 @@ export default function SignupFlow() {
           </aside>
         </div>
 
-        <div className="mt-6 text-center text-xs text-neutral-500">
+        <div className="mt-10 text-center text-base text-neutral-500">
           Ayuda · Privacidad · Términos
         </div>
       </div>

@@ -1,13 +1,18 @@
 'use client';
+
 import { useEffect } from 'react';
-import Link from 'next/link';
+
 import SeccionResenasIA from '@/components/ui/SeccionResenasIA';
 import TemasDemo from '@/components/ui/temasdemo';
 import SentimientoDemo from '@/components/ui/sentimientodemo';
 import VolumenDemo from '@/components/ui/volumendemo';
 import OportunidadesDemo from '@/components/ui/oportunidadesdemo';
 import Frases from '@/components/ui/frases';
-import Ventajas from '@/components/ui/ventajas';
+import VideoInicio from '@/components/ui/videoinicio';
+import Footer from './Footer';
+import TresRecuadros from '@/components/ui/3recuadros';
+import VideoTemas from '@/components/ui/videotemas';
+
 
 export default function Home() {
   useEffect(() => {
@@ -33,7 +38,7 @@ export default function Home() {
       letterSpacing: cs.letterSpacing,
       whiteSpace: 'normal',
       display: 'block',
-    } as CSSStyleDeclaration);
+    });
     document.body.appendChild(probe);
     let max = 0;
     TITLES.forEach((t) => {
@@ -44,12 +49,11 @@ export default function Home() {
     slotEl.style.setProperty('--title-height', Math.ceil(max + 8) + 'px');
 
     let i = 0;
-  function show(index: number) {
-  const nextText = TITLES[index % TITLES.length];
-  if (!titleEl) return; // ✅ evita usarlo si aún no existe
-  titleEl.classList.remove('fade-enter', 'fade-enter-active');
-  titleEl.classList.add('fade-exit');
-
+    function show(index) {
+      const nextText = TITLES[index % TITLES.length];
+      if (!titleEl) return;
+      titleEl.classList.remove('fade-enter', 'fade-enter-active');
+      titleEl.classList.add('fade-exit');
       requestAnimationFrame(() => {
         titleEl.classList.add('fade-exit-active');
         setTimeout(() => {
@@ -60,6 +64,7 @@ export default function Home() {
         }, 600);
       });
     }
+
     titleEl.textContent = TITLES[0];
     const id = setInterval(() => {
       i = (i + 1) % TITLES.length;
@@ -82,83 +87,97 @@ export default function Home() {
           playsInline
           className="hero-video"
         />
-
         <div className="shell">
-          <header className="topbar" aria-label="Navegación principal">
-            <div className="brand">
-              <div className="logo" aria-hidden="true">
-                <span>AI</span>
-              </div>
-              <div className="brand-text">
-                <strong>AIBE Technologies</strong>
-                <small>Artificial Intelligence for Business Efficiency</small>
-              </div>
-            </div>
-
-            <nav className="nav" aria-label="Menú">
-              <Link href="/contact" className="text-cyan-100 hover:underline">
-                Contacto
-              </Link>
-            </nav>
-
-            <div className="actions">
-              <Link href="/login" className="link">
-                Iniciar sesión
-              </Link>
-              <Link href="/registro" className="btn">
-                Comenzar gratis
-              </Link>
-            </div>
-          </header>
-
+          <div className="topbar-spacer" aria-hidden="true" />
           <div className="center">
             <div className="title-slot" id="titleSlot" aria-live="polite" aria-atomic="true">
               <div className="title-layer">
                 <h1 id="dynamicTitle" className="title"></h1>
               </div>
             </div>
-
             <p className="subtitle">
               La tecnología que usan las grandes empresas, ahora al alcance de tu negocio.
             </p>
           </div>
         </div>
+
+        <style jsx>{`
+          :root { --topbar-h: 64px; }
+          .hero { position: relative; overflow: hidden; }
+          .hero-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+          .shell { position: relative; z-index: 1; }
+          .topbar-spacer { height: var(--topbar-h); }
+        `}</style>
       </section>
 
       {/* Secciones */}
-      <section className={sectionCx}>
-        <Frases />
+      <section className={sectionCx}><Frases /></section>
+      <VideoInicio />
+      <TresRecuadros />
+
+      {/* Sección azul integrada (full-width) */}
+      <section
+        className="
+          relative left-1/2 right-1/2 -mx-[50vw] w-screen
+          text-white font-sans
+          bg-[#0A1224]
+        "
+        style={{ fontFamily: 'Inter, sans-serif' }}
+      >
+        <div className="mx-auto max-w-7xl px-6 py-20 lg:px-8">
+          <div className="grid items-start gap-8 md:grid-cols-12">
+            <div className="md:col-span-7">
+              <h2 className="mt-0 text-2xl md:text-4xl lg:text-5xl font-light leading-tight text-gray-100">
+                {`Para todos: desde pequeños negocios hasta grandes marcas, sin importar el sector.`}
+              </h2>
+            </div>
+
+            <div className="md:col-span-5">
+              <p className="text-xs sm:text-sm md:text-base lg:text-lg text-gray-300 leading-relaxed">
+                {`+1000 respuestas enviadas.`} <br />
+                {`+250 negocios en España suscritos.`} <br />
+                {`+125.000 reseñas analizadas.`} <br />
+                <span className="block mt-4 text-gray-100">
+                  {`Liderando la gestión inteligente de reseñas en España.`}
+                </span>
+              </p>
+            </div>
+          </div>
+        </div>
       </section>
 
-      <section className={sectionCx}>
-        <Ventajas />
-      </section>
+      <VideoTemas />
 
-      {/* ↓ Reseñas con separación mínima respecto a Ventajas */}
-      <section className="bg-black px-4 md:px-6 pt-0 pb-6 md:pb-8">
-        <SeccionResenasIA />
-      </section>
+      {/* Sección combinada: Sentimiento + Volumen (pegadas entre sí, con 1 cm de margen lateral) */}
+<section className="relative left-1/2 right-1/2 -mx-[50vw] w-screen bg-black py-10">
+  <div className="mx-auto w-[calc(100vw-2rem)] max-w-[2000px] px-0"> 
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 items-start justify-center">
+      {/* Sentimiento */}
+      <div className="flex justify-end w-full">
+        <div className="w-full max-w-[980px]">
+          <SentimientoDemo />
+        </div>
+      </div>
 
-      <section className={sectionCx}>
-        <TemasDemo />
-      </section>
+      {/* Volumen */}
+      <div className="flex justify-start w-full">
+        <div className="w-full max-w-[980px]">
+          <VolumenDemo />
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
-      <section className={sectionCx}>
-        <SentimientoDemo />
-      </section>
 
-      <section className={sectionCx}>
-        <VolumenDemo />
-      </section>
 
-      <section className={sectionCx}>
-        <OportunidadesDemo />
-      </section>
+<section className={sectionCx}><OportunidadesDemo /></section>
+      {/* Resto de secciones */}
+      <section className="bg-black px-4 md:px-6 pt-0 pb-6 md:pb-8"><SeccionResenasIA /></section>
+      
+      
+
+      <Footer />
     </>
   );
 }
-
-
-
-
-

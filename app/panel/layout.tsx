@@ -3,13 +3,75 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
-import { supabase } from "@/lib/supabase"; // cliente unificado de Supabase
+import { supabase } from "@/lib/supabase";
 
 type View = "menu" | "help" | "subscription" | "confirm-cancel";
 
 /* =========================
+   Logo (versión para fondo claro)
+========================= */
+function PanelLogo() {
+  return (
+    <Link href="/panel" className="flex items-center gap-3" aria-label="Panel">
+      {/* ICONO degradado */}
+      <div
+        className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-cyan-400 shadow-md"
+        aria-hidden="true"
+      >
+        <span
+          className="font-semibold leading-none text-white"
+          style={{ fontFamily: "Poppins, sans-serif", fontSize: 14 }}
+        >
+          AI
+        </span>
+      </div>
+
+      {/* BLOQUE DE TEXTO */}
+      <span className="leading-tight">
+        <div className="flex items-baseline gap-1">
+          <span
+            className="tracking-tight"
+            style={{
+              color: "#111111",
+              fontFamily: "Poppins, sans-serif",
+              fontWeight: 700,
+              fontSize: 18,
+              lineHeight: 1,
+            }}
+          >
+            AIBE
+          </span>
+          <span
+            style={{
+              color: "#111111",
+              fontFamily: "Poppins, sans-serif",
+              fontWeight: 300,
+              fontSize: 15,
+              lineHeight: 1,
+            }}
+          >
+            Technologies
+          </span>
+        </div>
+        <div
+          className="text-slate-500"
+          style={{
+            fontFamily: "Inter, sans-serif",
+            fontWeight: 300,
+            fontSize: 12,
+            lineHeight: 1.1,
+          }}
+        >
+          Artificial Intelligence for Business Efficiency
+        </div>
+      </span>
+    </Link>
+  );
+}
+
+/* =========================
    Componente AccountMenu (export nombrado)
-   ========================= */
+========================= */
 export function AccountMenu() {
   const router = useRouter();
 
@@ -109,11 +171,8 @@ export function AccountMenu() {
         <h3 className="text-lg font-semibold">{title}</h3>
         <button
           onClick={() => {
-            if (view === "menu") {
-              setOpen(false);
-            } else {
-              setView("menu");
-            }
+            if (view === "menu") setOpen(false);
+            else setView("menu");
           }}
           className="rounded-full p-1 hover:bg-gray-100"
           aria-label="Cerrar"
@@ -191,18 +250,12 @@ export function AccountMenu() {
           </p>
           <p>
             <span className="font-medium">Teléfono / WhatsApp:</span>{" "}
-            <a
-              href="https://wa.me/34699301819"
-              target="_blank"
-              className="text-blue-600 hover:underline"
-              rel="noreferrer"
-            >
+            <a href="https://wa.me/34699301819" target="_blank" className="text-blue-600 hover:underline" rel="noreferrer">
               699 301 819
             </a>
           </p>
           <p className="text-gray-600">
-            El servicio técnico se pondrá en contacto con usted en menos de{" "}
-            <span className="font-semibold">24 horas</span>.
+            El servicio técnico se pondrá en contacto con usted en menos de <span className="font-semibold">24 horas</span>.
           </p>
         </div>
 
@@ -222,8 +275,7 @@ export function AccountMenu() {
         <Header title="Suscripción" />
         <div className="mb-4 rounded-xl bg-gray-50 p-3 text-sm text-gray-700">
           <div className="text-gray-600">
-            Suscripción actual:{" "}
-            <span className="font-medium text-gray-900">{plan ?? "X suscripción"}</span>
+            Suscripción actual: <span className="font-medium text-gray-900">{plan ?? "X suscripción"}</span>
           </div>
         </div>
 
@@ -248,8 +300,6 @@ export function AccountMenu() {
     async function onYes() {
       try {
         setLoadingCancel(true);
-
-        // 1) Obtener el token actual del usuario
         const {
           data: { session },
         } = await supabase.auth.getSession();
@@ -257,32 +307,19 @@ export function AccountMenu() {
           router.push("/login");
           return;
         }
-
-        // 2) Llamar al endpoint de cancelación
         const res = await fetch("/api/stripe/cancel-subscription", {
           method: "POST",
-          headers: {
-            Authorization: `Bearer ${session.access_token}`,
-          },
-          // Para cancelación inmediata:
-          // fetch("/api/stripe/cancel-subscription?immediate=1", { ... })
+          headers: { Authorization: `Bearer ${session.access_token}` },
         });
-
         const json = await res.json();
-
         if (!json?.ok) {
           console.error("Error cancelando:", json);
           alert("No se pudo cancelar la suscripción. Intenta más tarde.");
           return;
         }
-
-        // 3) Opcional: cerrar sesión para bloquear acceso inmediato
         await supabase.auth.signOut();
-
         setOpen(false);
         setView("menu");
-
-        // 4) Redirigir a confirmación
         router.push("/panel/cuenta/suscripcion-cancelada");
       } finally {
         setLoadingCancel(false);
@@ -324,7 +361,7 @@ export function AccountMenu() {
       <button
         ref={buttonRef}
         aria-label="Perfil"
-        className="h-9 w-9 rounded-full border bg-white grid place-items-center text-slate-600 hover:bg-slate-50"
+        className="grid h-9 w-9 place-items-center rounded-full border bg-white text-slate-600 hover:bg-slate-50"
         onClick={() => {
           setOpen((v) => !v);
           setView("menu");
@@ -358,7 +395,7 @@ export function AccountMenu() {
 
 /* =========================
    Layout del Panel (con guard)
-   ========================= */
+========================= */
 export default function PanelLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const [checking, setChecking] = useState(true);
@@ -367,7 +404,6 @@ export default function PanelLayout({ children }: { children: React.ReactNode })
     let mounted = true;
 
     (async () => {
-      // 1) intenta leer la sesión actual
       const {
         data: { session },
       } = await supabase.auth.getSession();
@@ -378,17 +414,12 @@ export default function PanelLayout({ children }: { children: React.ReactNode })
         return;
       }
 
-      // 2) escucha cambios de sesión (post-login/OAuth)
       const { data: sub } = supabase.auth.onAuthStateChange((_evt, newSession) => {
         if (!mounted) return;
-        if (newSession) {
-          setChecking(false);
-        } else {
-          router.replace("/login");
-        }
+        if (newSession) setChecking(false);
+        else router.replace("/login");
       });
 
-      // 3) plan B por si no llega el evento
       const t = setTimeout(() => {
         if (!mounted) return;
         router.replace("/login");
@@ -407,38 +438,71 @@ export default function PanelLayout({ children }: { children: React.ReactNode })
 
   if (checking) {
     return (
-      <div className="min-h-screen grid place-items-center">
+      <div className="grid min-h-screen place-items-center">
         <p className="text-sm text-neutral-600">Cargando…</p>
       </div>
     );
   }
 
-  // ✅ Con sesión: renderiza el panel
   return (
     <div className="min-h-[100dvh] bg-white">
       <header className="sticky top-0 z-30 border-b bg-white/80 backdrop-blur">
-        <div className="w-full px-4 py-3 flex items-center justify-between">
-          {/* Izquierda: logo + marca + tagline */}
-          <Link href="/panel" className="flex items-center gap-3">
-            <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-slate-900 text-white font-bold">
-              A
-            </span>
-            <span className="leading-tight">
-              <div className="font-semibold">AIBE Technologies</div>
-              <div className="text-xs text-slate-500">
-                Artificial Intelligence for Business Efficiency
-              </div>
-            </span>
-          </Link>
+        {/* Barra superior con logo, navegación centrada y cuenta */}
+        <div className="relative mx-auto flex w-full items-center px-4 py-3">
+          {/* Izquierda: logo */}
+          <PanelLogo />
 
-          {/* Derecha: icono persona -> pop-up “Mi Cuenta” */}
-          <div className="flex items-center gap-3">
+          {/* Centro: navegación de secciones */}
+          <nav
+            className="pointer-events-auto absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 items-center gap-6 md:flex"
+            aria-label="Secciones del panel"
+          >
+            <a href="#temas" className="px-2 py-2 text-[15px] font-medium text-slate-700 border-b-2 border-transparent hover:border-slate-300 transition">
+              Temas detectados
+            </a>
+            <a href="#sentimiento" className="px-2 py-2 text-[15px] font-medium text-slate-700 border-b-2 border-transparent hover:border-slate-300 transition">
+              Sentimiento
+            </a>
+            <a href="#oportunidades" className="px-2 py-2 text-[15px] font-medium text-slate-700 border-b-2 border-transparent hover:border-slate-300 transition">
+              Oportunidades
+            </a>
+            <a href="#volumen" className="px-2 py-2 text-[15px] font-medium text-slate-700 border-b-2 border-transparent hover:border-slate-300 transition">
+              Volumen
+            </a>
+            <a href="#respuestas" className="px-2 py-2 text-[15px] font-medium text-slate-700 border-b-2 border-transparent hover:border-slate-300 transition">
+              Respuestas IA
+            </a>
+          </nav>
+
+          {/* Derecha: menú de cuenta */}
+          <div className="ml-auto flex items-center gap-3">
             <AccountMenu />
+          </div>
+        </div>
+
+        {/* Navegación secundaria visible en móvil (scroll horizontal suave) */}
+        <div className="md:hidden">
+          <div className="no-scrollbar flex w-full snap-x snap-mandatory gap-2 overflow-x-auto px-4 pb-2 pt-1">
+            {[
+              { href: "#temas", label: "Temas detectados" },
+              { href: "#sentimiento", label: "Sentimiento" },
+              { href: "#oportunidades", label: "Oportunidades" },
+              { href: "#volumen", label: "Volumen" },
+              { href: "#respuestas", label: "Respuestas IA" },
+            ].map((item) => (
+              <a
+                key={item.href}
+                href={item.href}
+                className="snap-start whitespace-nowrap rounded-full border px-3 py-1.5 text-sm text-slate-700"
+              >
+                {item.label}
+              </a>
+            ))}
           </div>
         </div>
       </header>
 
-      <main className="w-full px-4 sm:px-6 lg:px-8 py-6">{children}</main>
+      <main className="w-full px-4 py-6 sm:px-6 lg:px-8">{children}</main>
     </div>
   );
 }

@@ -72,15 +72,16 @@ export default function PlanDeAccionDemo() {
   ];
 
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100">
-      <div className="px-4 sm:px-6 lg:px-8 py-10">
-        <header className="mb-8">
-          <h1 className="text-2xl md:text-3xl font-bold text-slate-900">
+    <div className="min-h-screen bg-slate-100 text-slate-900 dark:bg-slate-900 dark:text-slate-100">
+      {/* Contenedor principal con menos margen superior */}
+      <div className="px-4 sm:px-6 lg:px-8 pt-6 pb-8 md:pt-8">
+        <header className="mb-6 md:mb-6">
+          <h1 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100">
             Plan de acción
           </h1>
         </header>
 
-        <div className="space-y-10">
+        <div className="space-y-8 md:space-y-10">
           {data.map((block, idx) => (
             <Categoria key={idx} {...block} />
           ))}
@@ -101,7 +102,6 @@ function Categoria({
   oportunidad: any;
   reseñas: any[];
 }) {
-
   return (
     <section className="rounded-2xl bg-white p-5 md:p-6 shadow-sm ring-1 ring-black/5">
       <div className="flex items-center justify-between gap-4 mb-6">

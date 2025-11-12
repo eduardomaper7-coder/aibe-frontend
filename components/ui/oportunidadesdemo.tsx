@@ -47,45 +47,65 @@ export default function PlanDeAccionDemo() {
   }, []);
 
   return (
-    <section className="w-full min-h-screen bg-black py-16">
-      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-        <header className="mb-10">
-          <h1 className="text-white text-3xl md:text-4xl font-semibold tracking-tight">
-            Toma decisiones estratégicas en base a las opiniones de tus clientes
-          </h1>
-          <p className="mt-2 text-slate-300 text-base md:text-lg">
-            Ejecuta nuestro plan de acción realizado con inteligencia artificial
-          </p>
-        </header>
 
-        {/* Recuadro degradado azul difuminado */}
-        <motion.div
-          className="relative overflow-hidden rounded-3xl p-8 md:p-10 bg-gradient-to-br from-[#0B1120] via-[#0F1E40] to-[#0B1835] shadow-[0_0_50px_-12px_rgba(30,58,138,0.5)] ring-1 ring-white/10"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-        >
-          {/* Focos suaves azules */}
-          <div className="pointer-events-none absolute -top-32 -left-20 h-80 w-80 rounded-full bg-blue-500/20 blur-3xl" />
-          <div className="pointer-events-none absolute -bottom-32 -right-24 h-80 w-80 rounded-full bg-indigo-400/15 blur-3xl" />
-          <div className="pointer-events-none absolute top-1/3 right-1/3 h-56 w-56 rounded-full bg-white/10 blur-2xl" />
+   <section className="relative w-full min-h-screen bg-gradient-to-br from-[#03110A] via-[#041A12] to-[#06241A] py-16 overflow-hidden">
+  {/* FOCOS BLANCOS — CAPA DE FONDO */}
+  <div className="pointer-events-none absolute top-1/4 left-1/4 h-96 w-96 rounded-full bg-white/10 blur-[140px]" />
+  <div className="pointer-events-none absolute top-1/2 right-1/3 h-[28rem] w-[28rem] rounded-full bg-white/5 blur-[160px]" />
+  <div className="pointer-events-none absolute bottom-10 left-1/2 h-80 w-80 rounded-full bg-white/10 blur-[120px]" />
+  <div className="pointer-events-none absolute top-10 right-10 h-64 w-64 rounded-full bg-white/15 blur-[100px]" />
 
-          <div className="relative z-10">
-            <AnimatePresence mode="popLayout">
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 30, scale: 0.98 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -30, scale: 0.98 }}
-                transition={{ duration: 0.5, ease: "easeOut" }}
-              >
-                <Categoria {...data[index]} />
-              </motion.div>
-            </AnimatePresence>
-          </div>
-        </motion.div>
+  {/* FOCOS ADICIONALES PARA MAYOR PROFUNDIDAD */}
+  <div className="pointer-events-none absolute top-[10%] left-[10%] h-40 w-40 rounded-full bg-white/5 blur-[90px]" />
+  <div className="pointer-events-none absolute top-[65%] left-[15%] h-60 w-60 rounded-full bg-white/7 blur-[110px]" />
+  <div className="pointer-events-none absolute bottom-[20%] right-[5%] h-72 w-72 rounded-full bg-white/8 blur-[140px]" />
+  <div className="pointer-events-none absolute bottom-[35%] right-[40%] h-56 w-56 rounded-full bg-white/6 blur-[120px]" />
+  <div className="pointer-events-none absolute top-[70%] left-[60%] h-48 w-48 rounded-full bg-white/5 blur-[100px]" />
+  <div className="pointer-events-none absolute top-[20%] right-[45%] h-44 w-44 rounded-full bg-white/8 blur-[90px]" />
+
+  <div className="relative z-10 mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+    <header className="mb-10">
+      <h1 className="text-white text-3xl md:text-4xl font-semibold tracking-tight">
+        Toma decisiones estratégicas en base a las opiniones de tus clientes
+      </h1>
+      <p className="mt-2 text-slate-300 text-base md:text-lg">
+        Ejecuta nuestro plan de acción realizado con inteligencia artificial
+      </p>
+    </header>
+
+    {/* Recuadro degradado */}
+    <motion.div
+      className="relative overflow-hidden rounded-3xl p-8 md:p-10 bg-gradient-to-br from-[#0B1E14] via-[#103323] to-[#0B291E] shadow-[0_0_50px_-12px_rgba(16,185,129,0.3)] ring-1 ring-white/10"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, ease: 'easeOut' }}
+    >
+      {/* Focos suaves dentro del recuadro */}
+      <div className="pointer-events-none absolute -top-32 -left-20 h-80 w-80 rounded-full bg-white/10 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-32 -right-24 h-80 w-80 rounded-full bg-white/5 blur-3xl" />
+      <div className="pointer-events-none absolute top-1/3 right-1/3 h-56 w-56 rounded-full bg-white/10 blur-2xl" />
+      <div className="pointer-events-none absolute bottom-1/4 left-1/4 h-48 w-48 rounded-full bg-white/10 blur-2xl" />
+
+      <div className="relative z-10">
+        <AnimatePresence mode="popLayout">
+          <motion.div
+            key={index}
+            initial={{ opacity: 0, y: 30, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -30, scale: 0.98 }}
+            transition={{ duration: 0.5, ease: 'easeOut' }}
+          >
+            <Categoria {...data[index]} />
+          </motion.div>
+        </AnimatePresence>
       </div>
-    </section>
+    </motion.div>
+  </div>
+</section>
+
+
+
+
   );
 }
 

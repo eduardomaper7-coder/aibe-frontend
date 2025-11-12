@@ -2,7 +2,7 @@
 
 import React, { ReactNode } from "react";
 
-// DEMO: Análisis de reseñas Google — Sección: Respuestas IA personalizadas
+// DEMO: Análisis de reseñas Google — Sección: Respuestas IA personalizadas (fondo azul más oscuro y 3 recuadros corregidos)
 
 type PillProps = { children: ReactNode };
 const Pill = ({ children }: PillProps) => (
@@ -30,88 +30,43 @@ const StatCard = ({ title, value, subtitle, helper }: StatCardProps) => (
   </div>
 );
 
-const Progress = ({ value }: { value: number }) => (
-  <div className="h-2 w-full overflow-hidden rounded-full bg-slate-200">
-    <div
-      className="h-full rounded-full bg-slate-900 transition-all"
-      style={{ width: `${value}%` }}
-    />
-  </div>
-);
-
-type QualityRowProps = { label: string; value: number; hint?: string };
-const QualityRow = ({ label, value, hint }: QualityRowProps) => (
-  <div className="space-y-1">
-    <div className="flex items-center justify-between text-sm">
-      <span className="text-slate-700">{label}</span>
-      <span className="font-medium text-slate-900">{value}%</span>
-    </div>
-    <Progress value={value} />
-    {hint && <p className="text-xs text-slate-500">{hint}</p>}
-  </div>
-);
-
-type AutoReplyCardProps = { title: string; content: string; meta: string };
-const AutoReplyCard = ({ title, content, meta }: AutoReplyCardProps) => (
+type ReplyCardProps = { title: string; content: string };
+const ReplyCard = ({ title, content }: ReplyCardProps) => (
   <div className="flex h-full flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
     <h4 className="text-sm font-semibold text-slate-900">{title}</h4>
     <p className="mt-2 line-clamp-5 text-sm leading-6 text-slate-700">{content}</p>
-    <div className="mt-4 flex items-center justify-between text-xs text-slate-500">
-      <span>{meta}</span>
-      <button className="rounded-lg border border-slate-200 px-2 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50">
-        Ver detalle
-      </button>
-    </div>
-  </div>
-);
-
-type TrendProps = { label: string; value: string };
-const Trend = ({ label, value }: TrendProps) => (
-  <div className="flex items-center gap-2 text-xs">
-    <Pill>{label}</Pill>
-    <span className="font-medium text-slate-900">{value}</span>
   </div>
 );
 
 export default function DemoAnalisisResenasGoogle() {
   // Datos de ejemplo (estáticos)
   const kpis = {
-    responseTime: { value: "1 h 48 min", subtitle: "Promedio últimos 30 días" },
-    respondedPct: { value: "92%", subtitle: "De 214 reseñas en el período" },
-    reviewFrequency: { value: "Cada 6 h", subtitle: "Frecuencia de revisión del equipo" },
+    responseTime: { value: "1 h 48 min" },
+    respondedPct: { value: "92%" },
+    lastReview: { value: "Hace 6 h" },
   };
 
-  const quality = {
-    personalization: 76,
-    tone: 88,
-    lengthAdequacy: 64,
-    clearStructure: 72,
-  };
-
-  const lastAutoReplies: AutoReplyCardProps[] = [
+  const lastSentReplies: ReplyCardProps[] = [
     {
-      title: "Respuesta automática — 30 oct, 12:14",
+      title: "Respuesta — 30 oct, 12:14",
       content:
-        "Hola, Marta. Gracias por compartir tu experiencia en nuestra clínica. Lamentamos la espera que comentas; ya hemos ajustado la agenda para evitarlo. Si te parece, escríbenos a citas@ejemplo.com para reprogramar en el horario que mejor te convenga.",
-      meta: "Menciona nombre · 3 líneas · Tono empático",
+        "¡Qué gusto leer tu comentario! Nos alegra enormemente saber que disfrutaste tanto de nuestros platos como de la atención del equipo. Trabajamos cada día para ofrecer una experiencia agradable y cuidada, por lo que tus palabras son una gran motivación. Gracias por elegirnos y por compartir tu experiencia con otros comensales.",
     },
     {
-      title: "Respuesta automática — 28 oct, 09:02",
+      title: "Respuesta — 28 oct, 09:02",
       content:
-        "Gracias por tu reseña, Manuel. Nos alegra que la atención haya sido rápida y clara. Si necesitas cualquier cosa, estamos disponibles por WhatsApp en el 600 000 000 para ayudarte en tu próxima visita.",
-      meta: "Menciona nombre · 2 líneas · Cierra con invitación",
+        "Lamentamos sinceramente que tu visita no haya cumplido con tus expectativas. Agradecemos que nos compartas estos detalles, ya que nos permiten identificar aspectos que debemos mejorar para brindar un servicio más ágil y una mejor experiencia culinaria. Valoramos mucho tu tiempo y tu comentario.",
     },
     {
-      title: "Respuesta automática — 26 oct, 18:47",
+      title: "Respuesta — 26 oct, 18:47",
       content:
-        "Hola, Laura. Agradecemos que valores el trato del equipo. Tomamos nota de tu sugerencia sobre ampliar el horario de sábados. Te contactaremos cuando lo habilitemos.",
-      meta: "Personalizada · 3 líneas · Profesional",
+        "Muchas gracias por hospedarte con nosotros y por dejar una reseña tan completa. Nos alegra saber que encontraste las instalaciones cómodas y en buenas condiciones. También apreciamos tu observación sobre el desayuno; este tipo de comentarios son muy útiles para seguir mejorando nuestra oferta y atención.",
     },
   ];
 
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100">
-      <div className="px-4 sm:px-6 lg:px-8 py-10">
+    <div className="bg-blue-100 dark:bg-slate-900 text-slate-900 dark:text-slate-100">
+      <div className="px-4 sm:px-6 lg:px-8 pt-6 pb-2">
         {/* Encabezado */}
         <header className="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
           <div>
@@ -119,142 +74,44 @@ export default function DemoAnalisisResenasGoogle() {
               Respuestas IA personalizadas
             </h1>
           </div>
-          <div className="flex items-center gap-2">
-            <Pill>Últimos 30 días</Pill>
-            <Pill>Fuente: Google Business</Pill>
-          </div>
         </header>
 
         {/* Métricas de gestión y tiempo */}
-        <section className="mb-8">
+        <section className="mb-6">
           <div className="mb-3 flex items-center justify-between">
             <h2 className="text-lg font-semibold text-slate-900">
               Métricas de gestión y tiempo
             </h2>
-            <div className="flex items-center gap-3 text-xs">
-              <Trend label="Objetivo de respuesta" value="< 2 h" />
-              <Trend label="SLA cumplido" value="94%" />
-            </div>
           </div>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
             <StatCard
               title="Tiempo de respuesta promedio"
               value={kpis.responseTime.value}
-              subtitle={kpis.responseTime.subtitle}
-              helper={<Pill>Meta: 2 h</Pill>}
             />
             <StatCard
               title="Porcentaje de reseñas respondidas"
               value={kpis.respondedPct.value}
-              subtitle={kpis.respondedPct.subtitle}
-              helper={<Pill>Objetivo: 95%</Pill>}
             />
             <StatCard
-              title="Frecuencia de revisión"
-              value={kpis.reviewFrequency.value}
-              subtitle={kpis.reviewFrequency.subtitle}
-              helper={<Pill>Horario: 8:00–20:00</Pill>}
+              title="Última revisión"
+              value={kpis.lastReview.value}
             />
           </div>
         </section>
 
-        {/* Métricas de calidad de respuesta */}
-        <section className="mb-10">
-          <h2 className="mb-3 text-lg font-semibold text-slate-900">
-            Métricas de calidad de respuesta
-          </h2>
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-            <div className="space-y-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-              <QualityRow
-                label="Personalización"
-                value={quality.personalization}
-                hint="Porcentaje de respuestas que mencionan el nombre del cliente o detalles específicos de su experiencia."
-              />
-              <QualityRow
-                label="Tono y lenguaje"
-                value={quality.tone}
-                hint="Respuestas empáticas, profesionales y positivas."
-              />
-              <QualityRow
-                label="Extensión adecuada"
-                value={quality.lengthAdequacy}
-                hint="Respuestas entre 2–5 líneas."
-              />
-              <QualityRow
-                label="Estructura clara"
-                value={quality.clearStructure}
-                hint="Agradecimiento + reconocimiento del comentario + invitación/solución."
-              />
-            </div>
-
-            <div className="space-y-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-              <h3 className="text-sm font-semibold text-slate-900">Detalle de criterios</h3>
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div className="space-y-2">
-                  <div className="rounded-xl border border-slate-200 p-3">
-                    <p className="text-slate-500">Personalización</p>
-                    <p className="mt-1 text-2xl font-semibold text-slate-900">76%</p>
-                    <p className="mt-1 text-xs text-slate-500">Menciona nombre en 61% · Incluye detalle específico en 43%</p>
-                  </div>
-                  <div className="rounded-xl border border-slate-200 p-3">
-                    <p className="text-slate-500">Extensión</p>
-                    <p className="mt-1 text-2xl font-semibold text-slate-900">64%</p>
-                    <p className="mt-1 text-xs text-slate-500">Mediana: 3 líneas · Límite: 5 líneas</p>
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <div className="rounded-xl border border-slate-200 p-3">
-                    <p className="text-slate-500">Tono y lenguaje</p>
-                    <p className="mt-1 text-2xl font-semibold text-slate-900">88%</p>
-                    <p className="mt-1 text-xs text-slate-500">Empático 90% · Profesional 95% · Positivo 78%</p>
-                  </div>
-                  <div className="rounded-xl border border-slate-200 p-3">
-                    <p className="text-slate-500">Estructura</p>
-                    <p className="mt-1 text-2xl font-semibold text-slate-900">72%</p>
-                    <p className="mt-1 text-xs text-slate-500">Agradece 94% · Reconoce 74% · Cierra 69%</p>
-                  </div>
-                </div>
-              </div>
-              <div className="rounded-xl border border-slate-200 p-4">
-                <h4 className="text-sm font-semibold text-slate-900">Recomendaciones</h4>
-                <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-slate-700">
-                  <li>Subir personalización al 85% incluyendo nombre y detalle del caso.</li>
-                  <li>Ajustar plantillas para mantener 2–5 líneas por respuesta.</li>
-                  <li>Incluir cierre con invitación/solución en el 90% de los casos.</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Últimas respuestas automáticas */}
-        <section className="mb-4">
+        {/* Últimas respuestas enviadas */}
+        <section className="mb-0">
           <div className="mb-3 flex items-center justify-between">
             <h2 className="text-lg font-semibold text-slate-900">
-              Últimas respuestas automáticas
+              Últimas respuestas enviadas
             </h2>
-            <div className="flex items-center gap-2 text-xs">
-              <Pill>Plantilla: Genérica v2</Pill>
-              <Pill>Clasificación: Positivas/Neutras/Negativas</Pill>
-            </div>
           </div>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-            {lastAutoReplies.map((r, i) => (
-              <AutoReplyCard key={i} title={r.title} content={r.content} meta={r.meta} />
+            {lastSentReplies.map((r, i) => (
+              <ReplyCard key={i} title={r.title} content={r.content} />
             ))}
           </div>
         </section>
-
-        {/* Pie con notas */}
-        <footer className="mt-10 flex flex-col items-start justify-between gap-3 border-t border-slate-200 pt-4 text-xs text-slate-500 sm:flex-row sm:items-center">
-          <p>
-            Datos de demostración. Los porcentajes se calculan sobre las respuestas generadas por IA en el período seleccionado.
-          </p>
-          <div className="flex items-center gap-2">
-            <Pill>Exportar CSV</Pill>
-            <Pill>Ver reglas de calidad</Pill>
-          </div>
-        </footer>
       </div>
     </div>
   );

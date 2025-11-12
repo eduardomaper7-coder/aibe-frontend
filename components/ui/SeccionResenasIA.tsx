@@ -1,12 +1,6 @@
-/*
-  Versión con título alineado a la izquierda.
-  - Tipografía Inter sans-serif, tamaño ~38–40px, color blanco.
-  - Título alineado a la izquierda.
-  - Mantiene los focos blancos difuminados y el fondo azul oscuro.
-*/
-
 "use client";
 
+import Link from "next/link";
 import { ThumbsUp, Share2, Star } from "lucide-react";
 import { motion, type Variants } from "framer-motion";
 
@@ -91,6 +85,51 @@ function AIResponseCard({ text }: { text: string }) {
   );
 }
 
+/* CÍRCULO grande con color y glow tipo neón */
+function FeatureCircle({
+  title,
+  subtitle,
+  color,
+  delay = 0,
+}: {
+  title: string;
+  subtitle: string;
+  color: string; // hex
+  delay?: number;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.9, y: 18 }}
+      whileInView={{ opacity: 1, scale: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.4 }}
+      transition={{ delay, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+      className="relative grid place-items-center rounded-full
+                 h-52 w-52 md:h-60 md:w-60 xl:h-72 xl:w-72
+                 text-white text-center px-6 shadow-lg ring-1 ring-white/20"
+      style={{ backgroundColor: color }}
+    >
+      {/* Glow / luz neón detrás */}
+      <div
+        className="pointer-events-none absolute inset-0 -z-10 rounded-full"
+        style={{
+          backgroundColor: color,
+          opacity: 0.45,
+          filter: "blur(36px)",
+          transform: "scale(1.25)",
+        }}
+      />
+      <div className="font-sans">
+        <div className="text-[15px] md:text-xl xl:text-2xl font-semibold leading-tight">
+          {title}
+        </div>
+        <div className="mt-2 text-[12px] md:text-sm xl:text-base leading-snug opacity-95">
+          {subtitle}
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
 export default function SeccionResenasIA() {
   const rows = [
     {
@@ -131,6 +170,25 @@ export default function SeccionResenasIA() {
     },
   ];
 
+  /* Textos + colores de los 3 círculos */
+  const features = [
+    {
+      title: "Ahorra tiempo, gana eficiencia.",
+      subtitle: "Deja que la IA responda por ti mientras tú te enfocas en hacer crecer tu negocio.",
+      color: "#F59E0B", // ámbar
+    },
+    {
+      title: "Respuestas con tono perfecto.",
+      subtitle: "Comunicación coherente, profesional y alineada con tu marca en cada reseña.",
+      color: "#F43F5E", // rosa
+    },
+    {
+      title: "Mejora tu reputación sin esfuerzo.",
+      subtitle: "Responde en segundos y demuestra a tus clientes que te importan.",
+      color: "#10B981", // verde esmeralda
+    },
+  ];
+
   const getVariants = (
     baseDelay: number
   ): { review: Variants; arrow: Variants; ai: Variants } => ({
@@ -146,7 +204,7 @@ export default function SeccionResenasIA() {
         transition: {
           delay: baseDelay + 0.45,
           duration: 0.5,
-          ease: [0.42, 0, 0.58, 1], // cubic-bezier (easeInOut)
+          ease: [0.42, 0, 0.58, 1],
         },
       },
     },
@@ -157,77 +215,128 @@ export default function SeccionResenasIA() {
   });
 
   return (
-    <section className="w-full bg-black py-20">
-      <div className="mx-auto max-w-6xl mb-16">
+    <section className="w-full bg-black py-20 overflow-x-visible relative">
+      <div className="max-w-6xl pl-8 md:pl-10 relative">
         <h2 className="font-sans text-white text-[38px] md:text-[40px] font-semibold tracking-tight text-left">
           Responde a tus reseñas de forma automática con IA
         </h2>
-      </div>
-      <div className="mx-auto max-w-6xl space-y-10">
-        {rows.map((r, idx) => {
-          const v = getVariants(idx * 0.2);
-          return (
-            <div
-              key={idx}
-              className="relative overflow-hidden rounded-3xl p-6 md:p-8 ring-1 ring-white/10 shadow-[0_0_50px_-12px_rgba(30,58,138,0.6)] bg-gradient-to-br from-[#0B1430] via-[#0A1537] to-[#081025]"
-            >
-              {/* Focos difuminados decorativos */}
-              <div className="pointer-events-none absolute -top-28 -left-20 h-72 w-72 rounded-full bg-indigo-500/20 blur-3xl" />
-              <div className="pointer-events-none absolute -bottom-28 -right-24 h-72 w-72 rounded-full bg-blue-400/10 blur-3xl" />
-              <div className="pointer-events-none absolute top-16 left-1/4 h-48 w-48 rounded-full bg-white/10 blur-2xl" />
-              <div className="pointer-events-none absolute bottom-12 right-1/3 h-56 w-56 rounded-full bg-white/5 blur-3xl" />
-              <div className="pointer-events-none absolute top-1/3 right-10 h-40 w-40 rounded-full bg-white/[0.07] blur-2xl" />
 
-              <div className="relative flex flex-col items-center gap-10 md:flex-row md:justify-between">
-                <motion.div
-                  initial="hidden"
-                  whileInView="show"
-                  viewport={{ once: true, amount: 0.4 }}
-                  variants={v.review}
-                >
-                  <ReviewCard review={r} />
-                </motion.div>
+        {/* Lista de bloques + columna de círculos muy a la derecha */}
+        <div className="relative mt-16 space-y-12">
+          {/* Columna (ancla) del hilo: centrado respecto al ancho de los círculos */}
+          <div
+            className="hidden md:block absolute top-0 right-[-360px] lg:right-[-420px] xl:right-[-520px]
+                       w-[208px] md:w-[240px] xl:w-[288px] h-full pointer-events-none"
+          >
+            <motion.div
+              className="absolute left-1/2 -translate-x-1/2 w-px bg-white/35 h-full"
+              initial={{ scaleY: 0, originY: 0 }}
+              whileInView={{ scaleY: 1 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+            />
+          </div>
 
-                <motion.svg
-                  initial="hidden"
-                  whileInView="show"
-                  viewport={{ once: true, amount: 0.4 }}
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 220 24"
-                  className="hidden h-6 w-56 md:block"
-                  fill="none"
-                >
-                  <defs>
-                    <marker id="arrowhead" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
-                      <path d="M0,0 L0,8 L8,4 z" fill="#d1d5db" />
-                    </marker>
-                  </defs>
-                  <motion.line
-                    x1="2"
-                    y1="12"
-                    x2="210"
-                    y2="12"
-                    stroke="#d1d5db"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    markerEnd="url(#arrowhead)"
-                    variants={v.arrow}
-                  />
-                </motion.svg>
+          {rows.map((r, idx) => {
+            const v = getVariants(idx * 0.2);
+            const f = features[idx];
+            const circleDelay = 0.15 + idx * 0.15;
 
-                <motion.div
-                  initial="hidden"
-                  whileInView="show"
-                  viewport={{ once: true, amount: 0.4 }}
-                  variants={v.ai}
+            return (
+              <div key={idx} className="relative">
+                {/* Bloque principal */}
+                <div
+                  className="relative overflow-hidden rounded-3xl p-6 md:p-8 ring-1 ring-white/10
+                             shadow-[0_0_50px_-12px_rgba(30,58,138,0.6)]
+                             bg-gradient-to-br from-[#0B1430] via-[#0A1537] to-[#081025]"
                 >
-                  <AIResponseCard text={r.ai} />
-                </motion.div>
+                  {/* Focos decorativos */}
+                  <div className="pointer-events-none absolute -top-28 -left-20 h-72 w-72 rounded-full bg-indigo-500/20 blur-3xl" />
+                  <div className="pointer-events-none absolute -bottom-28 -right-24 h-72 w-72 rounded-full bg-blue-400/10 blur-3xl" />
+                  <div className="pointer-events-none absolute top-16 left-1/4 h-48 w-48 rounded-full bg-white/10 blur-2xl" />
+                  <div className="pointer-events-none absolute bottom-12 right-1/3 h-56 w-56 rounded-full bg-white/5 blur-3xl" />
+                  <div className="pointer-events-none absolute top-1/3 right-10 h-40 w-40 rounded-full bg-white/[0.07] blur-2xl" />
+
+                  <div className="relative flex flex-col items-center gap-10 md:flex-row md:items-center md:justify-start">
+                    <motion.div
+                      initial="hidden"
+                      whileInView="show"
+                      viewport={{ once: true, amount: 0.4 }}
+                      variants={v.review}
+                    >
+                      <ReviewCard review={r} />
+                    </motion.div>
+
+                    {/* Flecha */}
+                    <motion.svg
+                      initial="hidden"
+                      whileInView="show"
+                      viewport={{ once: true, amount: 0.4 }}
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 220 24"
+                      className="hidden h-6 w-56 md:block self-center"
+                      fill="none"
+                    >
+                      <defs>
+                        <marker id="arrowhead" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+                          <path d="M0,0 L0,8 L8,4 z" fill="#d1d5db" />
+                        </marker>
+                      </defs>
+                      <motion.line
+                        x1="2"
+                        y1="12"
+                        x2="210"
+                        y2="12"
+                        stroke="#d1d5db"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        markerEnd="url(#arrowhead)"
+                        variants={v.arrow}
+                      />
+                    </motion.svg>
+
+                    <motion.div
+                      initial="hidden"
+                      whileInView="show"
+                      viewport={{ once: true, amount: 0.4 }}
+                      variants={v.ai}
+                    >
+                      <AIResponseCard text={r.ai} />
+                    </motion.div>
+                  </div>
+                </div>
+
+                {/* Círculo alineado con el hilo y MUY a la derecha */}
+                <div
+                  className="hidden md:block absolute top-1/2 -translate-y-1/2
+                             right-[-360px] lg:right-[-420px] xl:right-[-520px]
+                             w-[208px] md:w-[240px] xl:w-[288px]"
+                >
+                  <div className="mx-auto w-[208px] md:w-[240px] xl:w-[288px]">
+                    <FeatureCircle
+                      title={f.title}
+                      subtitle={f.subtitle}
+                      color={f.color}
+                      delay={circleDelay}
+                    />
+                  </div>
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
+      {/* 🚀 BOTÓN FINAL */}
+        <div className="mt-20 flex justify-center">
+          <Link
+  href="/registro"
+  className="bg-white text-black font-semibold text-xl px-10 py-5 rounded-full transition-all duration-200 hover:bg-gray-100 hover:scale-105 shadow-md"
+>
+  Comenzar gratis hoy
+</Link>
+
+        </div>
     </section>
   );
 }
+

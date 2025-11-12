@@ -112,21 +112,22 @@ export default function SeccionGraficasAvanzadas() {
     </defs>
   );
 
-  // Agrandar solo el sector activo
   const activeShape = (props: any) => {
     const { outerRadius = 150 } = props;
     return <Sector {...props} outerRadius={outerRadius + 10} />;
   };
 
   return (
-    <section ref={sectionRef} id="graficas-avanzadas" className="relative w-full bg-black text-slate-100">
-      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-16">
+    <section ref={sectionRef} id="graficas-avanzadas" className="relative w-full bg-black text-slate-100 mt-0">
+      {/* sin margen/padding superior */}
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 pt-0 pb-16">
         <div className="mb-8">
+          {/* Opción 1 aplicada */}
           <h2 className="text-left font-sans text-white text-[32px] sm:text-[36px] md:text-[40px] font-semibold tracking-tight">
-            Conoce tu negocio mejor que nadie
+            Análisis de Sentimiento de las Reseñas
           </h2>
           <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-300">
-            Ten acceso a múltiples gráficas avanzadas. Visualiza tendencias clave, desglosa sentimientos y entiende la evolución de tu reputación en tiempo real.
+            Descubre cómo se distribuyen las opiniones positivas, neutras y negativas sobre tu negocio.
           </p>
         </div>
 
@@ -170,7 +171,6 @@ export default function SeccionGraficasAvanzadas() {
                         {defs}
                         <Tooltip formatter={(value: number, name: string) => [`${value}%`, name]} />
                         <Pie
-                          // inyecta activeIndex solo cuando hay valor → evita el error de tipos
                           {...(activeIndex != null ? { activeIndex } : {})}
                           data={dataSentimiento}
                           dataKey="value"
