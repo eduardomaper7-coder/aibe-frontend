@@ -13,15 +13,15 @@ import Footer from './Footer';
 import TresRecuadros from '@/components/ui/3recuadros';
 import VideoTemas from '@/components/ui/videotemas';
 
-
 export default function Home() {
   useEffect(() => {
-    const TITLES = [
+    const TITLES: string[] = [
       'Convierte cada reseña en una oportunidad de crecimiento',
       'Descubre lo que tus clientes realmente piensan.',
       'La IA que transforma tus reseñas en decisiones inteligentes.',
       'Porque cada cliente merece una respuesta única.',
     ];
+
     const titleEl = document.getElementById('dynamicTitle');
     const slotEl = document.getElementById('titleSlot');
     if (!titleEl || !slotEl) return;
@@ -38,8 +38,9 @@ export default function Home() {
       letterSpacing: cs.letterSpacing,
       whiteSpace: 'normal',
       display: 'block',
-    });
+    } as CSSStyleDeclaration);
     document.body.appendChild(probe);
+
     let max = 0;
     TITLES.forEach((t) => {
       probe.textContent = t;
@@ -49,14 +50,15 @@ export default function Home() {
     slotEl.style.setProperty('--title-height', Math.ceil(max + 8) + 'px');
 
     let i = 0;
-    function show(index) {
+
+    function show(index: number): void {
       const nextText = TITLES[index % TITLES.length];
       if (!titleEl) return;
       titleEl.classList.remove('fade-enter', 'fade-enter-active');
       titleEl.classList.add('fade-exit');
       requestAnimationFrame(() => {
         titleEl.classList.add('fade-exit-active');
-        setTimeout(() => {
+        window.setTimeout(() => {
           titleEl.textContent = nextText;
           titleEl.classList.remove('fade-exit', 'fade-exit-active');
           titleEl.classList.add('fade-enter');
@@ -66,10 +68,12 @@ export default function Home() {
     }
 
     titleEl.textContent = TITLES[0];
-    const id = setInterval(() => {
+
+    const id: ReturnType<typeof setInterval> = window.setInterval(() => {
       i = (i + 1) % TITLES.length;
       show(i);
     }, 6500);
+
     return () => clearInterval(id);
   }, []);
 
@@ -148,34 +152,33 @@ export default function Home() {
 
       <VideoTemas />
 
-      {/* Sección combinada: Sentimiento + Volumen (pegadas entre sí, con 1 cm de margen lateral) */}
-<section className="relative left-1/2 right-1/2 -mx-[50vw] w-screen bg-black py-10">
-  <div className="mx-auto w-[calc(100vw-2rem)] max-w-[2000px] px-0"> 
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 items-start justify-center">
-      {/* Sentimiento */}
-      <div className="flex justify-end w-full">
-        <div className="w-full max-w-[980px]">
-          <SentimientoDemo />
+      {/* Sección combinada: Sentimiento + Volumen */}
+      <section className="relative left-1/2 right-1/2 -mx-[50vw] w-screen bg-black py-10">
+        <div className="mx-auto w-[calc(100vw-2rem)] max-w-[2000px] px-0">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 items-start justify-center">
+            {/* Sentimiento */}
+            <div className="flex justify-end w-full">
+              <div className="w-full max-w-[980px]">
+                <SentimientoDemo />
+              </div>
+            </div>
+
+            {/* Volumen */}
+            <div className="flex justify-start w-full">
+              <div className="w-full max-w-[980px]">
+                <VolumenDemo />
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
+      </section>
 
-      {/* Volumen */}
-      <div className="flex justify-start w-full">
-        <div className="w-full max-w-[980px]">
-          <VolumenDemo />
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+      <section className={sectionCx}><OportunidadesDemo /></section>
 
-
-
-<section className={sectionCx}><OportunidadesDemo /></section>
       {/* Resto de secciones */}
-      <section className="bg-black px-4 md:px-6 pt-0 pb-6 md:pb-8"><SeccionResenasIA /></section>
-      
-      
+      <section className="bg-black px-4 md:px-6 pt-0 pb-6 md:pb-8">
+        <SeccionResenasIA />
+      </section>
 
       <Footer />
     </>
