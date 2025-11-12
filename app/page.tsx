@@ -69,12 +69,12 @@ export default function Home() {
 
     titleEl.textContent = TITLES[0];
 
-    const id: ReturnType<typeof setInterval> = window.setInterval(() => {
-      i = (i + 1) % TITLES.length;
-      show(i);
-    }, 6500);
+    const id: ReturnType<typeof window.setInterval> = window.setInterval(() => {
+  i = (i + 1) % TITLES.length;
+  show(i);
+}, 6500);
 
-    return () => clearInterval(id);
+return () => window.clearInterval(id);
   }, []);
 
   const sectionCx = 'bg-black px-4 md:px-6 py-6 md:py-8';

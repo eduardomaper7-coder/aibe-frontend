@@ -1,3 +1,6 @@
+"use client";
+
+
 // components/ui/ShapeFusion.tsx
 import { motion } from "framer-motion";
 
