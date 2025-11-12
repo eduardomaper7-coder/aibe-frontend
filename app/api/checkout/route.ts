@@ -1,34 +1,80 @@
+// app/api/checkout/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import Stripe from 'stripe';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!); // ✅ sin apiVersion
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
   try {
-    const { email, origin } = await req.json();
-    if (!email) return NextResponse.json({ error: "Email requerido" }, { status: 400 });
+    // Import dinámico para evitar evaluar el SDK si la env falta en build
+    const { default: Stripe } = await import("stripe");
+
+    const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
+    const PRICE_ID = process.env.STRIPE_PRICE_MONTHLY_1EUR_ID;
+
+    if (!STRIPE_SECRET_KEY) {
+      console.error("Missing STRIPE_SECRET_KEY");
+      return NextResponse.json({ error: "Server misconfigured" }, { status: 500 });
+    }
+    if (!PRICE_ID) {
+      console.error("Missing STRIPE_PRICE_MONTHLY_1EUR_ID");
+      return NextResponse.json({ error: "Server misconfigured" }, { status: 500 });
+    }
+
+    const stripe = new Stripe(STRIPE_SECRET_KEY, {
+      apiVersion: "2024-06-20",
+    });
+
+    const body = await req.json().catch(() => ({}));
+    const email: string | undefined = body?.email;
+    const originFromBody: string | undefined = body?.origin;
+
+    if (!email) {
+      return NextResponse.json({ error: "Email requerido" }, { status: 400 });
+    }
+
+    // Origin de respaldo si no llega en el body
+    const originHeader = req.headers.get("origin") ?? undefined;
+    const fallbackPublicUrl = process.env.NEXT_PUBLIC_SITE_URL; // opcional, configúralo en Vercel
+    const origin =
+      originFromBody ||
+      originHeader ||
+      fallbackPublicUrl ||
+      ""; // Stripe exige URLs absolutas
+
+    if (!origin) {
+      console.error("No se pudo determinar el origin para las URLs de retorno");
+      return NextResponse.json(
+        { error: "No se pudo determinar el dominio de retorno" },
+        { status: 500 }
+      );
+    }
 
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
       customer_email: email,
       line_items: [
         {
-          price: process.env.STRIPE_PRICE_MONTHLY_1EUR_ID!, // 1 €/mes
+          price: PRICE_ID, // 1 €/mes
           quantity: 1,
         },
       ],
-      // 3 días gratis de prueba
       subscription_data: {
-        trial_period_days: 3,
+        trial_period_days: 3, // 3 días gratis
       },
       success_url: `${origin}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/pricing?canceled=1`,
       automatic_tax: { enabled: false },
     });
 
-    return NextResponse.json({ url: session.url });
-  } catch (err: any) {
-    return NextResponse.json({ error: err?.message ?? "Error creando Checkout" }, { status: 500 });
+    return NextResponse.json({ url: session.url }, { status: 200 });
+  } catch (err: unknown) {
+    const message =
+      typeof err === "object" && err && "message" in err
+        ? String((err as any).message)
+        : "Error creando Checkout";
+    console.error("Stripe checkout error:", err);
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
 
