@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 
 import SeccionResenasIA from '@/components/ui/SeccionResenasIA';
-import TemasDemo from '@/components/ui/temasdemo';
+// import TemasDemo from '@/components/ui/temasdemo'; // <- no se usa, lo dejamos fuera
 import SentimientoDemo from '@/components/ui/sentimientodemo';
 import VolumenDemo from '@/components/ui/volumendemo';
 import OportunidadesDemo from '@/components/ui/oportunidadesdemo';
@@ -28,17 +28,20 @@ export default function Home() {
 
     const probe = document.createElement('div');
     const cs = window.getComputedStyle(titleEl);
+
+    // Evita choques de tipos con CSSStyleDeclaration en TS
     Object.assign(probe.style, {
       position: 'absolute',
       left: '-9999px',
       top: '-9999px',
       width: getComputedStyle(slotEl).width,
-      font: cs.font,
-      lineHeight: cs.lineHeight,
-      letterSpacing: cs.letterSpacing,
+      font: (cs as any).font,
+      lineHeight: (cs as any).lineHeight,
+      letterSpacing: (cs as any).letterSpacing,
       whiteSpace: 'normal',
       display: 'block',
-    } as CSSStyleDeclaration);
+    } as Partial<CSSStyleDeclaration>);
+
     document.body.appendChild(probe);
 
     let max = 0;
@@ -69,12 +72,13 @@ export default function Home() {
 
     titleEl.textContent = TITLES[0];
 
-    const id: ReturnType<typeof window.setInterval> = window.setInterval(() => {
-  i = (i + 1) % TITLES.length;
-  show(i);
-}, 6500);
+    // Deja que infiera el tipo (number en el navegador) para evitar choque con Node.Timeout
+    const id = window.setInterval(() => {
+      i = (i + 1) % TITLES.length;
+      show(i);
+    }, 6500);
 
-return () => window.clearInterval(id);
+    return () => window.clearInterval(id);
   }, []);
 
   const sectionCx = 'bg-black px-4 md:px-6 py-6 md:py-8';
@@ -106,16 +110,34 @@ return () => window.clearInterval(id);
         </div>
 
         <style jsx>{`
-          :root { --topbar-h: 64px; }
-          .hero { position: relative; overflow: hidden; }
-          .hero-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-          .shell { position: relative; z-index: 1; }
-          .topbar-spacer { height: var(--topbar-h); }
+          :root {
+            --topbar-h: 64px;
+          }
+          .hero {
+            position: relative;
+            overflow: hidden;
+          }
+          .hero-video {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+          }
+          .shell {
+            position: relative;
+            z-index: 1;
+          }
+          .topbar-spacer {
+            height: var(--topbar-h);
+          }
         `}</style>
       </section>
 
       {/* Secciones */}
-      <section className={sectionCx}><Frases /></section>
+      <section className={sectionCx}>
+        <Frases />
+      </section>
       <VideoInicio />
       <TresRecuadros />
 
@@ -173,7 +195,9 @@ return () => window.clearInterval(id);
         </div>
       </section>
 
-      <section className={sectionCx}><OportunidadesDemo /></section>
+      <section className={sectionCx}>
+        <OportunidadesDemo />
+      </section>
 
       {/* Resto de secciones */}
       <section className="bg-black px-4 md:px-6 pt-0 pb-6 md:pb-8">
