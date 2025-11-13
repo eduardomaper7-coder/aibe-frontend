@@ -12,11 +12,13 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Faltan campos" }, { status: 400 });
     }
 
-    const user = process.env.EMAIL_USER; // p.ej. info@aibetech.es
-    const pass = process.env.EMAIL_PASS; // contraseña del buzón (en .env.local)
+    // 🔹 Ahora usamos las credenciales de Gmail (Workspace)
+    const user = process.env.GMAIL_USER;      // ayuda@aibetech.es
+    const pass = process.env.GMAIL_PASS;      // contraseña de aplicación
+    const to   = process.env.CONTACT_TO || user; // destino interno
 
-    console.log("[ENV CHECK] EMAIL_USER set?", !!user);
-    console.log("[ENV CHECK] EMAIL_PASS set?", !!pass);
+    console.log("[ENV CHECK] GMAIL_USER set?", !!user);
+    console.log("[ENV CHECK] GMAIL_PASS set?", !!pass);
 
     if (!user || !pass) {
       return NextResponse.json(
@@ -25,10 +27,11 @@ export async function POST(req: Request) {
       );
     }
 
+    // 🔹 Transporter usando Gmail, NO Hostinger
     const transporter = nodemailer.createTransport({
-      host: "smtp.hostinger.com",
+      host: "smtp.gmail.com",
       port: 465,
-      secure: true, // 465 = SSL
+      secure: true, // SSL
       auth: { user, pass },
     });
 
@@ -48,8 +51,8 @@ export async function POST(req: Request) {
 
     try {
       const info = await transporter.sendMail({
-        from: `"Formulario AIBE" <${user}>`, // debe ser el MISMO buzón autenticado en Hostinger
-        to: user,                            // te lo envías a ti
+        from: `"Formulario AIBE" <${user}>`, // mismo buzón autenticado
+        to: to,                              // te lo envías a ti
         replyTo: email,                      // para poder responder al usuario
         subject: `Nuevo mensaje de ${nombre}`,
         text: `Nombre: ${nombre}\nCorreo: ${email}\n\nMensaje:\n${mensaje}`,
