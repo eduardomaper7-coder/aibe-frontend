@@ -160,11 +160,11 @@ export default function Home() {
 
             <div className="md:col-span-5">
               <p className="text-xs sm:text-sm md:text-base lg:text-lg text-gray-300 leading-relaxed">
-                {`+1000 respuestas enviadas.`} <br />
-                {`+250 negocios en España suscritos.`} <br />
-                {`+125.000 reseñas analizadas.`} <br />
+                {``} <br />
+                {``} <br />
+                {``} <br />
                 <span className="block mt-4 text-gray-100">
-                  {`Liderando la gestión inteligente de reseñas en España.`}
+                  {``}
                 </span>
               </p>
             </div>
