@@ -1,107 +1,119 @@
-export default function PlanDeAccionDemo() {
-  const data = [
-    {
-      categoria: "Atención al cliente",
-      dato: "El 10% de las reseñas negativas señalan un servicio lento.",
-      oportunidad:
-        "Implementar un sistema de turnos y respuestas predefinidas para picos de demanda; fijar SLA de 3 min en hora punta y capacitar al equipo.",
-      reseñas: [
-        {
-          autor: "Laura G.",
-          texto:
-            "Me atendieron, pero tardaron mucho en responder el chat. Esperé casi 10 minutos.",
-        },
-        {
-          autor: "Diego M.",
-          texto:
-            "Buen trato, aunque la cola telefónica fue eterna. Terminé colgando y volviendo a llamar.",
-        },
-        {
-          autor: "María P.",
-          texto:
-            "El soporte resolvió mi problema, pero el tiempo de espera fue demasiado largo.",
-        },
-      ],
-    },
-    {
-      categoria: "Logística / Entrega",
-      dato: "El 25% de las reseñas negativas mencionan retrasos en la entrega.",
-      oportunidad:
-        "Ajustar promesas de entrega según zonas, activar notificaciones proactivas y crear stock de seguridad para SKUs top.",
-      reseñas: [
-        {
-          autor: "Sofía R.",
-          texto:
-            "El pedido llegó dos días después de lo prometido. Nadie me avisó del retraso.",
-        },
-        {
-          autor: "Iván T.",
-          texto:
-            "Todo bien con el producto, pero la mensajería demoró más de lo indicado.",
-        },
-        {
-          autor: "Elena C.",
-          texto:
-            "Compré por la entrega rápida y al final tardó casi una semana.",
-        },
-      ],
-    },
-    {
-      categoria: "Producto / Calidad",
-      dato: "El 8% de las reseñas negativas indican defectos de fábrica en la primera semana.",
-      oportunidad:
-        "Robustecer control de calidad final, test de estrés de 24h y guía de uso inicial en el empaque para evitar fallos por configuración.",
-      reseñas: [
-        {
-          autor: "Andrés V.",
-          texto:
-            "A los pocos días dejó de funcionar el botón principal. Tuve que tramitar garantía.",
-        },
-        {
-          autor: "Nuria S.",
-          texto:
-            "El producto venía con una pieza floja. Se nota falta de control de calidad.",
-        },
-        {
-          autor: "Carla D.",
-          texto:
-            "Funciona bien, pero el primero me llegó defectuoso y tuve que cambiarlo.",
-        },
-      ],
-    },
-  ];
+"use client";
+
+import React, { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase";
+
+type ReviewSnippet = {
+  autor: string;
+  texto: string;
+};
+
+type CategoriaPlan = {
+  categoria: string;
+  dato: string;
+  oportunidad: string;
+  reseñas: ReviewSnippet[];
+};
+
+type ActionPlanResponse = {
+  categorias: CategoriaPlan[];
+};
+
+type PlanDeAccionProps = {
+  fromDate: string | null;
+  toDate: string | null;
+};
+
+export default function PlanDeAccionSection({
+  fromDate,
+  toDate,
+}: PlanDeAccionProps) {
+  const API_BASE = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/+$/, "");
+
+  const [data, setData] = useState<CategoriaPlan[] | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  // -------- Fetch backend --------
+  useEffect(() => {
+    (async () => {
+      if (!API_BASE) return;
+
+      const { data: sessionData } = await supabase.auth.getSession();
+      const email = sessionData.session?.user?.email?.toLowerCase();
+      if (!email) return;
+
+      const params = new URLSearchParams({ email });
+      if (fromDate) params.append("from", fromDate);
+      if (toDate) params.append("to", toDate);
+
+      setLoading(true);
+      try {
+        const res = await fetch(
+          `${API_BASE}/reviews/action-plan?${params.toString()}`,
+          { cache: "no-store" }
+        );
+        if (!res.ok) throw new Error("Error al obtener plan de acción");
+        const json: ActionPlanResponse = await res.json();
+        setData(json.categorias ?? []);
+      } catch (e) {
+        console.error("Error plan de acción", e);
+        setData([]);
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, [API_BASE, fromDate, toDate]);
+
+  const categorias = data ?? [];
 
   return (
-    <div className="min-h-screen bg-slate-100 text-slate-900 dark:bg-slate-900 dark:text-slate-100">
-      {/* Contenedor principal con menos margen superior */}
+    <div className="min-h-[320px] bg-slate-100 text-slate-900">
       <div className="px-4 sm:px-6 lg:px-8 pt-6 pb-8 md:pt-8">
-        <header className="mb-6 md:mb-6">
-          <h1 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100">
-            Plan de acción
-          </h1>
+        <header className="mb-6 md:mb-6 flex items-center justify-between gap-3">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold text-slate-900">
+              Plan de acción
+            </h1>
+            {loading && (
+              <p className="text-xs text-slate-500 mt-1">
+                Analizando oportunidades a partir de tus reseñas…
+              </p>
+            )}
+          </div>
+          {!loading && categorias.length > 0 && (
+            <p className="text-xs text-slate-500">
+              Generado con IA a partir del periodo seleccionado
+            </p>
+          )}
         </header>
 
-        <div className="space-y-8 md:space-y-10">
-          {data.map((block, idx) => (
-            <Categoria key={idx} {...block} />
-          ))}
-        </div>
+        {categorias.length === 0 && !loading ? (
+          <div className="rounded-2xl bg-white p-6 shadow-sm text-sm text-slate-600">
+            Todavía no hay suficientes reseñas para generar un plan de acción en
+            este periodo. Prueba ampliando el rango de fechas.
+          </div>
+        ) : (
+          <div className="space-y-8 md:space-y-10">
+            {categorias.map((block, idx) => (
+              <Categoria key={idx} {...block} />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
 }
+
+/* =======================
+   Componentes de UI
+   ======================= */
 
 function Categoria({
   categoria,
   dato,
   oportunidad,
   reseñas,
-}: {
-  categoria: string;
-  dato: any;
-  oportunidad: any;
-  reseñas: any[];
-}) {
+}: CategoriaPlan) {
   return (
     <section className="rounded-2xl bg-white p-5 md:p-6 shadow-sm ring-1 ring-black/5">
       <div className="flex items-center justify-between gap-4 mb-6">
@@ -109,7 +121,9 @@ function Categoria({
           <Dot className="h-2 w-2 fill-current" />
           {categoria}
         </span>
-        <span className="text-xs text-slate-500">Últimos 90 días • Demo</span>
+        <span className="text-xs text-slate-500">
+          Basado en reseñas del periodo seleccionado
+        </span>
       </div>
 
       {/* Fila principal: Datos -> Flecha/Puente -> Oportunidad */}
@@ -133,13 +147,37 @@ function Categoria({
             />
             {/* Flecha */}
             <defs>
-              <marker id="arrow" markerWidth="10" markerHeight="10" refX="6" refY="3" orient="auto" markerUnits="strokeWidth">
-                <path d="M0,0 L0,6 L6,3 z" className="fill-slate-400" />
+              <marker
+                id="arrow"
+                markerWidth="10"
+                markerHeight="10"
+                refX="6"
+                refY="3"
+                orient="auto"
+                markerUnits="strokeWidth"
+              >
+                <path
+                  d="M0,0 L0,6 L6,3 z"
+                  className="fill-slate-400"
+                />
               </marker>
             </defs>
-            <line x1="30" y1="80" x2="270" y2="80" strokeWidth="2" className="stroke-slate-400" markerEnd="url(#arrow)" />
+            <line
+              x1="30"
+              y1="80"
+              x2="270"
+              y2="80"
+              strokeWidth="2"
+              className="stroke-slate-400"
+              markerEnd="url(#arrow)"
+            />
             {/* Etiquetas */}
-            <text x="150" y="18" textAnchor="middle" className="fill-slate-500 text-[12px]">
+            <text
+              x="150"
+              y="18"
+              textAnchor="middle"
+              className="fill-slate-500 text-[12px]"
+            >
               De datos a oportunidad
             </text>
           </svg>
@@ -147,20 +185,28 @@ function Categoria({
 
         {/* Oportunidad */}
         <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5 md:p-6 shadow-inner">
-          <h3 className="text-sm font-semibold text-emerald-700 mb-2">Oportunidad</h3>
-          <p className="text-slate-900 text-base leading-relaxed">{oportunidad}</p>
+          <h3 className="text-sm font-semibold text-emerald-700 mb-2">
+            Oportunidad
+          </h3>
+          <p className="text-slate-900 text-base leading-relaxed">
+            {oportunidad}
+          </p>
         </div>
       </div>
 
       {/* Reseñas relacionadas */}
-      <div className="mt-6">
-        <h4 className="text-sm font-semibold text-slate-700 mb-3">Reseñas relacionadas</h4>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {reseñas.map((r, i) => (
-            <ReviewCard key={i} autor={r.autor} texto={r.texto} />)
-          )}
+      {reseñas && reseñas.length > 0 && (
+        <div className="mt-6">
+          <h4 className="text-sm font-semibold text-slate-700 mb-3">
+            Reseñas relacionadas
+          </h4>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {reseñas.map((r, i) => (
+              <ReviewCard key={i} autor={r.autor} texto={r.texto} />
+            ))}
+          </div>
         </div>
-      </div>
+      )}
     </section>
   );
 }
@@ -173,7 +219,7 @@ function ReviewCard({ autor, texto }: { autor: string; texto: string }) {
           <Avatar />
           <div>
             <p className="text-sm font-medium text-slate-900">{autor}</p>
-            <p className="text-xs text-slate-500">Reseña verificada</p>
+            <p className="text-xs text-slate-500">Reseña seleccionada</p>
           </div>
         </div>
         <Stars />
@@ -184,6 +230,7 @@ function ReviewCard({ autor, texto }: { autor: string; texto: string }) {
 }
 
 function Stars() {
+  // De momento fijo 2/5 como en tu demo original
   return (
     <div className="flex items-center gap-0.5" aria-label="2 estrellas">
       {[...Array(2)].map((_, i) => (
@@ -192,7 +239,11 @@ function Stars() {
         </svg>
       ))}
       {[...Array(3)].map((_, i) => (
-        <svg key={`o${i}`} viewBox="0 0 20 20" className="h-4 w-4 fill-slate-200">
+        <svg
+          key={`o${i}`}
+          viewBox="0 0 20 20"
+          className="h-4 w-4 fill-slate-200"
+        >
           <path d="M10 15l-5.878 3.09 1.122-6.545L.488 6.91l6.562-.954L10 0l2.95 5.956 6.562.954-4.756 4.635 1.122 6.545z" />
         </svg>
       ))}

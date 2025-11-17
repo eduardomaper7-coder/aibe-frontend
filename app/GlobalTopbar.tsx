@@ -91,10 +91,13 @@ export default function GlobalTopbar() {
           </nav>
         </div>
 
-        {/* DERECHA */}
+                 {/* DERECHA */}
         <div className="actions" style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-          <Link href="/login" className="link">Iniciar sesión</Link>
-          <Link href="/registro" className="btn">Comenzar gratis</Link>
+          {/* Eliminamos el botón de iniciar sesión */}
+          {/* <Link href="/login" className="link">Iniciar sesión</Link> */}
+
+          {/* Cambiamos el texto del botón */}
+          <Link href="/acceso-anticipado" className="btn">Reservar plaza</Link>
         </div>
       </header>
 

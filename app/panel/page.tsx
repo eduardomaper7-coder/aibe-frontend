@@ -23,8 +23,14 @@ function useAllowPanel() {
   useEffect(() => {
     let cancel = false
     ;(async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      if (!session) { if (!cancel) setAllowed(false); router.replace('/login'); return }
+      const {
+        data: { session },
+      } = await supabase.auth.getSession()
+      if (!session) {
+        if (!cancel) setAllowed(false)
+        router.replace('/login')
+        return
+      }
       try {
         const res = await fetch('/api/subscription/check', {
           method: 'POST',
@@ -34,12 +40,20 @@ function useAllowPanel() {
         const json = await res.json()
         if (cancel) return
         if (json?.allowed) setAllowed(true)
-        else { setAllowed(false); router.replace('/pago?msg=trial') }
+        else {
+          setAllowed(false)
+          router.replace('/pago?msg=trial')
+        }
       } catch {
-        if (!cancel) { setAllowed(false); router.replace('/pago?msg=trial') }
+        if (!cancel) {
+          setAllowed(false)
+          router.replace('/pago?msg=trial')
+        }
       }
     })()
-    return () => { cancel = true }
+    return () => {
+      cancel = true
+    }
   }, [router])
 
   return allowed
@@ -69,7 +83,10 @@ function PanelUI() {
   const checkStatus = async () => {
     const { data } = await supabase.auth.getSession()
     const email = data.session?.user?.email?.toLowerCase()
-    if (!email || !API_BASE) { setIsConnected(false); return }
+    if (!email || !API_BASE) {
+      setIsConnected(false)
+      return
+    }
     const url = `${API_BASE}/auth/google/status?email=${encodeURIComponent(email)}`
     try {
       const res = await fetch(url, { cache: 'no-store' })
@@ -90,24 +107,41 @@ function PanelUI() {
   const openGooglePopup = async () => {
     const { data } = await supabase.auth.getSession()
     const email = data.session?.user?.email?.toLowerCase()
-    if (!email) { alert('No hay sesión de usuario.'); return }
-    if (!API_BASE) { alert('Falta NEXT_PUBLIC_API_URL en .env.local'); return }
+    if (!email) {
+      alert('No hay sesión de usuario.')
+      return
+    }
+    if (!API_BASE) {
+      alert('Falta NEXT_PUBLIC_API_URL en .env.local')
+      return
+    }
 
     const url = `${API_BASE}/auth/google/login?email=${encodeURIComponent(email)}`
     const w = window.open(
       url,
       'google_oauth',
-      'width=480,height=640,menubar=no,toolbar=no,resizable=yes,scrollbars=yes'
+      'width=480,height=640,menubar=no,toolbar=no,resizable=yes,scrollbars=yes',
     )
     popupRef.current = w
-    if (!w) { alert('Permite las ventanas emergentes para continuar.'); return }
+    if (!w) {
+      alert('Permite las ventanas emergentes para continuar.')
+      return
+    }
     setIsConnecting(true)
 
-    const backendOrigin = (() => { try { return new URL(API_BASE).origin } catch { return '' } })()
+    const backendOrigin = (() => {
+      try {
+        return new URL(API_BASE).origin
+      } catch {
+        return ''
+      }
+    })()
     const onMessage = (e: MessageEvent) => {
       if (!e?.data || e.data.type !== 'oauth-complete') return
       if (e.origin !== backendOrigin) return
-      try { popupRef.current?.close() } catch {}
+      try {
+        popupRef.current?.close()
+      } catch {}
       window.removeEventListener('message', onMessage)
       setIsConnecting(false)
       if (e.data.ok) {
@@ -134,37 +168,97 @@ function PanelUI() {
   type PeriodKey = '7d' | '30d' | '3m' | '6m' | '1y' | 'all'
   const [period, setPeriod] = useState<PeriodKey>('7d')
   const [customFrom, setCustomFrom] = useState<string>('')
+  const [customTo, setCustomTo] = useState<string>('')
 
   const [showPeriodMenu, setShowPeriodMenu] = useState(false)
   const [showCustomMenu, setShowCustomMenu] = useState(false)
 
   const todayLocal = () => new Date().toLocaleDateString('en-CA')
 
-  const { startLabel, endLabel } = useMemo(() => {
-    const end = todayLocal()
-    if (customFrom) return { startLabel: customFrom, endLabel: end }
+  // Rango seleccionado: etiquetas para mostrar + fechas reales para el backend
+  const { startLabel, endLabel, fromDate, toDate } = useMemo(() => {
+    // 👉 Si hay rango personalizado completo, usarlo tal cual
+    if (customFrom && customTo) {
+      return {
+        startLabel: customFrom,
+        endLabel: customTo,
+        fromDate: customFrom,
+        toDate: customTo,
+      }
+    }
+
     const endDate = new Date()
     const startDate = new Date(endDate)
+
     switch (period) {
-      case '7d': startDate.setDate(endDate.getDate() - 7); break
-      case '30d': startDate.setDate(endDate.getDate() - 30); break
-      case '3m': startDate.setMonth(endDate.getMonth() - 3); break
-      case '6m': startDate.setMonth(endDate.getMonth() - 6); break
-      case '1y': startDate.setFullYear(endDate.getFullYear() - 1); break
-      case 'all': return { startLabel: 'histórico', endLabel: end }
+      case '7d':
+        startDate.setDate(endDate.getDate() - 7)
+        break
+      case '30d':
+        startDate.setDate(endDate.getDate() - 30)
+        break
+      case '3m':
+        startDate.setMonth(endDate.getMonth() - 3)
+        break
+      case '6m':
+        startDate.setMonth(endDate.getMonth() - 6)
+        break
+      case '1y':
+        startDate.setFullYear(endDate.getFullYear() - 1)
+        break
+      case 'all': {
+        const fmt = (d: Date) => d.toLocaleDateString('en-CA')
+        return {
+          startLabel: 'histórico',
+          endLabel: fmt(endDate),
+          fromDate: null as string | null, // sin límite inferior
+          toDate: fmt(endDate),
+        }
+      }
     }
-    const fmt = (d: Date) => d.toLocaleDateString('en-CA')
-    return { startLabel: fmt(startDate), endLabel: fmt(endDate) }
-  }, [period, customFrom])
+
+    const fmt = (d: Date) => d.toLocaleDateString('en-CA') // YYYY-MM-DD
+    return {
+      startLabel: fmt(startDate),
+      endLabel: fmt(endDate),
+      fromDate: fmt(startDate),
+      toDate: fmt(endDate),
+    }
+  }, [period, customFrom, customTo])
+
+  // Bucket de agregación para la gráfica de evolución (día / semana / mes)
+  const bucket: 'day' | 'week' | 'month' = useMemo(() => {
+    if (customFrom && customTo) return 'day' // rango personalizado → por día
+
+    switch (period) {
+      case '7d':
+        return 'day'
+      case '30d':
+      case '3m':
+        return 'week'
+      case '6m':
+      case '1y':
+      case 'all':
+      default:
+        return 'month'
+    }
+  }, [period, customFrom, customTo])
 
   const selectPeriod = (p: PeriodKey) => {
     setPeriod(p)
     setCustomFrom('')
+    setCustomTo('')
     setShowPeriodMenu(false)
   }
 
-  const applyCustom = () => { setShowCustomMenu(false) }
-  const clearCustom = () => { setCustomFrom(''); setShowCustomMenu(false) }
+  const applyCustom = () => {
+    setShowCustomMenu(false)
+  }
+  const clearCustom = () => {
+    setCustomFrom('')
+    setCustomTo('')
+    setShowCustomMenu(false)
+  }
 
   return (
     <>
@@ -175,9 +269,13 @@ function PanelUI() {
             <Card className="mb-4 border-dashed shadow-sm">
               <CardContent className="flex flex-col gap-4 p-4 md:flex-row md:items-center md:justify-between">
                 <div className="flex items-start gap-3">
-                  <div className="mt-1"><CheckCircle2 className="h-5 w-5 opacity-60" /></div>
+                  <div className="mt-1">
+                    <CheckCircle2 className="h-5 w-5 opacity-60" />
+                  </div>
                   <div>
-                    <div className="text-sm font-semibold">Conecta tu cuenta de Google para empezar</div>
+                    <div className="text-sm font-semibold">
+                      Conecta tu cuenta de Google para empezar
+                    </div>
                     <p className="text-sm opacity-70">
                       Importaremos tus reseñas y activaremos las respuestas automáticas de IA.
                     </p>
@@ -227,7 +325,9 @@ function PanelUI() {
                   <div className="relative flex flex-wrap items-center gap-2 bg-white rounded-xl p-3 shadow-sm border border-slate-200">
                     <div className="flex items-center gap-2 text-slate-600">
                       <Calendar className="h-4 w-4" />
-                      <span className="text-xs">{startLabel} → {endLabel}</span>
+                      <span className="text-xs">
+                        {startLabel} → {endLabel}
+                      </span>
                     </div>
 
                     {/* --- Botón PERIODO --- */}
@@ -236,7 +336,7 @@ function PanelUI() {
                         variant="outline"
                         className="rounded-2xl text-slate-800 bg-white border-slate-300"
                         onClick={() => {
-                          setShowPeriodMenu(v => !v)
+                          setShowPeriodMenu((v) => !v)
                           setShowCustomMenu(false)
                         }}
                       >
@@ -251,14 +351,56 @@ function PanelUI() {
 
                       {showPeriodMenu && (
                         <Card className="absolute right-0 z-20 mt-2 w-56 shadow-lg bg-white border border-slate-200">
-    <CardContent className="p-1 text-slate-800">
+                          <CardContent className="p-1 text-slate-800">
                             <ul className="text-sm">
-                              <li><button className="w-full px-3 py-2 text-left hover:bg-slate-100 rounded-lg" onClick={() => selectPeriod('7d')}>Últimos 7 días</button></li>
-                              <li><button className="w-full px-3 py-2 text-left hover:bg-slate-100 rounded-lg" onClick={() => selectPeriod('30d')}>1 mes</button></li>
-                              <li><button className="w-full px-3 py-2 text-left hover:bg-slate-100 rounded-lg" onClick={() => selectPeriod('3m')}>3 meses</button></li>
-                              <li><button className="w-full px-3 py-2 text-left hover:bg-slate-100 rounded-lg" onClick={() => selectPeriod('6m')}>6 meses</button></li>
-                              <li><button className="w-full px-3 py-2 text-left hover:bg-slate-100 rounded-lg" onClick={() => selectPeriod('1y')}>1 año</button></li>
-                              <li><button className="w-full px-3 py-2 text-left hover:bg-slate-100 rounded-lg" onClick={() => selectPeriod('all')}>Histórico</button></li>
+                              <li>
+                                <button
+                                  className="w-full px-3 py-2 text-left hover:bg-slate-100 rounded-lg"
+                                  onClick={() => selectPeriod('7d')}
+                                >
+                                  Últimos 7 días
+                                </button>
+                              </li>
+                              <li>
+                                <button
+                                  className="w-full px-3 py-2 text-left hover:bg-slate-100 rounded-lg"
+                                  onClick={() => selectPeriod('30d')}
+                                >
+                                  1 mes
+                                </button>
+                              </li>
+                              <li>
+                                <button
+                                  className="w-full px-3 py-2 text-left hover:bg-slate-100 rounded-lg"
+                                  onClick={() => selectPeriod('3m')}
+                                >
+                                  3 meses
+                                </button>
+                              </li>
+                              <li>
+                                <button
+                                  className="w-full px-3 py-2 text-left hover:bg-slate-100 rounded-lg"
+                                  onClick={() => selectPeriod('6m')}
+                                >
+                                  6 meses
+                                </button>
+                              </li>
+                              <li>
+                                <button
+                                  className="w-full px-3 py-2 text-left hover:bg-slate-100 rounded-lg"
+                                  onClick={() => selectPeriod('1y')}
+                                >
+                                  1 año
+                                </button>
+                              </li>
+                              <li>
+                                <button
+                                  className="w-full px-3 py-2 text-left hover:bg-slate-100 rounded-lg"
+                                  onClick={() => selectPeriod('all')}
+                                >
+                                  Histórico
+                                </button>
+                              </li>
                             </ul>
                           </CardContent>
                         </Card>
@@ -271,34 +413,49 @@ function PanelUI() {
                         variant="outline"
                         className="rounded-2xl text-slate-800 bg-white border-slate-300"
                         onClick={() => {
-                          setShowCustomMenu(v => !v)
+                          setShowCustomMenu((v) => !v)
                           setShowPeriodMenu(false)
                         }}
                       >
-                        {customFrom ? `Personalizado: desde ${customFrom}` : 'Personalizado'}
+                        {customFrom && customTo
+                          ? `Personalizado: ${customFrom} → ${customTo}`
+                          : 'Personalizado'}
                         <ChevronDown className="ml-2 h-4 w-4" />
                       </Button>
 
                       {showCustomMenu && (
                         <Card className="absolute right-0 z-20 mt-2 w-64 shadow-lg bg-white border border-slate-200">
-    <CardContent className="p-3 text-slate-800">
+                          <CardContent className="p-3 text-slate-800">
                             <div className="space-y-3">
                               <label className="block text-xs font-medium text-slate-600">
-                                Desde (hasta hoy)
+                                Desde
                               </label>
                               <input
                                 type="date"
                                 className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-800"
                                 value={customFrom}
-                                max={todayLocal()}
+                                max={customTo || todayLocal()}
                                 onChange={(e) => setCustomFrom(e.target.value)}
                               />
+
+                              <label className="block text-xs font-medium text-slate-600">
+                                Hasta
+                              </label>
+                              <input
+                                type="date"
+                                className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-800"
+                                value={customTo}
+                                min={customFrom || undefined}
+                                max={todayLocal()}
+                                onChange={(e) => setCustomTo(e.target.value)}
+                              />
+
                               <div className="flex items-center justify-between">
                                 <Button
                                   variant="default"
                                   className="rounded-xl"
                                   onClick={applyCustom}
-                                  disabled={!customFrom}
+                                  disabled={!(customFrom && customTo && customFrom <= customTo)}
                                 >
                                   Aplicar
                                 </Button>
@@ -321,28 +478,34 @@ function PanelUI() {
 
               {/* Secciones */}
               {/* Temas */}
-<section id="temas" className="mt-8 px-4 sm:px-6 lg:px-8">
-  <TemasSection />
-</section>
-
-{/* Análisis de sentimiento */}
-<section id="sentimiento" className="mt-10 px-4 sm:px-6 lg:px-8">
-  <SentimientoSection />
-</section>
-
-{/* Puntuación media vs Volumen */}
-<section id="volumen" className="mt-8 px-4 sm:px-6 lg:px-8">
-  <VolumenSection />
+              <section id="temas" className="mt-8 px-4 sm:px-6 lg:px-8">
+  <TemasSection fromDate={fromDate} toDate={toDate} />
 </section>
 
 
+              {/* Análisis de sentimiento */}
+              <section id="sentimiento" className="mt-10 px-4 sm:px-6 lg:px-8">
+                <SentimientoSection fromDate={fromDate} toDate={toDate} bucket={bucket} />
+              </section>
+
+              {/* Puntuación media vs Volumen */}
+              <section id="volumen" className="mt-8 px-4 sm:px-6 lg:px-8">
+  <VolumenSection
+    fromDate={fromDate}
+    toDate={toDate}
+    bucket={period === "7d" ? "day" : period === "30d" ? "week" : "month"}
+  />
+</section>
 
 
               <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen bg-slate-100">
-                <div className="mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
-                  <section id="oportunidades"><OportunidadesSection /></section>
-                </div>
-              </div>
+  <div className="mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
+    <section id="oportunidades">
+      <OportunidadesSection fromDate={fromDate} toDate={toDate} />
+    </section>
+  </div>
+</div>
+
 
               <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen bg-blue-100">
                 <div className="mx-auto px-4 sm:px-6 lg:px-8 pt-4 md:pt-6 pb-10">
