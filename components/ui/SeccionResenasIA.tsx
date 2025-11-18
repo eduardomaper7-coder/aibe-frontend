@@ -329,11 +329,12 @@ export default function SeccionResenasIA() {
       {/* 🚀 BOTÓN FINAL */}
         <div className="mt-20 flex justify-center">
           <Link
-  href="/registro"
+  href="/contact"
   className="bg-white text-black font-semibold text-xl px-10 py-5 rounded-full transition-all duration-200 hover:bg-gray-100 hover:scale-105 shadow-md"
 >
-  Comenzar gratis hoy
+  Escríbenos sin compromiso
 </Link>
+
 
         </div>
     </section>

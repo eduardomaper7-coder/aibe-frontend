@@ -14,10 +14,9 @@ export default function GlobalTopbar() {
         document.documentElement.scrollTop ??
         document.body.scrollTop ??
         0;
-      setSolid(y > 0); // ← negro al primer píxel de scroll
+      setSolid(y > 0);
     };
 
-    // estado inicial y primer frame
     setByScroll();
     const raf = requestAnimationFrame(setByScroll);
 
@@ -57,7 +56,7 @@ export default function GlobalTopbar() {
           transition: 'background .28s ease, border-color .28s ease, box-shadow .28s ease',
         }}
       >
-        {/* IZQUIERDA: Logo + enlaces */}
+        {/* IZQUIERDA: Logo */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 'clamp(16px, 2vw, 28px)', marginLeft: 'clamp(8px, 2vw, 24px)' }}>
           <Link href="/" className="brand-logo brand-logo--text flex items-center gap-2" aria-label="Inicio">
             <div className="logo-icon flex items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-cyan-400 shadow-md"
@@ -70,44 +69,37 @@ export default function GlobalTopbar() {
             <div className="flex flex-col leading-[1.05] justify-center">
               <div className="flex items-baseline gap-[6px]">
                 <span className="text-white font-bold tracking-tight"
-                      style={{ fontFamily: 'Poppins, sans-serif', fontSize: 'clamp(16px,2.4vw,26px)', lineHeight: 1 }}>
+                      style={{ fontFamily: 'Poppins, sans-serif', fontSize: 'clamp(16px,2.4vw,26px)' }}>
                   AIBE
                 </span>
                 <span className="text-white font-light"
-                      style={{ fontFamily: 'Poppins, sans-serif', fontSize: 'clamp(12px,1.2vw,17px)', lineHeight: 1 }}>
+                      style={{ fontFamily: 'Poppins, sans-serif', fontSize: 'clamp(12px,1.2vw,17px)' }}>
                   Technologies
                 </span>
               </div>
               <span className="text-gray-300 font-light mt-[1px]"
-                    style={{ fontFamily: 'Inter, sans-serif', fontSize: 'clamp(9px,0.85vw,12px)', opacity: 0.9, lineHeight: 1.1 }}>
+                    style={{ fontFamily: 'Inter, sans-serif', fontSize: 'clamp(9px,0.85vw,12px)', opacity: 0.9 }}>
                 Artificial Intelligence for Business Efficiency
               </span>
             </div>
           </Link>
 
-          <nav className="nav-inline" aria-label="Menú principal">
-      
-            <Link href="/contact" className="nav-link">Contacto</Link>
-          </nav>
+          {/* Se elimina el menú con "Contacto" */}
+          <nav className="nav-inline" aria-label="Menú principal" />
         </div>
 
-                 {/* DERECHA */}
+        {/* DERECHA */}
         <div className="actions" style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-          {/* Eliminamos el botón de iniciar sesión */}
-          {/* <Link href="/login" className="link">Iniciar sesión</Link> */}
+          {/* Botón ahora apunta a /contacto */}
+          <Link href="/contact" className="btn">Contáctanos</Link>
 
-          {/* Cambiamos el texto del botón */}
-          <Link href="/acceso-anticipado" className="btn">Reservar plaza</Link>
         </div>
       </header>
 
-      {/* estilos mínimos del nav */}
       <style jsx global>{`
         #global-topbar .nav-inline { display: flex; align-items: center; gap: clamp(14px, 2vw, 22px); white-space: nowrap; }
-        #global-topbar .nav-link { color: #cde3ff; text-decoration: none; font-weight: 400; opacity: .95; font-size: clamp(12px, 1.2vw, 15px); }
-        #global-topbar .nav-link:hover { opacity: 1; text-decoration: underline; }
         #global-topbar .brand-logo--text { align-items: center; gap: 0.5rem; line-height: 1; }
-        #global-topbar .brand-logo--text span { display: inline-block; height: auto; }
+        #global-topbar .brand-logo--text span { display: inline-block; }
         #global-topbar .logo-icon { flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
         @media (max-width: 900px) { #global-topbar .nav-inline { display: none; } }
       `}</style>
