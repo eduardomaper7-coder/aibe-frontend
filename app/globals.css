@@ -1,10 +1,16 @@
+/* ====== global.css (LIMPIO Y FUNCIONAL) ======
+   Mantiene todo lo necesario para el HERO, VIDEO, FULLBLEED,
+   ANIMACIONES, BOTONES y TOPBAR.
+   Elimina duplicados, media queries rotas y código muerto.
+=========================================================== */
+
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* tus estilos globales debajo */
+/* VARIABLES */
 :root {
   --container-max: 1280px;
   --pad-x: clamp(4px, 0.6vw, 14px);
@@ -13,860 +19,233 @@
   --subtitle-size: clamp(16px, 2.2vw, 22px);
   --title-height: 1px;
   --topbar-h: 64px;
-
-  /* offsets de la parte baja del hero */
   --subtitle-bottom: clamp(48px, 8vh, 100px);
   --cta-bottom: clamp(16px, 4vh, 40px);
 }
 
 * { box-sizing: border-box; }
-
 html, body { height: 100%; }
-
 body {
   margin: 0;
-  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  font-weight: 300;
+  font-family: 'Inter', system-ui;
   background: #000;
   overflow-x: hidden;
 }
 
-/* HERO */
-.hero {
-  position: relative;
-  height: 100vh;         /* el hero ocupa toda la pantalla */
-  isolation: isolate;
-  overflow: hidden;
-}
-.hero video {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;     /* cubre todo el hero */
-  z-index: -2;
-}
-.hero::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background:
-    radial-gradient(80% 60% at 20% 20%, rgba(0,0,0,.05), rgba(0,0,0,.25) 70%),
-    linear-gradient(to top, rgba(0,0,0,.18), rgba(0,0,0,0) 40%);
-}
-
-.shell {
-  max-width: var(--container-max);
-  margin: 0 auto;
-  padding: 16px var(--pad-x);
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
-/* TOPBAR */
-.topbar { 
-  display: flex; 
-  align-items: center; 
-  justify-content: space-between; 
-  gap: 18px; 
-  padding: 8px 0; 
-}
-
-.brand { 
-  display: flex; 
-  align-items: center; 
-  gap: 12px; 
-}
-
-/* NAV */
-.nav { 
-  display: flex; 
-  gap: 28px; 
-  align-items: center; 
-  margin-left: min(3vw, 32px); 
-  margin-right: min(3vw, 32px); 
-}
-.nav a { 
-  color: #cde3ff; 
-  text-decoration: none; 
-  font-weight: 400; 
-  opacity: .95; 
-}
-.nav a:hover { 
-  opacity: 1; 
-  text-decoration: underline; 
-}
-
-/* ACTIONS */
-.actions { 
-  display: flex; 
-  align-items: center; 
-  gap: 18px; 
-}
-.link { 
-  background: none; 
-  border: none; 
-  color: #e7e7e7; 
-  font-weight: 400; 
-  cursor: pointer; 
-}
-
-.btn {
-  appearance: none;
-  border: 1.5px solid rgba(255,255,255,.25);
-  background: #fff; 
-  color: #111;
-  padding: 12px 18px; 
-  border-radius: 999px;
-  font-weight: 600; 
-  cursor: pointer;
-  transition: transform .2s ease, background .2s ease, border-color .2s ease;
-}
-.btn.secondary { 
-  background: transparent; 
-  color: #fff; 
-  border-color: rgba(255,255,255,.45); 
-}
-.btn:hover { 
-  transform: translateY(-1px); 
-  background: #f3f3f3; 
-}
-
-a.btn,
-a.btn:link,
-a.btn:visited,
-a.btn:hover,
-a.btn:active,
-.actions a.btn { text-decoration: none !important; }
-
-/* CENTRO / HERO PRINCIPAL */
-.center {
-  position: relative;
-  height: 100%;
-  display: flex; 
-  flex-direction: column; 
-  justify-content: flex-start;
-  padding-top: clamp(110px, 22vh, 300px);
-  padding-left: var(--content-x);
-  padding-right: var(--pad-x);
-  z-index: 1;
-  padding-top: 20vh !important;
-}
-
-/* Título dinámico */
-.title-slot { height: var(--title-height); position: relative; }
-.title {
-  font-size: var(--title-size); 
-  line-height: .94; 
-  letter-spacing: -.01em;
-  margin: 0; 
-  font-weight: 300; 
-  font-variation-settings: "wght" 300;
-}
-.title-layer { 
-  position: absolute; 
-  inset: 0; 
-  display: flex; 
-  align-items: flex-start; 
-}
-
-/* Subtítulo */
-.subtitle {
-  position: absolute;
-  left: var(--content-x);
-  right: var(--pad-x);
-  bottom: var(--subtitle-bottom);
-  font-size: var(--subtitle-size);
-  max-width: 52ch; 
-  opacity: .92; 
-  font-weight: 300; 
-  margin: 0;
-  transform: translateY(+350px);
-}
-
-/* CTA */
-.cta {
-  position: absolute;
-  left: var(--content-x);
-  bottom: var(--cta-bottom);
-}
-.cta .btn {
-  padding: 18px 30px;
-  font-size: clamp(15px, 1.4vw, 20px);
-  border-width: 2px;
-  background: #fff; 
-  color: #000; 
-  font-weight: 700;
-  border-radius: 999px;
-  transition: transform .2s ease, background .2s ease;
-}
-.cta .btn:hover { 
-  background: #f3f3f3; 
-  transform: translateY(-2px); 
-}
-
-/* Animaciones */
-.fade-enter { opacity: 0; transform: translateY(8px) scale(.99); }
-.fade-enter-active {
-  opacity: 1; transform: translateY(0) scale(1);
-  transition: opacity .7s ease, transform .7s ease;
-}
-.fade-exit { opacity: 1; transform: translateY(0) scale(1); }
-.fade-exit-active {
-  opacity: 0; transform: translateY(-6px) scale(.99);
-  transition: opacity .55s ease, transform .55s ease;
-}
-
-/* Responsive */
-@media (max-width: 960px) {
-  .nav { display: none; }
-  .center { padding-top: 20vh; padding-left: var(--content-x); }
-}
-
-@media (max-width: 520px) {
-  .center { padding-top: 18vh; padding-left: var(--content-x); }
-  .subtitle {
-    left: var(--content-x); 
-    right: var(--content-x);
-    max-width: 100%;
-    bottom: clamp(56px, 7vh, 80px);
-  }
-  .cta { 
-    left: var(--content-x); 
-    bottom: clamp(12px, 4vh, 36px); 
-  }
-}
-
-/* === LOGO === */
-
-/* Base para logos (imagen o texto) */
-.brand-logo {
-  display: inline-flex;
-  align-items: center;
-  line-height: 0; /* útil para imágenes */
-}
-
-/* --- Logos con imagen --- */
-.brand-logo img,
-.brand-logo picture {
-  display: block;
-  height: clamp(48px, 6vw, 88px);
-  width: auto;
-  object-fit: contain;
-  max-width: none;
-}
-
-/* --- Logos de texto (AIBE Technologies®) --- */
-.brand-logo--text {
-  line-height: 1;          /* importante: no 0 */
-  align-items: baseline;   /* alinea texto en la misma línea */
-}
-
-.brand-logo--text span {
-  display: inline-block;   /* permite control fino */
-  height: auto;            /* sin clamp */
-}
-
-.brand-logo--text .tech .r {
-  position: absolute;
-  top: -0.45em;
-  right: -0.9em;
-  font-size: 0.45em;        /* antes 0.6em → más sutil */
-  font-weight: 300;
-  font-family: Poppins, sans-serif;
-  opacity: 0.85;            /* un pelín más discreta */
-}
-
-/* ----- Topbar global en portal: capa máxima + transición de fondo ----- */
+/* TOPBAR BASE */
 #global-topbar.topbar {
   position: fixed;
   top: 0; left: 0; right: 0;
-  height: var(--topbar-h, 64px);
-  z-index: 2147483647;   /* por encima de todo */
-  isolation: isolate;
-
+  height: var(--topbar-h);
+  z-index: 2147483647;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 clamp(12px, 2vw, 24px);
-
-  background: transparent;            /* transparente en la parte superior */
+  background: transparent;
   border-bottom: 1px solid transparent;
-  box-shadow: none;
-
-  transition: background .35s ease, border-color .35s ease, box-shadow .35s ease;
-  will-change: background;
+  transition: background .3s ease;
 }
-
 #global-topbar.topbar.topbar--solid {
-  background: rgba(0,0,0,1) !important;   /* negro sólido al “pasar del top” */
-  border-bottom-color: rgba(255,255,255,.08);
-  box-shadow: 0 10px 20px rgba(0,0,0,.25);
+  background: #000;
+  border-bottom-color: rgba(255,255,255,.1);
 }
 
-/* Enlaces al lado del logo (tu estilo “antes”) */
+/* NAV LINKS (desktop) */
 #global-topbar .nav-inline {
   display: flex;
-  align-items: center;
   gap: clamp(14px, 2vw, 22px);
   white-space: nowrap;
 }
 #global-topbar .nav-link {
-  color: #cde3ff;      /* equivalente a text-cyan-100 */
-  text-decoration: none;
-  font-weight: 400;
+  color: #fff;
+  font-size: 0.95rem;
   opacity: .95;
-  font-size: clamp(12px, 1.2vw, 15px);
+  text-decoration: none;
 }
-#global-topbar .nav-link:hover {
-  opacity: 1;
-  text-decoration: underline;
+#global-topbar .nav-link:hover { opacity: 1; }
+
+/* LOGO */
+.brand-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
-
-
-/* ===== Full-bleed sin costuras (laterales y borde inferior) ===== */
-.bleed-black {
-  position: relative;
-  isolation: isolate;              /* para colocar el pseudo detrás sin interferir */
-}
-
-/* Pinta un “tapete” negro infinito alrededor del bloque */
-.bleed-black::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  box-shadow: 0 0 0 100vmax #000;  /* expande negro hacia fuera del contenedor */
-  clip-path: inset(0 -100vmax);    /* evita scroll horizontal */
-  z-index: -1;
+.brand-logo .text-gray-300 {
+  font-size: 0.7rem;
+  opacity: 0.8;
 }
 
-/* Si algún navegador aún deja un subpíxel abajo, lo cubrimos */
-.bleed-black::after {
-  content: "";
-  position: absolute;
-  left: 0; right: 0; bottom: -1px;
-  height: 2px;
-  background: #000;
-  z-index: -1;
-}
-
-/* Fondo del documento negro SOLO para cubrir el “detrás” del footer */
-html { background: #000; }         /* no cambia el resto de la página */
-body { background: transparent; }  /* respeta tus fondos blanco/azul */
-
-/* El documento siempre cubre el viewport (evita ver el fondo del navegador) */
-:root, html, body, #__next {
-  min-height: 100dvh;
-}
-
-/* El fondo "detrás" del footer es negro; el resto de la página lo mantiene cada sección */
-html { background: #000; }
-
-/* El body respeta tus fondos (blanco/azul): */
-body { background: transparent; margin: 0; padding: 0; }
-
-
-/* HERO — Video fijo estilo Shopify */
-.hero {
-  height: 100vh;      /* ⬅⬅ AQUI defines cuánto dura el video en el scroll */
-  position: relative;
-  overflow: visible;
-}
-
-/* Contenedor del video */
-.hero-video-wrapper {
-  position: sticky;
-  inset: 0;
-  width: 100%;
-  height: 100vh;
-  z-index: -1;
-}
-
-/* Video */
-.hero-video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-/* Botonera estilo Shopify */
-.hero-buttons {
-  position: absolute;
-
-  /* mismo offset que tenías */
-  left: calc(var(--content-x) + 130px);
-
-  /* misma altura que tenías */
-  bottom: calc(var(--subtitle-bottom) + 30px);
-
+/* ACTIONS */
+.actions {
   display: flex;
   align-items: center;
   gap: 18px;
-
-  width: 100%; /* 👈 IMPORTANTE: permite empujar el link a la derecha */
-  z-index: 2;
 }
-
-
-/* Botones principales */
-.hero-btn {
-  padding: 12px 28px;
-  border-radius: 999px;
-  font-size: clamp(15px, 1.4vw, 18px);
-  font-weight: 500;
-  cursor: pointer;
-  border: 1.7px solid rgba(255,255,255,.4);
-  backdrop-filter: blur(8px);
-  transition: all .25s ease;
-  white-space: nowrap;
-}
-
-/* Botón blanco */
-.hero-btn.primary {
+.btn {
+  appearance: none;
+  padding: 12px 18px;
   background: #fff;
   color: #000;
-  border-color: #fff;
-}
-.hero-btn.primary:hover {
-  background: #f5f5f5;
-  transform: translateY(-2px);
+  border-radius: 999px;
+  font-weight: 600;
+  text-decoration: none !important;
 }
 
-/* Botón transparente */
-.hero-btn.secondary {
-  background: transparent;
-  color: #fff;
-}
-.hero-btn.secondary:hover {
-  background: rgba(255,255,255,0.12);
-  border-color: rgba(255,255,255,.7);
-  transform: translateY(-2px);
+/* HERO BASE */
+.hero { position: relative; height: 100vh; overflow: hidden; }
+.hero-video-wrapper { position: absolute; inset: 0; z-index: -1; }
+.hero-video { width: 100%; height: 100%; object-fit: cover; }
+
+.center {
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding-top: 20vh;
+  text-align: left;
 }
 
-/* Enlace de texto */
-.hero-link {
-  color: #fff;
-  font-weight: 500;
-  text-decoration: none;
-  opacity: .85;
+.title-slot { height: var(--title-height); }
+.title {
+  font-size: var(--title-size);
+  line-height: .95;
+  font-weight: 300;
+  margin: 0;
+}
+.subtitle {
+  margin-top: 12px;
+  font-size: var(--subtitle-size);
+  opacity: .92;
+  max-width: 50ch;
+}
+
+/* HERO BUTTONS */
+.hero-buttons {
+  margin-top: 20px;
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: clamp(14px, 1.3vw, 18px);
-  margin-left: auto;
-  margin-right: calc(var(--pad-x) + 250px);
-  
+  gap: 16px;
 }
-.hero-link:hover {
-  opacity: 1;
-  text-decoration: underline;
+.hero-btn {
+  padding: 12px 26px;
+  border-radius: 999px;
+  border: 1.4px solid rgba(255,255,255,.4);
+  backdrop-filter: blur(8px);
+  white-space: nowrap;
 }
+.hero-btn.primary { background: #fff; color: #000; }
+.hero-btn.secondary { background: transparent; color: #fff; }
+.hero-link { color: #fff; opacity: .85; }
 
-
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: -2;
-  background: #000;
-}
-
-
-/* Full bleed negro con expansión lateral */
+/* FULLBLEED UTILITIES */
+.bg-blue-fullbleed,
 .bg-black-fullbleed {
   position: relative;
   isolation: isolate;
 }
-
+.bg-blue-fullbleed::before,
 .bg-black-fullbleed::before {
-  content: "";
+  content:"";
   position: absolute;
   inset: 0;
-  background: #000;
-  z-index: -1;
-  box-shadow: 0 0 0 100vmax #000; /* expande el fondo infinitamente */
-  clip-path: inset(0 -100vmax);   /* evita scroll horizontal */
-}
-
-.hero-mask-bottom {
-  position: absolute;
-  top: 100%;        /* empieza justo donde el hero termina */
-  left: 0;
-  right: 0;
-  height: 0vh;    /* cubre todo lo que sigue */
-  background: #000; /* color de tu página */
-  z-index: -1;      /* por encima del video, por debajo del resto */
-  pointer-events: none;
-}
-
-
-.section-blue-fix {
-  position: relative;
-  overflow: visible;
-}
-
-/* Cubre el borde inferior sin tapar el color de la sección */
-.section-blue-fix::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -1px;
-  height: 4px; /* suficiente para eliminar el hueco */
-  background: inherit; /* usa el MISMO fondo de la sección */
-  z-index: 1;
-}
-
-.section-mask {
-  position: relative;
-  isolation: isolate;
-}
-
-.section-mask::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: #0A1224; /* MISMO color de la sección */
-  z-index: -1;
-  box-shadow: 0 0 0 100vmax #0A1224;
+  z-index:-1;
+  box-shadow: 0 0 0 100vmax currentColor;
   clip-path: inset(0 -100vmax);
 }
+.bg-blue-fullbleed { color:#0A1224; }
+.bg-black-fullbleed { color:#000; }
 
-
-.bg-blue-fullbleed {
-  position: relative;
-  isolation: isolate;
-}
-
-.bg-blue-fullbleed::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: #0A1224; /* color original */
-  z-index: -1;
-  box-shadow: 0 0 0 100vmax #0A1224; /* expande el fondo azul */
-  clip-path: inset(0 -100vmax);
-}
-
-#dynamicTitle,
-.subtitle {
-  position: relative;
-  z-index: 99 !important;
-}
-
-/* PONER TÍTULOS ENCIMA DEL VIDEO (SOLUCIÓN SIMPLE) */
-#dynamicTitle,
-.subtitle,
-.title-slot,
-.title-layer {
-  position: relative !important;
-  z-index: 10 !important;
-}
-
-/* Dejar el video detrás */
-.hero-video-wrapper video,
-.hero video {
-  z-index: -1 !important;
-}
-
-/* Asegurar que el contenido esté por encima del video */
-.hero .shell,
-.hero .center,
-.hero .title-slot,
-.hero .title-layer,
-#dynamicTitle,
-.hero .subtitle,
-.hero .hero-buttons,
-.hero .hero-btn-group,
-.hero .hero-link {
-  position: relative !important;
-  z-index: 2 !important;
-}
-
-/* El video queda detrás del contenido */
-.hero-video-wrapper,
-.hero-video-wrapper video {
-  position: absolute !important;
-  z-index: 0 !important;
-}
-
-.hero-btn-group .hero-btn + .hero-btn {
-  margin-left: 17px !important;  /* ← ajusta aquí el espacio */
-}
-
-#modal-root {
-  all: initial;
-  position: fixed !important;
-  inset: 0 !important;
-  z-index: 999999999 !important;
-  font-family: Inter, sans-serif !important;
-}
-
-/* Permitir Tailwind en el modal */
-#modal-root * {
-  all: revert;
-}
-
-
-/* ======= AJUSTES SOLO PARA MÓVIL ======= */
+/* ===== MOBILE CLEAN FIX ===== */
 @media (max-width: 640px) {
 
-  /* --- TOPBAR --- */
-  #global-topbar .actions {
-    gap: 12px !important;
+  /* Ocultar enlaces del centro */
+  #global-topbar .nav-inline {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: hidden !important;
   }
 
+  /* Topbar ajustado */
+  #global-topbar {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+    height: 50px !important;
+  }
+
+  /* Logo reducido */
+  #global-topbar .brand-logo {
+    transform: scale(0.72) !important;
+    transform-origin: left center !important;
+  }
+  #global-topbar .brand-logo .text-gray-300 { display:none !important; }
+
+  /* Botones */
+  #global-topbar .actions { gap: 6px !important; }
   #global-topbar .actions .nav-link {
-    font-size: 0.85rem !important;
-    white-space: nowrap;
+    font-size: 0.72rem !important;
+    white-space: nowrap !important;
   }
-
   #global-topbar .actions .btn {
-    padding: 8px 14px !important;
-    font-size: 0.85rem !important;
+    font-size: 0.72rem !important;
+    padding: 6px 10px !important;
   }
 
-  /* Evita que el botón se salga */
-  #global-topbar .btn {
-    max-width: 120px;
-    text-align: center;
-  }
+  /* HERO MOBILE */
+  .center { text-align: center; padding-top: 16vh; }
+  .subtitle { margin-top: 6px !important; text-align:center; }
 
-
-  /* --- HERO (HOME) --- */
-
-  @media (max-width: 640px) {
-
-  /* Subtítulo muy cerca del título */
-  .hero .subtitle {
-    margin-top: 6px !important;   /* margen pequeño */
-    font-size: 1rem;
-    line-height: 1.35;
-    text-align: center;
-  }
-
-}
-
-  /* Reordenar botones SOLO en móvil */
   .hero-buttons {
-    display: flex;
     flex-direction: column !important;
     gap: 10px;
-    margin-top: 24px;
-    align-items: center;
-  }
-
-  .hero-btn-group {
-    display: flex;
-    flex-direction: column !important;
     width: 100%;
-    gap: 10px;
     align-items: center;
+    margin-top: 22px;
   }
 
-  .hero-btn {
+  .hero-btn, .hero-btn.primary, .hero-btn.secondary {
     width: 90% !important;
     max-width: 360px;
   }
 
-  /* Enlace debajo de todos los botones */
-  .hero-link {
-    margin-top: 6px;
-    font-size: 0.95rem;
-    text-align: center;
-  }
-
+  .hero-link { margin-top: 4px; font-size:0.95rem; text-align:center; }
 }
 
-/* ===== HERO MOBILE FIX ===== */
+/* ===== HERO — SEPARACIÓN MÓVIL ===== */
 @media (max-width: 640px) {
 
-  /* Contenedor principal centrado de forma estable */
-  .hero .center {
-    padding: 0 16px;
-    text-align: center;
-    position: relative;
-    z-index: 5;
+  /* Separar título y subtítulo */
+  .hero .title-slot {
+    margin-bottom: 12px !important;
   }
 
-  /* Subtítulo pegado al título */
   .hero .subtitle {
     margin-top: 6px !important;
-    font-size: 1rem;
-    line-height: 1.35;
+    margin-bottom: 22px !important;
+    line-height: 1.35 !important;
   }
 
-  /* BLOQUE COMPLETO DE BOTONES */
+  /* Separar los botones del subtítulo */
   .hero-buttons {
-    margin-top: 20px !important;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    position: relative;
-    z-index: 6;
+    margin-top: 26px !important;
   }
 
-  /* Grupo de botones principales */
-  .hero-btn-group {
-    width: 100%;
-    display: flex;
-    flex-direction: column !important;
-    gap: 12px;
-    align-items: center;
+  /* Separación entre los botones */
+  .hero-btn-group .hero-btn {
+    margin-bottom: 10px !important;
   }
 
-  .hero-btn {
-    width: 92% !important;
-    max-width: 360px;
-    padding: 14px 0 !important;
-    font-size: 1rem !important;
-  }
-
-  /* Enlace "Por qué creamos AIBE" */
+  /* Separar el enlace del grupo de botones */
   .hero-link {
-    font-size: 0.95rem;
-    margin-top: 4px !important;
-    text-align: center;
-    display: inline-block;
+    margin-top: 10px !important;
   }
 
-  /* Evita que el fondo negro de abajo se meta dentro del hero */
-  .hero-mask-bottom {
-    margin-top: 20px;
-  }
-}
-
-/* ===== TOPBAR MOBILE FIX ===== */
-@media (max-width: 640px) {
-
-  /* CONTENEDOR TOPBAR */
-  #global-topbar {
-    height: 54px !important;
-    padding: 0 10px !important;
-  }
-
-  /* === LOGO === */
-  /* Ocultamos el subtítulo y reducimos todo */
-  #global-topbar .brand-logo .text-gray-300 {
-    display: none !important;
-  }
-
-  /* Reducir el tamaño del bloque completo */
-  #global-topbar .brand-logo {
-    transform: scale(0.82);
-    transform-origin: left center;
-  }
-
-  /* Reducir tamaño de "AIBE" y "Technologies" si hace falta */
-  #global-topbar .brand-logo span {
-    line-height: 1 !important;
-  }
-
-  /* === ACTIONS (derecha) === */
-  #global-topbar .actions {
-    gap: 10px !important;
-  }
-
-  /* Enlace “Iniciar sesión” más pequeño */
-  #global-topbar .actions .nav-link {
-    font-size: 0.78rem !important;
-    white-space: nowrap !important;
-  }
-
-  /* Botón “Comenzar gratis” reducido */
-  #global-topbar .actions .btn {
-    padding: 6px 12px !important;
-    font-size: 0.78rem !important;
-    border-radius: 8px !important;
-    white-space: nowrap !important;
-  }
-}
-
-@media (max-width: 640px) {
-
-  /* Contenedor general */
-  #global-topbar {
-    display: flex !important;
-    justify-content: space-between !important;
-    padding: 0 12px !important;
-  }
-
-  /* Acción derecha (Iniciar sesión + Comenzar gratis) centrada */
-  #global-topbar .actions {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;     /* 💛 CLAVE: centra el bloque */
-    gap: 10px !important;
-    flex-shrink: 1 !important;              /* Evita que empuje fuera de la pantalla */
-    max-width: 60% !important;              /* Para evitar desbordes */
-  }
-
-  /* Iniciar sesión más pequeño */
-  #global-topbar .actions .nav-link {
-    font-size: 0.8rem !important;
-    white-space: nowrap;
-  }
-
-  /* Botón Comenzar gratis más compacto */
-  #global-topbar .actions .btn {
-    font-size: 0.8rem !important;
-    padding: 6px 10px !important;
-    white-space: nowrap !important;
-  }
-
-  /* Logo reducido para dejar espacio */
-  #global-topbar .brand-logo {
-    transform: scale(0.82);
-    transform-origin: left center;
-  }
-
-}
-
-@media (max-width: 640px) {
-
-  /* ======== TOPBAR RESET ======== */
-  #global-topbar {
-    padding: 0 10px !important;         /* antes 40px — causa del problema */
-    height: 52px !important;
-    justify-content: space-between !important;
-  }
-
-  /* Contenedor izquierdo (logo) */
-  #global-topbar > div:first-child {
-    margin-left: 0 !important;          /* antes <24px — empujaba todo */
-    gap: 10px !important;
-  }
-
-  /* LOGO más pequeño */
-  #global-topbar .brand-logo {
-    transform: scale(0.78);
-    transform-origin: left center;
-  }
-
-  /* Ocultamos la frase larga debajo del logo */
-  #global-topbar .brand-logo .text-gray-300 {
-    display: none !important;
-  }
-
-
-  /* ====== BOTONES DERECHA ====== */
-  #global-topbar .actions {
-    gap: 10px !important;               /* antes 24px — demasiado para móvil */
-    flex-shrink: 1 !important;
-  }
-
-  #global-topbar .actions .nav-link {
-    font-size: 0.8rem !important;
-    white-space: nowrap !important;
-  }
-
-  #global-topbar .actions .btn {
-    padding: 6px 12px !important;
-    font-size: 0.8rem !important;
-    white-space: nowrap !important;
+  /* Empujar todo el bloque más abajo del video para evitar solapamiento visual */
+  .hero .center {
+    padding-top: 22vh !important;
   }
 }
