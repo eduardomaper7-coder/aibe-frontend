@@ -3,19 +3,25 @@
 import { useEffect, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
 
+type User = {
+  id: string;
+  email: string;
+  approved: boolean;
+};
+
 export default function AdminPage() {
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   );
 
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState<User[]>([]);
 
   useEffect(() => {
     supabase
       .from("profiles")
       .select("id, email, approved")
-      .then(({ data }) => setUsers(data || []));
+      .then(({ data }) => setUsers((data as User[]) || []));
   }, []);
 
   const approveUser = async (id: string) => {
