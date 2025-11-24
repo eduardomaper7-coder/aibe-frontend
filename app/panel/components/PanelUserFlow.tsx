@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 
-export default function PanelUserFlow({ user }) {
+export default function PanelUserFlow({ user }: { user: any }) {
+
   const router = useRouter();
 
   const [loading, setLoading] = useState(true);
