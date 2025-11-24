@@ -608,3 +608,265 @@ body::before {
 #modal-root * {
   all: revert;
 }
+
+
+/* ======= AJUSTES SOLO PARA MÓVIL ======= */
+@media (max-width: 640px) {
+
+  /* --- TOPBAR --- */
+  #global-topbar .actions {
+    gap: 12px !important;
+  }
+
+  #global-topbar .actions .nav-link {
+    font-size: 0.85rem !important;
+    white-space: nowrap;
+  }
+
+  #global-topbar .actions .btn {
+    padding: 8px 14px !important;
+    font-size: 0.85rem !important;
+  }
+
+  /* Evita que el botón se salga */
+  #global-topbar .btn {
+    max-width: 120px;
+    text-align: center;
+  }
+
+
+  /* --- HERO (HOME) --- */
+
+  @media (max-width: 640px) {
+
+  /* Subtítulo muy cerca del título */
+  .hero .subtitle {
+    margin-top: 6px !important;   /* margen pequeño */
+    font-size: 1rem;
+    line-height: 1.35;
+    text-align: center;
+  }
+
+}
+
+  /* Reordenar botones SOLO en móvil */
+  .hero-buttons {
+    display: flex;
+    flex-direction: column !important;
+    gap: 10px;
+    margin-top: 24px;
+    align-items: center;
+  }
+
+  .hero-btn-group {
+    display: flex;
+    flex-direction: column !important;
+    width: 100%;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .hero-btn {
+    width: 90% !important;
+    max-width: 360px;
+  }
+
+  /* Enlace debajo de todos los botones */
+  .hero-link {
+    margin-top: 6px;
+    font-size: 0.95rem;
+    text-align: center;
+  }
+
+}
+
+/* ===== HERO MOBILE FIX ===== */
+@media (max-width: 640px) {
+
+  /* Contenedor principal centrado de forma estable */
+  .hero .center {
+    padding: 0 16px;
+    text-align: center;
+    position: relative;
+    z-index: 5;
+  }
+
+  /* Subtítulo pegado al título */
+  .hero .subtitle {
+    margin-top: 6px !important;
+    font-size: 1rem;
+    line-height: 1.35;
+  }
+
+  /* BLOQUE COMPLETO DE BOTONES */
+  .hero-buttons {
+    margin-top: 20px !important;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    position: relative;
+    z-index: 6;
+  }
+
+  /* Grupo de botones principales */
+  .hero-btn-group {
+    width: 100%;
+    display: flex;
+    flex-direction: column !important;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .hero-btn {
+    width: 92% !important;
+    max-width: 360px;
+    padding: 14px 0 !important;
+    font-size: 1rem !important;
+  }
+
+  /* Enlace "Por qué creamos AIBE" */
+  .hero-link {
+    font-size: 0.95rem;
+    margin-top: 4px !important;
+    text-align: center;
+    display: inline-block;
+  }
+
+  /* Evita que el fondo negro de abajo se meta dentro del hero */
+  .hero-mask-bottom {
+    margin-top: 20px;
+  }
+}
+
+/* ===== TOPBAR MOBILE FIX ===== */
+@media (max-width: 640px) {
+
+  /* CONTENEDOR TOPBAR */
+  #global-topbar {
+    height: 54px !important;
+    padding: 0 10px !important;
+  }
+
+  /* === LOGO === */
+  /* Ocultamos el subtítulo y reducimos todo */
+  #global-topbar .brand-logo .text-gray-300 {
+    display: none !important;
+  }
+
+  /* Reducir el tamaño del bloque completo */
+  #global-topbar .brand-logo {
+    transform: scale(0.82);
+    transform-origin: left center;
+  }
+
+  /* Reducir tamaño de "AIBE" y "Technologies" si hace falta */
+  #global-topbar .brand-logo span {
+    line-height: 1 !important;
+  }
+
+  /* === ACTIONS (derecha) === */
+  #global-topbar .actions {
+    gap: 10px !important;
+  }
+
+  /* Enlace “Iniciar sesión” más pequeño */
+  #global-topbar .actions .nav-link {
+    font-size: 0.78rem !important;
+    white-space: nowrap !important;
+  }
+
+  /* Botón “Comenzar gratis” reducido */
+  #global-topbar .actions .btn {
+    padding: 6px 12px !important;
+    font-size: 0.78rem !important;
+    border-radius: 8px !important;
+    white-space: nowrap !important;
+  }
+}
+
+@media (max-width: 640px) {
+
+  /* Contenedor general */
+  #global-topbar {
+    display: flex !important;
+    justify-content: space-between !important;
+    padding: 0 12px !important;
+  }
+
+  /* Acción derecha (Iniciar sesión + Comenzar gratis) centrada */
+  #global-topbar .actions {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;     /* 💛 CLAVE: centra el bloque */
+    gap: 10px !important;
+    flex-shrink: 1 !important;              /* Evita que empuje fuera de la pantalla */
+    max-width: 60% !important;              /* Para evitar desbordes */
+  }
+
+  /* Iniciar sesión más pequeño */
+  #global-topbar .actions .nav-link {
+    font-size: 0.8rem !important;
+    white-space: nowrap;
+  }
+
+  /* Botón Comenzar gratis más compacto */
+  #global-topbar .actions .btn {
+    font-size: 0.8rem !important;
+    padding: 6px 10px !important;
+    white-space: nowrap !important;
+  }
+
+  /* Logo reducido para dejar espacio */
+  #global-topbar .brand-logo {
+    transform: scale(0.82);
+    transform-origin: left center;
+  }
+
+}
+
+@media (max-width: 640px) {
+
+  /* ======== TOPBAR RESET ======== */
+  #global-topbar {
+    padding: 0 10px !important;         /* antes 40px — causa del problema */
+    height: 52px !important;
+    justify-content: space-between !important;
+  }
+
+  /* Contenedor izquierdo (logo) */
+  #global-topbar > div:first-child {
+    margin-left: 0 !important;          /* antes <24px — empujaba todo */
+    gap: 10px !important;
+  }
+
+  /* LOGO más pequeño */
+  #global-topbar .brand-logo {
+    transform: scale(0.78);
+    transform-origin: left center;
+  }
+
+  /* Ocultamos la frase larga debajo del logo */
+  #global-topbar .brand-logo .text-gray-300 {
+    display: none !important;
+  }
+
+
+  /* ====== BOTONES DERECHA ====== */
+  #global-topbar .actions {
+    gap: 10px !important;               /* antes 24px — demasiado para móvil */
+    flex-shrink: 1 !important;
+  }
+
+  #global-topbar .actions .nav-link {
+    font-size: 0.8rem !important;
+    white-space: nowrap !important;
+  }
+
+  #global-topbar .actions .btn {
+    padding: 6px 12px !important;
+    font-size: 0.8rem !important;
+    white-space: nowrap !important;
+  }
+}
