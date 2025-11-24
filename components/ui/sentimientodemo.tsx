@@ -72,8 +72,14 @@ export default function SeccionGraficasAvanzadas() {
   const vx = Math.cos(-midAngle * RADIAN);
   const vy = Math.sin(-midAngle * RADIAN);
 
-  let x = cx + r * vx;
+    let x = cx + r * vx;
   let y = cy + r * vy;
+
+  // 👇 Ajuste específico para "Neutras" (index = 1)
+  if (index === 1) {
+    y += isMobile ? 12 : 10;   // mover un poco hacia abajo
+  }
+
 
   const name = dataSentimiento[index].name;
   const val = Math.round(percent * 100);
