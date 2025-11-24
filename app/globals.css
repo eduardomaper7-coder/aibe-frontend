@@ -27,7 +27,6 @@ body {
   margin: 0;
   font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   font-weight: 300;
-  color: #fff;
   background: #000;
   overflow-x: hidden;
 }
@@ -153,6 +152,7 @@ a.btn:active,
   padding-left: var(--content-x);
   padding-right: var(--pad-x);
   z-index: 1;
+  padding-top: 20vh !important;
 }
 
 /* Título dinámico */
@@ -183,6 +183,7 @@ a.btn:active,
   opacity: .92; 
   font-weight: 300; 
   margin: 0;
+  transform: translateY(+350px);
 }
 
 /* CTA */
@@ -365,3 +366,245 @@ html { background: #000; }
 
 /* El body respeta tus fondos (blanco/azul): */
 body { background: transparent; margin: 0; padding: 0; }
+
+
+/* HERO — Video fijo estilo Shopify */
+.hero {
+  height: 100vh;      /* ⬅⬅ AQUI defines cuánto dura el video en el scroll */
+  position: relative;
+  overflow: visible;
+}
+
+/* Contenedor del video */
+.hero-video-wrapper {
+  position: sticky;
+  inset: 0;
+  width: 100%;
+  height: 100vh;
+  z-index: -1;
+}
+
+/* Video */
+.hero-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Botonera estilo Shopify */
+.hero-buttons {
+  position: absolute;
+
+  /* mismo offset que tenías */
+  left: calc(var(--content-x) + 130px);
+
+  /* misma altura que tenías */
+  bottom: calc(var(--subtitle-bottom) + 30px);
+
+  display: flex;
+  align-items: center;
+  gap: 18px;
+
+  width: 100%; /* 👈 IMPORTANTE: permite empujar el link a la derecha */
+  z-index: 2;
+}
+
+
+/* Botones principales */
+.hero-btn {
+  padding: 12px 28px;
+  border-radius: 999px;
+  font-size: clamp(15px, 1.4vw, 18px);
+  font-weight: 500;
+  cursor: pointer;
+  border: 1.7px solid rgba(255,255,255,.4);
+  backdrop-filter: blur(8px);
+  transition: all .25s ease;
+  white-space: nowrap;
+}
+
+/* Botón blanco */
+.hero-btn.primary {
+  background: #fff;
+  color: #000;
+  border-color: #fff;
+}
+.hero-btn.primary:hover {
+  background: #f5f5f5;
+  transform: translateY(-2px);
+}
+
+/* Botón transparente */
+.hero-btn.secondary {
+  background: transparent;
+  color: #fff;
+}
+.hero-btn.secondary:hover {
+  background: rgba(255,255,255,0.12);
+  border-color: rgba(255,255,255,.7);
+  transform: translateY(-2px);
+}
+
+/* Enlace de texto */
+.hero-link {
+  color: #fff;
+  font-weight: 500;
+  text-decoration: none;
+  opacity: .85;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: clamp(14px, 1.3vw, 18px);
+  margin-left: auto;
+  margin-right: calc(var(--pad-x) + 250px);
+  
+}
+.hero-link:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background: #000;
+}
+
+
+/* Full bleed negro con expansión lateral */
+.bg-black-fullbleed {
+  position: relative;
+  isolation: isolate;
+}
+
+.bg-black-fullbleed::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: #000;
+  z-index: -1;
+  box-shadow: 0 0 0 100vmax #000; /* expande el fondo infinitamente */
+  clip-path: inset(0 -100vmax);   /* evita scroll horizontal */
+}
+
+.hero-mask-bottom {
+  position: absolute;
+  top: 100%;        /* empieza justo donde el hero termina */
+  left: 0;
+  right: 0;
+  height: 0vh;    /* cubre todo lo que sigue */
+  background: #000; /* color de tu página */
+  z-index: -1;      /* por encima del video, por debajo del resto */
+  pointer-events: none;
+}
+
+
+.section-blue-fix {
+  position: relative;
+  overflow: visible;
+}
+
+/* Cubre el borde inferior sin tapar el color de la sección */
+.section-blue-fix::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 4px; /* suficiente para eliminar el hueco */
+  background: inherit; /* usa el MISMO fondo de la sección */
+  z-index: 1;
+}
+
+.section-mask {
+  position: relative;
+  isolation: isolate;
+}
+
+.section-mask::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: #0A1224; /* MISMO color de la sección */
+  z-index: -1;
+  box-shadow: 0 0 0 100vmax #0A1224;
+  clip-path: inset(0 -100vmax);
+}
+
+
+.bg-blue-fullbleed {
+  position: relative;
+  isolation: isolate;
+}
+
+.bg-blue-fullbleed::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: #0A1224; /* color original */
+  z-index: -1;
+  box-shadow: 0 0 0 100vmax #0A1224; /* expande el fondo azul */
+  clip-path: inset(0 -100vmax);
+}
+
+#dynamicTitle,
+.subtitle {
+  position: relative;
+  z-index: 99 !important;
+}
+
+/* PONER TÍTULOS ENCIMA DEL VIDEO (SOLUCIÓN SIMPLE) */
+#dynamicTitle,
+.subtitle,
+.title-slot,
+.title-layer {
+  position: relative !important;
+  z-index: 10 !important;
+}
+
+/* Dejar el video detrás */
+.hero-video-wrapper video,
+.hero video {
+  z-index: -1 !important;
+}
+
+/* Asegurar que el contenido esté por encima del video */
+.hero .shell,
+.hero .center,
+.hero .title-slot,
+.hero .title-layer,
+#dynamicTitle,
+.hero .subtitle,
+.hero .hero-buttons,
+.hero .hero-btn-group,
+.hero .hero-link {
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+/* El video queda detrás del contenido */
+.hero-video-wrapper,
+.hero-video-wrapper video {
+  position: absolute !important;
+  z-index: 0 !important;
+}
+
+.hero-btn-group .hero-btn + .hero-btn {
+  margin-left: 17px !important;  /* ← ajusta aquí el espacio */
+}
+
+#modal-root {
+  all: initial;
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 999999999 !important;
+  font-family: Inter, sans-serif !important;
+}
+
+/* Permitir Tailwind en el modal */
+#modal-root * {
+  all: revert;
+}

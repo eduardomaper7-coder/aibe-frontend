@@ -4,19 +4,23 @@ import Link from "next/link";
 import { ThumbsUp, Share2, Star } from "lucide-react";
 import { motion, type Variants } from "framer-motion";
 
+/* ⭐ ESTRELLAS */
 function RatingStars({ rating }: { rating: number }) {
   return (
-    <div className="flex items-center gap-1" aria-label={`Puntuación ${rating} de 5`}>
+    <div className="flex items-center gap-0.5 text-xs">
       {Array.from({ length: 5 }).map((_, i) => (
         <Star
           key={i}
-          className={`h-4 w-4 ${i < rating ? "fill-yellow-400 stroke-yellow-500" : "stroke-gray-300"}`}
+          className={`h-3 w-3 ${
+            i < rating ? "fill-yellow-400 stroke-yellow-500" : "stroke-gray-300"
+          }`}
         />
       ))}
     </div>
   );
 }
 
+/* ⭐ AVATAR MÁS PEQUEÑO */
 function Avatar({
   name,
   color,
@@ -26,49 +30,57 @@ function Avatar({
   color: string;
   textColor?: string;
 }) {
-  const initial = name && name.length > 0 ? name[0].toLowerCase() : "?";
+  const initial = name[0]?.toUpperCase() ?? "?";
   return (
     <div
-      className={`relative h-10 w-10 shrink-0 overflow-hidden rounded-full ${color} ${textColor} grid place-items-center font-semibold`}
+      className={`relative h-8 w-8 shrink-0 overflow-hidden rounded-full ${color} ${textColor} grid place-items-center text-sm font-semibold`}
     >
-      <span className="text-base leading-none">{initial}</span>
-      <div className="absolute -bottom-1 -right-1 grid h-4 w-4 place-items-center rounded-full bg-white">
-        <Star className="h-3 w-3 fill-orange-400 stroke-orange-500" />
+      {initial}
+      <div className="absolute -bottom-1 -right-1 grid h-3 w-3 place-items-center rounded-full bg-white">
+        <Star className="h-2.5 w-2.5 fill-orange-400 stroke-orange-500" />
       </div>
     </div>
   );
 }
 
+/* ⭐ ACCIONES */
 function ActionBar() {
   return (
-    <div className="mt-3 flex gap-6 text-sm text-gray-500">
+    <div className="mt-2 flex gap-4 text-xs text-gray-500">
       <button className="flex items-center gap-1 hover:text-gray-700">
-        <ThumbsUp className="h-4 w-4" />
+        <ThumbsUp className="h-3 w-3" />
         Me gusta
       </button>
       <button className="flex items-center gap-1 hover:text-gray-700">
-        <Share2 className="h-4 w-4" />
+        <Share2 className="h-3 w-3" />
         Compartir
       </button>
     </div>
   );
 }
 
+/* ⭐ TARJETA DE RESEÑA REDUCIDA Y SIN TRUNCAR */
 function ReviewCard({ review }: { review: any }) {
   return (
-    <div className="rounded-2xl border bg-white p-5 shadow-sm w-full max-w-xl">
-      <div className="flex items-start gap-3">
+    <div className="rounded-xl border bg-white p-3 shadow-sm w-full max-w-sm text-[13px] leading-5">
+      <div className="flex items-start gap-2">
         <Avatar name={review.user} color={review.avatarColor} textColor={review.avatarText} />
         <div className="min-w-0">
-          <div className="flex flex-wrap items-center gap-x-2 text-sm text-gray-700">
+          <div className="flex flex-wrap items-center gap-x-1 text-xs text-gray-700">
             <span className="font-semibold">{review.user}</span>
             <span className="text-gray-500">· Local Guide · {review.guideReviews} reseñas</span>
           </div>
-          <div className="mt-1 flex items-center gap-3 text-xs text-gray-500">
+
+          <div className="mt-1 flex items-center gap-2 text-[11px] text-gray-500">
             <RatingStars rating={review.rating} />
             <span>· {review.time}</span>
           </div>
-          <p className="mt-2 text-[15px] leading-6 text-gray-800">{review.text}</p>
+
+          {/* TEXTO COMPLETO SIN TRUNCAR */}
+          <p className="mt-2 text-[13px] leading-6 whitespace-normal break-words text-gray-800">
+            {review.text}
+          </p>
+
           <ActionBar />
         </div>
       </div>
@@ -76,16 +88,21 @@ function ReviewCard({ review }: { review: any }) {
   );
 }
 
+/* ⭐ TARJETA IA REDUCIDA Y SIN TRUNCAR */
 function AIResponseCard({ text }: { text: string }) {
   return (
-    <div className="relative rounded-2xl border bg-white p-5 shadow-sm w-full max-w-xl">
-      <div className="mb-2 text-sm font-medium text-gray-700">Respuesta IA sugerida</div>
-      <p className="text-[15px] leading-6 text-gray-800">{text}</p>
+    <div className="relative rounded-xl border bg-white p-3 shadow-sm w-full max-w-sm text-[13px] leading-5">
+      <div className="mb-1 text-xs font-medium text-gray-700">Respuesta IA sugerida</div>
+
+      {/* TEXTO COMPLETO SIN TRUNCAR */}
+      <p className="text-[13px] leading-6 whitespace-normal break-words text-gray-800">
+        {text}
+      </p>
     </div>
   );
 }
 
-/* CÍRCULO grande con color y glow tipo neón */
+/* ⭐ CÍRCULO FEATURE REDUCIDO */
 function FeatureCircle({
   title,
   subtitle,
@@ -94,35 +111,35 @@ function FeatureCircle({
 }: {
   title: string;
   subtitle: string;
-  color: string; // hex
+  color: string;
   delay?: number;
 }) {
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.9, y: 18 }}
       whileInView={{ opacity: 1, scale: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.4 }}
+      viewport={{ once: true, amount: 0 }}
       transition={{ delay, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
       className="relative grid place-items-center rounded-full
-                 h-52 w-52 md:h-60 md:w-60 xl:h-72 xl:w-72
-                 text-white text-center px-6 shadow-lg ring-1 ring-white/20"
+        h-36 w-36 md:h-44 md:w-44 xl:h-52 xl:w-52
+        text-white text-center px-3 shadow-lg ring-1 ring-white/20"
       style={{ backgroundColor: color }}
     >
-      {/* Glow / luz neón detrás */}
       <div
         className="pointer-events-none absolute inset-0 -z-10 rounded-full"
         style={{
           backgroundColor: color,
           opacity: 0.45,
-          filter: "blur(36px)",
-          transform: "scale(1.25)",
+          filter: "blur(30px)",
+          transform: "scale(1.2)",
         }}
       />
+
       <div className="font-sans">
-        <div className="text-[15px] md:text-xl xl:text-2xl font-semibold leading-tight">
+        <div className="text-[13px] md:text-base xl:text-lg font-semibold">
           {title}
         </div>
-        <div className="mt-2 text-[12px] md:text-sm xl:text-base leading-snug opacity-95">
+        <div className="mt-1 text-[11px] md:text-xs xl:text-sm opacity-90">
           {subtitle}
         </div>
       </div>
@@ -130,6 +147,7 @@ function FeatureCircle({
   );
 }
 
+/* ⭐ COMPONENTE PRINCIPAL */
 export default function SeccionResenasIA() {
   const rows = [
     {
@@ -142,7 +160,7 @@ export default function SeccionResenasIA() {
       text:
         "Tuve una experiencia excelente. Desde el momento en que llegué, el personal fue muy amable y atento. Me explicaron todo con claridad y se aseguraron de que me sintiera cómodo. Además, el lugar estaba impecable y se notaba que cuidan cada detalle. Sin duda, fue una visita muy agradable y me quedo con una impresión muy positiva.",
       ai:
-        "¡Muchas gracias por tomarte el tiempo de compartir tu experiencia! Nos alegra mucho saber que te sentiste bien atendido y que notaste el esfuerzo que ponemos en mantener todo en buen estado. Valoramos sinceramente tus palabras y nos motiva saber que tu visita fue tan agradable. 😊",
+        "¡Muchas gracias por compartir tu experiencia! Nos alegra saber que te sentiste bien atendido y que notaste el esfuerzo que ponemos en mantener todo en buen estado. Valoramos sinceramente tus palabras y nos motiva saber que tu visita fue tan agradable. 😊",
     },
     {
       user: "Luis Pérez",
@@ -170,155 +188,123 @@ export default function SeccionResenasIA() {
     },
   ];
 
-  /* Textos + colores de los 3 círculos */
   const features = [
     {
       title: "Ahorra tiempo, gana eficiencia.",
-      subtitle: "Deja que la IA responda por ti mientras tú te enfocas en hacer crecer tu negocio.",
-      color: "#F59E0B", // ámbar
+      subtitle: "La IA responde por ti en segundos.",
+      color: "#F59E0B",
     },
     {
-      title: "Respuestas con tono perfecto.",
-      subtitle: "Comunicación coherente, profesional y alineada con tu marca en cada reseña.",
-      color: "#F43F5E", // rosa
+      title: "Respuestas con el tono ideal.",
+      subtitle: "Comunicación profesional y coherente.",
+      color: "#F43F5E",
     },
     {
-      title: "Mejora tu reputación sin esfuerzo.",
-      subtitle: "Responde en segundos y demuestra a tus clientes que te importan.",
-      color: "#10B981", // verde esmeralda
+      title: "Mejora tu reputación fácilmente.",
+      subtitle: "Demuestra atención en cada respuesta.",
+      color: "#10B981",
     },
   ];
 
-  const getVariants = (
-    baseDelay: number
-  ): { review: Variants; arrow: Variants; ai: Variants } => ({
+  const getVariants = (baseDelay: number) => ({
     review: {
       hidden: { opacity: 0, y: 8 },
-      show: { opacity: 1, y: 0, transition: { delay: baseDelay, duration: 0.35 } },
+      show: { opacity: 1, y: 0, transition: { delay: baseDelay } },
     },
     arrow: {
       hidden: { pathLength: 0, opacity: 0 },
       show: {
         pathLength: 1,
         opacity: 1,
-        transition: {
-          delay: baseDelay + 0.45,
-          duration: 0.5,
-          ease: [0.42, 0, 0.58, 1],
-        },
+        transition: { delay: baseDelay + 0.3, duration: 0.4 },
       },
     },
     ai: {
       hidden: { opacity: 0, y: 8 },
-      show: { opacity: 1, y: 0, transition: { delay: baseDelay + 1.0, duration: 0.35 } },
+      show: { opacity: 1, y: 0, transition: { delay: baseDelay + 0.6 } },
     },
   });
 
   return (
-    <section className="w-full bg-black py-20 overflow-x-visible relative">
-      <div className="max-w-6xl pl-8 md:pl-10 relative">
-        <h2 className="font-sans text-white text-[38px] md:text-[40px] font-semibold tracking-tight text-left">
+    <section className="w-full bg-black py-16 relative overflow-x-visible">
+      <div className="max-w-5xl pl-6 md:pl-8 relative">
+
+        <h2 className="text-white text-[30px] md:text-[34px] font-semibold">
           Responde a tus reseñas de forma automática con IA
         </h2>
 
-        {/* Lista de bloques + columna de círculos muy a la derecha */}
-        <div className="relative mt-16 space-y-12">
-          {/* Columna (ancla) del hilo: centrado respecto al ancho de los círculos */}
+        <div className="relative mt-12 space-y-10">
+
+          {/* Línea vertical */}
           <div
-            className="hidden md:block absolute top-0 right-[-360px] lg:right-[-420px] xl:right-[-520px]
-                       w-[208px] md:w-[240px] xl:w-[288px] h-full pointer-events-none"
+            className="hidden md:block absolute top-0 right-[-240px] lg:right-[-300px] xl:right-[-360px]
+              w-[160px] md:w-[180px] xl:w-[220px] h-full"
           >
             <motion.div
-              className="absolute left-1/2 -translate-x-1/2 w-px bg-white/35 h-full"
+              className="absolute left-1/2 -translate-x-1/2 w-px bg-white/30 h-full"
               initial={{ scaleY: 0, originY: 0 }}
               whileInView={{ scaleY: 1 }}
-              viewport={{ once: true, amount: 0.2 }}
-              transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.7 }}
             />
           </div>
 
           {rows.map((r, idx) => {
-            const v = getVariants(idx * 0.2);
+            const v = getVariants(idx * 0.15);
             const f = features[idx];
             const circleDelay = 0.15 + idx * 0.15;
 
             return (
               <div key={idx} className="relative">
-                {/* Bloque principal */}
-                <div
-                  className="relative overflow-hidden rounded-3xl p-6 md:p-8 ring-1 ring-white/10
-                             shadow-[0_0_50px_-12px_rgba(30,58,138,0.6)]
-                             bg-gradient-to-br from-[#0B1430] via-[#0A1537] to-[#081025]"
-                >
-                  {/* Focos decorativos */}
-                  <div className="pointer-events-none absolute -top-28 -left-20 h-72 w-72 rounded-full bg-indigo-500/20 blur-3xl" />
-                  <div className="pointer-events-none absolute -bottom-28 -right-24 h-72 w-72 rounded-full bg-blue-400/10 blur-3xl" />
-                  <div className="pointer-events-none absolute top-16 left-1/4 h-48 w-48 rounded-full bg-white/10 blur-2xl" />
-                  <div className="pointer-events-none absolute bottom-12 right-1/3 h-56 w-56 rounded-full bg-white/5 blur-3xl" />
-                  <div className="pointer-events-none absolute top-1/3 right-10 h-40 w-40 rounded-full bg-white/[0.07] blur-2xl" />
+                
+                <div className="relative overflow-hidden rounded-3xl p-4 md:p-5 bg-gradient-to-br from-[#0B1430] via-[#0A1537] to-[#081025] ring-1 ring-white/10">
 
-                  <div className="relative flex flex-col items-center gap-10 md:flex-row md:items-center md:justify-start">
-                    <motion.div
-                      initial="hidden"
-                      whileInView="show"
-                      viewport={{ once: true, amount: 0.4 }}
-                      variants={v.review}
-                    >
+                  <div className="relative flex flex-col items-center gap-6 md:flex-row md:items-center md:justify-between">
+
+                    <motion.div variants={v.review} initial="hidden" whileInView="show" viewport={{ once: true }}>
                       <ReviewCard review={r} />
                     </motion.div>
 
-                    {/* Flecha */}
                     <motion.svg
+                      variants={v.arrow}
                       initial="hidden"
                       whileInView="show"
-                      viewport={{ once: true, amount: 0.4 }}
+                      viewport={{ once: true }}
                       xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 220 24"
-                      className="hidden h-6 w-56 md:block self-center"
+                      viewBox="0 0 200 20"
+                      className="hidden md:block h-4 w-40"
                       fill="none"
                     >
                       <defs>
-                        <marker id="arrowhead" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
-                          <path d="M0,0 L0,8 L8,4 z" fill="#d1d5db" />
+                        <marker id="arrowhead" markerWidth="6" markerHeight="6" refX="6" refY="3" orient="auto">
+                          <path d="M0,0 L0,6 L6,3 z" fill="#d1d5db" />
                         </marker>
                       </defs>
                       <motion.line
                         x1="2"
-                        y1="12"
-                        x2="210"
-                        y2="12"
+                        y1="10"
+                        x2="190"
+                        y2="10"
                         stroke="#d1d5db"
-                        strokeWidth="2.5"
+                        strokeWidth="2"
                         strokeLinecap="round"
                         markerEnd="url(#arrowhead)"
-                        variants={v.arrow}
                       />
                     </motion.svg>
 
-                    <motion.div
-                      initial="hidden"
-                      whileInView="show"
-                      viewport={{ once: true, amount: 0.4 }}
-                      variants={v.ai}
-                    >
+                    <motion.div variants={v.ai} initial="hidden" whileInView="show" viewport={{ once: true }}>
                       <AIResponseCard text={r.ai} />
                     </motion.div>
                   </div>
                 </div>
 
-                {/* Círculo alineado con el hilo y MUY a la derecha */}
                 <div
                   className="hidden md:block absolute top-1/2 -translate-y-1/2
-                             right-[-360px] lg:right-[-420px] xl:right-[-520px]
-                             w-[208px] md:w-[240px] xl:w-[288px]"
+                    right-[-240px] lg:right-[-300px] xl:right-[-360px]
+                    w-[160px] md:w-[180px] xl:w-[220px]"
                 >
-                  <div className="mx-auto w-[208px] md:w-[240px] xl:w-[288px]">
-                    <FeatureCircle
-                      title={f.title}
-                      subtitle={f.subtitle}
-                      color={f.color}
-                      delay={circleDelay}
-                    />
+                  <div className="mx-auto w-full">
+                    <FeatureCircle {...f} delay={circleDelay} />
                   </div>
                 </div>
               </div>
@@ -326,17 +312,15 @@ export default function SeccionResenasIA() {
           })}
         </div>
       </div>
-      {/* 🚀 BOTÓN FINAL */}
-        <div className="mt-20 flex justify-center">
-          <Link
-  href="/contact"
-  className="bg-white text-black font-semibold text-xl px-10 py-5 rounded-full transition-all duration-200 hover:bg-gray-100 hover:scale-105 shadow-md"
->
-  Escríbenos sin compromiso
-</Link>
 
-
-        </div>
+      <div className="mt-16 flex justify-center">
+        <Link
+          href="/contact"
+          className="bg-white text-black font-semibold text-lg px-8 py-4 rounded-full hover:scale-105 transition-all"
+        >
+          Escríbenos sin compromiso
+        </Link>
+      </div>
     </section>
   );
 }

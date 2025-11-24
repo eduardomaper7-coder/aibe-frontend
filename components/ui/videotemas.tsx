@@ -62,7 +62,7 @@ export default function VideoTemas() {
       : 'opacity-100 translate-y-0';
 
   return (
-    <section className="w-full bg-black mt-20 py-10 font-[Inter] text-white">
+    <section className="bg-black-fullbleed bg-black mt-20 py-10 font-[Inter] text-white">
       {/* SUBTÍTULO Y TÍTULO */}
       <div className="max-w-[min(1800px,98vw)] mx-auto px-4 md:px-6 lg:px-8 mb-10 text-left">
         <p className="text-white/80 text-base md:text-lg mb-2">

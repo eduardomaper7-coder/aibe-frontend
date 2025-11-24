@@ -1,7 +1,10 @@
 // app/TopbarGate.tsx
-'use client';
+"use client";
+
+
 import { usePathname } from 'next/navigation';
 import GlobalTopbar from './GlobalTopbar';
+
 
 export default function TopbarGate() {
   const pathname = usePathname();
@@ -9,3 +12,5 @@ export default function TopbarGate() {
   if (!isMarketingHome) return null;
   return <GlobalTopbar />;
 }
+
+

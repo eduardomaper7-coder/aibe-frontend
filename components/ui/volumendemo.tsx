@@ -41,9 +41,11 @@ export default function GraficoPuntuacionVsVolumen() {
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
           {/* Opción 1 aplicada */}
-          <h2 className="mt-0 text-left font-sans text-white text-[28px] sm:text-[32px] md:text-[36px] font-semibold tracking-tight">
-            Evolución del Volumen y la Puntuación Media
-          </h2>
+          <h2 className="mt-0 text-left font-sans text-white text-[24px] sm:text-[28px] md:text-[32px] font-semibold tracking-tight">
+  Evolución del Volumen y la Puntuación Media
+</h2>
+
+
           <p className="mt-2 max-w-3xl text-sm text-slate-300">
             Compara cómo cambia el número de reseñas y su valoración a lo largo del tiempo.
           </p>

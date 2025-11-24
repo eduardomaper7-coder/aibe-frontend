@@ -123,9 +123,10 @@ export default function SeccionGraficasAvanzadas() {
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 pt-0 pb-16">
         <div className="mb-8">
           {/* Opción 1 aplicada */}
-          <h2 className="text-left font-sans text-white text-[32px] sm:text-[36px] md:text-[40px] font-semibold tracking-tight">
-            Análisis de Sentimiento de las Reseñas
-          </h2>
+          <h2 className="text-left font-sans text-white text-[28px] sm:text-[32px] md:text-[36px] font-semibold tracking-tight">
+  Análisis de Sentimiento de las Reseñas
+</h2>
+
           <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-300">
             Descubre cómo se distribuyen las opiniones positivas, neutras y negativas sobre tu negocio.
           </p>
@@ -162,7 +163,7 @@ export default function SeccionGraficasAvanzadas() {
                             <stop offset="100%" stopColor="#a3a3a3" />
                           </linearGradient>
                         </defs>
-                        <circle cx="180" cy="180" r="158" fill="none" stroke="url(#ring)" strokeWidth="2" strokeDasharray="4 6" />
+                        <circle cx="180" cy="180" r="130" fill="none" stroke="url(#ring)" strokeWidth="2" strokeDasharray="4 6" />
                       </svg>
                     </motion.div>
 
@@ -175,8 +176,8 @@ export default function SeccionGraficasAvanzadas() {
                           data={dataSentimiento}
                           dataKey="value"
                           nameKey="name"
-                          innerRadius={100}
-                          outerRadius={150}
+                          innerRadius={50}
+                          outerRadius={80}
                           paddingAngle={3}
                           startAngle={90}
                           endAngle={-270}
@@ -208,7 +209,8 @@ export default function SeccionGraficasAvanzadas() {
                       transition={{ duration: 0.5, delay: 0.15 }}
                     >
                       <div className="text-xs uppercase tracking-wide text-slate-400">Reseñas</div>
-                      <div className="text-4xl md:text-5xl font-semibold text-white">{centerDisplay}</div>
+                      <div className="text-3xl md:text-4xl font-semibold text-white">{centerDisplay}</div>
+
                     </motion.div>
                   </div>
                 </motion.div>

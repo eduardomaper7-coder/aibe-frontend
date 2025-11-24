@@ -12,6 +12,9 @@ import VideoInicio from '@/components/ui/videoinicio';
 import Footer from './Footer';
 import TresRecuadros from '@/components/ui/3recuadros';
 import VideoTemas from '@/components/ui/videotemas';
+import SeoBeneficio from '@/components/ui/seo-beneficio'
+
+
 
 export default function Home() {
   useEffect(() => {
@@ -85,94 +88,123 @@ export default function Home() {
 
   return (
     <>
-      {/* HERO */}
-      <section className="hero mb-8" aria-label="Sección inicial con video de fondo">
-        <video
-          src="/videos/Diseño sin título (3).mp4"
-          autoPlay
-          muted
-          loop
-          playsInline
-          className="hero-video"
-        />
-        <div className="shell">
-          <div className="topbar-spacer" aria-hidden="true" />
-          <div className="center">
-            <div className="title-slot" id="titleSlot" aria-live="polite" aria-atomic="true">
-              <div className="title-layer">
-                <h1 id="dynamicTitle" className="title"></h1>
-              </div>
-            </div>
-            <p className="subtitle">
-              La tecnología que usan las grandes empresas, ahora al alcance de tu negocio.
-            </p>
-          </div>
+     <section className="hero relative" aria-label="Sección inicial con video de fondo">
+
+  {/* VIDEO fijo detrás de todo */}
+  <div className="hero-video-wrapper">
+    <video
+      src="/videos/Diseño sin título (3).mp4"
+      autoPlay
+      muted
+      loop
+      playsInline
+      className="hero-video"
+    />
+  </div>
+
+  {/* Contenido encima del video */}
+  <div className="shell relative z-[1]">
+    <div className="topbar-spacer" aria-hidden="true" />
+    <div className="center">
+      <div className="title-slot" id="titleSlot">
+        <div className="title-layer">
+          <h1 id="dynamicTitle" className="title"></h1>
         </div>
+      </div>
+      <p className="subtitle">
+        La tecnología que usan las grandes empresas,<br />
+        ahora al alcance de tu negocio.
+      </p>
+    </div>
+  </div>
 
-        <style jsx>{`
-          :root {
-            --topbar-h: 64px;
-          }
-          .hero {
-            position: relative;
-            overflow: hidden;
-          }
-          .hero-video {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-          }
-          .shell {
-            position: relative;
-            z-index: 1;
-          }
-          .topbar-spacer {
-            height: var(--topbar-h);
-          }
-        `}</style>
-      </section>
+  {/* Botones */}
+  <div className="hero-buttons">
+    <div className="hero-btn-group">
+      <button className="hero-btn primary">Empieza gratis</button>
+      <button className="hero-btn secondary">Ver planes</button>
+    </div>
 
-      {/* Secciones */}
-      <section className={sectionCx}>
-        <Frases />
-      </section>
+    <a href="#" className="hero-link">
+      <span>›</span> Por qué creamos AIBE
+    </a>
+  </div>
+
+  {/* ⭐ Capa que tapa el video fuera del hero */}
+  <div className="hero-mask-bottom"></div>
+
+</section>
+
+
+{/* SEO Beneficio */}
+<section className="relative z-[10] px-4 md:px-6 py-10">
+  <SeoBeneficio />
+</section>
+
+
+     {/* Secciones */}
+<section
+  className="
+    bg-black
+    px-4 md:px-6 py-6 md:py-8
+    relative z-[2]
+    rounded-t-[60px]
+    -mt-[40px]
+  "
+>
+  <Frases />
+</section>
+
       <VideoInicio />
       <TresRecuadros />
 
       {/* Sección azul integrada (full-width) */}
-      <section
-        className="
-          relative left-1/2 right-1/2 -mx-[50vw] w-screen
-          text-white font-sans
-          bg-[#0A1224]
-        "
-        style={{ fontFamily: 'Inter, sans-serif' }}
-      >
-        <div className="mx-auto max-w-7xl px-6 py-20 lg:px-8">
-          <div className="grid items-start gap-8 md:grid-cols-12">
-            <div className="md:col-span-7">
-              <h2 className="mt-0 text-2xl md:text-4xl lg:text-5xl font-light leading-tight text-gray-100">
-                {`Para todos: desde pequeños negocios hasta grandes marcas, sin importar el sector.`}
-              </h2>
-            </div>
+<section
+  className="
+    bg-blue-fullbleed
+    relative left-1/2 right-1/2 -mx-[50vw] w-screen
+    text-white font-sans
+    bg-[#0A1224]
+  "
+  style={{ fontFamily: 'Inter, sans-serif' }}
+>
+  <div className="mx-auto max-w-7xl px-6 py-20 lg:px-8">
+    <div className="grid items-start gap-8 md:grid-cols-12">
 
-            <div className="md:col-span-5">
-              <p className="text-xs sm:text-sm md:text-base lg:text-lg text-gray-300 leading-relaxed">
-                {``} <br />
-                {``} <br />
-                {``} <br />
-                <span className="block mt-4 text-gray-100">
-                  {``}
-                </span>
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
+      <div className="md:col-span-7">
+        <h2 className="mt-0 text-2xl md:text-4xl lg:text-5xl font-light leading-tight text-gray-100">
+          Especialistas en aumentar las ventas y mejorar la reputación online de restaurantes.
+        </h2>
+      </div>
+
+      <div className="md:col-span-5 flex flex-col items-end justify-start space-y-1">
+
+  <p className="text-[13px] md:text-sm lg:text-base text-gray-400 leading-relaxed text-right">
+    Profesionales en SEO y captación de clientes para restaurantes.
+  </p>
+
+  <p className="text-[13px] md:text-sm lg:text-base text-gray-400 leading-relaxed text-right">
+    Resultados comprobados a las 2 semanas.
+  </p>
+
+  <p className="text-[13px] md:text-sm lg:text-base text-gray-400 leading-relaxed text-right">
+    Prueba gratis sin compromiso.
+  </p>
+
+</div>
+
+
+    </div>
+  </div>
+</section>
+
+
+
+
 
       <VideoTemas />
+
+      
 
       {/* Sección combinada: Sentimiento + Volumen */}
       <section className="relative left-1/2 right-1/2 -mx-[50vw] w-screen bg-black py-10">
@@ -208,3 +240,4 @@ export default function Home() {
     </>
   );
 }
+

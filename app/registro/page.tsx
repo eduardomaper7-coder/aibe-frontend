@@ -3,15 +3,19 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
+import { useRouter } from "next/navigation";
 
 export default function SignupPage() {
+  const router = useRouter();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  // 🚀 Crea la sesión de Stripe Checkout y redirige
+  // 🚀 Mantengo la función por si luego la necesitas,
+  // pero YA NO SE LLAMA desde ningún lado.
   async function goToCheckout(userEmail: string) {
     const origin =
       typeof window !== "undefined"
@@ -33,7 +37,7 @@ export default function SignupPage() {
     window.location.assign(data.url);
   }
 
-  // ✉️ Registro + acceso + redirección a Stripe
+  // ✉️ Registro + acceso + REDIRECCIÓN AL PANEL
   async function handleEmail(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
@@ -59,11 +63,13 @@ export default function SignupPage() {
 
       if (error) throw error;
 
+      // Si supabase ya crea sesión directamente → ir al panel
       if (data.session) {
-        await goToCheckout(email);
+        router.push("/panel");
         return;
       }
 
+      // Si no, iniciar sesión y luego ir al panel
       const { error: loginErr } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -71,7 +77,7 @@ export default function SignupPage() {
 
       if (loginErr) throw loginErr;
 
-      await goToCheckout(email);
+      router.push("/panel");
     } catch (err: any) {
       setError(err?.message ?? "No se pudo crear la cuenta.");
     } finally {
@@ -79,7 +85,7 @@ export default function SignupPage() {
     }
   }
 
-  // 🔵 Google OAuth
+  // 🔵 Google OAuth (aquí no hago cambio, pero si quieres que Google también vaya al panel, te lo hago)
   async function handleGoogle() {
     setError(null);
     setMessage(null);
