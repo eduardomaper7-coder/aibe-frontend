@@ -58,45 +58,64 @@ export default function SeccionGraficasAvanzadas() {
   });
 
   const renderLabel = (props: any) => {
-    const { cx, cy, midAngle, outerRadius, percent, index } = props;
-    const RADIAN = Math.PI / 180;
-    const r = outerRadius + 18;
-    const vx = Math.cos(-midAngle * RADIAN);
-    const vy = Math.sin(-midAngle * RADIAN);
-    const x = cx + r * vx;
-    const y = cy + r * vy;
+  const { cx, cy, midAngle, outerRadius, percent, index } = props;
 
-    const name = dataSentimiento[index].name;
-    const val = Math.round(percent * 100);
+  // Detectar si es móvil
+  const isMobile = typeof window !== "undefined" && window.innerWidth < 430;
 
-    let anchor: "start" | "end" = index === 0 ? "start" : vx >= 0 ? "start" : "end";
-    let dx = index === 0 ? 6 : anchor === "end" ? -5 : 6;
+  const RADIAN = Math.PI / 180;
 
-    return (
-      <g>
-        <line
-          x1={cx}
-          y1={cy}
-          x2={cx + (outerRadius + 8) * vx}
-          y2={cy + (outerRadius + 8) * vy}
-          stroke="#e5e7eb"
-          strokeWidth={1.5}
-        />
-        <circle cx={x} cy={y} r={3} fill={COLORS[index]} />
-        <text
-          x={x + dx}
-          y={y}
-          textAnchor={anchor}
-          dominantBaseline="middle"
-          fill="#ffffff"
-          fontSize={12}
-          fontWeight={600}
-        >
-          {name} {val}%
-        </text>
-      </g>
-    );
-  };
+  // Distancia desde el borde externo
+  const extraRadius = isMobile ? 10 : 18;
+  const r = outerRadius + extraRadius;
+
+  const vx = Math.cos(-midAngle * RADIAN);
+  const vy = Math.sin(-midAngle * RADIAN);
+
+  let x = cx + r * vx;
+  let y = cy + r * vy;
+
+  const name = dataSentimiento[index].name;
+  const val = Math.round(percent * 100);
+
+  // Limitar horizontalmente para que NO se salga nunca
+  const limitLeft = cx - (isMobile ? 120 : 160);
+  const limitRight = cx + (isMobile ? 120 : 160);
+
+  x = Math.max(limitLeft, Math.min(x, limitRight));
+
+  // Textos más compactos en móvil
+  const fontSize = isMobile ? 10 : 12;
+  const dx = isMobile ? 4 : 6;
+
+  const anchor: "start" | "end" =
+    vx >= 0 ? "start" : "end";
+
+  return (
+    <g>
+      <line
+        x1={cx}
+        y1={cy}
+        x2={cx + (outerRadius - 2) * vx}
+        y2={cy + (outerRadius - 2) * vy}
+        stroke="#e5e7eb"
+        strokeWidth={1.3}
+      />
+      <circle cx={x} cy={y} r={3} fill={COLORS[index]} />
+      <text
+        x={x + dx}
+        y={y}
+        fontSize={fontSize}
+        fontWeight={600}
+        textAnchor={anchor}
+        dominantBaseline="middle"
+        fill="#ffffff"
+      >
+        {name} {val}%
+      </text>
+    </g>
+  );
+};
 
   const defs = (
     <defs>

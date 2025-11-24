@@ -1,11 +1,14 @@
 'use client';
 import React, { useEffect, useRef, useState } from 'react';
 
+
 type Phase = 'show' | 'fadeOut' | 'gap' | 'fadeIn';
+
 
 const VIDEO_W_CLAMP = 'clamp(620px, 72vw, 1200px)';
 const SEP_PX = 28;
 const OFFSET_TOP = 117;
+
 
 const CARDS = [
   { title: 'Tendencia', text: 'Permite identificar si la opinión mejora o empeora con el tiempo.', color: '#FF8C42' },
@@ -14,18 +17,22 @@ const CARDS = [
   { title: 'Sentimiento promedio', text: 'Refleja la percepción general de los clientes.', color: '#C77DFF' },
 ];
 
+
 // Duraciones de animación
 const DUR_SHOW = 4000;
 const DUR_FADE = 500;
 const DUR_GAP = 200;
 const CYCLE_MS = DUR_SHOW + DUR_FADE + DUR_GAP + DUR_FADE;
 
+
 export default function VideoTemas() {
   const [index, setIndex] = useState(0);
   const [phase, setPhase] = useState<Phase>('show');
 
+
   const startRef = useRef<number | null>(null);
   const rafRef = useRef<number | null>(null);
+
 
   useEffect(() => {
     const step = (t: number) => {
@@ -34,23 +41,29 @@ export default function VideoTemas() {
       const elapsed = total % CYCLE_MS;
       const cycleNumber = Math.floor(total / CYCLE_MS);
 
+
       let nextPhase: Phase;
       if (elapsed < DUR_SHOW) nextPhase = 'show';
       else if (elapsed < DUR_SHOW + DUR_FADE) nextPhase = 'fadeOut';
       else if (elapsed < DUR_SHOW + DUR_FADE + DUR_GAP) nextPhase = 'gap';
       else nextPhase = 'fadeIn';
 
+
       const nextIndex = cycleNumber % CARDS.length;
+
 
       if (nextPhase !== phase) setPhase(nextPhase);
       if (nextIndex !== index) setIndex(nextIndex);
 
+
       rafRef.current = requestAnimationFrame(step);
     };
+
 
     rafRef.current = requestAnimationFrame(step);
     return () => { if (rafRef.current) cancelAnimationFrame(rafRef.current); };
   }, [index, phase]);
+
 
   const phaseClass =
     phase === 'show'
@@ -61,8 +74,9 @@ export default function VideoTemas() {
       ? 'opacity-0 translate-y-2'
       : 'opacity-100 translate-y-0';
 
+
   return (
-    <section className="bg-black-fullbleed bg-black mt-20 py-10 font-[Inter] text-white">
+<section className="hidden md:block bg-black-fullbleed bg-black mt-20 py-10 font-[Inter] text-white">
       {/* SUBTÍTULO Y TÍTULO */}
       <div className="max-w-[min(1800px,98vw)] mx-auto px-4 md:px-6 lg:px-8 mb-10 text-left">
         <p className="text-white/80 text-base md:text-lg mb-2">
@@ -72,6 +86,7 @@ export default function VideoTemas() {
           Conoce tu negocio mejor que nadie
         </h2>
       </div>
+
 
       {/* BLOQUE PRINCIPAL */}
       <div
@@ -100,6 +115,7 @@ export default function VideoTemas() {
             />
           </div>
 
+
           {/* RECUADRO ROTATIVO */}
           <div className="self-start" style={{ marginTop: `${OFFSET_TOP}px` }}>
             <div
@@ -127,8 +143,3 @@ export default function VideoTemas() {
     </section>
   );
 }
-
-
-
-
-
