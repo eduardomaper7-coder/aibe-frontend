@@ -25,15 +25,16 @@ const VideoInicio: React.FC = () => {
       </div>
 
       {/* 📱 MÓVIL — Video simple con controles */}
-      <div className="flex md:hidden w-full px-4 mt-6">
-        <video
-          src="/videos/1111.mp4"
-          controls
-          playsInline
-          className="w-full rounded-xl shadow-lg"
-          style={{ maxHeight: "70vh" }}
-        />
-      </div>
+<div className="flex md:hidden w-full px-4 mt-10 mb-10">
+  <video
+    src="/videos/1111.mp4"
+    controls
+    playsInline
+    className="w-full rounded-xl shadow-lg"
+    style={{ height: "95vh", objectFit: "cover" }}
+  />
+</div>
+
     </section>
   );
 };
