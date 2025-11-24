@@ -7,11 +7,10 @@ export default function DosRecuadros() {
       className="w-full bg-black px-4 md:px-6 py-8 md:py-12"
       aria-label="Sección con 2 recuadros grandes en degradado"
     >
-      {/* Recuadro ligeramente más bajo para acercar animación y texto */}
-      <div className="mx-auto max-w-7xl h-[105vh] grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* Recuadro 1 con ShapeFusion */}
-        <div className="rounded-2xl h-full bg-[#0A1224] flex items-center justify-center overflow-hidden relative">
-          {/* Animación elevada ligeramente */}
+      <div className="mx-auto max-w-7xl grid grid-cols-1 md:grid-cols-2 gap-8 md:h-[105vh]">
+        {/* RECUADRO 1: Análisis inteligente */}
+        <div className="relative rounded-2xl overflow-hidden bg-[#0A1224] min-h-[460px] md:min-h-0 flex items-center justify-center">
+          {/* Animación */}
           <div className="w-full h-full p-4 -translate-y-12 md:-translate-y-14 transition-transform">
             <ShapeFusion bgColor="#0A1224" />
           </div>
@@ -19,7 +18,7 @@ export default function DosRecuadros() {
           {/* Degradado inferior */}
           <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 md:h-44 bg-gradient-to-t from-[#0A1224] to-transparent" />
 
-          {/* Texto inferior (mismo estilo) */}
+          {/* Texto inferior */}
           <div className="pointer-events-none absolute inset-x-0 bottom-0 px-5 md:px-8 pb-12 md:pb-14">
             <h3 className="text-white text-lg sm:text-xl md:text-2xl font-extrabold tracking-tight">
               Análisis inteligente de todas tus reseñas
@@ -30,8 +29,8 @@ export default function DosRecuadros() {
           </div>
         </div>
 
-        {/* Recuadro 2 con video + título/subtítulo alineados */}
-        <div className="relative rounded-2xl h-full overflow-hidden">
+        {/* RECUADRO 2: Potencia tu reputación */}
+        <div className="relative rounded-2xl overflow-hidden bg-[#0A1224] min-h-[460px] md:min-h-0">
           <video
             src="/videos/videoreseñas.mp4"
             autoPlay
@@ -44,10 +43,10 @@ export default function DosRecuadros() {
             Tu navegador no soporta el elemento <code>video</code>.
           </video>
 
-          {/* Cubrimos la parte inferior del video para legibilidad */}
+          {/* Degradado inferior */}
           <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 md:h-44 bg-gradient-to-t from-[#0A1224] to-transparent" />
 
-          {/* Título + subtítulo con mismo estilo y misma altura que el otro */}
+          {/* Texto inferior */}
           <div className="pointer-events-none absolute inset-x-0 bottom-0 px-5 md:px-8 pb-12 md:pb-14">
             <h3 className="text-white text-lg sm:text-xl md:text-2xl font-extrabold tracking-tight">
               Potencia tu reputación online

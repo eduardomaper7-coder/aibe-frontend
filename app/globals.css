@@ -249,3 +249,27 @@ body {
     padding-top: 22vh !important;
   }
 }
+
+/* === Igualar altura de los dos recuadros solo en móvil === */
+@media (max-width: 640px) {
+  #dos-recuadros .same-height {
+    height: 105vh !important;
+    position: relative;
+  }
+}
+
+
+  /* El contenido interno debe respetar */
+  #dos-recuadros .same-height > div,
+  #dos-recuadros .same-height video {
+    height: 100% !important;
+  }
+
+/* Corregir que el contenido vuelva a ocupar toda la altura */
+#dos-recuadros .same-height > div,
+#dos-recuadros .same-height video {
+  height: 100% !important;
+  width: 100% !important;
+  object-fit: cover !important;
+  display: block;
+}
