@@ -127,7 +127,7 @@ function Categoria({ categoria, dato, oportunidad, reseñas }: any) {
         </span>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 items-stretch gap-6">
+<div className="flex flex-row overflow-x-auto no-scrollbar gap-4 md:grid md:grid-cols-3 md:gap-6">
         <div className="rounded-2xl border border-slate-200 bg-white p-5 md:p-6 shadow-inner">
           <h3 className="mb-2 text-sm font-semibold text-slate-700">Datos</h3>
           <p className="text-base leading-relaxed">{dato}</p>
@@ -187,7 +187,7 @@ function Categoria({ categoria, dato, oportunidad, reseñas }: any) {
         <h4 className="mb-3 text-sm font-semibold text-slate-700">
           Reseñas relacionadas
         </h4>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+<div className="flex flex-row overflow-x-auto no-scrollbar gap-4 md:grid md:grid-cols-3">
           {reseñas.map((r: any, i: number) => (
             <ReviewCard key={i} autor={r.autor} texto={r.texto} />
           ))}
