@@ -105,8 +105,9 @@ export default function DemoAnalisisResenasGoogle() {
           "http://localhost:8000";
 
         const url = `${base.replace(/\/$/, "")}/reviews/latest?email=${encodeURIComponent(
-          userEmail
-        )}`;
+  userEmail!
+)}`;
+
 
         console.log("DEBUG latest replies URL", url);
 
