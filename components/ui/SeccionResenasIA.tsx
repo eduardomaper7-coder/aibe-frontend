@@ -147,9 +147,9 @@ export default function SeccionResenasIA() {
       avatarColor: "bg-orange-600",
       avatarText: "text-white",
       text:
-        "Tuve una experiencia excelente. Desde el momento en que llegué, el personal fue muy amable...",
+        " Tuve una experiencia excelente. Desde el momento en que llegué, el personal fue muy amable y atento. Me explicaron todo con claridad y se aseguraron de que me sintiera cómodo. Además, el lugar estaba impecable y se notaba que cuidan cada detalle. Sin duda, fue una visita muy agradable y me quedo con una impresión muy positiva.",
       ai:
-        "¡Muchas gracias por compartir tu experiencia! Nos alegra saber que te sentiste bien atendido...",
+        "¡Muchas gracias por compartir tu experiencia! Nos alegra saber que te sentiste bien atendido y que notaste el esfuerzo que ponemos en mantener todo en buen estado. Valoramos sinceramente tus palabras y nos motiva saber que tu visita fue tan agradable. 😊",
     },
     {
       user: "Luis Pérez",
@@ -159,9 +159,9 @@ export default function SeccionResenasIA() {
       avatarColor: "bg-sky-500",
       avatarText: "text-slate-900",
       text:
-        "El restaurante tiene un ambiente agradable, pero la comida tardó más de lo esperado...",
+        "El restaurante tiene un ambiente agradable y el personal fue atento, pero la comida tardó un poco más de lo esperado. Pedí la lasaña de carne, que estaba muy sabrosa, aunque me habría gustado que llegara un poco más caliente. En general, fue una buena experiencia, pero con algunos detalles por mejorar.",
       ai:
-        "Agradecemos mucho que hayas compartido tu experiencia. Nos alegra saber que disfrutaste...",
+        "Agradecemos mucho que hayas compartido tu experiencia. Nos alegra saber que disfrutaste el sabor de la lasaña y valoramos tus observaciones sobre el tiempo de servicio y la temperatura del plato. Comentarios como el tuyo nos ayudan a comprender mejor la experiencia de nuestros clientes y a cuidar esos pequeños detalles que marcan la diferencia.",
     },
     {
       user: "Natalia Ríos",
@@ -171,9 +171,9 @@ export default function SeccionResenasIA() {
       avatarColor: "bg-emerald-600",
       avatarText: "text-white",
       text:
-        "El spa tiene buenas instalaciones, pero mi visita no fue tan relajante como esperaba...",
+        "El spa tiene unas instalaciones bonitas, pero mi visita no fue tan relajante como esperaba. Durante el masaje, hubo algo de ruido en la sala contigua y me costó desconectarme. El personal fue respetuoso, pero sentí que la experiencia podría haber sido más tranquila. Salí algo decepcionada, aunque el lugar en sí me pareció agradable.",
       ai:
-        "Gracias por dejar tu reseña. Lamentamos que el ambiente no haya sido todo lo relajante...",
+        "Gracias por dejar tu reseña y contarnos cómo fue tu experiencia. Lamentamos que el ambiente no haya sido todo lo relajante que esperabas y agradecemos que lo señales con claridad. Valoramos tus comentarios, ya que nos permiten conocer mejor la percepción de nuestros clientes y seguir prestando atención a los detalles que influyen en su bienestar.",
     },
   ];
 
@@ -190,41 +190,49 @@ export default function SeccionResenasIA() {
           Responde a tus reseñas de forma automática con IA
         </h2>
 
-        {/* 📱 MÓVIL: 3 reseñas + flecha vertical */}
-        <div className="mt-12 space-y-12 md:hidden">
-          {rows.map((r, idx) => (
-            <div key={idx} className="flex flex-col items-center space-y-4">
-              <ReviewCard review={r} />
+        {/* 📱 MÓVIL: 3 reseñas dentro del recuadro azul como escritorio */}
+<div className="mt-12 space-y-12 md:hidden">
+  {rows.map((r, idx) => (
+    <div
+      key={idx}
+      className="rounded-3xl p-5 bg-gradient-to-br from-[#0B1430] via-[#0A1537] to-[#081025] 
+                 ring-1 ring-white/10 flex flex-col items-center space-y-6"
+    >
+      {/* Reseña */}
+      <ReviewCard review={r} />
 
-              <motion.svg
-                width="32"
-                height="90"
-                viewBox="0 0 32 90"
-                initial={{ opacity: 0, y: -10 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5 }}
-              >
-                <motion.line
-                  x1="16"
-                  y1="0"
-                  x2="16"
-                  y2="70"
-                  stroke="#d1d5db"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  initial={{ pathLength: 0 }}
-                  whileInView={{ pathLength: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.8 }}
-                />
-                <polygon points="10,70 22,70 16,90" fill="#d1d5db" />
-              </motion.svg>
+      {/* Flecha vertical */}
+      <motion.svg
+        width="32"
+        height="90"
+        viewBox="0 0 32 90"
+        initial={{ opacity: 0, y: -10 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5 }}
+      >
+        <motion.line
+          x1="16"
+          y1="0"
+          x2="16"
+          y2="70"
+          stroke="#d1d5db"
+          strokeWidth="2"
+          strokeLinecap="round"
+          initial={{ pathLength: 0 }}
+          whileInView={{ pathLength: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+        />
+        <polygon points="10,70 22,70 16,90" fill="#d1d5db" />
+      </motion.svg>
 
-              <AIResponseCard text={r.ai} />
-            </div>
-          ))}
-        </div>
+      {/* Respuesta IA */}
+      <AIResponseCard text={r.ai} />
+    </div>
+  ))}
+</div>
+
 
         {/* 🖥️ ESCRITORIO COMPLETO */}
         <div className="hidden md:block relative mt-12 space-y-10">

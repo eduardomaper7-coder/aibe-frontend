@@ -13,6 +13,7 @@ import Footer from './Footer';
 import TresRecuadros from '@/components/ui/3recuadros';
 import VideoTemas from '@/components/ui/videotemas';
 import SeoBeneficio from '@/components/ui/seo-beneficio'
+import Link from "next/link";
 
 
 
@@ -119,21 +120,28 @@ export default function Home() {
   </div>
 
   {/* Botones */}
-  <div className="hero-buttons">
-    <div className="hero-btn-group">
-      <button className="hero-btn primary">Empieza gratis</button>
-      <button className="hero-btn secondary">Ver planes</button>
-    </div>
+<div className="hero-buttons">
+  <div className="hero-btn-group">
 
-    <a href="#" className="hero-link">
-      <span>›</span> Por qué creamos AIBE
-    </a>
+    <Link href="/registro" className="hero-btn primary">
+      Empieza gratis
+    </Link>
+
+    <Link href="/precios" className="hero-btn secondary">
+      Ver planes
+    </Link>
+
   </div>
+</div>
 
-  {/* ⭐ Capa que tapa el video fuera del hero */}
-  <div className="hero-mask-bottom"></div>
+{/* ⭐ Capa que tapa el video fuera del hero */}
+<div className="hero-mask-bottom"></div>
 
 </section>
+
+
+    
+
 
 
 {/* SEO Beneficio */}

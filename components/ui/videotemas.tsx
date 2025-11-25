@@ -79,12 +79,28 @@ export default function VideoTemas() {
 <section className="hidden md:block bg-black-fullbleed bg-black mt-20 py-10 font-[Inter] text-white">
       {/* SUBTÍTULO Y TÍTULO */}
       <div className="max-w-[min(1800px,98vw)] mx-auto px-4 md:px-6 lg:px-8 mb-10 text-left">
-        <p className="text-white/80 text-base md:text-lg mb-2">
-          Analiza tu negocio por categorías
-        </p>
-        <h2 className="font-semibold text-2xl md:text-4xl lg:text-5xl leading-tight">
-          Conoce tu negocio mejor que nadie
-        </h2>
+        {/* SUBTÍTULO NUEVO (más moderno, equilibrado) */}
+<p className="
+  text-left text-white/70
+  text-[14px] md:text-[15px] lg:text-[17px]
+  font-light tracking-wide
+  mb-1
+">
+  Analiza tu negocio por categorías
+</p>
+
+{/* TÍTULO NUEVO (tu tipografía + más grande) */}
+<h2
+  className="
+    text-left font-sans text-white
+    text-[28px] sm:text-[32px] md:text-[36px] lg:text-[46px]
+    font-semibold tracking-tight
+    leading-tight
+  "
+>
+  Conoce tu negocio mejor que nadie
+</h2>
+
       </div>
 
 

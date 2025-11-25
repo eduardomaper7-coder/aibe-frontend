@@ -273,3 +273,72 @@ body {
   object-fit: cover !important;
   display: block;
 }
+
+
+/* ===========================
+   HERO — AJUSTES SOLO DESKTOP
+   =========================== */
+@media (min-width: 641px) {
+
+  /* Más margen a la izquierda */
+  .hero .center {
+    padding-left: 6vw !important;
+  }
+
+  /* Bajar el título + subtítulo */
+  .hero .center {
+    padding-top: 24vh !important;
+  }
+
+  .hero .subtitle {
+    margin-top: 24px !important;
+    margin-bottom: 48px !important;
+  }
+
+  /* Grupo de botones separado y más abajo */
+  .hero-buttons {
+    margin-top: 42px !important;
+    gap: 20px !important;
+  }
+
+  /* Botón "Por qué creamos AIBE" a la derecha */
+  .hero-link {
+    margin-left: auto !important;
+    padding-right: 6vw !important;
+    position: relative;
+    top: 6px;
+  }
+
+  /* Los botones principales se quedan a la izquierda */
+  .hero-btn-group {
+    display: flex;
+    gap: 18px;
+  }
+}
+
+
+/* ===== HERO — AJUSTES SOLO ESCRITORIO ===== */
+@media (min-width: 1024px) {
+
+  /* Más margen desde la izquierda */
+  .hero .center {
+    padding-left: 80px !important;
+  }
+
+  /* Desplazar título + subtítulo hacia abajo */
+  .hero .center {
+    padding-top: 26vh !important;
+  }
+
+  /* Más separación entre título y subtítulo */
+  .hero .subtitle {
+    margin-top: 40px !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .hero-buttons {
+    margin-top: 50px !important; /* antes 20px */
+    padding-left: 80px !important; /* coincide con el título */
+  }
+}

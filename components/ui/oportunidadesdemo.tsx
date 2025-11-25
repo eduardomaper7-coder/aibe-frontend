@@ -1,7 +1,9 @@
 "use client";
 
+
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+
 
 export default function PlanDeAccionDemo() {
   const data = [
@@ -40,83 +42,88 @@ export default function PlanDeAccionDemo() {
     },
   ];
 
-  const [index, setIndex] = useState(0);
 
+  const [index, setIndex] = useState(0);
   useEffect(() => {
     const id = setInterval(() => setIndex((i) => (i + 1) % data.length), 6000);
     return () => clearInterval(id);
   }, []);
 
+
   return (
-    <section className="relative w-full min-h-screen bg-gradient-to-br from-[#03110A] via-[#041A12] to-[#06241A] py-16 overflow-hidden">
 
-      {/* FOCOS DE FONDO */}
-      <div className="pointer-events-none absolute top-1/4 left-1/4 h-96 w-96 rounded-full bg-white/10 blur-[140px]" />
-      <div className="pointer-events-none absolute top-1/2 right-1/3 h-[28rem] w-[28rem] rounded-full bg-white/5 blur-[160px]" />
-      <div className="pointer-events-none absolute bottom-10 left-1/2 h-80 w-80 rounded-full bg-white/10 blur-[120px]" />
-      <div className="pointer-events-none absolute top-10 right-10 h-64 w-64 rounded-full bg-white/15 blur-[100px]" />
 
-      {/* MÁS FOCOS */}
-      <div className="pointer-events-none absolute top-[10%] left-[10%] h-40 w-40 rounded-full bg-white/5 blur-[90px]" />
-      <div className="pointer-events-none absolute top-[65%] left-[15%] h-60 w-60 rounded-full bg-white/7 blur-[110px]" />
-      <div className="pointer-events-none absolute bottom-[20%] right-[5%] h-72 w-72 rounded-full bg-white/8 blur-[140px]" />
-      <div className="pointer-events-none absolute bottom-[35%] right-[40%] h-56 w-56 rounded-full bg-white/6 blur-[120px]" />
-      <div className="pointer-events-none absolute top-[70%] left-[60%] h-48 w-48 rounded-full bg-white/5 blur-[100px]" />
-      <div className="pointer-events-none absolute top-[20%] right-[45%] h-44 w-44 rounded-full bg-white/8 blur-[90px]" />
+   <section className="relative w-full min-h-screen bg-gradient-to-br from-[#03110A] via-[#041A12] to-[#06241A] py-16 overflow-hidden">
+  {/* FOCOS BLANCOS — CAPA DE FONDO */}
+  <div className="pointer-events-none absolute top-1/4 left-1/4 h-96 w-96 rounded-full bg-white/10 blur-[140px]" />
+  <div className="pointer-events-none absolute top-1/2 right-1/3 h-[28rem] w-[28rem] rounded-full bg-white/5 blur-[160px]" />
+  <div className="pointer-events-none absolute bottom-10 left-1/2 h-80 w-80 rounded-full bg-white/10 blur-[120px]" />
+  <div className="pointer-events-none absolute top-10 right-10 h-64 w-64 rounded-full bg-white/15 blur-[100px]" />
 
-      <div className="relative z-10 mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-        <header className="mb-10">
-          <h1 className="text-white text-3xl md:text-4xl font-semibold tracking-tight">
-            Toma decisiones estratégicas en base a las opiniones de tus clientes
-          </h1>
-          <p className="mt-2 text-slate-300 text-base md:text-lg">
-            Ejecuta nuestro plan de acción realizado con inteligencia artificial
-          </p>
-        </header>
 
-        {/* RECUADRO DEGRADADO */}
-        <motion.div
-          className="relative overflow-hidden rounded-3xl p-8 md:p-10 bg-gradient-to-br from-[#0B1E14] via-[#103323] to-[#0B291E] shadow-[0_0_50px_-12px_rgba(16,185,129,0.3)] ring-1 ring-white/10"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-        >
+  {/* FOCOS ADICIONALES PARA MAYOR PROFUNDIDAD */}
+  <div className="pointer-events-none absolute top-[10%] left-[10%] h-40 w-40 rounded-full bg-white/5 blur-[90px]" />
+  <div className="pointer-events-none absolute top-[65%] left-[15%] h-60 w-60 rounded-full bg-white/7 blur-[110px]" />
+  <div className="pointer-events-none absolute bottom-[20%] right-[5%] h-72 w-72 rounded-full bg-white/8 blur-[140px]" />
+  <div className="pointer-events-none absolute bottom-[35%] right-[40%] h-56 w-56 rounded-full bg-white/6 blur-[120px]" />
+  <div className="pointer-events-none absolute top-[70%] left-[60%] h-48 w-48 rounded-full bg-white/5 blur-[100px]" />
+  <div className="pointer-events-none absolute top-[20%] right-[45%] h-44 w-44 rounded-full bg-white/8 blur-[90px]" />
 
-          {/* FOCOS INTERNOS */}
-          <div className="pointer-events-none absolute -top-32 -left-20 h-80 w-80 rounded-full bg-white/10 blur-3xl" />
-          <div className="pointer-events-none absolute -bottom-32 -right-24 h-80 w-80 rounded-full bg-white/5 blur-3xl" />
-          <div className="pointer-events-none absolute top-1/3 right-1/3 h-56 w-56 rounded-full bg-white/10 blur-2xl" />
-          <div className="pointer-events-none absolute bottom-1/4 left-1/4 h-48 w-48 rounded-full bg-white/10 blur-2xl" />
 
-          {/* 💥 BLOQUE ESCALADO EN MÓVIL */}
-          <div className="w-full flex justify-center">
-            <div className="scale-[0.85] origin-top md:scale-100 md:origin-center w-full max-w-[1000px]">
+  <div className="relative z-10 mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+    <header className="mb-10">
+      <h1 className="text-white text-3xl md:text-4xl font-semibold tracking-tight">
+        Toma decisiones estratégicas en base a las opiniones de tus clientes
+      </h1>
+      <p className="mt-2 text-slate-300 text-base md:text-lg">
+        Ejecuta nuestro plan de acción realizado con inteligencia artificial
+      </p>
+    </header>
 
-              <motion.div className="relative z-10">
-                <AnimatePresence mode="popLayout">
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, y: 30, scale: 0.98 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -30, scale: 0.98 }}
-                    transition={{ duration: 0.5, ease: "easeOut" }}
-                  >
-                    <Categoria {...data[index]} />
-                  </motion.div>
-                </AnimatePresence>
-              </motion.div>
 
-            </div>
-          </div>
+    {/* Recuadro degradado */}
+    <motion.div
+      className="relative overflow-hidden rounded-3xl p-8 md:p-10 bg-gradient-to-br from-[#0B1E14] via-[#103323] to-[#0B291E] shadow-[0_0_50px_-12px_rgba(16,185,129,0.3)] ring-1 ring-white/10"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, ease: 'easeOut' }}
+    >
+      {/* Focos suaves dentro del recuadro */}
+      <div className="pointer-events-none absolute -top-32 -left-20 h-80 w-80 rounded-full bg-white/10 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-32 -right-24 h-80 w-80 rounded-full bg-white/5 blur-3xl" />
+      <div className="pointer-events-none absolute top-1/3 right-1/3 h-56 w-56 rounded-full bg-white/10 blur-2xl" />
+      <div className="pointer-events-none absolute bottom-1/4 left-1/4 h-48 w-48 rounded-full bg-white/10 blur-2xl" />
 
-        </motion.div>
+
+      <div className="relative z-10">
+        <AnimatePresence mode="popLayout">
+          <motion.div
+            key={index}
+            initial={{ opacity: 0, y: 30, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -30, scale: 0.98 }}
+            transition={{ duration: 0.5, ease: 'easeOut' }}
+          >
+            <Categoria {...data[index]} />
+          </motion.div>
+        </AnimatePresence>
       </div>
-    </section>
+    </motion.div>
+  </div>
+</section>
+
+
+
+
+
+
+
+
   );
 }
 
-/* ---------------------------- CATEGORÍA ----------------------------- */
 
+// ————————————————————————————————————————————————
 function Categoria({ categoria, dato, oportunidad, reseñas }: any) {
   return (
     <section className="rounded-2xl p-5 md:p-6 text-slate-900">
@@ -127,11 +134,14 @@ function Categoria({ categoria, dato, oportunidad, reseñas }: any) {
         </span>
       </div>
 
-<div className="flex flex-row overflow-x-auto no-scrollbar gap-4 md:grid md:grid-cols-3 md:gap-6">
+
+      {/* Dato → Flecha → Oportunidad */}
+      <div className="grid grid-cols-1 md:grid-cols-3 items-stretch gap-6">
         <div className="rounded-2xl border border-slate-200 bg-white p-5 md:p-6 shadow-inner">
           <h3 className="mb-2 text-sm font-semibold text-slate-700">Datos</h3>
           <p className="text-base leading-relaxed">{dato}</p>
         </div>
+
 
         <div className="relative flex items-center justify-center">
           <svg viewBox="0 0 300 100" className="h-24 w-full md:h-28">
@@ -175,6 +185,7 @@ function Categoria({ categoria, dato, oportunidad, reseñas }: any) {
           </svg>
         </div>
 
+
         <div className="rounded-2xl border border-emerald-200 bg-white p-5 md:p-6 shadow-inner">
           <h3 className="mb-2 text-sm font-semibold text-emerald-700">
             Oportunidad
@@ -183,11 +194,12 @@ function Categoria({ categoria, dato, oportunidad, reseñas }: any) {
         </div>
       </div>
 
+
       <div className="mt-6">
         <h4 className="mb-3 text-sm font-semibold text-slate-700">
           Reseñas relacionadas
         </h4>
-<div className="flex flex-row overflow-x-auto no-scrollbar gap-4 md:grid md:grid-cols-3">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {reseñas.map((r: any, i: number) => (
             <ReviewCard key={i} autor={r.autor} texto={r.texto} />
           ))}
@@ -196,6 +208,7 @@ function Categoria({ categoria, dato, oportunidad, reseñas }: any) {
     </section>
   );
 }
+
 
 function ReviewCard({ autor, texto }: { autor: string; texto: string }) {
   return (
@@ -215,6 +228,7 @@ function ReviewCard({ autor, texto }: { autor: string; texto: string }) {
   );
 }
 
+
 function Stars() {
   return (
     <div className="flex items-center gap-0.5">
@@ -232,11 +246,13 @@ function Stars() {
   );
 }
 
+
 function Avatar() {
   return (
     <div className="h-8 w-8 rounded-full bg-gradient-to-br from-slate-200 to-slate-300 ring-1 ring-slate-300" />
   );
 }
+
 
 function Dot(props: any) {
   return (

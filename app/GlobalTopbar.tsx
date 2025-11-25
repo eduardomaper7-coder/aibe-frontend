@@ -1,10 +1,13 @@
 'use client';
 
+
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
+
 export default function GlobalTopbar() {
   const [solid, setSolid] = useState(false);
+
 
   useEffect(() => {
     const setByScroll = () => {
@@ -16,13 +19,16 @@ export default function GlobalTopbar() {
       setSolid(y > 0);
     };
 
+
     setByScroll();
     const raf = requestAnimationFrame(setByScroll);
+
 
     window.addEventListener('scroll', setByScroll, { passive: true });
     window.addEventListener('resize', setByScroll);
     window.addEventListener('pageshow', setByScroll);
     window.addEventListener('load', setByScroll);
+
 
     return () => {
       cancelAnimationFrame(raf);
@@ -32,6 +38,7 @@ export default function GlobalTopbar() {
       window.removeEventListener('load', setByScroll);
     };
   }, []);
+
 
   return (
     <>
@@ -60,6 +67,7 @@ export default function GlobalTopbar() {
             'background .28s ease, border-color .28s ease, box-shadow .28s ease',
         }}
       >
+
 
         {/* IZQUIERDA */}
         <div
@@ -93,6 +101,7 @@ export default function GlobalTopbar() {
                 AI
               </span>
             </div>
+
 
             <div className="flex flex-col leading-[1.05] justify-center">
               <div className="flex items-baseline gap-[6px]">
@@ -128,13 +137,15 @@ export default function GlobalTopbar() {
             </div>
           </Link>
 
+
           {/* ENLACES NUEVOS */}
           <nav className="nav-inline" aria-label="Menú principal">
             <Link href="/contact" className="nav-link">Contacto</Link>
-            <Link href="#" className="nav-link">Precios</Link>
-            <Link href="#" className="nav-link">Sobre AIBE</Link>
+            <Link href="/precios" className="nav-link">Precios</Link>
+ 
           </nav>
         </div>
+
 
         {/* DERECHA */}
         <div
@@ -146,9 +157,11 @@ export default function GlobalTopbar() {
           }}
         >
 
+
           <Link href="/login" className="nav-link">
             Iniciar sesión
           </Link>
+
 
           {/* Pequeño */}
           <Link
@@ -163,8 +176,10 @@ export default function GlobalTopbar() {
   Comenzar gratis
 </Link>
 
+
         </div>
       </header>
+
 
       <style jsx global>{`
         #global-topbar .nav-inline {
@@ -173,6 +188,7 @@ export default function GlobalTopbar() {
           gap: clamp(14px, 2vw, 24px);
           white-space: nowrap;
         }
+
 
         /* Enlaces 100% blancos */
         .nav-link {
@@ -184,10 +200,12 @@ export default function GlobalTopbar() {
           transition: color 0.2s ease;
         }
 
+
         .nav-link:hover {
           color: #ffffff;
           text-decoration: underline;
         }
+
 
         @media (max-width: 900px) {
           #global-topbar .nav-inline {
