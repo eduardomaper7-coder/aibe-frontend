@@ -207,11 +207,7 @@ body {
     margin-top: 22px;
   }
 
-  .hero-btn, .hero-btn.primary, .hero-btn.secondary {
-    width: 90% !important;
-    max-width: 360px;
-  }
-
+ 
   .hero-link { margin-top: 4px; font-size:0.95rem; text-align:center; }
 }
 
@@ -342,3 +338,22 @@ body {
     padding-left: 80px !important; /* coincide con el título */
   }
 }
+
+
+@media (max-width: 768px) {
+  .hero-btn-group {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+    align-items: center;
+  }
+
+  .hero-btn-group .hero-btn {
+    width: 150% !important;           /* ← más ancho que antes */
+    max-width: 400px;                /* opcional */
+    text-align: center;
+    padding-left: 14px !important;
+    padding-right: 14px !important;  /* proporción ideal */
+  }
+}
+

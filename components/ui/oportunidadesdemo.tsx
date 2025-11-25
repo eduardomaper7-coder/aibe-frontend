@@ -195,16 +195,17 @@ function Categoria({ categoria, dato, oportunidad, reseñas }: any) {
       </div>
 
 
-      <div className="mt-6">
-        <h4 className="mb-3 text-sm font-semibold text-slate-700">
-          Reseñas relacionadas
-        </h4>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {reseñas.map((r: any, i: number) => (
-            <ReviewCard key={i} autor={r.autor} texto={r.texto} />
-          ))}
-        </div>
-      </div>
+      <div className="mt-6 hidden md:block">
+  <h4 className="mb-3 text-sm font-semibold text-slate-700">
+    Reseñas relacionadas
+  </h4>
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+    {reseñas.map((r: any, i: number) => (
+      <ReviewCard key={i} autor={r.autor} texto={r.texto} />
+    ))}
+  </div>
+</div>
+
     </section>
   );
 }

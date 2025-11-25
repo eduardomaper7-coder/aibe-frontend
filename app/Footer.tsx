@@ -16,11 +16,13 @@ export default function Footer() {
 
         {/* Enlaces legales */}
         <nav className="flex flex-wrap justify-center gap-5 md:gap-6 text-sm">
-          <Link href="/aviso-legal" className="hover:text-white">Aviso legal</Link>
-          <Link href="/politica-privacidad" className="hover:text-white">Política de privacidad</Link>
-          <Link href="/terminos-servicio" className="hover:text-white">Términos del servicio</Link>
-          <Link href="/contacto" className="hover:text-white">Contacto</Link>
-        </nav>
+  <Link href="/legal" className="hover:text-white">Aviso legal</Link>
+  <Link href="/legal" className="hover:text-white">Política de privacidad</Link>
+  <Link href="/legal" className="hover:text-white">Términos del servicio</Link>
+  <Link href="/contact" className="hover:text-white">Contacto</Link>
+
+</nav>
+
 
         {/* Idioma y país */}
         <div className="flex items-center gap-2 text-sm text-gray-400">

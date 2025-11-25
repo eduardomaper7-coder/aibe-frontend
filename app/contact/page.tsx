@@ -39,9 +39,7 @@ export default function ContactPage() {
   return (
     <main className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-[#0a2239] to-[#0e3a5c] relative overflow-hidden">
       {/* Nombre de la empresa */}
-      <div className="absolute top-6 left-8 text-white font-semibold text-lg tracking-wide">
-        AIBE Technologies
-      </div>
+      
 
       <div className="text-center mb-10 mt-8">
         <h1 className="text-4xl md:text-5xl font-bold text-white mb-3">
