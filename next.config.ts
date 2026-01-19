@@ -32,17 +32,27 @@ const nextConfig = {
         source: "/(.*)",
         headers: [
           {
-            key: "Content-Security-Policy",
-            value: [
-              "default-src 'self';",
-              "script-src 'self' https://js.stripe.com 'unsafe-inline' 'unsafe-eval';",
-              "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;",
-              "font-src 'self' https://fonts.gstatic.com;",
-              "img-src 'self' blob: data: https:;",
-              "connect-src 'self' https://api.stripe.com https://r.stripe.com https://q.stripe.com;",
-              "frame-src https://js.stripe.com;",
-            ].join(" "),
-          },
+  key: "Content-Security-Policy",
+  value: [
+    "default-src 'self';",
+    "script-src 'self' https://js.stripe.com 'unsafe-inline' 'unsafe-eval';",
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;",
+    "font-src 'self' https://fonts.gstatic.com;",
+    "img-src 'self' blob: data: https:;",
+    [
+      "connect-src 'self'",
+      API ? API : "",
+      "https://*.railway.app",
+      "https://*.up.railway.app",
+      "https://*.supabase.co",
+      "https://api.stripe.com",
+      "https://r.stripe.com",
+      "https://q.stripe.com",
+    ].join(" ") + ";",
+    "frame-src https://js.stripe.com;",
+  ].join(" "),
+},
+
         ],
       },
     ];
