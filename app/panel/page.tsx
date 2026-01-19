@@ -20,6 +20,8 @@ import { useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import PanelHeader from "./PanelHeader";
 export const dynamic = "force-dynamic";
+import { Suspense } from "react";
+
 
 /** -------- PANEL PRINCIPAL -------- */
 function PanelUI() {
@@ -396,7 +398,10 @@ export default function Page() {
   return (
     <>
       <PanelHeader />
-      <PanelUI />
+      <Suspense fallback={<div>Cargando panel…</div>}>
+        <PanelUI />
+      </Suspense>
     </>
   );
 }
+
