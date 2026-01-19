@@ -19,7 +19,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import PanelHeader from "./PanelHeader";
-
+export const dynamic = "force-dynamic";
 
 /** -------- PANEL PRINCIPAL -------- */
 function PanelUI() {
