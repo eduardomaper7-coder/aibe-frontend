@@ -1,12 +1,11 @@
 // next.config.ts
-import type { NextConfig } from "next";
 
 const API = process.env.NEXT_PUBLIC_API_URL?.replace(/\/+$/, "");
 const isDev = process.env.NODE_ENV !== "production";
 const isLocalLoop =
   API?.includes("localhost") || API?.includes("127.0.0.1");
 
-const nextConfig: NextConfig = {
+const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
@@ -56,6 +55,3 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
-
-
-
