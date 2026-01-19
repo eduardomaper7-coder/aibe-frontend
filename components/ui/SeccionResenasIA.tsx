@@ -279,12 +279,7 @@ export default function SeccionResenasIA() {
       </div>
 
       <div className="mt-16 flex justify-center">
-  <Link
-    href="/registro"
-    className="bg-white text-black font-semibold text-lg px-8 py-4 rounded-full hover:scale-105 transition-all"
-  >
-    Empieza gratis hoy
-  </Link>
+  
 </div>
 
     </section>

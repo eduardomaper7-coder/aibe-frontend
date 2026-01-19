@@ -1,7 +1,6 @@
 "use client";
 
 import React, { ReactNode, useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
 
 type PillProps = { children: ReactNode };
 const Pill = ({ children }: PillProps) => (
@@ -14,218 +13,171 @@ type StatCardProps = {
   title: string;
   value: string;
   subtitle?: string;
-  helper?: ReactNode;
 };
-const StatCard = ({ title, value, subtitle, helper }: StatCardProps) => (
+const StatCard = ({ title, value, subtitle }: StatCardProps) => (
   <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-    <div className="flex items-start justify-between">
-      <div>
-        <p className="text-sm text-slate-500">{title}</p>
-        <p className="mt-1 text-2xl font-semibold text-slate-900">{value}</p>
-        {subtitle && <p className="mt-1 text-xs text-slate-500">{subtitle}</p>}
-      </div>
-      {helper}
-    </div>
+    <p className="text-sm text-slate-500">{title}</p>
+    <p className="mt-1 text-2xl font-semibold text-slate-900">{value}</p>
+    {subtitle && <p className="mt-1 text-xs text-slate-500">{subtitle}</p>}
   </div>
 );
 
-type ReplyCardProps = { title: string; content: string };
-const ReplyCard = ({ title, content }: ReplyCardProps) => (
-  <div className="flex h-full flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-    <h4 className="text-sm font-semibold text-slate-900">{title}</h4>
-    <p className="mt-2 line-clamp-5 text-sm leading-6 text-slate-700">
-      {content}
-    </p>
-  </div>
-);
-
-// Tipo que viene del backend
-type ApiReply = {
-  review_id: string;
+// 👇 lo que esperamos del backend
+type ApiAIReply = {
+  review_id: number;
+  review_text: string;
   reply_text: string;
+  rating: number;
   created_at: string;
-  status: string;
 };
 
-export default function DemoAnalisisResenasGoogle() {
-  // KPIs de momento siguen estáticos
-  const kpis = {
-    responseTime: { value: "1 h 48 min" },
-    respondedPct: { value: "92%" },
-    lastReview: { value: "Hace 6 h" },
-  };
+type Props = {
+  jobId: number;
+};
 
-  const [userEmail, setUserEmail] = useState<string | null>(null);
-  const [replies, setReplies] = useState<ApiReply[]>([]);
+export default function RespuestasIASection({ jobId }: Props) {
+  const API_BASE =
+    (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000").replace(
+      /\/+$/,
+      ""
+    );
+
+  const [items, setItems] = useState<ApiAIReply[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // 1️⃣ Obtener el email real del usuario logueado en Supabase
+  console.log("DEBUG RespuestasIASection jobId:", jobId);
+
   useEffect(() => {
+    if (!jobId) {
+    setLoading(false); // 👈 CLAVE
+    return;
+  }
     let cancelled = false;
 
-    async function loadUser() {
-      try {
-        const { data, error } = await supabase.auth.getUser();
-        if (error) {
-          console.error("Error getUser", error);
-          return;
-        }
-        if (!cancelled) {
-          const email = data.user?.email ?? null;
-          setUserEmail(email);
-        }
-      } catch (e) {
-        console.error("Error cargando usuario", e);
-      }
-    }
-
-    loadUser();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  // 2️⃣ Llamar al backend /reviews/latest cuando tengamos email
-  useEffect(() => {
-    if (!userEmail) {
-      return;
-    }
-
-    let cancelled = false;
-
-    async function fetchReplies() {
+    async function load() {
       setLoading(true);
       setError(null);
 
       try {
-        const base =
-          process.env.NEXT_PUBLIC_API_BASE_URL ??
-          process.env.NEXT_PUBLIC_API_URL ??
-          "http://localhost:8000";
+        const res = await fetch(
+          `${API_BASE}/reviews/ai-replies?job_id=${jobId}`,
+          { cache: "no-store" }
+        );
 
-        const url = `${base.replace(/\/$/, "")}/reviews/latest?email=${encodeURIComponent(
-  userEmail!
-)}`;
-
-
-        console.log("DEBUG latest replies URL", url);
-
-        const res = await fetch(url);
         if (!res.ok) {
-          throw new Error(`Error HTTP ${res.status}`);
+          throw new Error(`HTTP ${res.status}`);
         }
 
-        const data: ApiReply[] = await res.json();
+        const json: ApiAIReply[] = await res.json();
 
         if (!cancelled) {
-          setReplies(data || []);
+          setItems(json ?? []);
         }
-      } catch (err: any) {
-        console.error("Error cargando últimas respuestas", err);
-        if (!cancelled) {
-          setError("No se pudieron cargar las últimas respuestas.");
-        }
+      } catch (e) {
+        console.error(e);
+        if (!cancelled) setError("No se pudieron cargar las respuestas IA.");
       } finally {
-        if (!cancelled) {
-          setLoading(false);
-        }
+        if (!cancelled) setLoading(false);
       }
     }
 
-    fetchReplies();
-
+    load();
     return () => {
       cancelled = true;
     };
-  }, [userEmail]);
+  }, [API_BASE, jobId]);
 
-  // 3️⃣ Construir tarjetas a partir de las respuestas
-  const lastSentReplies: ReplyCardProps[] = replies.map((r) => ({
-    title: `Respuesta — ${new Date(r.created_at).toLocaleString("es-ES", {
-      day: "2-digit",
-      month: "short",
-      hour: "2-digit",
-      minute: "2-digit",
-    })}`,
-    content: r.reply_text,
-  }));
+  const copyToClipboard = async (text: string) => {
+    await navigator.clipboard.writeText(text);
+  };
 
   return (
-    <div className="bg-blue-100 dark:bg-slate-900 text-slate-900 dark:text-slate-100">
+    <div className="bg-slate-100 text-slate-900">
       <div className="px-4 sm:px-6 lg:px-8 pt-6 pb-10">
-        {/* Encabezado */}
-        <header className="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
-              Respuestas IA personalizadas
-            </h1>
-            {userEmail && (
-              <p className="mt-1 text-sm text-slate-600">
-                Mostrando datos de:{" "}
-                <span className="font-medium">{userEmail}</span>
-              </p>
-            )}
-          </div>
+        <header className="mb-6">
+          <h1 className="text-2xl font-semibold tracking-tight">
+            Respuestas IA personalizadas
+          </h1>
+          <p className="mt-1 text-sm text-slate-600">
+            Reseñas del último mes con respuesta sugerida por IA
+          </p>
         </header>
 
-        {/* Métricas de gestión y tiempo */}
-        <section className="mb-6">
-          <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-slate-900">
-              Métricas de gestión y tiempo
-            </h2>
-          </div>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-            <StatCard
-              title="Tiempo de respuesta promedio"
-              value={kpis.responseTime.value}
-            />
-            <StatCard
-              title="Porcentaje de reseñas respondidas"
-              value={kpis.respondedPct.value}
-            />
-            <StatCard
-              title="Última revisión"
-              value={kpis.lastReview.value}
-            />
-          </div>
+        {/* Métricas simples */}
+        <section className="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+          <StatCard
+            title="Reseñas con respuesta IA"
+            value={items.length.toString()}
+            subtitle="Últimos 30 días"
+          />
         </section>
 
-        {/* Últimas respuestas enviadas */}
-        <section className="mb-0">
-          <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-slate-900">
-              Últimas respuestas enviadas
-            </h2>
+        {/* Contenido */}
+        {loading && (
+          <p className="text-sm text-slate-600">Cargando respuestas IA…</p>
+        )}
+
+        {!loading && error && (
+          <p className="text-sm text-rose-600">{error}</p>
+        )}
+
+        {!loading && !error && items.length === 0 && (
+          <p className="text-sm text-slate-600">
+            No hay reseñas recientes con respuestas IA.
+          </p>
+        )}
+
+        {!loading && !error && items.length > 0 && (
+          <div className="space-y-6">
+            {items.map((r) => (
+              <article
+                key={r.review_id}
+                className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+              >
+                {/* Header */}
+                <div className="flex items-center justify-between mb-3">
+                  <Pill>{r.rating} ★</Pill>
+                  <span className="text-xs text-slate-500">
+                    {new Date(r.created_at).toLocaleDateString("es-ES", {
+                      day: "2-digit",
+                      month: "short",
+                      year: "numeric",
+                    })}
+                  </span>
+                </div>
+
+                {/* Reseña */}
+                <div className="mb-4">
+                  <p className="text-sm font-medium text-slate-700 mb-1">
+                    Reseña del cliente
+                  </p>
+                  <p className="text-sm text-slate-800 leading-relaxed">
+                    {r.review_text}
+                  </p>
+                </div>
+
+                {/* Respuesta IA */}
+                <div className="relative rounded-xl border border-emerald-200 bg-emerald-50 p-4">
+                  <p className="text-sm font-medium text-emerald-700 mb-1">
+                    Respuesta sugerida por IA
+                  </p>
+                  <p className="text-sm text-slate-800 leading-relaxed whitespace-pre-line">
+                    {r.reply_text}
+                  </p>
+
+                  <button
+                    onClick={() => copyToClipboard(r.reply_text)}
+                    className="absolute top-3 right-3 text-xs rounded-md border border-emerald-300 bg-white px-2 py-1 text-emerald-700 hover:bg-emerald-100"
+                  >
+                    Copiar
+                  </button>
+                </div>
+              </article>
+            ))}
           </div>
-
-          {loading && (
-            <p className="text-sm text-slate-600">
-              Cargando últimas respuestas…
-            </p>
-          )}
-
-          {!loading && error && (
-            <p className="text-sm text-rose-600">{error}</p>
-          )}
-
-          {!loading && !error && lastSentReplies.length === 0 && (
-            <p className="text-sm text-slate-600">
-              Todavía no hay respuestas generadas.
-            </p>
-          )}
-
-          {!loading && !error && lastSentReplies.length > 0 && (
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-              {lastSentReplies.map((r, i) => (
-                <ReplyCard key={i} title={r.title} content={r.content} />
-              ))}
-            </div>
-          )}
-        </section>
+        )}
       </div>
     </div>
   );
 }
-

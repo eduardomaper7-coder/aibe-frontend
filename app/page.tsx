@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import SeccionResenasIA from '@/components/ui/SeccionResenasIA';
 // import TemasDemo from '@/components/ui/temasdemo'; // <- no se usa, lo dejamos fuera
@@ -13,77 +13,124 @@ import Footer from './Footer';
 import TresRecuadros from '@/components/ui/3recuadros';
 import VideoTemas from '@/components/ui/videotemas';
 import SeoBeneficio from '@/components/ui/seo-beneficio'
-import Link from "next/link";
 
+import { useRouter } from "next/navigation";
 
 
 export default function Home() {
-  useEffect(() => {
-    const TITLES: string[] = [
-      'Convierte cada reseña en una oportunidad de crecimiento',
-      'Descubre lo que tus clientes realmente piensan.',
-      'La IA que transforma tus reseñas en decisiones inteligentes.',
-      'Porque cada cliente merece una respuesta única.',
-    ];
+  const [googleMapsUrl, setGoogleMapsUrl] = useState('');
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
-    const titleEl = document.getElementById('dynamicTitle');
-    const slotEl = document.getElementById('titleSlot');
-    if (!titleEl || !slotEl) return;
+  async function handleStart() {
+  const url = googleMapsUrl.trim();
+  if (!url) return;
 
-    const probe = document.createElement('div');
-    const cs = window.getComputedStyle(titleEl);
+  try {
+    setLoading(true);
 
-    // Evita choques de tipos con CSSStyleDeclaration en TS
-    Object.assign(probe.style, {
-      position: 'absolute',
-      left: '-9999px',
-      top: '-9999px',
-      width: getComputedStyle(slotEl).width,
-      font: (cs as any).font,
-      lineHeight: (cs as any).lineHeight,
-      letterSpacing: (cs as any).letterSpacing,
-      whiteSpace: 'normal',
-      display: 'block',
-    } as Partial<CSSStyleDeclaration>);
-
-    document.body.appendChild(probe);
-
-    let max = 0;
-    TITLES.forEach((t) => {
-      probe.textContent = t;
-      max = Math.max(max, probe.getBoundingClientRect().height);
+    const res = await fetch("http://localhost:8000/scrape", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        accept: "application/json",
+      },
+      body: JSON.stringify({
+        google_maps_url: url,
+        max_reviews: 99999,       // para pruebas
+        personal_data: true,
+      }),
     });
-    document.body.removeChild(probe);
-    slotEl.style.setProperty('--title-height', Math.ceil(max + 8) + 'px');
 
-    let i = 0;
-
-    function show(index: number): void {
-      const nextText = TITLES[index % TITLES.length];
-      if (!titleEl) return;
-      titleEl.classList.remove('fade-enter', 'fade-enter-active');
-      titleEl.classList.add('fade-exit');
-      requestAnimationFrame(() => {
-        titleEl.classList.add('fade-exit-active');
-        window.setTimeout(() => {
-          titleEl.textContent = nextText;
-          titleEl.classList.remove('fade-exit', 'fade-exit-active');
-          titleEl.classList.add('fade-enter');
-          requestAnimationFrame(() => titleEl.classList.add('fade-enter-active'));
-        }, 600);
-      });
+    if (!res.ok) {
+      const txt = await res.text();
+      throw new Error(txt || "Error haciendo scrape");
     }
 
-    titleEl.textContent = TITLES[0];
+    const data = await res.json(); // { job_id, status, reviews_saved }
 
-    // Deja que infiera el tipo (number en el navegador) para evitar choque con Node.Timeout
-    const id = window.setInterval(() => {
-      i = (i + 1) % TITLES.length;
-      show(i);
-    }, 6500);
+    // “panel del usuario” (por ahora) = lo que queda guardado en su navegador
+    localStorage.setItem("googleMapsUrl", url);
+    localStorage.setItem("jobId", String(data.job_id));
 
-    return () => window.clearInterval(id);
-  }, []);
+    // ✅ ir al panel (ruta directa)
+    router.push(`/panel?job_id=${data.job_id}`);
+  } catch (e: any) {
+    alert(e?.message ?? "Error");
+  } finally {
+    setLoading(false);
+  }
+}
+
+
+  useEffect(() => {
+
+  const TITLES: string[] = [
+    'Convierte cada reseña en una oportunidad de crecimiento',
+    'Descubre lo que tus clientes realmente piensan.',
+    'La IA que transforma tus reseñas en decisiones inteligentes.',
+    'Porque cada cliente merece una respuesta única.',
+  ];
+
+  const titleEl = document.getElementById('dynamicTitle');
+  const slotEl = document.getElementById('titleSlot');
+  if (!titleEl || !slotEl) return;
+
+  const probe = document.createElement('div');
+  const cs = window.getComputedStyle(titleEl);
+
+  Object.assign(probe.style, {
+    position: 'absolute',
+    left: '-9999px',
+    top: '-9999px',
+    width: getComputedStyle(slotEl).width,
+    font: (cs as any).font,
+    lineHeight: (cs as any).lineHeight,
+    letterSpacing: (cs as any).letterSpacing,
+    whiteSpace: 'normal',
+    display: 'block',
+  } as Partial<CSSStyleDeclaration>);
+
+  document.body.appendChild(probe);
+
+  let max = 0;
+  TITLES.forEach((t) => {
+    probe.textContent = t;
+    max = Math.max(max, probe.getBoundingClientRect().height);
+  });
+  document.body.removeChild(probe);
+  slotEl.style.setProperty('--title-height', Math.ceil(max + 8) + 'px');
+
+  let i = 0;
+
+  function show(index: number): void {
+    const nextText = TITLES[index % TITLES.length];
+    if (!titleEl) return;
+    titleEl.classList.remove('fade-enter', 'fade-enter-active');
+    titleEl.classList.add('fade-exit');
+    requestAnimationFrame(() => {
+      titleEl.classList.add('fade-exit-active');
+      window.setTimeout(() => {
+        titleEl.textContent = nextText;
+        titleEl.classList.remove('fade-exit', 'fade-exit-active');
+        titleEl.classList.add('fade-enter');
+        requestAnimationFrame(() =>
+          titleEl.classList.add('fade-enter-active')
+        );
+      }, 600);
+    });
+  }
+
+  titleEl.textContent = TITLES[0];
+
+  const id = window.setInterval(() => {
+    i = (i + 1) % TITLES.length;
+    show(i);
+  }, 6500);
+
+  return () => window.clearInterval(id);
+}, []);
+
 
   const sectionCx = 'bg-black px-4 md:px-6 py-6 md:py-8';
 
@@ -119,23 +166,44 @@ export default function Home() {
     </div>
   </div>
 
-  {/* Botones */}
+  {/* Input + botón */}
 <div className="hero-buttons">
-  <div className="hero-btn-group">
+  <div className="hero-btn-group flex flex-col items-center gap-4 w-full max-w-xl mx-auto">
 
-    <Link href="/registro" className="hero-btn primary">
-      Empieza gratis
-    </Link>
+    <div className="w-full">
+      <input
+        type="text"
+        placeholder="Pega el link de Google Maps del restaurante"
+        value={googleMapsUrl}
+        onChange={(e) => setGoogleMapsUrl(e.target.value)}
+        className="
+          w-full
+          rounded-full
+          px-6
+          py-4
+          text-sm md:text-base
+          bg-white
+          text-black
+          placeholder-gray-400
+          focus:outline-none
+        "
+      />
+    </div>
 
-    <Link href="/precios" className="hero-btn secondary">
-      Ver planes
-    </Link>
+    <button
+      type="button"
+      className="hero-btn primary"
+      onClick={handleStart}
+      disabled={loading}
+    >
+      {loading ? "Analizando reseñas..." : "Empezar Gratis"}
+    </button>
 
-  </div>
+  </div> {/* 👈 ESTE CIERRE FALTABA */}
 </div>
 
-{/* ⭐ Capa que tapa el video fuera del hero */}
 <div className="hero-mask-bottom"></div>
+
 
 </section>
 
@@ -145,10 +213,11 @@ export default function Home() {
 
 
 {/* SEO Beneficio */}
+{/*
 <section className="relative z-[10] px-4 md:px-6 py-10">
   <SeoBeneficio />
 </section>
-
+*/}
 
      {/* Secciones */}
 <section
@@ -157,7 +226,6 @@ export default function Home() {
     px-4 md:px-6 py-6 md:py-8
     relative z-[2]
     rounded-t-[60px]
-    -mt-[40px]
   "
 >
   <Frases />

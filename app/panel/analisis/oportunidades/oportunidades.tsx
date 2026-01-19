@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
 
 type ReviewSnippet = {
   autor: string;
@@ -20,14 +19,18 @@ type ActionPlanResponse = {
 };
 
 type PlanDeAccionProps = {
+  jobId: string;          // 👈 NUEVO
   fromDate: string | null;
   toDate: string | null;
 };
 
+
 export default function PlanDeAccionSection({
+  jobId,
   fromDate,
   toDate,
 }: PlanDeAccionProps) {
+
   const API_BASE = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/+$/, "");
 
   const [data, setData] = useState<CategoriaPlan[] | null>(null);
@@ -35,34 +38,33 @@ export default function PlanDeAccionSection({
 
   // -------- Fetch backend --------
   useEffect(() => {
-    (async () => {
-      if (!API_BASE) return;
+  if (!API_BASE || !jobId) return;
 
-      const { data: sessionData } = await supabase.auth.getSession();
-      const email = sessionData.session?.user?.email?.toLowerCase();
-      if (!email) return;
+  const params = new URLSearchParams();
+  params.append("job_id", jobId);
 
-      const params = new URLSearchParams({ email });
-      if (fromDate) params.append("from", fromDate);
-      if (toDate) params.append("to", toDate);
+  if (fromDate) params.append("from", fromDate);
+  if (toDate) params.append("to", toDate);
 
-      setLoading(true);
-      try {
-        const res = await fetch(
-          `${API_BASE}/reviews/action-plan?${params.toString()}`,
-          { cache: "no-store" }
-        );
-        if (!res.ok) throw new Error("Error al obtener plan de acción");
-        const json: ActionPlanResponse = await res.json();
-        setData(json.categorias ?? []);
-      } catch (e) {
-        console.error("Error plan de acción", e);
-        setData([]);
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, [API_BASE, fromDate, toDate]);
+  setLoading(true);
+
+  fetch(`${API_BASE}/reviews/action-plan?${params.toString()}`, {
+    cache: "no-store",
+  })
+    .then((res) => {
+      if (!res.ok) throw new Error("Error al obtener plan de acción");
+      return res.json();
+    })
+    .then((json: ActionPlanResponse) => {
+      setData(json.categorias ?? []);
+    })
+    .catch((e) => {
+      console.error("Error plan de acción", e);
+      setData([]);
+    })
+    .finally(() => setLoading(false));
+}, [API_BASE, jobId, fromDate, toDate]);
+
 
   const categorias = data ?? [];
 

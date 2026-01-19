@@ -12,14 +12,35 @@ export default function LoginFlow() {
   const [error, setError] = useState<string | null>(null);
 
   // Si ya hay sesión, manda al panel
-  useEffect(() => {
-    (async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      if (session) router.replace("/panel");
-    })();
-  }, [router]);
+useEffect(() => {
+  // ⛔️ SI VENIMOS DE UN SCRAPE PÚBLICO, NO INTERFERIR
+  if (typeof window !== "undefined") {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("job_id")) return;
+  }
+
+  (async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { data } = await supabase
+      .from("analyses")
+      .select("id")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(1);
+
+    if (data && data.length > 0) {
+      router.replace(`/panel?job_id=${data[0].id}`);
+    } else {
+      router.replace("/panel?empty=1");
+    }
+  })();
+}, [router]);
+
+
+
+
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
@@ -28,7 +49,28 @@ export default function LoginFlow() {
     try {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
-      router.replace("/panel"); // ✅ al panel
+      const {
+  data: { user },
+} = await supabase.auth.getUser();
+
+if (user) {
+  const { data } = await supabase
+  .from("analyses")
+  .select("id")
+  .eq("user_id", user.id)
+  .order("created_at", { ascending: false })
+  .limit(1);
+
+if (data && data.length > 0) {
+  router.replace(`/panel?job_id=${data[0].id}`);
+  return;
+}
+
+router.replace("/panel?empty=1");
+
+}
+
+
     } catch (err: any) {
       setError(err?.message ?? "No se pudo iniciar sesión.");
     } finally {

@@ -1,5 +1,6 @@
 "use client";
 
+
 import { useRef, useState, useEffect, useMemo } from "react";
 import { TrendingUp, Star } from "lucide-react";
 import {
@@ -22,12 +23,14 @@ import {
   useMotionValueEvent,
   animate,
 } from "framer-motion";
-import { supabase } from "@/lib/supabase";
+
 
 const COLORS = ["#22c55e", "#a3a3a3", "#ef4444"]; // verde, gris, rojo
 
+
 type SentimentLabel = "positive" | "neutral" | "negative";
 type BucketType = "day" | "week" | "month";
+
 
 type SentimentSummaryResponse = {
   total_reviews: number;
@@ -37,21 +40,30 @@ type SentimentSummaryResponse = {
   bucket_type: BucketType;
 };
 
+
 type SentimientoProps = {
-  fromDate: string | null; // "YYYY-MM-DD" o null
-  toDate: string | null; // "YYYY-MM-DD" o null
-  bucket: BucketType; // cómo queremos agrupar: day / week / month
+  jobId: string;
+  fromDate: string | null;
+  toDate: string | null;
+  bucket: BucketType;
 };
 
+
+
+
 export default function SentimientoSection({
+  jobId,
   fromDate,
   toDate,
   bucket,
 }: SentimientoProps) {
   const API_BASE = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/+$/, "");
 
+
   const [summary, setSummary] = useState<SentimentSummaryResponse | null>(null);
   const [loading, setLoading] = useState(false);
+const [isMobile, setIsMobile] = useState(false);
+
 
   // ---- animaciones/etiquetas del diagrama ----
   const sectionRef = useRef<HTMLDivElement | null>(null);
@@ -60,53 +72,69 @@ export default function SentimientoSection({
   const centerValue = useMotionValue(0);
   const [centerDisplay, setCenterDisplay] = useState(0);
 
+useEffect(() => {
+  const mediaQuery = window.matchMedia("(max-width: 640px)");
+
+  const handleChange = () => setIsMobile(mediaQuery.matches);
+
+  handleChange(); // estado inicial
+  mediaQuery.addEventListener("change", handleChange);
+
+  return () => mediaQuery.removeEventListener("change", handleChange);
+}, []);
+
   // ======================
   // 1) Fetch al backend
   // ======================
   useEffect(() => {
-    (async () => {
-      if (!API_BASE) return;
+  if (!API_BASE || !jobId) return;
 
-      const { data } = await supabase.auth.getSession();
-      const email = data.session?.user?.email?.toLowerCase();
-      if (!email) return;
+  const params = new URLSearchParams();
+  params.append("job_id", jobId);
 
-      const params = new URLSearchParams({ email });
-      if (fromDate) params.append("from", fromDate);
-      if (toDate) params.append("to", toDate);
-      if (bucket) params.append("bucket", bucket);
 
-      setLoading(true);
-      try {
-        const res = await fetch(
-          `${API_BASE}/reviews/sentiment-summary?${params.toString()}`,
-          { cache: "no-store" }
-        );
-        if (!res.ok) throw new Error("Error al obtener datos de sentimiento");
-        const json: SentimentSummaryResponse = await res.json();
-        setSummary(json);
+  if (fromDate) params.append("from", fromDate);
+  if (toDate) params.append("to", toDate);
+  if (bucket) params.append("bucket", bucket);
 
-        animate(centerValue, json.total_reviews ?? 0, {
-          duration: 1.0,
-          ease: "easeOut",
-        });
-      } catch (e) {
-        console.error("Error al obtener datos de sentimiento", e);
-        setSummary(null);
-        animate(centerValue, 0, { duration: 0.4, ease: "easeOut" });
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, [API_BASE, fromDate, toDate, bucket, centerValue]);
+
+  setLoading(true);
+
+
+  fetch(`${API_BASE}/reviews/sentiment-summary?${params.toString()}`, {
+    cache: "no-store",
+  })
+    .then((res) => {
+      if (!res.ok) throw new Error("Error al obtener datos de sentimiento");
+      return res.json();
+    })
+    .then((json: SentimentSummaryResponse) => {
+      setSummary(json);
+      animate(centerValue, json.total_reviews ?? 0, {
+        duration: 1.0,
+        ease: "easeOut",
+      });
+    })
+    .catch((e) => {
+      console.error("Error al obtener datos de sentimiento", e);
+      setSummary(null);
+      animate(centerValue, 0, { duration: 0.4, ease: "easeOut" });
+    })
+    .finally(() => setLoading(false));
+}, [API_BASE, jobId, fromDate, toDate, bucket, centerValue]);
+
+
+
 
   useMotionValueEvent(centerValue, "change", (v) => {
     setCenterDisplay(Math.round(v));
   });
 
+
   // ======================
   // 2) Adaptar datos al UI
   // ======================
+
 
   // Pie: porcentajes por sentimiento
   const dataSentimiento = useMemo(() => {
@@ -114,7 +142,9 @@ export default function SentimientoSection({
       return [{ name: "Sin datos", value: 100 }];
     }
 
+
     const total = summary.breakdown.reduce((acc, b) => acc + b.count, 0) || 1;
+
 
     const labelMap: Record<SentimentLabel, string> = {
       positive: "Positivas",
@@ -122,20 +152,25 @@ export default function SentimientoSection({
       negative: "Negativas",
     };
 
+
     return summary.breakdown.map((b) => ({
       name: labelMap[b.label],
       value: Math.round((b.count / total) * 100),
     }));
   }, [summary]);
 
+
   const totalResenas = summary?.total_reviews ?? 0;
   const puntuacionMedia = summary?.avg_rating ?? 0;
+
 
   // LineChart: evolución por día/semana/mes según bucket_type
   const dataEvolucion = useMemo(() => {
     if (!summary || !summary.trend.length) return [];
 
+
     const type = summary.bucket_type;
+
 
     const labelFromBucket = (bucket: string) => {
       if (type === "day") {
@@ -148,6 +183,7 @@ export default function SentimientoSection({
         });
       }
 
+
       if (type === "week") {
         // 2025-W46 → "Sem 46"
         const parts = bucket.split("-W");
@@ -156,6 +192,7 @@ export default function SentimientoSection({
         }
         return bucket;
       }
+
 
       // month: 2025-11 → "nov"
       const [yearStr, monthStr] = bucket.split("-");
@@ -166,27 +203,34 @@ export default function SentimientoSection({
       return d.toLocaleDateString("es-ES", { month: "short" });
     };
 
+
     return summary.trend.map((t) => ({
       label: labelFromBucket(t.bucket),
       rating: t.avg_rating,
     }));
   }, [summary]);
 
+
   const bestWorst = useMemo(() => {
     if (!dataEvolucion.length) return null;
 
+
     let best = dataEvolucion[0];
     let worst = dataEvolucion[0];
+
 
     for (const p of dataEvolucion) {
       if (p.rating > best.rating) best = p;
       if (p.rating < worst.rating) worst = p;
     }
 
+
     return { best, worst };
   }, [dataEvolucion]);
 
+
   const porcentaje = (v: number) => `${v}%`;
+
 
   const renderLabel = (props: any) => {
     const { cx, cy, midAngle, outerRadius, percent, index } = props;
@@ -197,12 +241,15 @@ export default function SentimientoSection({
     const x = cx + r * vx;
     const y = cy + r * vy;
 
+
     const name = dataSentimiento[index]?.name ?? "";
     const val = Math.round(percent * 100);
+
 
     let anchor: "start" | "end" =
       index === 0 ? "start" : vx >= 0 ? "start" : "end";
     let dx = index === 0 ? 6 : anchor === "end" ? -5 : 6;
+
 
     return (
       <g>
@@ -230,6 +277,7 @@ export default function SentimientoSection({
     );
   };
 
+
   const defs = (
     <defs>
       <filter id="dropShadow" x="-20%" y="-20%" width="140%" height="140%">
@@ -244,14 +292,17 @@ export default function SentimientoSection({
     </defs>
   );
 
+
   const activeShape = (props: any) => {
     const { outerRadius = 110 } = props;
     return <Sector {...props} outerRadius={outerRadius + 10} />;
   };
 
+
   // ======================
   // 3) JSX
   // ======================
+
 
   return (
     <div className="min-h-[420px] bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100">
@@ -266,6 +317,7 @@ export default function SentimientoSection({
             )}
           </div>
         </div>
+
 
         <div
           ref={sectionRef}
@@ -311,6 +363,7 @@ export default function SentimientoSection({
                   </svg>
                 </motion.div>
 
+
                 <ResponsiveContainer>
                   <PieChart>
                     {defs}
@@ -330,8 +383,9 @@ export default function SentimientoSection({
                       paddingAngle={3}
                       startAngle={90}
                       endAngle={-270}
-                      labelLine
-                      label={renderLabel}
+                      labelLine={!isMobile}
+  label={!isMobile ? renderLabel : false}
+                      
                       isAnimationActive={inView}
                       animationBegin={100}
                       animationDuration={900}
@@ -351,6 +405,7 @@ export default function SentimientoSection({
                   </PieChart>
                 </ResponsiveContainer>
 
+
                 <motion.div
                   className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center"
                   initial={{ scale: 0.96, opacity: 0 }}
@@ -367,6 +422,7 @@ export default function SentimientoSection({
               </div>
             </motion.div>
 
+
             {/* Métricas laterales */}
             <div className="md:col-span-2 flex flex-col gap-4">
               <div className="rounded-2xl border bg-white dark:bg-slate-900 p-4 shadow-sm border-gray-200 dark:border-white/10">
@@ -377,6 +433,7 @@ export default function SentimientoSection({
                   {totalResenas.toLocaleString()}
                 </p>
               </div>
+
 
               <div className="rounded-2xl border bg-white dark:bg-slate-900 p-4 shadow-sm border-gray-200 dark:border-white/10">
                 <div className="flex items-center justify-start">
@@ -400,6 +457,7 @@ export default function SentimientoSection({
                   </span>
                 </div>
               </div>
+
 
               <div className="rounded-2xl border bg-white dark:bg-slate-900 p-4 shadow-sm border-gray-200 dark:border-white/10">
                 <div className="mb-2 flex items-center justify-start">
@@ -464,6 +522,7 @@ export default function SentimientoSection({
               </div>
             </div>
           </div>
+
 
           {/* Leyenda compacta */}
           <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-3">

@@ -141,7 +141,7 @@ export default function GlobalTopbar() {
           {/* ENLACES NUEVOS */}
           <nav className="nav-inline" aria-label="Menú principal">
             <Link href="/contact" className="nav-link">Contacto</Link>
-            <Link href="/precios" className="nav-link">Precios</Link>
+            
  
           </nav>
         </div>
@@ -158,23 +158,13 @@ export default function GlobalTopbar() {
         >
 
 
-          <Link href="/login" className="nav-link">
-            Iniciar sesión
-          </Link>
-
-
-          {/* Pequeño */}
-          <Link
-  href="/registro"
-  className="btn"
-  style={{
-    padding: '10px 22px',
-    fontSize: '1rem',
-    transform: 'scale(1)', // tamaño normal
-  }}
->
-  Comenzar gratis
+          <Link href="/login" className="login-button">
+  Iniciar sesión
 </Link>
+
+
+
+          
 
 
         </div>
@@ -199,6 +189,40 @@ export default function GlobalTopbar() {
           opacity: 1 !important; /* sin transparencia */
           transition: color 0.2s ease;
         }
+/* BOTÓN INICIAR SESIÓN */
+.login-button {
+  background: #ffffff;
+  color: #000000 !important;
+  font-family: Inter, sans-serif;
+  font-weight: 500;
+
+  padding: 12px 22px;
+  border-radius: 999px; /* bordes bien redondos */
+  font-size: 1.05rem;   /* más grande que los links */
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  transition: 
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    background 0.15s ease;
+}
+
+/* Hover */
+.login-button:hover {
+  background: #f2f2f2;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
+  text-decoration: none;
+}
+
+/* Active (clic) */
+.login-button:active {
+  transform: translateY(0);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+}
 
 
         .nav-link:hover {
@@ -212,6 +236,31 @@ export default function GlobalTopbar() {
             display: none;
           }
         }
+          /* === MODO MÓVIL: Iniciar sesión como link === */
+@media (max-width: 640px) {
+  .login-button {
+    background: transparent;
+    color: #ffffff !important;
+
+    padding: 0;
+    border-radius: 0;
+    font-size: 0.95rem;
+
+    box-shadow: none;
+    transform: none;
+
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  .login-button:hover {
+    background: transparent;
+    box-shadow: none;
+    transform: none;
+    text-decoration: underline;
+  }
+}
+
       `}</style>
     </>
   );

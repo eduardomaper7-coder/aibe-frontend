@@ -1,18 +1,8 @@
 "use client";
 
+import { useState, useMemo } from "react";
 
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { supabase } from '@/lib/supabase'
-import { Card, CardContent } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Calendar, CheckCircle2, LogIn, ChevronDown, X } from 'lucide-react'
-import PanelShell from "./PanelShell";
-import PaymentPopup from "@/components/ui/PaymentPopup";
-
-
-
-import PanelUserFlow from "./components/PanelUserFlow";
+import { useSearchParams } from "next/navigation";
 import TemasSection from './analisis/temas/TemasSection'
 import SentimientoSection from './analisis/sentimiento/sentimiento'
 
@@ -20,172 +10,70 @@ import OportunidadesSection from './analisis/oportunidades/oportunidades'
 import VolumenSection from './analisis/volumen/volumen'
 import RespuestasSection from './analisis/respuestas/respuestas'
 import Footer from '../Footer'
-import IsolatedPortal from "./components/isolatedPortal";
+import { Calendar, ChevronDown, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 
+import { useRouter } from "next/navigation";
 
-
+import { useEffect } from "react";
+import { supabase } from "@/lib/supabase";
+import PanelHeader from "./PanelHeader";
 
 
 /** -------- PANEL PRINCIPAL -------- */
 function PanelUI() {
+
+  
+const [placeName, setPlaceName] = useState<string | null>(null);
+const [user, setUser] = useState<any>(null);
+
+  const searchParams = useSearchParams();
+  const jobId = searchParams.get("job_id");
   const API_BASE = (process.env.NEXT_PUBLIC_API_URL ?? '').replace(/\/+$/, '')
-  console.log("API_BASE:", API_BASE);
-  console.log(">>> 🧪 API_BASE =", API_BASE);
-
-
-
-
-  const [isConnected, setIsConnected] = useState(false)
-  const [isConnecting, setIsConnecting] = useState(false)
-  const popupRef = useRef<Window | null>(null)
-
-
-  /* 🌟 1. Email usuario */
-  const [sessionUserEmail, setSessionUserEmail] = useState("")
-  const [sessionUserId, setSessionUserId] = useState("")
-
-  const [hasPayment, setHasPayment] = useState<boolean | null>(null);
-const [showPaymentPopup, setShowPaymentPopup] = useState(false);
-
 
   useEffect(() => {
-  supabase.auth.getUser().then(({ data }) => {
-    setSessionUserEmail(data.user?.email ?? "")
-    setSessionUserId(data.user?.id ?? "")
-  })
-}, [])
+  if (!jobId) return;
 
-
-
-
-  /* 🌟 2. Aprobación usuario */
-  const [approval, setApproval] = useState<null | boolean>(null)
-  useEffect(() => {
-    (async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      if (!session) {
-        setApproval(false)
-        return
+  // 🔹 1. Nombre del negocio → BACKEND
+  fetch(`${API_BASE}/jobs/${jobId}/meta`)
+    .then(res => res.json())
+    .then(data => {
+      if (data?.place_name) {
+        setPlaceName(data.place_name);
       }
-      const { data: profile } = await supabase
-  .from("profiles")
-  .select("approved, has_payment_method")
-  .eq("id", session.user.id)
-  .single()
+    });
 
-setApproval(profile?.approved ?? false)
-setHasPayment(profile?.has_payment_method ?? false)
+  // 🔹 2. Usuario → Supabase
+  supabase.auth.getUser().then(({ data }) => {
+    setUser(data.user);
+  });
 
-// Mostrar popup si está aprobado pero NO tiene tarjeta guardada
-if (profile?.approved === true && profile?.has_payment_method === false) {
-  setShowPaymentPopup(true)
+}, [jobId]);
+
+
+  if (!jobId) {
+  return (
+    <div className="p-8 text-slate-600">
+      Aún no tienes ningún análisis.
+      <br />
+      Empieza creando uno nuevo.
+    </div>
+  );
 }
 
-    })()
-  }, [])
 
 
-  /* -------- Conexión Google OAuth -------- */
-  const checkStatus = async () => {
-    const { data } = await supabase.auth.getSession()
-    const email = data.session?.user?.email?.toLowerCase()
-    if (!email || !API_BASE) {
-      setIsConnected(false)
-      return
-    }
-
-
-    try {
-      const res = await fetch(`${API_BASE}/auth/google/status?email=${encodeURIComponent(email)}`, { cache: 'no-store' })
-      const json = await res.json().catch(() => ({}))
-      setIsConnected(Boolean(json?.connected))
-    } catch {
-      setIsConnected(false)
-    }
-  }
-
-
-  useEffect(() => {
-    checkStatus()
-    const onFocus = () => checkStatus()
-    window.addEventListener('focus', onFocus)
-    return () => window.removeEventListener('focus', onFocus)
-  }, [])
-
-
-  const openGooglePopup = async () => {
-    const { data } = await supabase.auth.getSession()
-    const email = data.session?.user?.email?.toLowerCase()
-
-
-    if (!email) return alert('No hay sesión de usuario.')
-    if (!API_BASE) return alert('NEXT_PUBLIC_API_URL falta.')
-
-
-    const w = window.open(
-      `${API_BASE}/auth/google/login?email=${encodeURIComponent(email)}`,
-      'google_oauth',
-      'width=480,height=640,menubar=no,toolbar=no,resizable=yes,scrollbars=yes'
-    )
-
-
-    popupRef.current = w
-    if (!w) return alert("Permite ventanas emergentes.")
-
-
-    setIsConnecting(true)
-
-
-    const backendOrigin = (() => {
-      try {
-        return new URL(API_BASE).origin
-      } catch {
-        return ""
-      }
-    })()
-
-
-    const onMessage = (e: MessageEvent) => {
-      if (!e.data || e.data.type !== "oauth-complete") return
-      if (e.origin !== backendOrigin) return
-
-
-      try { popupRef.current?.close() } catch {}
-
-
-      window.removeEventListener("message", onMessage)
-      setIsConnecting(false)
-
-
-      if (e.data.ok) {
-        setIsConnected(true)
-        setTimeout(checkStatus, 300)
-      } else {
-        setIsConnected(false)
-        alert("Error al conectar.")
-      }
-    }
-
-
-    window.addEventListener("message", onMessage)
-
-
-    const poll = window.setInterval(() => {
-      if (!w || w.closed) {
-        window.clearInterval(poll)
-        window.removeEventListener("message", onMessage)
-        setIsConnecting(false)
-        checkStatus()
-      }
-    }, 700)
-  }
+  console.log("API_BASE:", API_BASE);
+  console.log(">>> 🧪 API_BASE =", API_BASE);
+  const router = useRouter();
 
 
   /** ---------------- Periodos ---------------- */
   type PeriodKey = '7d' | '30d' | '3m' | '6m' | '1y' | 'all'
 
 
-  const [period, setPeriod] = useState<PeriodKey>('7d')
+  const [period, setPeriod] = useState<PeriodKey>('all')
   const [customFrom, setCustomFrom] = useState<string>('')
   const [customTo, setCustomTo] = useState<string>('')
 
@@ -265,10 +153,6 @@ if (profile?.approved === true && profile?.has_payment_method === false) {
   }
 
 
-  // 🔍 DEBUG ESTADOS QUE CONTROLAN EL DIFUMINADO
-  console.log("🔥 approval =", approval);
-  console.log("🔥 isConnected =", isConnected);
-
 
 
   /* ========== RETURN COMPLETO ========== */
@@ -276,75 +160,6 @@ if (profile?.approved === true && profile?.has_payment_method === false) {
     <div className="text-black bg-white min-h-screen">
       <div className="w-full pb-0">
         <div className="px-4 sm:px-6 lg:px-8">
-
-
-          {/* SOLO mostramos PanelUserFlow cuando haga falta:  
-   - Usuario NO aprobado  
-   - Usuario aprobado PERO sin método de pago
-*/}
-{approval !== null && approval === false && (
-  <IsolatedPortal>
-    <PanelUserFlow
-      user={{
-        id: sessionUserId,
-        email: sessionUserEmail,
-        approved: approval,
-      }}
-    />
-  </IsolatedPortal>
-)}
-
-<PaymentPopup
-  open={showPaymentPopup}
-  onClose={() => setShowPaymentPopup(false)}
-/>
-
-
-
-
-
-
-          {/* Banner Google */}
-          {!isConnected && (
-            <Card className="mb-4 border-dashed shadow-sm">
-              <CardContent className="flex flex-col gap-4 p-4 md:flex-row md:items-center md:justify-between">
-                <div className="flex items-start gap-3">
-                  <div className="mt-1">
-                    <CheckCircle2 className="h-5 w-5 opacity-60" />
-                  </div>
-                  <div>
-                    <div className="text-sm font-semibold">Conecta Google</div>
-                    <p className="text-sm opacity-70">
-                      Importaremos tus reseñas y activaremos respuestas automáticas.
-                    </p>
-                  </div>
-                </div>
-                <Button
-                  className="gap-2 rounded-2xl shadow-sm"
-                  disabled={isConnecting}
-                  onClick={openGooglePopup}
-                >
-                  <LogIn className="h-4 w-4" />
-                  {isConnecting ? "Conectando…" : "Conectar Google OAuth"}
-                </Button>
-              </CardContent>
-            </Card>
-          )}
-
-
-          {/* Contenido del panel */}
-          <div className="relative">
-            {!isConnected && approval === true && (
-              <div className="pointer-events-none absolute inset-0 z-10 grid place-items-center">
-                <div className="text-center text-slate-600">
-                  <p className="font-medium">Aún no podemos extraer información</p>
-                  <p className="mt-1 text-sm opacity-70">Conecta Google OAuth (≈2 minutos)</p>
-                </div>
-              </div>
-            )}
-
-
-<div className={!isConnected ? "blur-sm select-none opacity-60" : ""}>
 
 
 
@@ -356,7 +171,10 @@ if (profile?.approved === true && profile?.has_payment_method === false) {
 
                   <div>
                     <p className="text-sm font-medium text-slate-500">Te damos la bienvenida,</p>
-                    <h1 className="text-3xl font-semibold text-slate-900">Restaurante Madrid</h1>
+                    <h1 className="text-3xl font-semibold text-slate-900">
+  {placeName || "Tu negocio"}
+</h1>
+
                     <p className="mt-1 text-sm text-slate-600">
                       analizando reseñas del{" "}
                       <span className="font-medium">{startLabel}</span> al{" "}
@@ -491,28 +309,43 @@ if (profile?.approved === true && profile?.has_payment_method === false) {
 
               {/* SECCIONES */}
               <section id="temas" className="mt-8 px-4 sm:px-6 lg:px-8">
-                <TemasSection fromDate={fromDate} toDate={toDate} />
+                <TemasSection
+  jobId={jobId}
+  fromDate={fromDate}
+  toDate={toDate}
+/>
+
               </section>
 
 
               <section id="sentimiento" className="mt-10 px-4 sm:px-6 lg:px-8">
-                <SentimientoSection fromDate={fromDate} toDate={toDate} bucket={bucket} />
+                <SentimientoSection
+  jobId={jobId}
+  fromDate={fromDate}
+  toDate={toDate}
+  bucket={bucket}
+/>
               </section>
 
 
               <section id="volumen" className="mt-8 px-4 sm:px-6 lg:px-8">
                 <VolumenSection
-                  fromDate={fromDate}
-                  toDate={toDate}
-                  bucket={period === "7d" ? "day" : period === "30d" ? "week" : "month"}
-                />
+  jobId={jobId}
+  fromDate={fromDate}
+  toDate={toDate}
+  bucket={period === "7d" ? "day" : period === "30d" ? "week" : "month"}
+/>
               </section>
 
 
               <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen bg-slate-100">
                 <div className="mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
                   <section id="oportunidades">
-                    <OportunidadesSection fromDate={fromDate} toDate={toDate} />
+                    <OportunidadesSection
+  jobId={jobId}
+  fromDate={fromDate}
+  toDate={toDate}
+/>
                   </section>
                 </div>
               </div>
@@ -521,29 +354,49 @@ if (profile?.approved === true && profile?.has_payment_method === false) {
               <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen bg-blue-100">
                 <div className="mx-auto px-4 sm:px-6 lg:px-8 pt-4 md:pt-6 pb-10">
                   <section id="respuestas">
-                    <RespuestasSection />
+                    <RespuestasSection jobId={Number(jobId)} />
                   </section>
                 </div>
               </div>
-
-
-            </div>
+             </div>  
           </div>
 
-
-        </div>
+{/* Sticky CTA Guardar análisis */}
+{!user && (
+  <div className="fixed bottom-4 left-0 right-0 z-50 px-4">
+    <div className="mx-auto max-w-3xl rounded-2xl border border-slate-200 bg-white/95 backdrop-blur shadow-lg p-4 flex items-center justify-between gap-4">
+      <div>
+        <p className="text-sm font-semibold text-slate-900">
+          🔒 Guardar análisis gratis
+        </p>
+        <p className="text-xs text-slate-600">
+          Crea una cuenta y accede a este análisis cuando quieras.
+        </p>
       </div>
+
+      <a
+        href={`/registro?job_id=${jobId}`}
+        className="shrink-0 rounded-xl bg-black px-4 py-2 text-sm font-semibold text-white hover:bg-neutral-800"
+      >
+        Crear cuenta gratis
+      </a>
+    </div>
+  </div>
+)}
+
+
+
 
 
       <Footer />
     </div>
   )
 }
-
 export default function Page() {
   return (
-    <PanelShell>
+    <>
+      <PanelHeader />
       <PanelUI />
-    </PanelShell>
+    </>
   );
 }

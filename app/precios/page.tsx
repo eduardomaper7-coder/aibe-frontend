@@ -3,10 +3,10 @@ import { Button } from "@/components/ui/button";
 
 export default function PricingSection() {
   return (
-    <div className="w-full min-h-screen bg-gray-100 font-inter text-gray-900">
+    <div className="w-full min-h-screen bg-blue-100 font-inter text-gray-900">
 
-      {/* SECCIÓN AZUL MUY SUAVE (Encabezado + Tabla) */}
-      <div className="w-full bg-blue-50 text-gray-800 py-20 px-6 md:px-12">
+      {/* SECCIÓN PRINCIPAL (antes azul suave blue-50) */}
+      <div className="w-full bg-blue-200 text-gray-800 py-20 px-6 md:px-12">
 
         {/* Encabezado */}
         <div className="text-center mb-12 max-w-4xl mx-auto">
@@ -56,68 +56,69 @@ export default function PricingSection() {
       </div>
 
       {/* SECCIÓN DE LOS 3 RECUADROS */}
-      <section className="w-full bg-gray-100 py-16 px-6 md:px-12">
-        <div className="max-w-6xl mx-auto">
+<section className="w-full bg-gray-300 py-16 px-6 md:px-12">
+  <div className="max-w-6xl mx-auto">
 
-          <h3 className="text-3xl mb-12 font-normal">
-            ¿Cómo contamos los clientes generados?
-          </h3>
+    <h3 className="text-3xl mb-12 font-normal">
+      ¿Cómo contamos los clientes generados?
+    </h3>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
 
-            {/* Recuadro 1 */}
-            <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition">
-              <h4 className="text-2xl mb-4 font-normal">
-                1. Datos reales de Google y tu web
-              </h4>
-              <p className="text-gray-700 mb-4 font-light">
-                Cada mes analizamos:
-              </p>
-              <ul className="space-y-2 text-gray-700 font-light">
-                <li>Clics en “Cómo llegar”</li>
-                <li>Clics en Llamar</li>
-                <li>Visitas al sitio web</li>
-                <li>Reservas realizadas</li>
-                <li>Búsquedas de marca</li>
-              </ul>
-            </div>
+      {/* Recuadro 1 */}
+      <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition">
+        <h4 className="text-2xl mb-4 font-normal">
+          1. Datos reales de Google y tu web
+        </h4>
+        <p className="text-gray-700 mb-4 font-light">
+          Cada mes analizamos:
+        </p>
+        <ul className="space-y-2 text-gray-700 font-light">
+          <li>Clics en “Cómo llegar”</li>
+          <li>Clics en Llamar</li>
+          <li>Visitas al sitio web</li>
+          <li>Reservas realizadas</li>
+          <li>Búsquedas de marca</li>
+        </ul>
+      </div>
 
-            {/* Recuadro 2 */}
-            <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition">
-              <h4 className="text-2xl mb-4 font-normal">
-                2. Tu aportación
-              </h4>
-              <p className="text-gray-700 mb-4 font-light">
-                Cada mes solo te pediremos:
-              </p>
-              <ul className="space-y-2 text-gray-700 font-light">
-                <li>¿Has notado más clientes nuevos?</li>
-                <li>¿Más mesas?</li>
-                <li>¿Más facturación?</li>
-                <li>¿Más tickets?</li>
-              </ul>
-            </div>
+      {/* Recuadro 2 */}
+      <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition">
+        <h4 className="text-2xl mb-4 font-normal">
+          2. Tu aportación
+        </h4>
+        <p className="text-gray-700 mb-4 font-light">
+          Cada mes solo te pediremos:
+        </p>
+        <ul className="space-y-2 text-gray-700 font-light">
+          <li>¿Has notado más clientes nuevos?</li>
+          <li>¿Más mesas?</li>
+          <li>¿Más facturación?</li>
+          <li>¿Más tickets?</li>
+        </ul>
+      </div>
 
-            {/* Recuadro 3 */}
-            <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition">
-              <h4 className="text-2xl mb-4 font-normal">
-                3. Resultado final
-              </h4>
-              <p className="text-gray-700 mb-4 font-light">
-                Combinamos:
-              </p>
-              <ul className="space-y-2 text-gray-700 font-light">
-                <li>Crecimiento detectado en Google</li>
-                <li>Lo que ves realmente en tu restaurante</li>
-              </ul>
-            </div>
+      {/* Recuadro 3 */}
+      <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition">
+        <h4 className="text-2xl mb-4 font-normal">
+          3. Resultado final
+        </h4>
+        <p className="text-gray-700 mb-4 font-light">
+          Combinamos:
+        </p>
+        <ul className="space-y-2 text-gray-700 font-light">
+          <li>Crecimiento detectado en Google</li>
+          <li>Lo que ves realmente en tu restaurante</li>
+        </ul>
+      </div>
 
-          </div>
-        </div>
-      </section>
+    </div>
+  </div>
+</section>
+
 
       {/* SECCIÓN BENEFICIOS */}
-      <section className="bg-blue-50 w-full py-20 px-6 md:px-12 text-gray-900">
+      <section className="bg-blue-200 w-full py-20 px-6 md:px-12 text-gray-900">
         <div className="max-w-4xl mx-auto">
 
           <h3 className="text-3xl mb-6 font-normal">
@@ -138,13 +139,13 @@ export default function PricingSection() {
       </section>
 
       {/* CTA FINAL */}
-      <section className="text-center mt-16 pb-20 px-6 md:px-12">
+      <section className="text-center mt-16 pb-20 px-6 md:px-12 bg-blue-100">
         <h3 className="text-3xl mb-4 font-normal">
           Contacta con uno de nuestros especialistas.
         </h3>
 
         <p className="text-lg text-gray-700 mb-6 max-w-2xl mx-auto font-light">
-          Analizamos tu ficha de Google y tu web y te decimos cuántos clientes 
+          Analizamos tu ficha de Google y tu web y te decimos cuántos clientes
           nuevos podemos generar este mes.
         </p>
 

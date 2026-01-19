@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { supabase } from "@/lib/supabase";
 
 type Tend = "up" | "down" | "flat";
 
@@ -20,9 +19,11 @@ type TopicsSummaryResponse = {
 };
 
 type TemasProps = {
+  jobId: string;
   fromDate: string | null;
   toDate: string | null;
 };
+
 
 // ---- Utils ----
 function pct(x: number) {
@@ -66,7 +67,7 @@ function Trend({ value }: { value: Tend }) {
   );
 }
 
-export default function TemasSection({ fromDate, toDate }: TemasProps) {
+export default function TemasSection({ jobId, fromDate, toDate }: TemasProps) {
   const API_BASE = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/+$/, "");
 
   const [rows, setRows] = useState<Row[] | null>(null);
@@ -83,42 +84,38 @@ export default function TemasSection({ fromDate, toDate }: TemasProps) {
 
   // ------------------ Fetch backend ------------------
   useEffect(() => {
-    (async () => {
-      if (!API_BASE) return;
+  if (!API_BASE || !jobId) return;
 
-      const { data } = await supabase.auth.getSession();
-      const email = data.session?.user?.email?.toLowerCase();
-      if (!email) return;
+  const params = new URLSearchParams();
+  params.append("job_id", jobId);
 
-      const params = new URLSearchParams({ email });
-      if (fromDate) params.append("from", fromDate);
-      if (toDate) params.append("to", toDate);
+  if (fromDate) params.append("from", fromDate);
+  if (toDate) params.append("to", toDate);
 
-      setLoading(true);
-      try {
-        const res = await fetch(
-          `${API_BASE}/reviews/topics-summary?${params.toString()}`,
-          { cache: "no-store" }
-        );
-        if (!res.ok) throw new Error("Error al obtener temas");
-        const json: TopicsSummaryResponse = await res.json();
+  setLoading(true);
 
-        setRows(json.topics ?? []);
-        setTotalMentions(json.total_mentions ?? 0);
-        setAvgSentiment(json.avg_sentiment ?? 0);
-        setGlobalTrend(json.global_trend ?? "flat");
-      } catch (e) {
-        console.error(e);
-        // fallback: vaciar (se mostrará mensaje de "no hay resultados")
-        setRows([]);
-        setTotalMentions(0);
-        setAvgSentiment(0);
-        setGlobalTrend("flat");
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, [API_BASE, fromDate, toDate]);
+  fetch(`${API_BASE}/reviews/topics-summary?${params.toString()}`)
+    .then(res => {
+      if (!res.ok) throw new Error("Error temas");
+      return res.json();
+    })
+    .then((json: TopicsSummaryResponse) => {
+      setRows(json.topics ?? []);
+      setTotalMentions(json.total_mentions ?? 0);
+      setAvgSentiment(json.avg_sentiment ?? 0);
+      setGlobalTrend(json.global_trend ?? "flat");
+    })
+    .catch(() => {
+      setRows([]);
+      setTotalMentions(0);
+      setAvgSentiment(0);
+      setGlobalTrend("flat");
+    })
+    .finally(() => setLoading(false));
+}, [API_BASE, jobId, fromDate, toDate]);
+
+
+
 
   const baseRows = useMemo<Row[]>(() => rows ?? [], [rows]);
 
@@ -211,7 +208,7 @@ export default function TemasSection({ fromDate, toDate }: TemasProps) {
 
           {/* Tabla + Métricas */}
           <div className="bg-white/90 border border-slate-200 shadow-xl rounded-2xl p-5">
-            <div className="overflow-x-auto max-h-[60vh]">
+            <div className="hidden md:block overflow-x-auto max-h-[60vh]">
               <table className="w-full border-separate [border-spacing:0_10px]">
                 <thead className="sticky top-0 z-10">
                   <tr className="backdrop-blur bg-white/70">
@@ -276,6 +273,59 @@ export default function TemasSection({ fromDate, toDate }: TemasProps) {
                 </tbody>
               </table>
             </div>
+
+            {/* Vista móvil – cards */}
+<div className="md:hidden space-y-4">
+  {filteredSorted.length === 0 ? (
+    <div className="py-10 text-center text-slate-500">
+      No hay resultados para los filtros actuales.
+    </div>
+  ) : (
+    filteredSorted.map((d, i) => (
+      <div
+        key={i}
+        className="border border-slate-200 rounded-xl p-4 shadow-sm bg-white"
+      >
+        {/* Tema */}
+        <div className="font-semibold text-base mb-1">
+          {d.tema}
+        </div>
+
+        {/* Menciones */}
+        <div className="flex items-center gap-2 mb-3">
+          <span className="px-2 py-0.5 text-sm rounded-full bg-indigo-50 border border-indigo-200">
+            {d.menciones}
+          </span>
+          <span className="text-sm text-slate-500">
+            menciones
+          </span>
+        </div>
+
+        {/* Sentimiento */}
+        <div className="mb-3">
+          <div className="flex justify-between text-sm mb-1">
+            <span className="text-slate-500">Sentimiento</span>
+            <span className="font-semibold tabular-nums">
+              {fmtSent(d.sentimiento)}
+            </span>
+          </div>
+          <div className="h-2 w-full bg-slate-100 border border-slate-200 rounded-full overflow-hidden">
+            <span
+              className="block h-full bg-gradient-to-r from-red-500 via-amber-500 to-emerald-500"
+              style={{ width: `${pct(d.sentimiento)}%` }}
+            />
+          </div>
+        </div>
+
+        {/* Tendencia */}
+        <div className="mt-2">
+          <Trend value={d.tendencia} />
+        </div>
+      </div>
+    ))
+  )}
+</div>
+
 
             {/* Métricas rápidas */}
             <div className="mt-6">

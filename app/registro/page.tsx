@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+
 
 export default function SignupPage() {
   const router = useRouter();
@@ -13,6 +15,9 @@ export default function SignupPage() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const searchParams = useSearchParams();
+  const jobId = searchParams.get("job_id");
+
 
   // 🚀 Mantengo la función por si luego la necesitas,
   // pero YA NO SE LLAMA desde ningún lado.
@@ -64,10 +69,32 @@ export default function SignupPage() {
       if (error) throw error;
 
       // Si supabase ya crea sesión directamente → ir al panel
-      if (data.session) {
-        router.push("/panel");
-        return;
-      }
+      // Si supabase ya crea sesión directamente → ir al panel
+if (data.session) {
+  const userId = data.session.user.id;
+
+  if (!jobId) {
+    throw new Error("No hay job_id para enlazar el análisis");
+  }
+
+  console.log("🔗 Enlazando job_id", jobId, "con user", userId);
+
+  const { error: updateError } = await supabase
+    .from("analyses")
+    .update({
+      user_id: userId,
+      email: email,
+    })
+    .eq("id", Number(jobId));
+
+  if (updateError) {
+    throw updateError;
+  }
+
+  router.push(`/panel?job_id=${jobId}`);
+  return;
+}
+
 
       // Si no, iniciar sesión y luego ir al panel
       const { error: loginErr } = await supabase.auth.signInWithPassword({
@@ -77,7 +104,35 @@ export default function SignupPage() {
 
       if (loginErr) throw loginErr;
 
-      router.push("/panel");
+      const {
+  data: { session },
+} = await supabase.auth.getSession();
+if (!session?.user) {
+  throw new Error("No se pudo obtener la sesión del usuario");
+}
+
+
+if (!jobId) {
+  throw new Error("No hay job_id para enlazar el análisis");
+}
+
+console.log("🔗 Enlazando job_id", jobId, "con user", session.user.id);
+
+const { error: updateError } = await supabase
+  .from("analyses")
+  .update({
+    user_id: session.user.id,
+    email: email,
+  })
+  .eq("id", Number(jobId));
+
+if (updateError) {
+  throw updateError;
+}
+
+router.push(`/panel?job_id=${jobId}`);
+
+
     } catch (err: any) {
       setError(err?.message ?? "No se pudo crear la cuenta.");
     } finally {
@@ -118,10 +173,11 @@ export default function SignupPage() {
           </div>
 
           <h1 className="text-3xl font-bold tracking-tight">
-            Comienza tu prueba gratis
+            Guarda tu análisis gratis
           </h1>
           <p className="mt-3 text-base text-neutral-600">
-            Disfruta de 3 días gratis y, después, 1€/mes.
+            Crea tu cuenta para guardar este análisis y volver a él cuando quieras,
+  con actualizaciones cada 24 horas
           </p>
 
           <form onSubmit={handleEmail} className="mt-8 space-y-5">
