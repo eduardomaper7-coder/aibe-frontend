@@ -29,18 +29,19 @@ export default function Home() {
   try {
     setLoading(true);
 
-    const res = await fetch("http://localhost:8000/scrape", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        accept: "application/json",
-      },
-      body: JSON.stringify({
-        google_maps_url: url,
-        max_reviews: 99999,       // para pruebas
-        personal_data: true,
-      }),
-    });
+    const res = await fetch("/api/scrape", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    accept: "application/json",
+  },
+  body: JSON.stringify({
+    google_maps_url: url,
+    max_reviews: 99999,
+    personal_data: true,
+  }),
+});
+
 
     if (!res.ok) {
       const txt = await res.text();
