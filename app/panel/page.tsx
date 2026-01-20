@@ -1,407 +1,387 @@
-"use client";
+'use client';
 
-import { useState, useMemo } from "react";
 
-import { useSearchParams } from "next/navigation";
-import TemasSection from './analisis/temas/TemasSection'
-import SentimientoSection from './analisis/sentimiento/sentimiento'
+import { useEffect, useState } from 'react';
 
-import OportunidadesSection from './analisis/oportunidades/oportunidades'
-import VolumenSection from './analisis/volumen/volumen'
-import RespuestasSection from './analisis/respuestas/respuestas'
-import Footer from '../Footer'
-import { Calendar, ChevronDown, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+
+import SeccionResenasIA from '@/components/ui/SeccionResenasIA';
+// import TemasDemo from '@/components/ui/temasdemo'; // <- no se usa, lo dejamos fuera
+import SentimientoDemo from '@/components/ui/sentimientodemo';
+import VolumenDemo from '@/components/ui/volumendemo';
+import OportunidadesDemo from '@/components/ui/oportunidadesdemo';
+import Frases from '@/components/ui/frases';
+import VideoInicio from '@/components/ui/videoinicio';
+import Footer from './Footer';
+import TresRecuadros from '@/components/ui/3recuadros';
+import VideoTemas from '@/components/ui/videotemas';
+import SeoBeneficio from '@/components/ui/seo-beneficio'
+import Image from "next/image";
+
 
 import { useRouter } from "next/navigation";
 
-import { useEffect } from "react";
-import { supabase } from "@/lib/supabase";
-import PanelHeader from "./PanelHeader";
-export const dynamic = "force-dynamic";
-import { Suspense } from "react";
 
 
-/** -------- PANEL PRINCIPAL -------- */
-function PanelUI() {
 
-  
-const [placeName, setPlaceName] = useState<string | null>(null);
-const [user, setUser] = useState<any>(null);
-
-  const searchParams = useSearchParams();
-  const jobId = searchParams.get("job_id");
-  const API_BASE = (process.env.NEXT_PUBLIC_API_URL ?? '').replace(/\/+$/, '')
-
-  useEffect(() => {
-  if (!jobId) return;
-
-  // 🔹 1. Nombre del negocio → BACKEND
-  fetch(`${API_BASE}/jobs/${jobId}/meta`)
-    .then(res => res.json())
-    .then(data => {
-      if (data?.place_name) {
-        setPlaceName(data.place_name);
-      }
-    });
-
-  // 🔹 2. Usuario → Supabase
-  supabase.auth.getUser().then(({ data }) => {
-    setUser(data.user);
-  });
-
-}, [jobId]);
+export default function Home() {
+  const [googleMapsUrl, setGoogleMapsUrl] = useState('');
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
 
-  if (!jobId) {
-  return (
-    <div className="p-8 text-slate-600">
-      Aún no tienes ningún análisis.
-      <br />
-      Empieza creando uno nuevo.
-    </div>
-  );
+  async function handleStart() {
+  const url = googleMapsUrl.trim();
+  if (!url) return;
+
+
+  try {
+    setLoading(true);
+
+
+    const res = await fetch("/api/scrape", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    accept: "application/json",
+  },
+  body: JSON.stringify({
+    google_maps_url: url,
+    max_reviews: 99999,
+    personal_data: true,
+  }),
+});
+
+
+
+
+    if (!res.ok) {
+      const txt = await res.text();
+      throw new Error(txt || "Error haciendo scrape");
+    }
+
+
+    const data = await res.json(); // { job_id, status, reviews_saved }
+
+
+    // “panel del usuario” (por ahora) = lo que queda guardado en su navegador
+    localStorage.setItem("googleMapsUrl", url);
+    localStorage.setItem("jobId", String(data.job_id));
+
+
+    // ✅ ir al panel (ruta directa)
+    router.push(`/procesando?job_id=${data.job_id}`);
+  } catch (e: any) {
+    alert(e?.message ?? "Error");
+  } finally {
+    setLoading(false);
+  }
 }
 
 
 
-  console.log("API_BASE:", API_BASE);
-  console.log(">>> 🧪 API_BASE =", API_BASE);
-  const router = useRouter();
+
+  useEffect(() => {
 
 
-  /** ---------------- Periodos ---------------- */
-  type PeriodKey = '7d' | '30d' | '3m' | '6m' | '1y' | 'all'
+  const TITLES: string[] = [
+    'Convierte cada reseña en una oportunidad de crecimiento',
+    'Descubre lo que tus clientes realmente piensan.',
+    'La IA que transforma tus reseñas en decisiones inteligentes.',
+    'Porque cada cliente merece una respuesta única.',
+  ];
 
 
-  const [period, setPeriod] = useState<PeriodKey>('all')
-  const [customFrom, setCustomFrom] = useState<string>('')
-  const [customTo, setCustomTo] = useState<string>('')
+  const titleEl = document.getElementById('dynamicTitle');
+  const slotEl = document.getElementById('titleSlot');
+  if (!titleEl || !slotEl) return;
 
 
-  const [showPeriodMenu, setShowPeriodMenu] = useState(false)
-  const [showCustomMenu, setShowCustomMenu] = useState(false)
+  const probe = document.createElement('div');
+  const cs = window.getComputedStyle(titleEl);
 
 
-  const todayLocal = () => new Date().toLocaleDateString('en-CA')
+  Object.assign(probe.style, {
+    position: 'absolute',
+    left: '-9999px',
+    top: '-9999px',
+    width: getComputedStyle(slotEl).width,
+    font: (cs as any).font,
+    lineHeight: (cs as any).lineHeight,
+    letterSpacing: (cs as any).letterSpacing,
+    whiteSpace: 'normal',
+    display: 'block',
+  } as Partial<CSSStyleDeclaration>);
 
 
-  const { startLabel, endLabel, fromDate, toDate } = useMemo(() => {
+  document.body.appendChild(probe);
 
 
-    if (customFrom && customTo) {
-      return {
-        startLabel: customFrom,
-        endLabel: customTo,
-        fromDate: customFrom,
-        toDate: customTo,
-      }
-    }
+  let max = 0;
+  TITLES.forEach((t) => {
+    probe.textContent = t;
+    max = Math.max(max, probe.getBoundingClientRect().height);
+  });
+  document.body.removeChild(probe);
+  slotEl.style.setProperty('--title-height', Math.ceil(max + 8) + 'px');
 
 
-    const endDate = new Date()
-    const startDate = new Date(endDate)
+  let i = 0;
 
 
-    switch (period) {
-      case '7d': startDate.setDate(endDate.getDate() - 7); break
-      case '30d': startDate.setDate(endDate.getDate() - 30); break
-      case '3m': startDate.setMonth(endDate.getMonth() - 3); break
-      case '6m': startDate.setMonth(endDate.getMonth() - 6); break
-      case '1y': startDate.setFullYear(endDate.getFullYear() - 1); break
-      case 'all': return {
-        startLabel: 'histórico',
-        endLabel: endDate.toLocaleDateString('en-CA'),
-        fromDate: null,
-        toDate: endDate.toLocaleDateString('en-CA'),
-      }
-    }
-
-
-    const fmt = (d: Date) => d.toLocaleDateString('en-CA')
-
-
-    return {
-      startLabel: fmt(startDate),
-      endLabel: fmt(endDate),
-      fromDate: fmt(startDate),
-      toDate: fmt(endDate),
-    }
-  }, [period, customFrom, customTo])
-
-
-  const bucket: 'day' | 'week' | 'month' = useMemo(() => {
-    if (customFrom && customTo) return 'day'
-    if (period === '7d') return 'day'
-    if (period === '30d' || period === '3m') return 'week'
-    return 'month'
-  }, [period, customFrom, customTo])
-
-
-  const selectPeriod = (p: PeriodKey) => {
-    setPeriod(p)
-    setCustomFrom('')
-    setCustomTo('')
-    setShowPeriodMenu(false)
+  function show(index: number): void {
+    const nextText = TITLES[index % TITLES.length];
+    if (!titleEl) return;
+    titleEl.classList.remove('fade-enter', 'fade-enter-active');
+    titleEl.classList.add('fade-exit');
+    requestAnimationFrame(() => {
+      titleEl.classList.add('fade-exit-active');
+      window.setTimeout(() => {
+        titleEl.textContent = nextText;
+        titleEl.classList.remove('fade-exit', 'fade-exit-active');
+        titleEl.classList.add('fade-enter');
+        requestAnimationFrame(() =>
+          titleEl.classList.add('fade-enter-active')
+        );
+      }, 600);
+    });
   }
 
 
-  const applyCustom = () => setShowCustomMenu(false)
-  const clearCustom = () => {
-    setCustomFrom('')
-    setCustomTo('')
-    setShowCustomMenu(false)
-  }
+  titleEl.textContent = TITLES[0];
+
+
+  const id = window.setInterval(() => {
+    i = (i + 1) % TITLES.length;
+    show(i);
+  }, 6500);
+
+
+  return () => window.clearInterval(id);
+}, []);
 
 
 
 
-  /* ========== RETURN COMPLETO ========== */
+  const sectionCx = 'bg-black px-4 md:px-6 py-6 md:py-8';
+
+
   return (
-    <div className="text-black bg-white min-h-screen">
-      <div className="w-full pb-0">
-        <div className="px-4 sm:px-6 lg:px-8">
+    <>
+     <section className="hero relative" aria-label="Sección inicial con video de fondo">
+
+
+  {/* IMAGEN fija detrás de todo */}
+  {/* Fondo */}
+  <div className="hero-video-wrapper">
+    <Image
+      src="/imagenes/hero-imagen.png"
+      alt="Hero"
+      fill
+      priority
+      className="hero-video"
+    />
+  </div>
 
 
 
 
-              {/* HEADER */}
-              <div className="mb-4 rounded-2xl bg-slate-50 border border-slate-200 shadow-sm p-5">
-                <div className="flex flex-col justify-between gap-4 md:flex-row md:items-start">
 
 
-                  <div>
-                    <p className="text-sm font-medium text-slate-500">Te damos la bienvenida,</p>
-                    <h1 className="text-3xl font-semibold text-slate-900">
-  {placeName || "Tu negocio"}
-</h1>
-
-                    <p className="mt-1 text-sm text-slate-600">
-                      analizando reseñas del{" "}
-                      <span className="font-medium">{startLabel}</span> al{" "}
-                      <span className="font-medium">{endLabel}</span>
-                    </p>
-                  </div>
-
-
-                  {/* CONTROLES DE PERIODO */}
-                  <div className="relative flex flex-wrap items-center gap-2 bg-white rounded-xl p-3 shadow-sm border border-slate-200">
-
-
-                    <div className="flex items-center gap-2 text-slate-600">
-                      <Calendar className="h-4 w-4" />
-                      <span className="text-xs">{startLabel} → {endLabel}</span>
-                    </div>
-
-
-                    {/* BOTÓN PERIODO */}
-                    <div className="relative">
-                      <Button
-                        variant="outline"
-                        className="rounded-2xl text-slate-800 bg-white border-slate-300"
-                        onClick={() => {
-                          setShowPeriodMenu(v => !v)
-                          setShowCustomMenu(false)
-                        }}
-                      >
-                        {period === '7d' && 'Periodo: 7 días'}
-                        {period === '30d' && 'Periodo: 1 mes'}
-                        {period === '3m' && 'Periodo: 3 meses'}
-                        {period === '6m' && 'Periodo: 6 meses'}
-                        {period === '1y' && 'Periodo: 1 año'}
-                        {period === 'all' && 'Periodo: histórico'}
-                        <ChevronDown className="ml-2 h-4 w-4" />
-                      </Button>
-
-
-                      {showPeriodMenu && (
-                        <Card className="absolute right-0 z-20 mt-2 w-56 shadow-lg bg-white border">
-                          <CardContent className="p-1 text-slate-800">
-                            <ul className="text-sm">
-                              <li><button className="w-full px-3 py-2 text-left hover:bg-slate-100 rounded-lg" onClick={() => selectPeriod('7d')}>Últimos 7 días</button></li>
-                              <li><button className="w-full px-3 py-2 text-left hover:bg-slate-100 rounded-lg" onClick={() => selectPeriod('30d')}>1 mes</button></li>
-                              <li><button className="w-full px-3 py-2 text-left hover:bg-slate-100 rounded-lg" onClick={() => selectPeriod('3m')}>3 meses</button></li>
-                              <li><button className="w-full px-3 py-2 text-left hover:bg-slate-100 rounded-lg" onClick={() => selectPeriod('6m')}>6 meses</button></li>
-                              <li><button className="w-full px-3 py-2 text-left hover:bg-slate-100 rounded-lg" onClick={() => selectPeriod('1y')}>1 año</button></li>
-                              <li><button className="w-full px-3 py-2 text-left hover:bg-slate-100 rounded-lg" onClick={() => selectPeriod('all')}>Histórico</button></li>
-                            </ul>
-                          </CardContent>
-                        </Card>
-                      )}
-                    </div>
-
-
-                    {/* BOTÓN PERSONALIZADO */}
-                    <div className="relative">
-                      <Button
-                        variant="outline"
-                        className="rounded-2xl text-slate-800 bg-white border-slate-300"
-                        onClick={() => {
-                          setShowCustomMenu(v => !v)
-                          setShowPeriodMenu(false)
-                        }}
-                      >
-                        {customFrom && customTo
-                          ? `Personalizado: ${customFrom} → ${customTo}`
-                          : "Personalizado"}
-                        <ChevronDown className="ml-2 h-4 w-4" />
-                      </Button>
-
-
-                      {showCustomMenu && (
-                        <Card className="absolute right-0 z-20 mt-2 w-64 shadow-lg bg-white border">
-                          <CardContent className="p-3 text-slate-800">
-
-
-                            <div className="space-y-3">
-                              <label className="block text-xs font-medium text-slate-600">Desde</label>
-                              <input
-                                type="date"
-                                className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm"
-                                value={customFrom}
-                                max={customTo || todayLocal()}
-                                onChange={(e) => setCustomFrom(e.target.value)}
-                              />
-
-
-                              <label className="block text-xs font-medium text-slate-600">Hasta</label>
-                              <input
-                                type="date"
-                                className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm"
-                                value={customTo}
-                                min={customFrom || undefined}
-                                max={todayLocal()}
-                                onChange={(e) => setCustomTo(e.target.value)}
-                              />
-
-
-                              <div className="flex items-center justify-between">
-                                <Button
-                                  variant="default"
-                                  className="rounded-xl"
-                                  onClick={applyCustom}
-                                  disabled={!(customFrom && customTo && customFrom <= customTo)}
-                                >
-                                  Aplicar
-                                </Button>
-
-
-                                <Button
-                                  variant="ghost"
-                                  className="rounded-xl text-slate-600"
-                                  onClick={clearCustom}
-                                >
-                                  <X className="mr-1 h-4 w-4" /> Borrar
-                                </Button>
-                              </div>
-                            </div>
-
-
-                          </CardContent>
-                        </Card>
-                      )}
-                    </div>
-
-
-                  </div>
-                </div>
-              </div>
-
-
-              {/* SECCIONES */}
-              <section id="temas" className="mt-8 px-4 sm:px-6 lg:px-8">
-                <TemasSection
-  jobId={jobId}
-  fromDate={fromDate}
-  toDate={toDate}
-/>
-
-              </section>
-
-
-              <section id="sentimiento" className="mt-10 px-4 sm:px-6 lg:px-8">
-                <SentimientoSection
-  jobId={jobId}
-  fromDate={fromDate}
-  toDate={toDate}
-  bucket={bucket}
-/>
-              </section>
-
-
-              <section id="volumen" className="mt-8 px-4 sm:px-6 lg:px-8">
-                <VolumenSection
-  jobId={jobId}
-  fromDate={fromDate}
-  toDate={toDate}
-  bucket={period === "7d" ? "day" : period === "30d" ? "week" : "month"}
-/>
-              </section>
-
-
-              <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen bg-slate-100">
-                <div className="mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
-                  <section id="oportunidades">
-                    <OportunidadesSection
-  jobId={jobId}
-  fromDate={fromDate}
-  toDate={toDate}
-/>
-                  </section>
-                </div>
-              </div>
-
-
-              <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen bg-blue-100">
-                <div className="mx-auto px-4 sm:px-6 lg:px-8 pt-4 md:pt-6 pb-10">
-                  <section id="respuestas">
-                    <RespuestasSection jobId={Number(jobId)} />
-                  </section>
-                </div>
-              </div>
-             </div>  
-          </div>
-
-{/* Sticky CTA Guardar análisis */}
-{!user && (
-  <div className="fixed bottom-4 left-0 right-0 z-50 px-4">
-    <div className="mx-auto max-w-3xl rounded-2xl border border-slate-200 bg-white/95 backdrop-blur shadow-lg p-4 flex items-center justify-between gap-4">
-      <div>
-        <p className="text-sm font-semibold text-slate-900">
-          🔒 Guardar análisis gratis
-        </p>
-        <p className="text-xs text-slate-600">
-          Crea una cuenta y accede a este análisis cuando quieras.
-        </p>
+  {/* Contenido encima del video */}
+  <div className="shell relative z-[1]">
+    <div className="topbar-spacer" aria-hidden="true" />
+    <div className="center">
+      <div className="title-slot" id="titleSlot">
+        <div className="title-layer">
+          <h1 id="dynamicTitle" className="title"></h1>
+        </div>
       </div>
-
-      <a
-        href={`/registro?job_id=${jobId}`}
-        className="shrink-0 rounded-xl bg-black px-4 py-2 text-sm font-semibold text-white hover:bg-neutral-800"
-      >
-        Crear cuenta gratis
-      </a>
+      <p className="subtitle">
+        La tecnología que usan las grandes empresas,<br />
+        ahora al alcance de tu negocio.
+      </p>
     </div>
   </div>
-)}
+
+
+  {/* Input + botón */}
+<div className="relative z-[2]">
+  <div className="hero-buttons">
+    <div className="hero-btn-group hero-cta">
+     
+      <input
+        type="text"
+        placeholder="Pega el link de Google Maps del restaurante"
+        value={googleMapsUrl}
+        onChange={(e) => setGoogleMapsUrl(e.target.value)}
+        className="
+          hero-input
+          rounded-full
+          px-6
+          py-4
+          text-sm md:text-base
+          bg-white
+          text-black
+          placeholder-gray-400
+          focus:outline-none
+        "
+      />
+
+
+      <button
+        type="button"
+        className="hero-btn primary"
+        onClick={handleStart}
+        disabled={loading}
+      >
+        {loading ? "Analizando reseñas..." : "Empezar Gratis"}
+      </button>
+
+
+    </div>
+  </div>
+</div>
 
 
 
+
+
+
+</section>
+
+
+
+
+   
+
+
+
+
+
+
+{/* SEO Beneficio */}
+{/*
+<section className="relative z-[10] px-4 md:px-6 py-10">
+  <SeoBeneficio />
+</section>
+*/}
+
+
+     {/* Secciones */}
+<section
+  className="
+    bg-black
+    px-4 md:px-6 py-6 md:py-8
+    relative z-[2]
+    rounded-t-[60px]
+  "
+>
+  <Frases />
+</section>
+
+
+      <VideoInicio />
+      <TresRecuadros />
+
+
+      {/* Sección azul integrada (full-width) */}
+<section
+  className="
+    bg-blue-fullbleed
+    relative left-1/2 right-1/2 -mx-[50vw] w-screen
+    text-white font-sans
+    bg-[#0A1224]
+  "
+  style={{ fontFamily: 'Inter, sans-serif' }}
+>
+  <div className="mx-auto max-w-7xl px-6 py-20 lg:px-8">
+    <div className="grid items-start gap-8 md:grid-cols-12">
+
+
+      <div className="md:col-span-7">
+        <h2 className="mt-0 text-2xl md:text-4xl lg:text-5xl font-light leading-tight text-gray-100">
+          Especialistas en aumentar las ventas y mejorar la reputación online de restaurantes.
+        </h2>
+      </div>
+
+
+      <div className="md:col-span-5 flex flex-col items-end justify-start space-y-1">
+
+
+  <p className="text-[13px] md:text-sm lg:text-base text-gray-400 leading-relaxed text-right">
+    Profesionales en SEO y captación de clientes para restaurantes.
+  </p>
+
+
+  <p className="text-[13px] md:text-sm lg:text-base text-gray-400 leading-relaxed text-right">
+    Resultados comprobados a las 2 semanas.
+  </p>
+
+
+  <p className="text-[13px] md:text-sm lg:text-base text-gray-400 leading-relaxed text-right">
+    Prueba gratis sin compromiso.
+  </p>
+
+
+</div>
+
+
+
+
+    </div>
+  </div>
+</section>
+
+
+
+
+
+
+
+
+
+
+      <VideoTemas />
+
+
+     
+
+
+      {/* Sección combinada: Sentimiento + Volumen */}
+      <section className="relative left-1/2 right-1/2 -mx-[50vw] w-screen bg-black py-10">
+        <div className="mx-auto w-[calc(100vw-2rem)] max-w-[2000px] px-0">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 items-start justify-center">
+            {/* Sentimiento */}
+            <div className="flex justify-end w-full">
+              <div className="w-full max-w-[980px]">
+                <SentimientoDemo />
+              </div>
+            </div>
+
+
+            {/* Volumen */}
+            <div className="flex justify-start w-full">
+              <div className="w-full max-w-[980px]">
+                <VolumenDemo />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <section className={sectionCx}>
+        <OportunidadesDemo />
+      </section>
+
+
+      {/* Resto de secciones */}
+      <section className="bg-black px-4 md:px-6 pt-0 pb-6 md:pb-8">
+        <SeccionResenasIA />
+      </section>
 
 
       <Footer />
-    </div>
-  )
-}
-export default function Page() {
-  return (
-    <>
-      <PanelHeader />
-      <Suspense fallback={<div>Cargando panel…</div>}>
-        <PanelUI />
-      </Suspense>
     </>
   );
 }
-
