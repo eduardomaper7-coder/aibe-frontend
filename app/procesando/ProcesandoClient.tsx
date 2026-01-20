@@ -11,20 +11,34 @@ export default function ProcesandoClient() {
     const url = searchParams.get('url')
     if (!url) return
 
-    const analizar = async () => {
-      const res = await fetch('/api/analizar', {
-        method: 'POST',
-        body: JSON.stringify({ url }),
+    const run = async () => {
+      const res = await fetch("/api/scrape", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          accept: "application/json",
+        },
+        body: JSON.stringify({
+          google_maps_url: url,
+          max_reviews: 99999,
+          personal_data: true,
+        }),
       })
 
-      const data = await res.json()
+      if (!res.ok) {
+        throw new Error("Error haciendo scrape")
+      }
 
-      // 👉 REDIRECCIÓN AL PANEL
-      router.replace(`/panel/${data.id}`)
+      const data = await res.json() // { job_id }
+
+      localStorage.setItem("jobId", String(data.job_id))
+
+      // 👉 salto final al panel
+      router.replace(`/panel/${data.job_id}`)
     }
 
-    analizar()
+    run()
   }, [searchParams, router])
 
-  return null // no renderiza nada
+  return null
 }

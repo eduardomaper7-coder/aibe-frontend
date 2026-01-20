@@ -23,9 +23,17 @@ export default function Home() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
-  async function handleStart() {
+  function handleStart() {
   const url = googleMapsUrl.trim();
   if (!url) return;
+
+  // guardas lo mínimo
+  localStorage.setItem("googleMapsUrl", url);
+
+  // 🚀 navegación INMEDIATA
+  router.push(`/procesando?url=${encodeURIComponent(url)}`);
+}
+
 
   try {
     setLoading(true);

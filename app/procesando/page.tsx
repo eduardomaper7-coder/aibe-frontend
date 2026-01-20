@@ -3,17 +3,17 @@ import ProcesandoClient from './ProcesandoClient'
 
 export default function Page() {
   return (
-    <Suspense fallback={<ProcesandoUI />}>
+    <Suspense fallback={<Loader />}>
       <ProcesandoClient />
     </Suspense>
   )
 }
 
-function ProcesandoUI() {
+function Loader() {
   return (
-    <div>
-      <h1>Analizando reseñas...</h1>
-      <p>Esto tarda unos segundos</p>
+    <div style={{ padding: 40, textAlign: 'center' }}>
+      <h1>Analizando reseñas…</h1>
+      <p>Estamos procesando la información de tu negocio</p>
     </div>
   )
 }
