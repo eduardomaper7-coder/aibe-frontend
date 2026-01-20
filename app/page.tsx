@@ -27,7 +27,29 @@ export default function Home() {
   const [googleMapsUrl, setGoogleMapsUrl] = useState('');
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-const API_BASE = process.env.NEXT_PUBLIC_API_URL;
+  const API_BASE = process.env.NEXT_PUBLIC_API_URL;
+const [progressIndex, setProgressIndex] = useState(0);
+const PROGRESS_MESSAGES = [
+  "Creando análisis de temas…",
+  "Analizando sentimiento de clientes…",
+  "Calculando volumen de reseñas…",
+  "Detectando oportunidades de mejora…",
+  "Generando respuestas inteligentes…",
+];
+useEffect(() => {
+  if (!loading) {
+    setProgressIndex(0);
+    return;
+  }
+
+  const id = setInterval(() => {
+    setProgressIndex((prev) =>
+      prev < PROGRESS_MESSAGES.length - 1 ? prev + 1 : prev
+    );
+  }, 1500); // cambia cada 1.5s
+
+  return () => clearInterval(id);
+}, [loading]);
 
   async function handleStart() {
   const url = googleMapsUrl.trim();
@@ -210,7 +232,7 @@ router.push(`/panel?job_id=${data.job_id}`);
      
       <input
         type="text"
-        placeholder="Pega el link de Google Maps del restaurante"
+        placeholder="Pega el link de Google Maps"
         value={googleMapsUrl}
         onChange={(e) => setGoogleMapsUrl(e.target.value)}
         className="
@@ -236,6 +258,12 @@ router.push(`/panel?job_id=${data.job_id}`);
         {loading ? "Analizando reseñas..." : "Empezar Gratis"}
       </button>
 
+{loading && (
+  <p className="mt-3 text-sm text-white/80 flex items-center gap-2">
+    <span className="animate-spin h-3 w-3 border-2 border-white border-t-transparent rounded-full" />
+    {PROGRESS_MESSAGES[progressIndex]}
+  </p>
+)}
 
     </div>
   </div>
