@@ -1,5 +1,4 @@
 "use client";
-export const dynamic = "force-dynamic";
 
 import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
@@ -12,27 +11,24 @@ const MESSAGES = [
   "Preparando tu panel de resultados…",
 ];
 
-export default function ProcesandoPage() {
+export default function ProcesandoClient() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const jobId = searchParams.get("job_id");
 
   const API_BASE = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/+$/, "");
 
-  const [status, setStatus] = useState<string>("running");
+  const [status, setStatus] = useState("running");
   const [error, setError] = useState<string | null>(null);
   const [msgIndex, setMsgIndex] = useState(0);
 
-  // 🔁 Rotación de mensajes
   useEffect(() => {
     const interval = setInterval(() => {
       setMsgIndex((i) => (i + 1) % MESSAGES.length);
     }, 3500);
-
     return () => clearInterval(interval);
   }, []);
 
-  // 🔁 Polling del backend
   useEffect(() => {
     if (!jobId) {
       setError("No se encontró el análisis");
@@ -56,8 +52,7 @@ export default function ProcesandoPage() {
           clearInterval(interval);
           setError("El análisis ha fallado");
         }
-      } catch (e) {
-        console.error(e);
+      } catch {
         setError("Error conectando con el servidor");
         clearInterval(interval);
       }
@@ -73,24 +68,20 @@ export default function ProcesandoPage() {
           Analizando tu negocio
         </h1>
 
-        {/* Spinner */}
         <div className="flex justify-center mb-6">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-white" />
         </div>
 
-        {/* Mensaje rotativo */}
-        <p className="text-sm text-gray-300 mb-6 transition-opacity duration-500">
+        <p className="text-sm text-gray-300 mb-6">
           {MESSAGES[msgIndex]}
         </p>
 
-        {/* Estado técnico (debug suave) */}
         {!error && (
           <p className="text-xs text-gray-500">
             Estado: {status}
           </p>
         )}
 
-        {/* Error */}
         {error && (
           <p className="text-sm text-red-400 mt-4">
             {error}
