@@ -140,30 +140,6 @@ router.push(`/panel?job_id=${jobId}`);
     }
   }
 
-  // 🔵 Google OAuth (aquí no hago cambio, pero si quieres que Google también vaya al panel, te lo hago)
-  async function handleGoogle() {
-    setError(null);
-    setMessage(null);
-    setLoading(true);
-
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: {
-          redirectTo:
-            typeof window !== "undefined"
-              ? `${window.location.origin}/auth/callback`
-              : undefined,
-        },
-      });
-
-      if (error) throw error;
-    } catch (err: any) {
-      setError(err?.message ?? "No se pudo iniciar con Google.");
-      setLoading(false);
-    }
-  }
-
   return (
     <div className="min-h-screen w-full grid place-items-center bg-neutral-50 text-neutral-900">
       <div className="w-full max-w-2xl px-6">
@@ -220,39 +196,6 @@ router.push(`/panel?job_id=${jobId}`);
             </button>
           </form>
 
-          {/* Separador */}
-          <div className="my-8 flex items-center gap-3">
-            <div className="h-px flex-1 bg-neutral-200" />
-            <span className="text-sm text-neutral-500">o</span>
-            <div className="h-px flex-1 bg-neutral-200" />
-          </div>
-
-          {/* Google */}
-          <button
-            onClick={handleGoogle}
-            disabled={loading}
-            className="inline-flex w-full items-center justify-center gap-4 rounded-2xl border border-neutral-300 bg-white px-5 py-4 text-base font-semibold text-neutral-900 transition hover:bg-neutral-50 disabled:opacity-60"
-          >
-            <svg aria-hidden="true" viewBox="0 0 24 24" className="h-6 w-6">
-              <path
-                d="M24 12.273c0-.818-.073-1.64-.227-2.436H12v4.613h6.748a5.77 5.77 0 0 1-2.5 3.786v3.14h4.04C22.8 19.42 24 16.127 24 12.273z"
-                fill="#4285F4"
-              />
-              <path
-                d="M12 24c3.24 0 5.96-1.067 7.946-2.913l-4.04-3.14c-1.12.752-2.56 1.197-3.906 1.197-2.997 0-5.54-2.02-6.45-4.737H1.39v2.973A12 12 0 0 0 12 24z"
-                fill="#34A853"
-              />
-              <path
-                d="M5.55 14.407a7.2 7.2 0 0 1 0-4.814V6.62H1.39a12 12 0 0 0 0 10.76l4.16-2.973z"
-                fill="#FBBC05"
-              />
-              <path
-                d="M12 4.74c1.76 0 3.34.6 4.58 1.78l3.42-3.42C17.96 1.09 15.24 0 12 0 7.39 0 3.39 2.66 1.39 6.62l4.16 2.973C6.46 6.76 9.003 4.74 12 4.74z"
-                fill="#EA4335"
-              />
-            </svg>
-            Registrarse con Google
-          </button>
 
           {/* Enlace a iniciar sesión */}
           <div className="mt-6 flex items-center justify-center">

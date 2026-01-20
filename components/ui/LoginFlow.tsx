@@ -78,26 +78,6 @@ router.replace("/panel?empty=1");
     }
   }
 
-  async function handleGoogle() {
-    setError(null);
-    setLoading(true);
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: {
-          redirectTo:
-            typeof window !== "undefined"
-              ? `${window.location.origin}/auth/callback`
-              : undefined,
-        },
-      });
-      if (error) throw error;
-      // Al volver a /auth/callback, redirige a /panel si hay sesión
-    } catch (err: any) {
-      setError(err?.message ?? "No se pudo iniciar con Google.");
-      setLoading(false);
-    }
-  }
 
   return (
     <div className="min-h-screen w-full grid place-items-center bg-neutral-50 text-neutral-900">
@@ -148,19 +128,6 @@ router.replace("/panel?empty=1");
             </button>
           </form>
 
-          <div className="my-8 flex items-center gap-3">
-            <div className="h-px flex-1 bg-neutral-200" />
-            <span className="text-sm text-neutral-500">o</span>
-            <div className="h-px flex-1 bg-neutral-200" />
-          </div>
-
-          <button
-            onClick={handleGoogle}
-            disabled={loading}
-            className="inline-flex w-full items-center justify-center gap-4 rounded-2xl border border-neutral-300 bg-white px-5 py-4 text-base font-semibold text-neutral-900 transition hover:bg-neutral-50 disabled:opacity-60"
-          >
-            Iniciar sesión con Google
-          </button>
 
           {error && (
             <div className="mt-6 rounded-xl bg-rose-500/10 p-4 text-base text-rose-700 ring-1 ring-rose-500/30">

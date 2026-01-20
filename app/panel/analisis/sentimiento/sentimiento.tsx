@@ -368,11 +368,17 @@ useEffect(() => {
                   <PieChart>
                     {defs}
                     <Tooltip
-                      formatter={(value: number, name: string) => [
-                        `${value}%`,
-                        name,
-                      ]}
-                    />
+  contentStyle={{
+    backgroundColor: "transparent",
+    border: "none",
+    boxShadow: "none",
+  }}
+  formatter={(value: number, name: string) => [
+    `${value}%`,
+    name,
+  ]}
+/>
+
                     <Pie
                       {...(activeIndex != null ? { activeIndex } : {})}
                       data={dataSentimiento}
@@ -487,11 +493,17 @@ useEffect(() => {
                         fontSize={12}
                       />
                       <Tooltip
-                        formatter={(value: number) =>
-                          `${(value as number).toFixed(1)}★`
-                        }
-                        labelFormatter={(l) => `Periodo: ${l}`}
-                      />
+  contentStyle={{
+    backgroundColor: "transparent",
+    border: "none",
+    boxShadow: "none",
+  }}
+  formatter={(value: number) =>
+    `${(value as number).toFixed(1)}★`
+  }
+  labelFormatter={(l) => `Periodo: ${l}`}
+/>
+
                       <Line
                         type="monotone"
                         dataKey="rating"

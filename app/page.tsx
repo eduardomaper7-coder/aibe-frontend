@@ -13,6 +13,7 @@ import Footer from './Footer';
 import TresRecuadros from '@/components/ui/3recuadros';
 import VideoTemas from '@/components/ui/videotemas';
 import SeoBeneficio from '@/components/ui/seo-beneficio'
+import Image from "next/image";
 
 import { useRouter } from "next/navigation";
 
@@ -55,7 +56,7 @@ export default function Home() {
     localStorage.setItem("jobId", String(data.job_id));
 
     // ✅ ir al panel (ruta directa)
-    router.push(`/panel?job_id=${data.job_id}`);
+    router.push(`/procesando?job_id=${data.job_id}`);
   } catch (e: any) {
     alert(e?.message ?? "Error");
   } finally {
@@ -139,17 +140,19 @@ export default function Home() {
     <>
      <section className="hero relative" aria-label="Sección inicial con video de fondo">
 
-  {/* VIDEO fijo detrás de todo */}
+  {/* IMAGEN fija detrás de todo */}
+  {/* Fondo */}
   <div className="hero-video-wrapper">
-    <video
-      src="/videos/Diseño sin título (3).mp4"
-      autoPlay
-      muted
-      loop
-      playsInline
+    <Image
+      src="/imagenes/hero-imagen.png"
+      alt="Hero"
+      fill
+      priority
       className="hero-video"
     />
   </div>
+
+
 
   {/* Contenido encima del video */}
   <div className="shell relative z-[1]">
@@ -168,17 +171,17 @@ export default function Home() {
   </div>
 
   {/* Input + botón */}
-<div className="hero-buttons">
-  <div className="hero-btn-group flex flex-col items-center gap-4 w-full max-w-xl mx-auto">
-
-    <div className="w-full">
+<div className="relative z-[2]">
+  <div className="hero-buttons">
+    <div className="hero-btn-group hero-cta">
+      
       <input
         type="text"
         placeholder="Pega el link de Google Maps del restaurante"
         value={googleMapsUrl}
         onChange={(e) => setGoogleMapsUrl(e.target.value)}
         className="
-          w-full
+          hero-input
           rounded-full
           px-6
           py-4
@@ -189,21 +192,20 @@ export default function Home() {
           focus:outline-none
         "
       />
+
+      <button
+        type="button"
+        className="hero-btn primary"
+        onClick={handleStart}
+        disabled={loading}
+      >
+        {loading ? "Analizando reseñas..." : "Empezar Gratis"}
+      </button>
+
     </div>
-
-    <button
-      type="button"
-      className="hero-btn primary"
-      onClick={handleStart}
-      disabled={loading}
-    >
-      {loading ? "Analizando reseñas..." : "Empezar Gratis"}
-    </button>
-
-  </div> {/* 👈 ESTE CIERRE FALTABA */}
+  </div>
 </div>
 
-<div className="hero-mask-bottom"></div>
 
 
 </section>

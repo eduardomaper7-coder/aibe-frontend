@@ -94,7 +94,36 @@ body {
 
 /* HERO BASE */
 .hero { position: relative; height: 100vh; overflow: hidden; }
-.hero-video-wrapper { position: absolute; inset: 0; z-index: -1; }
+/* HERO BACKGROUND LAYERS */
+.hero-video-wrapper {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.hero-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Overlay SOLO sobre la imagen */
+.hero-video-wrapper::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45); /* ajusta aquí el tono */
+  z-index: 1;
+  pointer-events: none;
+}
+.hero > .relative {
+  position: relative;
+  z-index: 2;
+}
+
+
+
 .hero-video { width: 100%; height: 100%; object-fit: cover; }
 
 .center {
@@ -357,3 +386,25 @@ body {
   }
 }
 
+/* ===== HERO CTA — DESKTOP ALIGN ===== */
+/* ===== HERO CTA — DESKTOP ALIGN ===== */
+@media (min-width: 768px) {
+  .hero-cta {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-left: 6vw; /* desktop normal */
+  }
+
+  .hero-input {
+    width: 520px;
+    max-width: 100%;
+  }
+}
+
+/* ===== HERO CTA — DESKTOP GRANDE ===== */
+@media (min-width: 1024px) {
+  .hero-cta {
+    margin-left: 80px; /* MISMO valor que el texto */
+  }
+}
