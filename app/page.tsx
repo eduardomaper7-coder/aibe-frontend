@@ -27,7 +27,7 @@ export default function Home() {
   const [googleMapsUrl, setGoogleMapsUrl] = useState('');
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-
+const API_BASE = process.env.NEXT_PUBLIC_API_URL;
 
   async function handleStart() {
   const url = googleMapsUrl.trim();
@@ -68,7 +68,7 @@ export default function Home() {
 
 
     // ✅ ir al panel (ruta directa)
-    router.push(`/procesando?job_id=${data.job_id}`);
+router.push(`/panel?job_id=${data.job_id}`);
   } catch (e: any) {
     alert(e?.message ?? "Error");
   } finally {
