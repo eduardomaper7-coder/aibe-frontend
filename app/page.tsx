@@ -1,6 +1,8 @@
 'use client';
 
+
 import { useEffect, useState } from 'react';
+
 
 import SeccionResenasIA from '@/components/ui/SeccionResenasIA';
 // import TemasDemo from '@/components/ui/temasdemo'; // <- no se usa, lo dejamos fuera
@@ -15,27 +17,62 @@ import VideoTemas from '@/components/ui/videotemas';
 import SeoBeneficio from '@/components/ui/seo-beneficio'
 import Image from "next/image";
 
+
 import { useRouter } from "next/navigation";
+
+
 
 
 export default function Home() {
   const [googleMapsUrl, setGoogleMapsUrl] = useState('');
   const router = useRouter();
-  function handleStart() {
+  const [loading, setLoading] = useState(false);
+
+  async function handleStart() {
   const url = googleMapsUrl.trim();
   if (!url) return;
 
-  // guardas lo mínimo
-  localStorage.setItem("googleMapsUrl", url);
+  try {
+    setLoading(true);
 
-  // 🚀 navegación INMEDIATA
-  router.push(`/procesando?url=${encodeURIComponent(url)}`);
+    const res = await fetch("/api/scrape", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        accept: "application/json",
+      },
+      body: JSON.stringify({
+        google_maps_url: url,
+        max_reviews: 99999,
+        personal_data: true,
+      }),
+    });
+
+    if (!res.ok) {
+      const txt = await res.text();
+      throw new Error(txt || "Error haciendo scrape");
+    }
+
+    const data = await res.json();
+
+    localStorage.setItem("googleMapsUrl", url);
+    localStorage.setItem("jobId", String(data.job_id));
+
+    // 👉 AHORA sí navegas
+    router.push(`/panel/${data.job_id}`);
+  } catch (e: any) {
+    alert(e?.message ?? "Error");
+  } finally {
+    setLoading(false);
+  }
 }
 
 
 
 
+
   useEffect(() => {
+
 
   const TITLES: string[] = [
     'Convierte cada reseña en una oportunidad de crecimiento',
@@ -44,12 +81,15 @@ export default function Home() {
     'Porque cada cliente merece una respuesta única.',
   ];
 
+
   const titleEl = document.getElementById('dynamicTitle');
   const slotEl = document.getElementById('titleSlot');
   if (!titleEl || !slotEl) return;
 
+
   const probe = document.createElement('div');
   const cs = window.getComputedStyle(titleEl);
+
 
   Object.assign(probe.style, {
     position: 'absolute',
@@ -63,7 +103,9 @@ export default function Home() {
     display: 'block',
   } as Partial<CSSStyleDeclaration>);
 
+
   document.body.appendChild(probe);
+
 
   let max = 0;
   TITLES.forEach((t) => {
@@ -73,7 +115,9 @@ export default function Home() {
   document.body.removeChild(probe);
   slotEl.style.setProperty('--title-height', Math.ceil(max + 8) + 'px');
 
+
   let i = 0;
+
 
   function show(index: number): void {
     const nextText = TITLES[index % TITLES.length];
@@ -93,22 +137,29 @@ export default function Home() {
     });
   }
 
+
   titleEl.textContent = TITLES[0];
+
 
   const id = window.setInterval(() => {
     i = (i + 1) % TITLES.length;
     show(i);
   }, 6500);
 
+
   return () => window.clearInterval(id);
 }, []);
 
 
+
+
   const sectionCx = 'bg-black px-4 md:px-6 py-6 md:py-8';
+
 
   return (
     <>
      <section className="hero relative" aria-label="Sección inicial con video de fondo">
+
 
   {/* IMAGEN fija detrás de todo */}
   {/* Fondo */}
@@ -121,6 +172,9 @@ export default function Home() {
       className="hero-video"
     />
   </div>
+
+
+
 
 
 
@@ -140,11 +194,12 @@ export default function Home() {
     </div>
   </div>
 
+
   {/* Input + botón */}
 <div className="relative z-[2]">
   <div className="hero-buttons">
     <div className="hero-btn-group hero-cta">
-      
+     
       <input
         type="text"
         placeholder="Pega el link de Google Maps del restaurante"
@@ -163,13 +218,15 @@ export default function Home() {
         "
       />
 
+
       <button
-  type="button"
-  className="hero-btn primary"
-  onClick={handleStart}
->
-  Empezar Gratis
-</button>
+        type="button"
+        className="hero-btn primary"
+        onClick={handleStart}
+        disabled={loading}
+      >
+        {loading ? "Analizando reseñas..." : "Empezar Gratis"}
+      </button>
 
 
     </div>
@@ -178,10 +235,18 @@ export default function Home() {
 
 
 
+
+
+
 </section>
 
 
-    
+
+
+   
+
+
+
 
 
 
@@ -191,6 +256,7 @@ export default function Home() {
   <SeoBeneficio />
 </section>
 */}
+
 
      {/* Secciones */}
 <section
@@ -204,8 +270,10 @@ export default function Home() {
   <Frases />
 </section>
 
+
       <VideoInicio />
       <TresRecuadros />
+
 
       {/* Sección azul integrada (full-width) */}
 <section
@@ -220,27 +288,35 @@ export default function Home() {
   <div className="mx-auto max-w-7xl px-6 py-20 lg:px-8">
     <div className="grid items-start gap-8 md:grid-cols-12">
 
+
       <div className="md:col-span-7">
         <h2 className="mt-0 text-2xl md:text-4xl lg:text-5xl font-light leading-tight text-gray-100">
           Especialistas en aumentar las ventas y mejorar la reputación online de restaurantes.
         </h2>
       </div>
 
+
       <div className="md:col-span-5 flex flex-col items-end justify-start space-y-1">
+
 
   <p className="text-[13px] md:text-sm lg:text-base text-gray-400 leading-relaxed text-right">
     Profesionales en SEO y captación de clientes para restaurantes.
   </p>
 
+
   <p className="text-[13px] md:text-sm lg:text-base text-gray-400 leading-relaxed text-right">
     Resultados comprobados a las 2 semanas.
   </p>
+
 
   <p className="text-[13px] md:text-sm lg:text-base text-gray-400 leading-relaxed text-right">
     Prueba gratis sin compromiso.
   </p>
 
+
 </div>
+
+
 
 
     </div>
@@ -251,9 +327,16 @@ export default function Home() {
 
 
 
+
+
+
+
+
       <VideoTemas />
 
-      
+
+     
+
 
       {/* Sección combinada: Sentimiento + Volumen */}
       <section className="relative left-1/2 right-1/2 -mx-[50vw] w-screen bg-black py-10">
@@ -266,6 +349,7 @@ export default function Home() {
               </div>
             </div>
 
+
             {/* Volumen */}
             <div className="flex justify-start w-full">
               <div className="w-full max-w-[980px]">
@@ -276,17 +360,35 @@ export default function Home() {
         </div>
       </section>
 
+
       <section className={sectionCx}>
         <OportunidadesDemo />
       </section>
+
 
       {/* Resto de secciones */}
       <section className="bg-black px-4 md:px-6 pt-0 pb-6 md:pb-8">
         <SeccionResenasIA />
       </section>
 
+
       <Footer />
+      {loading && (
+  <div
+    className="fixed inset-0 z-[9999] flex items-center justify-center"
+    style={{ backgroundColor: 'rgba(0,0,0,0.9)' }}
+  >
+    <div className="text-center text-white">
+      <h1 style={{ fontSize: 24, marginBottom: 12 }}>
+        Analizando reseñas…
+      </h1>
+      <p style={{ opacity: 0.8 }}>
+        Esto puede tardar hasta 1 minuto
+      </p>
+    </div>
+  </div>
+)}
+
     </>
   );
 }
-
