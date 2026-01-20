@@ -21,8 +21,6 @@ import { useRouter } from "next/navigation";
 export default function Home() {
   const [googleMapsUrl, setGoogleMapsUrl] = useState('');
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
-
   function handleStart() {
   const url = googleMapsUrl.trim();
   if (!url) return;
@@ -35,42 +33,6 @@ export default function Home() {
 }
 
 
-  try {
-    setLoading(true);
-
-    const res = await fetch("/api/scrape", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-    accept: "application/json",
-  },
-  body: JSON.stringify({
-    google_maps_url: url,
-    max_reviews: 99999,
-    personal_data: true,
-  }),
-});
-
-
-    if (!res.ok) {
-      const txt = await res.text();
-      throw new Error(txt || "Error haciendo scrape");
-    }
-
-    const data = await res.json(); // { job_id, status, reviews_saved }
-
-    // “panel del usuario” (por ahora) = lo que queda guardado en su navegador
-    localStorage.setItem("googleMapsUrl", url);
-    localStorage.setItem("jobId", String(data.job_id));
-
-    // ✅ ir al panel (ruta directa)
-    router.push(`/procesando?job_id=${data.job_id}`);
-  } catch (e: any) {
-    alert(e?.message ?? "Error");
-  } finally {
-    setLoading(false);
-  }
-}
 
 
   useEffect(() => {
@@ -202,13 +164,13 @@ export default function Home() {
       />
 
       <button
-        type="button"
-        className="hero-btn primary"
-        onClick={handleStart}
-        disabled={loading}
-      >
-        {loading ? "Analizando reseñas..." : "Empezar Gratis"}
-      </button>
+  type="button"
+  className="hero-btn primary"
+  onClick={handleStart}
+>
+  Empezar Gratis
+</button>
+
 
     </div>
   </div>
