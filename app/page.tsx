@@ -38,11 +38,10 @@ export default function Home() {
     setLoading(true);
 
 
-    const res = await fetch("/api/scrape", {
+    const res = await fetch(`${API_BASE}/scrape`, {
   method: "POST",
   headers: {
     "Content-Type": "application/json",
-    accept: "application/json",
   },
   body: JSON.stringify({
     google_maps_url: url,
