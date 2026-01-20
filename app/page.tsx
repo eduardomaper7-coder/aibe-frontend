@@ -28,45 +28,54 @@ export default function Home() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
+
   async function handleStart() {
   const url = googleMapsUrl.trim();
   if (!url) return;
 
+
   try {
     setLoading(true);
 
+
     const res = await fetch("/api/scrape", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        accept: "application/json",
-      },
-      body: JSON.stringify({
-        google_maps_url: url,
-        max_reviews: 99999,
-        personal_data: true,
-      }),
-    });
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    accept: "application/json",
+  },
+  body: JSON.stringify({
+    google_maps_url: url,
+    max_reviews: 99999,
+    personal_data: true,
+  }),
+});
+
+
+
 
     if (!res.ok) {
       const txt = await res.text();
       throw new Error(txt || "Error haciendo scrape");
     }
 
-    const data = await res.json();
 
+    const data = await res.json(); // { job_id, status, reviews_saved }
+
+
+    // “panel del usuario” (por ahora) = lo que queda guardado en su navegador
     localStorage.setItem("googleMapsUrl", url);
     localStorage.setItem("jobId", String(data.job_id));
 
-    // 👉 AHORA sí navegas
-    router.push(`/panel/${data.job_id}`);
+
+    // ✅ ir al panel (ruta directa)
+    router.push(`/procesando?job_id=${data.job_id}`);
   } catch (e: any) {
     alert(e?.message ?? "Error");
   } finally {
     setLoading(false);
   }
 }
-
 
 
 
@@ -373,22 +382,10 @@ export default function Home() {
 
 
       <Footer />
-      {loading && (
-  <div
-    className="fixed inset-0 z-[9999] flex items-center justify-center"
-    style={{ backgroundColor: 'rgba(0,0,0,0.9)' }}
-  >
-    <div className="text-center text-white">
-      <h1 style={{ fontSize: 24, marginBottom: 12 }}>
-        Analizando reseñas…
-      </h1>
-      <p style={{ opacity: 0.8 }}>
-        Esto puede tardar hasta 1 minuto
-      </p>
-    </div>
-  </div>
-)}
-
     </>
   );
 }
+
+
+
+
