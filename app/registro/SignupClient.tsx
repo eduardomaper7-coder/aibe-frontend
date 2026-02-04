@@ -3,12 +3,13 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 type Props = {
   variant?: "page" | "modal";
   onSuccess?: () => void;
   showLoginLink?: boolean;
+  jobId?: string | null;
 };
 
 // ✅ FUERA del componente para que no se recree en cada render
@@ -32,10 +33,9 @@ export default function SignupClient({
   variant = "page",
   onSuccess,
   showLoginLink = true,
+  jobId = null,
 }: Props) {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const jobId = searchParams.get("job_id");
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -50,6 +50,17 @@ export default function SignupClient({
 
     if (!email || !password) {
       setError("Introduce un correo y una contraseña.");
+      return;
+    }
+
+    if (!jobId) {
+      setError("Falta job_id en la URL (ej: /registro?job_id=123).");
+      return;
+    }
+
+    const jobIdNumber = Number(jobId);
+    if (!Number.isFinite(jobIdNumber)) {
+      setError("job_id inválido.");
       return;
     }
 
@@ -68,15 +79,14 @@ export default function SignupClient({
 
       if (error) throw error;
 
+      // Caso 1: Supabase devuelve sesión inmediata
       if (data.session) {
         const userId = data.session.user.id;
-
-        if (!jobId) throw new Error("No hay job_id para enlazar el análisis");
 
         const { error: updateError } = await supabase
           .from("analyses")
           .update({ user_id: userId, email })
-          .eq("id", Number(jobId));
+          .eq("id", jobIdNumber);
 
         if (updateError) throw updateError;
 
@@ -85,23 +95,29 @@ export default function SignupClient({
         return;
       }
 
+      // Caso 2: No hay sesión (p.ej. confirmación por email). Intentamos login.
       const { error: loginErr } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
-      if (loginErr) throw loginErr;
+      if (loginErr) {
+        // Si tu proyecto requiere confirmación por email, puede caer aquí.
+        setMessage(
+          "Cuenta creada. Revisa tu email para confirmar tu cuenta y luego inicia sesión."
+        );
+        return;
+      }
 
       const {
         data: { session },
       } = await supabase.auth.getSession();
 
       if (!session?.user) throw new Error("No se pudo obtener la sesión del usuario");
-      if (!jobId) throw new Error("No hay job_id para enlazar el análisis");
 
       const { error: updateError } = await supabase
         .from("analyses")
         .update({ user_id: session.user.id, email })
-        .eq("id", Number(jobId));
+        .eq("id", jobIdNumber);
 
       if (updateError) throw updateError;
 
@@ -188,7 +204,9 @@ export default function SignupClient({
       </div>
 
       {variant === "page" && (
-        <div className="mt-8 text-center text-sm text-neutral-500">Ayuda · Privacidad · Términos</div>
+        <div className="mt-8 text-center text-sm text-neutral-500">
+          Ayuda · Privacidad · Términos
+        </div>
       )}
     </Wrapper>
   );
