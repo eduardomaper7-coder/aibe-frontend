@@ -387,7 +387,6 @@ body {
 }
 
 /* ===== HERO CTA — DESKTOP ALIGN ===== */
-/* ===== HERO CTA — DESKTOP ALIGN ===== */
 @media (min-width: 768px) {
   .hero-cta {
     display: flex;
@@ -408,3 +407,4 @@ body {
     margin-left: 80px; /* MISMO valor que el texto */
   }
 }
+

@@ -1,12 +1,27 @@
 // app/layout.tsx
 import "./globals.css";
 import type { Metadata } from "next";
-import ClientTopbarWrapper from "./ClientTopbarWrapper"; // wrapper seguro (client)
-import { Analytics } from "@vercel/analytics/react"; // 📊 Vercel Analytics
+import ClientTopbarWrapper from "./ClientTopbarWrapper";
+import { Analytics } from "@vercel/analytics/react";
+import Providers from "./providers";
+import PwaRegister from "./PwaRegister";
 
 export const metadata: Metadata = {
   title: "AIBE Technologies — Artificial Intelligence for Business Efficiency",
   description: "Hero con video y títulos rotativos",
+
+  applicationName: "AIBE",
+  themeColor: "#000000",
+
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "AIBE",
+  },
+
+  icons: {
+    apple: "/apple-touch-icon.png",
+  },
 };
 
 export default function RootLayout({
@@ -17,13 +32,12 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body className="bg-black text-white relative">
-        {/* 🔥 Componente client pero a través de un wrapper */}
+        <PwaRegister />
+
         <ClientTopbarWrapper />
 
-        {/* Contenido de páginas */}
-        {children}
+        <Providers>{children}</Providers>
 
-        {/* 📊 Vercel Analytics */}
         <Analytics />
       </body>
     </html>

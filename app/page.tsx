@@ -1,7 +1,11 @@
 'use client';
 
 
+
+
 import { useEffect, useState } from 'react';
+
+
 
 
 import SeccionResenasIA from '@/components/ui/SeccionResenasIA';
@@ -18,13 +22,16 @@ import SeoBeneficio from '@/components/ui/seo-beneficio'
 import Image from "next/image";
 
 
+
+
 import { useRouter } from "next/navigation";
 
 
-
-
 export default function Home() {
-  const [googleMapsUrl, setGoogleMapsUrl] = useState('');
+const [placeName, setPlaceName] = useState("");
+const [placeZone, setPlaceZone] = useState("");
+const [candidates, setCandidates] = useState<any[] | null>(null);
+
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const API_BASE = process.env.NEXT_PUBLIC_API_URL;
@@ -42,57 +49,75 @@ useEffect(() => {
     return;
   }
 
+
   const id = setInterval(() => {
     setProgressIndex((prev) =>
       prev < PROGRESS_MESSAGES.length - 1 ? prev + 1 : prev
     );
   }, 1500); // cambia cada 1.5s
 
+
   return () => clearInterval(id);
 }, [loading]);
 
-  async function handleStart() {
-  const url = googleMapsUrl.trim();
-  if (!url) return;
 
+  async function runScrapeWithCandidate(c: any) {
+  const apiBase = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/+$/, "");
+
+  const res = await fetch(`${apiBase}/scrape`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+  google_maps_url: c.google_maps_url,
+  place_name: placeName.trim(), // ✅ nombre del usuario
+  max_reviews: 10000,
+  personal_data: false,
+}),
+
+  });
+
+  if (!res.ok) throw new Error(await res.text());
+  const data = await res.json();
+
+  if (!data?.job_id) throw new Error("No llegó job_id");
+
+  router.push(`/panel?job_id=${data.job_id}`);
+}
+
+
+async function handleStart() {
+  const name = placeName.trim();
+  const zone = placeZone.trim();
+  const q = zone ? `${name}, ${zone}` : name;
+
+  if (!name) return;
 
   try {
     setLoading(true);
+    setCandidates(null);
 
+    const apiBase = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/+$/, "");
+    if (!apiBase) throw new Error("NEXT_PUBLIC_API_URL no está configurado");
 
-    const res = await fetch(`${API_BASE}/scrape`, {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  body: JSON.stringify({
-    google_maps_url: url,
-    max_reviews: 99999,
-    personal_data: true,
-  }),
-});
+    const r = await fetch(`${apiBase}/places/search?q=${encodeURIComponent(q)}`);
+    if (!r.ok) throw new Error(await r.text());
+    const data = await r.json();
 
-
-
-
-    if (!res.ok) {
-      const txt = await res.text();
-      throw new Error(txt || "Error haciendo scrape");
+    const list = data?.candidates ?? [];
+    if (!list.length) {
+      alert("No encontré ese negocio. Prueba a añadir ciudad o barrio.");
+      return;
     }
 
+    if (list.length === 1) {
+      await runScrapeWithCandidate(list[0]);
+      return;
+    }
 
-    const data = await res.json(); // { job_id, status, reviews_saved }
-
-
-    // “panel del usuario” (por ahora) = lo que queda guardado en su navegador
-    localStorage.setItem("googleMapsUrl", url);
-    localStorage.setItem("jobId", String(data.job_id));
-
-
-    // ✅ ir al panel (ruta directa)
-router.push(`/panel?job_id=${data.job_id}`);
-  } catch (e: any) {
-    alert(e?.message ?? "Error");
+    setCandidates(list);
+  } catch (e) {
+    console.error(e);
+    alert("No pude buscar el negocio. Inténtalo de nuevo.");
   } finally {
     setLoading(false);
   }
@@ -101,7 +126,14 @@ router.push(`/panel?job_id=${data.job_id}`);
 
 
 
+
+
+
+
+
   useEffect(() => {
+
+
 
 
   const TITLES: string[] = [
@@ -112,13 +144,19 @@ router.push(`/panel?job_id=${data.job_id}`);
   ];
 
 
+
+
   const titleEl = document.getElementById('dynamicTitle');
   const slotEl = document.getElementById('titleSlot');
   if (!titleEl || !slotEl) return;
 
 
+
+
   const probe = document.createElement('div');
   const cs = window.getComputedStyle(titleEl);
+
+
 
 
   Object.assign(probe.style, {
@@ -134,7 +172,11 @@ router.push(`/panel?job_id=${data.job_id}`);
   } as Partial<CSSStyleDeclaration>);
 
 
+
+
   document.body.appendChild(probe);
+
+
 
 
   let max = 0;
@@ -146,7 +188,11 @@ router.push(`/panel?job_id=${data.job_id}`);
   slotEl.style.setProperty('--title-height', Math.ceil(max + 8) + 'px');
 
 
+
+
   let i = 0;
+
+
 
 
   function show(index: number): void {
@@ -168,7 +214,11 @@ router.push(`/panel?job_id=${data.job_id}`);
   }
 
 
+
+
   titleEl.textContent = TITLES[0];
+
+
 
 
   const id = window.setInterval(() => {
@@ -177,8 +227,14 @@ router.push(`/panel?job_id=${data.job_id}`);
   }, 6500);
 
 
+
+
   return () => window.clearInterval(id);
 }, []);
+
+
+
+
 
 
 
@@ -186,9 +242,13 @@ router.push(`/panel?job_id=${data.job_id}`);
   const sectionCx = 'bg-black px-4 md:px-6 py-6 md:py-8';
 
 
+
+
   return (
     <>
      <section className="hero relative" aria-label="Sección inicial con video de fondo">
+
+
 
 
   {/* IMAGEN fija detrás de todo */}
@@ -202,6 +262,12 @@ router.push(`/panel?job_id=${data.job_id}`);
       className="hero-video"
     />
   </div>
+
+
+
+
+
+
 
 
 
@@ -225,49 +291,202 @@ router.push(`/panel?job_id=${data.job_id}`);
   </div>
 
 
-  {/* Input + botón */}
-<div className="relative z-[2]">
-  <div className="hero-buttons">
-    <div className="hero-btn-group hero-cta">
-     
-      <input
-        type="text"
-        placeholder="Pega el link de Google Maps"
-        value={googleMapsUrl}
-        onChange={(e) => setGoogleMapsUrl(e.target.value)}
-        className="
-          hero-input
-          rounded-full
-          px-6
-          py-4
-          text-sm md:text-base
-          bg-white
-          text-black
-          placeholder-gray-400
-          focus:outline-none
-        "
-      />
 
+
+{/* Input + botón (Nombre + Zona) */}
+<div className="relative z-[50] mt-8">
+  <div className="mx-auto w-full max-w-[820px] px-4">
+    <div
+      className="
+        flex flex-col gap-3
+        rounded-2xl
+        bg-white/10 backdrop-blur-md
+        border border-white/15
+        shadow-[0_20px_60px_rgba(0,0,0,0.35)]
+        p-3
+      "
+    >
+      {/* Inputs row */}
+      <div className="flex flex-col md:flex-row items-stretch gap-3">
+        {/* Nombre */}
+        <div className="flex items-center gap-3 w-full md:flex-1 rounded-xl bg-black/25 border border-white/10 px-4 h-12">
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            className="opacity-80 shrink-0"
+            aria-hidden="true"
+          >
+            <path
+              d="M10.5 18a7.5 7.5 0 1 1 5.3-12.8"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+            />
+            <path
+              d="M16 16l5 5"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+            />
+          </svg>
+
+          <input
+            type="text"
+            value={placeName}
+            onChange={(e) => setPlaceName(e.target.value)}
+            placeholder="Nombre del negocio (ej: La Tagliatella)"
+            disabled={loading}
+            className="
+              w-full bg-transparent text-white placeholder:text-white/60
+              outline-none text-[15px]
+            "
+          />
+        </div>
+
+        {/* Zona */}
+        <div className="flex items-center gap-3 md:w-[280px] rounded-xl bg-black/25 border border-white/10 px-4 h-12">
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            className="opacity-80 shrink-0"
+            aria-hidden="true"
+          >
+            <path
+              d="M12 22s7-4.4 7-12a7 7 0 1 0-14 0c0 7.6 7 12 7 12Z"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <path
+              d="M12 13.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4Z"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+
+          <input
+            type="text"
+            value={placeZone}
+            onChange={(e) => setPlaceZone(e.target.value)}
+            placeholder="Zona (ej: Chamberí, Madrid)"
+            disabled={loading}
+            className="
+              w-full bg-transparent text-white placeholder:text-white/60
+              outline-none text-[15px]
+            "
+          />
+        </div>
+      </div>
+
+      {/* CTA row */}
+      <div className="flex flex-col md:flex-row items-stretch md:items-center gap-3">
+        <div className="flex-1">
+          {!loading ? (
+            <p className="text-xs text-white/60 md:pl-1">
+              
+            </p>
+          ) : (
+            <p className="text-xs text-white/60 md:pl-1">
+              {PROGRESS_MESSAGES[progressIndex]}
+            </p>
+          )}
+        </div>
+
+        <button
+          type="button"
+          onClick={handleStart}
+          disabled={loading || !placeName.trim()}
+          className="
+            h-12 px-6 rounded-xl font-medium
+            bg-white text-black
+            hover:bg-white/90
+            disabled:opacity-50 disabled:cursor-not-allowed
+            transition
+            flex items-center justify-center gap-2
+            whitespace-nowrap
+          "
+        >
+          {loading ? (
+            <>
+              <span className="h-4 w-4 animate-spin rounded-full border-2 border-black border-t-transparent" />
+              Analizando…
+            </>
+          ) : (
+            <>
+              Empezar Gratis <span aria-hidden="true">→</span>
+            </>
+          )}
+        </button>
+      </div>
+    </div>
+
+    {/* Microcopy */}
+    {!loading && (
+      <p className="mt-3 text-xs text-white/60 text-center">
+        No pedimos tarjeta. Tarda menos de 1 minuto.
+      </p>
+    )}
+  </div>
+</div>
+
+
+
+{candidates?.length ? (
+  <div className="mx-auto mt-4 w-full max-w-[760px] px-4">
+    <div className="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-md p-3">
+      <p className="text-sm text-white/80 mb-2">
+        Encontré varias opciones. Elige la correcta:
+      </p>
+
+      <div className="flex flex-col gap-2">
+        {candidates.map((c, idx) => (
+          <button
+            key={c.place_id || idx}
+            type="button"
+            className="text-left rounded-xl px-4 py-3 bg-black/30 hover:bg-black/40 border border-white/10 transition"
+            onClick={async () => {
+  try {
+    setLoading(true);
+    await runScrapeWithCandidate(c);
+  } catch (e) {
+    console.error(e);
+    alert("No pude iniciar el análisis con esa opción.");
+  } finally {
+    setLoading(false);
+  }
+}}
+
+            disabled={loading}
+          >
+            <div className="text-white font-medium">{c.name}</div>
+            <div className="text-white/70 text-sm">{c.address}</div>
+            <div className="text-white/60 text-xs mt-1">
+              {c.rating ? `⭐ ${c.rating}` : ""}{" "}
+              {c.user_ratings_total ? `(${c.user_ratings_total} reseñas)` : ""}
+            </div>
+          </button>
+        ))}
+      </div>
 
       <button
         type="button"
-        className="hero-btn primary"
-        onClick={handleStart}
+        className="mt-3 text-xs text-white/70 hover:text-white"
+        onClick={() => setCandidates(null)}
         disabled={loading}
       >
-        {loading ? "Analizando reseñas..." : "Empezar Gratis"}
+        Cancelar
       </button>
-
-{loading && (
-  <p className="mt-3 text-sm text-white/80 flex items-center gap-2">
-    <span className="animate-spin h-3 w-3 border-2 border-white border-t-transparent rounded-full" />
-    {PROGRESS_MESSAGES[progressIndex]}
-  </p>
-)}
-
     </div>
   </div>
-</div>
+) : null}
+
 
 
 
@@ -279,7 +498,17 @@ router.push(`/panel?job_id=${data.job_id}`);
 
 
 
+
+
+
+
    
+
+
+
+
+
+
 
 
 
@@ -292,6 +521,8 @@ router.push(`/panel?job_id=${data.job_id}`);
   <SeoBeneficio />
 </section>
 */}
+
+
 
 
      {/* Secciones */}
@@ -307,8 +538,12 @@ router.push(`/panel?job_id=${data.job_id}`);
 </section>
 
 
+
+
       <VideoInicio />
       <TresRecuadros />
+
+
 
 
       {/* Sección azul integrada (full-width) */}
@@ -325,6 +560,8 @@ router.push(`/panel?job_id=${data.job_id}`);
     <div className="grid items-start gap-8 md:grid-cols-12">
 
 
+
+
       <div className="md:col-span-7">
         <h2 className="mt-0 text-2xl md:text-4xl lg:text-5xl font-light leading-tight text-gray-100">
           Especialistas en aumentar las ventas y mejorar la reputación online de restaurantes.
@@ -332,7 +569,11 @@ router.push(`/panel?job_id=${data.job_id}`);
       </div>
 
 
+
+
       <div className="md:col-span-5 flex flex-col items-end justify-start space-y-1">
+
+
 
 
   <p className="text-[13px] md:text-sm lg:text-base text-gray-400 leading-relaxed text-right">
@@ -340,9 +581,13 @@ router.push(`/panel?job_id=${data.job_id}`);
   </p>
 
 
+
+
   <p className="text-[13px] md:text-sm lg:text-base text-gray-400 leading-relaxed text-right">
     Resultados comprobados a las 2 semanas.
   </p>
+
+
 
 
   <p className="text-[13px] md:text-sm lg:text-base text-gray-400 leading-relaxed text-right">
@@ -350,7 +595,13 @@ router.push(`/panel?job_id=${data.job_id}`);
   </p>
 
 
+
+
 </div>
+
+
+
+
 
 
 
@@ -368,10 +619,24 @@ router.push(`/panel?job_id=${data.job_id}`);
 
 
 
+
+
+
+
+
+
+
+
+
+
       <VideoTemas />
 
 
+
+
      
+
+
 
 
       {/* Sección combinada: Sentimiento + Volumen */}
@@ -386,6 +651,8 @@ router.push(`/panel?job_id=${data.job_id}`);
             </div>
 
 
+
+
             {/* Volumen */}
             <div className="flex justify-start w-full">
               <div className="w-full max-w-[980px]">
@@ -397,9 +664,13 @@ router.push(`/panel?job_id=${data.job_id}`);
       </section>
 
 
+
+
       <section className={sectionCx}>
         <OportunidadesDemo />
       </section>
+
+
 
 
       {/* Resto de secciones */}
@@ -408,11 +679,9 @@ router.push(`/panel?job_id=${data.job_id}`);
       </section>
 
 
+
+
       <Footer />
     </>
   );
 }
-
-
-
-

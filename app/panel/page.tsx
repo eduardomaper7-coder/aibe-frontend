@@ -22,13 +22,16 @@ import { supabase } from "@/lib/supabase";
 import PanelHeader from "./PanelHeader";
 
 export const dynamic = "force-dynamic";
+import SignupClient from "../registro/SignupClient"; // ajusta el path si hace falta
 
 import { Suspense } from "react";
 
 /** -------- PANEL PRINCIPAL -------- */
 function PanelUI() {
   const [placeName, setPlaceName] = useState<string | null>(null);
-  const [user, setUser] = useState<any>(null);
+const [user, setUser] = useState<any>(null);
+const [authChecked, setAuthChecked] = useState(false);
+const [showSignupModal, setShowSignupModal] = useState(false);
 
   const searchParams = useSearchParams();
   const jobId = searchParams.get("job_id");
@@ -36,22 +39,44 @@ function PanelUI() {
   const API_BASE = (process.env.NEXT_PUBLIC_API_URL ?? '').replace(/\/+$/, '')
 
   useEffect(() => {
-    if (!jobId) return;
+  let mounted = true;
 
-    // 🔹 1. Nombre del negocio → BACKEND
-    fetch(`${API_BASE}/jobs/${jobId}/meta`)
-      .then(res => res.json())
-      .then(data => {
-        if (data?.place_name) {
-          setPlaceName(data.place_name);
-        }
-      });
+  const loadUser = async () => {
+    const { data } = await supabase.auth.getUser();
+    if (!mounted) return;
 
-    // 🔹 2. Usuario → Supabase
-    supabase.auth.getUser().then(({ data }) => {
-      setUser(data.user);
+    setUser(data.user ?? null);
+    setAuthChecked(true);
+
+    // ✅ Si NO hay user → abre modal de registro
+    if (!data.user) setShowSignupModal(true);
+  };
+
+  loadUser();
+
+  const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+    if (!mounted) return;
+    const u = session?.user ?? null;
+    setUser(u);
+
+    if (u) setShowSignupModal(false);
+  });
+
+  return () => {
+    mounted = false;
+    sub.subscription.unsubscribe();
+  };
+}, []);
+
+useEffect(() => {
+  if (!jobId) return;
+
+  fetch(`${API_BASE}/jobs/${jobId}/meta`)
+    .then((res) => res.json())
+    .then((data) => {
+      if (data?.place_name) setPlaceName(data.place_name);
     });
-  }, [jobId]);
+}, [jobId, API_BASE]);
 
   if (!jobId) {
     return (
@@ -319,27 +344,19 @@ function PanelUI() {
 
       </div>
 
-      {/* Sticky CTA Guardar análisis */}
-      {!user && (
-        <div className="fixed bottom-4 left-0 right-0 z-50 px-4">
-          <div className="mx-auto max-w-3xl rounded-2xl border border-slate-200 bg-white/95 backdrop-blur shadow-lg p-4 flex items-center justify-between gap-4">
-            <div>
-              <p className="text-sm font-semibold text-slate-900">
-                🔒 Guardar análisis gratis
-              </p>
-              <p className="text-xs text-slate-600">
-                Crea una cuenta y accede a este análisis cuando quieras.
-              </p>
-            </div>
-            <a
-              href={`/registro?job_id=${jobId}`}
-              className="shrink-0 rounded-xl bg-black px-4 py-2 text-sm font-semibold text-white hover:bg-neutral-800"
-            >
-              Crear cuenta gratis
-            </a>
-          </div>
-        </div>
-      )}
+      
+{authChecked && !user && showSignupModal && (
+  <div className="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div className="w-full max-w-3xl max-h-[90vh] overflow-auto rounded-3xl">
+      {/* popup grande con el mismo formulario */}
+      <SignupClient
+        variant="modal"
+        showLoginLink={true}
+        onSuccess={() => setShowSignupModal(false)}
+      />
+    </div>
+  </div>
+)}
 
       <Footer />
     </div>
