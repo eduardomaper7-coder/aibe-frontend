@@ -10,14 +10,8 @@ import Providers from "../providers";
 import PwaRegister from "../PwaRegister";
 import { Analytics } from "@vercel/analytics/react";
 
-export const metadata: Metadata = {
-  title: "AIBE Technologies — Artificial Intelligence for Business Efficiency",
-  description:
-    "Analiza tus reseñas de Google con inteligencia artificial y mejora tu reputación online.",
-  applicationName: "AIBE"
-};
+const SITE_URL = "https://aibetech.es";
 
-// ✅ Next 16: themeColor ahora va en viewport, no en metadata
 export const viewport: Viewport = {
   themeColor: "#000000"
 };
@@ -26,17 +20,42 @@ export function generateStaticParams() {
   return [{ locale: "es" }, { locale: "en" }];
 }
 
+export async function generateMetadata({
+  params
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+
+  const isEn = locale === "en";
+
+  return {
+    metadataBase: new URL(SITE_URL),
+    title: "AIBE Technologies — Artificial Intelligence for Business Efficiency",
+    description: isEn
+      ? "Analyze your Google reviews with AI and improve your online reputation."
+      : "Analiza tus reseñas de Google con inteligencia artificial y mejora tu reputación online.",
+    applicationName: "AIBE",
+    alternates: {
+      canonical: `/${locale}`,
+      languages: {
+        es: "/es",
+        en: "/en"
+      }
+    }
+  };
+}
+
 export default async function RootLayout({
   children,
   params
 }: {
   children: React.ReactNode;
-  params: Promise<{ locale: string }>; // ✅ params es Promise en Next 16
+  params: Promise<{ locale: string }>;
 }) {
-  const { locale } = await params; // ✅ hay que hacer await
+  const { locale } = await params;
 
   setRequestLocale(locale);
-
   const messages = await getMessages();
 
   return (
