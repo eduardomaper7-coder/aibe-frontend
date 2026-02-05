@@ -1,0 +1,51 @@
+{
+  "home": {
+    "hero": {
+      "titlePrefix": "Analiza tus reseñas de Google y",
+      "dynamicPhrases": [
+        "descubre qué mejorar",
+        "aumenta tus clientes",
+        "mejora tu reputación online",
+        "responde con IA automáticamente",
+        "detecta problemas antes que nadie"
+      ],
+      "subtitle": "Escribe el nombre de tu negocio y tu ciudad para analizar todas tus reseñas en segundos.",
+      "placeholders": {
+        "businessName": "Nombre del negocio (ej: La Tagliatella)",
+        "city": "Ciudad (ej: Chamberí)"
+      },
+      "cta": {
+        "startFree": "Empezar Gratis",
+        "analyzing": "Analizando…"
+      },
+      "microcopy": "No pedimos tarjeta. Tarda menos de 1 minuto."
+    },
+    "progress": {
+      "messages": [
+        "Creando análisis de temas…",
+        "Analizando sentimiento de clientes…",
+        "Calculando volumen de reseñas…",
+        "Detectando oportunidades de mejora…",
+        "Generando respuestas inteligentes…"
+      ]
+    },
+    "candidates": {
+      "title": "Encontré varias opciones. Elige la correcta:",
+      "reviewsLabel": "reseñas",
+      "cancel": "Cancelar"
+    },
+    "blueSection": {
+      "headline": "Especialistas en aumentar las ventas y mejorar la reputación online de restaurantes.",
+      "bullets": [
+        "Profesionales en SEO y captación de clientes para restaurantes.",
+        "Resultados comprobados a las 2 semanas.",
+        "Prueba gratis sin compromiso."
+      ]
+    }
+  },
+  "errors": {
+    "noBusinessFound": "No encontré ese negocio. Prueba a añadir ciudad o barrio.",
+    "searchFailed": "No pude buscar el negocio. Inténtalo de nuevo.",
+    "startAnalysisFailed": "No pude iniciar el análisis con esa opción."
+  }
+}

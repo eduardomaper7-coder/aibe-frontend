@@ -1,12 +1,18 @@
 'use client';
 
 
+
+
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
 
+
+
 export default function GlobalTopbar() {
   const [solid, setSolid] = useState(false);
+
+
 
 
   useEffect(() => {
@@ -16,18 +22,24 @@ export default function GlobalTopbar() {
         document.documentElement.scrollTop ??
         document.body.scrollTop ??
         0;
-      setSolid(y > 0);
+      setSolid(y > 8);
     };
+
+
 
 
     setByScroll();
     const raf = requestAnimationFrame(setByScroll);
 
 
+
+
     window.addEventListener('scroll', setByScroll, { passive: true });
     window.addEventListener('resize', setByScroll);
     window.addEventListener('pageshow', setByScroll);
     window.addEventListener('load', setByScroll);
+
+
 
 
     return () => {
@@ -40,33 +52,17 @@ export default function GlobalTopbar() {
   }, []);
 
 
+
+
   return (
     <>
       <header
-        id="global-topbar"
-        className="topbar"
-        aria-label="Navegación principal"
-        style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          height: 'var(--topbar-h, 64px)',
-          zIndex: 2147483647,
-          isolation: 'isolate',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '0 clamp(12px, 2vw, 40px)', /* + margen derecho */
-          background: solid ? 'rgba(0,0,0,1)' : 'transparent',
-          borderBottom: solid
-            ? '1px solid rgba(255,255,255,.08)'
-            : '1px solid transparent',
-          boxShadow: solid ? '0 10px 20px rgba(0,0,0,.25)' : 'none',
-          transition:
-            'background .28s ease, border-color .28s ease, box-shadow .28s ease',
-        }}
-      >
+  id="global-topbar"
+  className={`topbar ${solid ? 'topbar--solid' : ''}`}
+  aria-label="Navegación principal"
+>
+
+
 
 
         {/* IZQUIERDA */}
@@ -101,6 +97,8 @@ export default function GlobalTopbar() {
                 AI
               </span>
             </div>
+
+
 
 
             <div className="flex flex-col leading-[1.05] justify-center">
@@ -138,13 +136,17 @@ export default function GlobalTopbar() {
           </Link>
 
 
+
+
           {/* ENLACES NUEVOS */}
           <nav className="nav-inline" aria-label="Menú principal">
             <Link href="/contact" className="nav-link">Contacto</Link>
-            
+           
  
           </nav>
         </div>
+
+
 
 
         {/* DERECHA */}
@@ -158,17 +160,26 @@ export default function GlobalTopbar() {
         >
 
 
+
+
           <Link href="/login" className="login-button">
   Iniciar sesión
 </Link>
 
 
 
-          
+
+
+
+         
+
+
 
 
         </div>
       </header>
+
+
 
 
       <style jsx global>{`
@@ -178,6 +189,8 @@ export default function GlobalTopbar() {
           gap: clamp(14px, 2vw, 24px);
           white-space: nowrap;
         }
+
+
 
 
         /* Enlaces 100% blancos */
@@ -196,19 +209,23 @@ export default function GlobalTopbar() {
   font-family: Inter, sans-serif;
   font-weight: 500;
 
+
   padding: 12px 22px;
   border-radius: 999px; /* bordes bien redondos */
   font-size: 1.05rem;   /* más grande que los links */
+
 
   display: inline-flex;
   align-items: center;
   justify-content: center;
 
-  transition: 
+
+  transition:
     transform 0.15s ease,
     box-shadow 0.15s ease,
     background 0.15s ease;
 }
+
 
 /* Hover */
 .login-button:hover {
@@ -218,6 +235,7 @@ export default function GlobalTopbar() {
   text-decoration: none;
 }
 
+
 /* Active (clic) */
 .login-button:active {
   transform: translateY(0);
@@ -225,10 +243,14 @@ export default function GlobalTopbar() {
 }
 
 
+
+
         .nav-link:hover {
           color: #ffffff;
           text-decoration: underline;
         }
+
+
 
 
         @media (max-width: 900px) {
@@ -242,16 +264,20 @@ export default function GlobalTopbar() {
     background: transparent;
     color: #ffffff !important;
 
+
     padding: 0;
     border-radius: 0;
     font-size: 0.95rem;
 
+
     box-shadow: none;
     transform: none;
+
 
     text-decoration: underline;
     text-underline-offset: 4px;
   }
+
 
   .login-button:hover {
     background: transparent;
@@ -260,6 +286,7 @@ export default function GlobalTopbar() {
     text-decoration: underline;
   }
 }
+
 
       `}</style>
     </>

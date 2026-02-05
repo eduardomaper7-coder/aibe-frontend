@@ -1,7 +1,7 @@
 "use client";
 
-import TopbarGate from "./TopbarGate";
+import GlobalTopbar from "./[locale]/GlobalTopbar";
 
 export default function ClientTopbarWrapper() {
-  return <TopbarGate />;
+  return <GlobalTopbar />;
 }

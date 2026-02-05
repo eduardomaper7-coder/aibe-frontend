@@ -3,7 +3,7 @@
 
 
 import { usePathname } from 'next/navigation';
-import GlobalTopbar from './GlobalTopbar';
+import GlobalTopbar from '@/app/[locale]/GlobalTopbar';
 
 
 export default function TopbarGate() {

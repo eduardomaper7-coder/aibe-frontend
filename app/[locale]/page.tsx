@@ -20,6 +20,7 @@ import TresRecuadros from '@/components/ui/3recuadros';
 import VideoTemas from '@/components/ui/videotemas';
 import SeoBeneficio from '@/components/ui/seo-beneficio'
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 
 
 
@@ -31,18 +32,14 @@ export default function Home() {
 const [placeName, setPlaceName] = useState("");
 const [placeZone, setPlaceZone] = useState("");
 const [candidates, setCandidates] = useState<any[] | null>(null);
+const t = useTranslations();
+const router = useRouter();
 
-  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const API_BASE = process.env.NEXT_PUBLIC_API_URL;
 const [progressIndex, setProgressIndex] = useState(0);
-const PROGRESS_MESSAGES = [
-  "Creando análisis de temas…",
-  "Analizando sentimiento de clientes…",
-  "Calculando volumen de reseñas…",
-  "Detectando oportunidades de mejora…",
-  "Generando respuestas inteligentes…",
-];
+const PROGRESS_MESSAGES = t.raw("home.progress.messages") as string[];
+
 useEffect(() => {
   if (!loading) {
     setProgressIndex(0);
@@ -83,6 +80,28 @@ useEffect(() => {
 
   router.push(`/panel?job_id=${data.job_id}`);
 }
+useEffect(() => {
+  const PHRASES = t.raw("home.hero.dynamicPhrases") as string[];
+
+  const el = document.getElementById("dynamicPart");
+  if (!el || !PHRASES?.length) return;
+
+  let i = 0;
+  el.textContent = PHRASES[0];
+
+  const id = setInterval(() => {
+    i = (i + 1) % PHRASES.length;
+    el.style.opacity = "0";
+
+    setTimeout(() => {
+      el.textContent = PHRASES[i];
+      el.style.opacity = "1";
+    }, 300);
+  }, 3000);
+
+  return () => clearInterval(id);
+}, [t]);
+
 
 
 async function handleStart() {
@@ -105,7 +124,7 @@ async function handleStart() {
 
     const list = data?.candidates ?? [];
     if (!list.length) {
-      alert("No encontré ese negocio. Prueba a añadir ciudad o barrio.");
+      alert(t("errors.noBusinessFound"));
       return;
     }
 
@@ -117,7 +136,7 @@ async function handleStart() {
     setCandidates(list);
   } catch (e) {
     console.error(e);
-    alert("No pude buscar el negocio. Inténtalo de nuevo.");
+    alert(t("errors.searchFailed"));
   } finally {
     setLoading(false);
   }
@@ -131,106 +150,7 @@ async function handleStart() {
 
 
 
-  useEffect(() => {
-
-
-
-
-  const TITLES: string[] = [
-    'Convierte cada reseña en una oportunidad de crecimiento',
-    'Descubre lo que tus clientes realmente piensan.',
-    'La IA que transforma tus reseñas en decisiones inteligentes.',
-    'Porque cada cliente merece una respuesta única.',
-  ];
-
-
-
-
-  const titleEl = document.getElementById('dynamicTitle');
-  const slotEl = document.getElementById('titleSlot');
-  if (!titleEl || !slotEl) return;
-
-
-
-
-  const probe = document.createElement('div');
-  const cs = window.getComputedStyle(titleEl);
-
-
-
-
-  Object.assign(probe.style, {
-    position: 'absolute',
-    left: '-9999px',
-    top: '-9999px',
-    width: getComputedStyle(slotEl).width,
-    font: (cs as any).font,
-    lineHeight: (cs as any).lineHeight,
-    letterSpacing: (cs as any).letterSpacing,
-    whiteSpace: 'normal',
-    display: 'block',
-  } as Partial<CSSStyleDeclaration>);
-
-
-
-
-  document.body.appendChild(probe);
-
-
-
-
-  let max = 0;
-  TITLES.forEach((t) => {
-    probe.textContent = t;
-    max = Math.max(max, probe.getBoundingClientRect().height);
-  });
-  document.body.removeChild(probe);
-  slotEl.style.setProperty('--title-height', Math.ceil(max + 8) + 'px');
-
-
-
-
-  let i = 0;
-
-
-
-
-  function show(index: number): void {
-    const nextText = TITLES[index % TITLES.length];
-    if (!titleEl) return;
-    titleEl.classList.remove('fade-enter', 'fade-enter-active');
-    titleEl.classList.add('fade-exit');
-    requestAnimationFrame(() => {
-      titleEl.classList.add('fade-exit-active');
-      window.setTimeout(() => {
-        titleEl.textContent = nextText;
-        titleEl.classList.remove('fade-exit', 'fade-exit-active');
-        titleEl.classList.add('fade-enter');
-        requestAnimationFrame(() =>
-          titleEl.classList.add('fade-enter-active')
-        );
-      }, 600);
-    });
-  }
-
-
-
-
-  titleEl.textContent = TITLES[0];
-
-
-
-
-  const id = window.setInterval(() => {
-    i = (i + 1) % TITLES.length;
-    show(i);
-  }, 6500);
-
-
-
-
-  return () => window.clearInterval(id);
-}, []);
+  
 
 
 
@@ -276,17 +196,21 @@ async function handleStart() {
 
   {/* Contenido encima del video */}
   <div className="shell relative z-[1]">
-    <div className="topbar-spacer" aria-hidden="true" />
-    <div className="center">
-      <div className="title-slot" id="titleSlot">
+        <div className="center">
+      <div className="title-slot">
         <div className="title-layer">
-          <h1 id="dynamicTitle" className="title"></h1>
+          <h1 className="title">
+  {t("home.hero.titlePrefix")}{" "}
+  <span id="dynamicPart" className="text-white/90" />
+</h1>
+
+
+
         </div>
       </div>
-      <p className="subtitle">
-        La tecnología que usan las grandes empresas,<br />
-        ahora al alcance de tu negocio.
-      </p>
+      <p className="subtitle">{t("home.hero.subtitle")}</p>
+
+
     </div>
   </div>
 
@@ -294,6 +218,7 @@ async function handleStart() {
 
 
 {/* Input + botón (Nombre + Zona) */}
+
 <div className="relative z-[50] mt-8">
   <div className="mx-auto w-full max-w-[820px] px-4">
     <div
@@ -309,7 +234,7 @@ async function handleStart() {
       {/* Inputs row */}
       <div className="flex flex-col md:flex-row items-stretch gap-3">
         {/* Nombre */}
-        <div className="flex items-center gap-3 w-full md:flex-1 rounded-xl bg-black/25 border border-white/10 px-4 h-12">
+        <div className="flex items-center gap-3 w-full md:flex-1 rounded-xl bg-white border border-black/10 px-4 h-12 text-black/70">
           <svg
             width="18"
             height="18"
@@ -336,17 +261,18 @@ async function handleStart() {
             type="text"
             value={placeName}
             onChange={(e) => setPlaceName(e.target.value)}
-            placeholder="Nombre del negocio (ej: La Tagliatella)"
+            placeholder={t("home.hero.placeholders.businessName")}
             disabled={loading}
             className="
-              w-full bg-transparent text-white placeholder:text-white/60
-              outline-none text-[15px]
-            "
+  w-full bg-transparent text-black placeholder:text-gray-500
+  outline-none text-[15px]
+"
+
           />
         </div>
 
         {/* Zona */}
-        <div className="flex items-center gap-3 md:w-[280px] rounded-xl bg-black/25 border border-white/10 px-4 h-12">
+        <div className="flex items-center gap-3 md:w-[280px] rounded-xl bg-white border border-black/10 px-4 h-12 text-black/70">
           <svg
             width="18"
             height="18"
@@ -375,12 +301,13 @@ async function handleStart() {
             type="text"
             value={placeZone}
             onChange={(e) => setPlaceZone(e.target.value)}
-            placeholder="Zona (ej: Chamberí, Madrid)"
+            placeholder={t("home.hero.placeholders.city")}
             disabled={loading}
             className="
-              w-full bg-transparent text-white placeholder:text-white/60
-              outline-none text-[15px]
-            "
+  w-full bg-transparent text-black placeholder:text-gray-500
+  outline-none text-[15px]
+"
+
           />
         </div>
       </div>
@@ -416,11 +343,12 @@ async function handleStart() {
           {loading ? (
             <>
               <span className="h-4 w-4 animate-spin rounded-full border-2 border-black border-t-transparent" />
-              Analizando…
+              {t("home.hero.cta.analyzing")}
             </>
           ) : (
             <>
-              Empezar Gratis <span aria-hidden="true">→</span>
+              {t("home.hero.cta.startFree")}
+  <span aria-hidden="true">→</span>
             </>
           )}
         </button>
@@ -430,7 +358,7 @@ async function handleStart() {
     {/* Microcopy */}
     {!loading && (
       <p className="mt-3 text-xs text-white/60 text-center">
-        No pedimos tarjeta. Tarda menos de 1 minuto.
+        {t("home.hero.microcopy")}
       </p>
     )}
   </div>
@@ -442,7 +370,7 @@ async function handleStart() {
   <div className="mx-auto mt-4 w-full max-w-[760px] px-4">
     <div className="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-md p-3">
       <p className="text-sm text-white/80 mb-2">
-        Encontré varias opciones. Elige la correcta:
+        {t("home.candidates.title")}
       </p>
 
       <div className="flex flex-col gap-2">
@@ -457,7 +385,7 @@ async function handleStart() {
     await runScrapeWithCandidate(c);
   } catch (e) {
     console.error(e);
-    alert("No pude iniciar el análisis con esa opción.");
+    alert(t("errors.startAnalysisFailed"));
   } finally {
     setLoading(false);
   }
@@ -469,7 +397,7 @@ async function handleStart() {
             <div className="text-white/70 text-sm">{c.address}</div>
             <div className="text-white/60 text-xs mt-1">
               {c.rating ? `⭐ ${c.rating}` : ""}{" "}
-              {c.user_ratings_total ? `(${c.user_ratings_total} reseñas)` : ""}
+              {c.user_ratings_total ? `(${c.user_ratings_total} ${t("home.candidates.reviewsLabel")})` : ""}
             </div>
           </button>
         ))}
@@ -481,7 +409,7 @@ async function handleStart() {
         onClick={() => setCandidates(null)}
         disabled={loading}
       >
-        Cancelar
+        {t("home.candidates.cancel")}
       </button>
     </div>
   </div>
@@ -564,7 +492,7 @@ async function handleStart() {
 
       <div className="md:col-span-7">
         <h2 className="mt-0 text-2xl md:text-4xl lg:text-5xl font-light leading-tight text-gray-100">
-          Especialistas en aumentar las ventas y mejorar la reputación online de restaurantes.
+          {t("home.blueSection.headline")}
         </h2>
       </div>
 
@@ -577,22 +505,15 @@ async function handleStart() {
 
 
   <p className="text-[13px] md:text-sm lg:text-base text-gray-400 leading-relaxed text-right">
-    Profesionales en SEO y captación de clientes para restaurantes.
-  </p>
+  {t("home.blueSection.bullets.0")}
+</p>
+<p className="text-[13px] md:text-sm lg:text-base text-gray-400 leading-relaxed text-right">
+  {t("home.blueSection.bullets.1")}
+</p>
+<p className="text-[13px] md:text-sm lg:text-base text-gray-400 leading-relaxed text-right">
+  {t("home.blueSection.bullets.2")}
+</p>
 
-
-
-
-  <p className="text-[13px] md:text-sm lg:text-base text-gray-400 leading-relaxed text-right">
-    Resultados comprobados a las 2 semanas.
-  </p>
-
-
-
-
-  <p className="text-[13px] md:text-sm lg:text-base text-gray-400 leading-relaxed text-right">
-    Prueba gratis sin compromiso.
-  </p>
 
 
 

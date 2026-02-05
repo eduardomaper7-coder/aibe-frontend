@@ -132,11 +132,17 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  padding-top: 20vh;
+  padding-top: calc(var(--topbar-h) + 44px); /* <-- más cerca del menú */
   text-align: left;
 }
 
-.title-slot { height: var(--title-height); }
+.title-slot {
+  height: auto;         /* <-- antes era fijo */
+  min-height: 0;
+  overflow: visible;
+  margin-bottom: 12px;  /* separa del subtítulo */
+}
+
 .title {
   font-size: var(--title-size);
   line-height: .95;
@@ -312,8 +318,8 @@ body {
 
   /* Bajar el título + subtítulo */
   .hero .center {
-    padding-top: 24vh !important;
-  }
+  padding-top: calc(var(--topbar-h) + 64px) !important;
+}
 
   .hero .subtitle {
     margin-top: 24px !important;
@@ -352,8 +358,9 @@ body {
 
   /* Desplazar título + subtítulo hacia abajo */
   .hero .center {
-    padding-top: 26vh !important;
-  }
+  padding-top: calc(var(--topbar-h) + 50px) !important;
+}
+
 
   /* Más separación entre título y subtítulo */
   .hero .subtitle {
@@ -408,3 +415,61 @@ body {
   }
 }
 
+#dynamicPart {
+  display: inline-block;
+  transition: opacity 0.3s ease;
+}
+
+/* ===== DESKTOP: reducir tamaño del título ===== */
+@media (min-width: 1024px) {
+  :root {
+    --title-size: clamp(36px, 4.8vw, 64px);
+  }
+}
+
+/* ===== DESKTOP: agrandar inputs ===== */
+@media (min-width: 1024px) {
+
+  /* Inputs */
+  .hero input {
+    height: 56px !important;
+    font-size: 17px !important;
+  }
+
+  /* Contenedor */
+  .hero .rounded-2xl {
+    padding: 18px !important;
+  }
+
+  /* Botón */
+  .hero button {
+    height: 56px !important;
+    font-size: 17px !important;
+    font-weight: 600;
+  }
+}
+.topbar-spacer {
+  height: var(--topbar-h, 64px);
+}
+
+/* TOPBAR BASE */
+#global-topbar.topbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: var(--topbar-h);
+  z-index: 2147483647;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 clamp(12px, 2vw, 40px);
+  background: transparent !important;
+  border-bottom: 1px solid transparent;
+  box-shadow: none;
+  transition: background .28s ease, border-color .28s ease, box-shadow .28s ease;
+}
+
+#global-topbar.topbar.topbar--solid {
+  background: rgba(0,0,0,1) !important;
+  border-bottom-color: rgba(255,255,255,.08);
+  box-shadow: 0 10px 20px rgba(0,0,0,.25);
+}

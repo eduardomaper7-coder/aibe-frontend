@@ -1,0 +1,51 @@
+{
+  "home": {
+    "hero": {
+      "titlePrefix": "Analyze your Google reviews and",
+      "dynamicPhrases": [
+        "see what to improve",
+        "increase your customers",
+        "improve your online reputation",
+        "reply automatically with AI",
+        "spot problems before anyone else"
+      ],
+      "subtitle": "Type your business name and your city to analyze all your reviews in seconds.",
+      "placeholders": {
+        "businessName": "Business name (e.g., La Tagliatella)",
+        "city": "City / area (e.g., Chamberí)"
+      },
+      "cta": {
+        "startFree": "Start Free",
+        "analyzing": "Analyzing…"
+      },
+      "microcopy": "No credit card required. Takes less than 1 minute."
+    },
+    "progress": {
+      "messages": [
+        "Creating topic analysis…",
+        "Analyzing customer sentiment…",
+        "Calculating review volume…",
+        "Detecting improvement opportunities…",
+        "Generating smart replies…"
+      ]
+    },
+    "candidates": {
+      "title": "I found multiple options. Choose the right one:",
+      "reviewsLabel": "reviews",
+      "cancel": "Cancel"
+    },
+    "blueSection": {
+      "headline": "Specialists in increasing sales and improving the online reputation of restaurants.",
+      "bullets": [
+        "SEO and customer acquisition professionals for restaurants.",
+        "Proven results within 2 weeks.",
+        "Try it free, no commitment."
+      ]
+    }
+  },
+  "errors": {
+    "noBusinessFound": "I couldn’t find that business. Try adding the city or neighborhood.",
+    "searchFailed": "I couldn’t search for the business. Please try again.",
+    "startAnalysisFailed": "I couldn’t start the analysis with that option."
+  }
+}
