@@ -1,6 +1,6 @@
 // app/page.tsx
-import {headers} from "next/headers";
-import {redirect} from "next/navigation";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 
 function pickFromAcceptLanguage(accept: string) {
   const first = accept.split(",")[0]?.trim().toLowerCase();
@@ -11,16 +11,17 @@ function pickFromAcceptLanguage(accept: string) {
 export default async function Root() {
   const h = await headers();
 
-  // ✅ Vercel GeoIP (si está disponible)
   const country =
     h.get("x-vercel-ip-country") ||
     h.get("x-vercel-geo-country") ||
     "";
 
+  const accept = h.get("accept-language") || "";
+
+  console.log("COUNTRY:", country, "ACCEPT:", accept);
+
   if (country === "US") redirect("/en");
   if (country === "ES") redirect("/es");
 
-  // fallback
-  const accept = h.get("accept-language") || "";
   redirect(`/${pickFromAcceptLanguage(accept)}`);
 }

@@ -5,9 +5,10 @@ import {locales, defaultLocale} from "./src/i18n/config";
 export default createMiddleware({
   locales,
   defaultLocale,
-  localeDetection: false // 👈 importante: respeta /en y /es
+  localeDetection: false
 });
 
 export const config = {
-  matcher: ["/((?!api|_next|.*\\..*).*)"]
+  // ✅ Solo aplica el middleware cuando la URL ya tiene /es o /en
+  matcher: ["/(es|en)/:path*"]
 };
