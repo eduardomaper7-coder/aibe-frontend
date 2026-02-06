@@ -9,7 +9,7 @@ const isLocalLoop =
 
 const nextConfig = {
   turbopack: {
-    root: __dirname
+    root: __dirname,
   },
 
   async headers() {
@@ -17,8 +17,8 @@ const nextConfig = {
       return [
         {
           source: "/(.*)",
-          headers: [{ key: "Access-Control-Allow-Origin", value: "*" }]
-        }
+          headers: [{ key: "Access-Control-Allow-Origin", value: "*" }],
+        },
       ];
     }
 
@@ -42,20 +42,27 @@ const nextConfig = {
                 "https://*.supabase.co",
                 "https://api.stripe.com",
                 "https://r.stripe.com",
-                "https://q.stripe.com"
+                "https://q.stripe.com",
               ].join(" ") + ";",
-              "frame-src https://js.stripe.com;"
-            ].join(" ")
-          }
-        ]
-      }
+              "frame-src https://js.stripe.com;",
+            ].join(" "),
+          },
+        ],
+      },
     ];
   },
 
   async rewrites() {
     if (!API || isLocalLoop) return [];
-    return [{ source: "/api/:path*", destination: `${API}/:path*` }];
-  }
+
+    return [
+      // ✅ No tocar NextAuth
+      { source: "/api/auth/:path*", destination: "/api/auth/:path*" },
+
+      // ✅ El resto de /api sí va al backend
+      { source: "/api/:path*", destination: `${API}/:path*` },
+    ];
+  },
 };
 
 export default withNextIntl(nextConfig);
