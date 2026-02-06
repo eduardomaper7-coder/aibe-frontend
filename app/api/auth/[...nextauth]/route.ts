@@ -15,7 +15,8 @@ const handler = NextAuth({
             "https://www.googleapis.com/auth/business.manage",
           ].join(" "),
           access_type: "offline",
-          prompt: "consent",
+          // ✅ NO fuerces consent siempre
+          // prompt: "consent",
         },
       },
     }),
@@ -23,12 +24,11 @@ const handler = NextAuth({
   callbacks: {
     async jwt({ token, account }) {
       if (account?.access_token) token.accessToken = account.access_token;
-      if (account?.refresh_token) token.refreshToken = account.refresh_token; // importante
+      // ⛔ NO dependas del refreshToken en el cliente por ahora
       return token;
     },
     async session({ session, token }) {
       (session as any).accessToken = token.accessToken;
-      (session as any).refreshToken = token.refreshToken; // si lo vas a mandar al backend (mejor guardarlo server-side)
       return session;
     },
   },
