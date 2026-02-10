@@ -169,9 +169,7 @@ const locale = String((params as any)?.locale ?? "es");
 
 
 
-          <Link href="/login" className="login-button">
-  Iniciar sesión
-</Link>
+          
 
 
 

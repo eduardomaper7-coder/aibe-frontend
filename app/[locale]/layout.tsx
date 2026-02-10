@@ -1,7 +1,5 @@
 // app/[locale]/layout.tsx
-import "../globals.css";
 import type { Metadata, Viewport } from "next";
-
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
 
@@ -13,7 +11,7 @@ import { Analytics } from "@vercel/analytics/react";
 const SITE_URL = "https://aibetech.es";
 
 export const viewport: Viewport = {
-  themeColor: "#000000"
+  themeColor: "#000000",
 };
 
 export function generateStaticParams() {
@@ -21,12 +19,11 @@ export function generateStaticParams() {
 }
 
 export async function generateMetadata({
-  params
+  params,
 }: {
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
-
   const isEn = locale === "en";
 
   return {
@@ -38,17 +35,14 @@ export async function generateMetadata({
     applicationName: "AIBE",
     alternates: {
       canonical: `/${locale}`,
-      languages: {
-        es: "/es",
-        en: "/en"
-      }
-    }
+      languages: { es: "/es", en: "/en" },
+    },
   };
 }
 
-export default async function RootLayout({
+export default async function LocaleLayout({
   children,
-  params
+  params,
 }: {
   children: React.ReactNode;
   params: Promise<{ locale: string }>;
@@ -59,16 +53,14 @@ export default async function RootLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale}>
-      <body className="bg-black text-white relative">
-        <NextIntlClientProvider locale={locale} messages={messages}>
-          <PwaRegister />
-          <ClientTopbarWrapper />
-          <div className="topbar-spacer" />
-          <Providers>{children}</Providers>
-          <Analytics />
-        </NextIntlClientProvider>
-      </body>
-    </html>
+    <div className="bg-black text-white relative">
+      <NextIntlClientProvider locale={locale} messages={messages}>
+        <PwaRegister />
+        <ClientTopbarWrapper />
+        <div className="topbar-spacer" />
+        <Providers>{children}</Providers>
+        <Analytics />
+      </NextIntlClientProvider>
+    </div>
   );
 }
