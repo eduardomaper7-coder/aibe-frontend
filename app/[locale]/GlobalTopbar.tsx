@@ -6,12 +6,17 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
+import { useParams } from "next/navigation";
+
 
 
 
 export default function GlobalTopbar() {
   const [solid, setSolid] = useState(false);
 
+
+const params = useParams();
+const locale = String((params as any)?.locale ?? "es");
 
 
 
@@ -140,10 +145,12 @@ export default function GlobalTopbar() {
 
           {/* ENLACES NUEVOS */}
           <nav className="nav-inline" aria-label="Menú principal">
-            <Link href="/contact" className="nav-link">Contacto</Link>
-           
- 
-          </nav>
+  <Link href={`/${locale}/contact`} className="nav-link">Contacto</Link>
+  <Link href={`/${locale}/privacy`} className="nav-link">Privacidad</Link>
+  <Link href={`/${locale}/terms`} className="nav-link">Términos</Link>
+</nav>
+
+
         </div>
 
 
@@ -253,7 +260,7 @@ export default function GlobalTopbar() {
 
 
 
-        @media (max-width: 900px) {
+        @media (max-width: 700px) {
           #global-topbar .nav-inline {
             display: none;
           }

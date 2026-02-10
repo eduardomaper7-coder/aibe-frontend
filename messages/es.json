@@ -47,5 +47,198 @@
     "noBusinessFound": "No encontré ese negocio. Prueba a añadir ciudad o barrio.",
     "searchFailed": "No pude buscar el negocio. Inténtalo de nuevo.",
     "startAnalysisFailed": "No pude iniciar el análisis con esa opción."
+  },
+
+  "legal": {
+  "privacy": {
+    "title": "Política de Privacidad",
+    "lastUpdated": "Última actualización: 10/02/2026",
+    "sections": [
+      {
+        "h": "1. Responsable del tratamiento",
+        "p": [
+          "Nombre comercial / Marca: Aibe Technologies (aibetech.es).",
+          "Titular / Responsable: Eduardo Martínez Perdomo (persona física), España.",
+          "Contacto: info@aibetech.es."
+        ]
+      },
+      {
+        "h": "2. Qué datos tratamos",
+        "p": [
+          "Datos de cuenta: dirección de correo electrónico obtenida mediante Google OAuth (userinfo.email) y un identificador de sesión (OpenID).",
+          "Datos de Google Business Profile: cuentas y ubicaciones del Perfil de Empresa, y reseñas asociadas (texto de reseña, valoración, nombre público del autor si aparece, y fechas).",
+          "Datos generados: métricas, informes y resultados de análisis derivados de las reseñas.",
+          "Datos técnicos: registros básicos de seguridad y uso (por ejemplo, fecha/hora de acceso, identificadores técnicos, errores) para mantener la plataforma operativa y segura."
+        ]
+      },
+      {
+        "h": "3. Permisos de Google (OAuth) y alcance",
+        "p": [
+          "La aplicación utiliza Google OAuth para autenticar al usuario y acceder a datos autorizados por el propio usuario.",
+          "Permisos solicitados: openid, userinfo.email y business.manage (Google Business Profile).",
+          "El permiso business.manage es requerido por las APIs de Google Business Profile para acceder a ubicaciones/reseñas y, si el usuario lo decide, gestionar respuestas a reseñas."
+        ]
+      },
+      {
+        "h": "4. Finalidades",
+        "p": [
+          "Conectar la cuenta de Google del usuario y permitirle seleccionar un Perfil de Empresa/ubicación.",
+          "Extraer y mostrar reseñas en un panel para su análisis.",
+          "Analizar reseñas mediante IA para obtener insights (temas, sentimiento, métricas) y generar borradores de respuesta.",
+          "Soporte técnico y prevención de abuso o uso fraudulento."
+        ]
+      },
+      {
+        "h": "5. IA y proveedores (OpenAI)",
+        "p": [
+          "Para generar análisis y borradores de respuesta podemos enviar a OpenAI contenido necesario (por ejemplo, texto de reseñas y contexto mínimo) para producir el resultado.",
+          "No utilizamos los datos para publicidad basada en perfiles.",
+          "Limitamos el envío de información al mínimo necesario para prestar el servicio."
+        ]
+      },
+      {
+  "h": "6. Respuestas a reseñas",
+  "p": [
+    "Actualmente, el servicio no publica respuestas automáticamente sin intervención del usuario.",
+    "Si el usuario decide publicar respuestas generadas, será responsable del contenido final publicado.",
+    "La plataforma no modifica información del Perfil de Empresa (como nombre, dirección, teléfono u horarios) salvo que el usuario realice una acción explícita que lo solicite."
+  ]
+},
+
+      {
+        "h": "7. Conservación",
+        "p": [
+          "Conservamos los datos mientras la cuenta del usuario esté activa o durante el tiempo necesario para prestar el servicio y cumplir obligaciones legales.",
+          "El usuario puede solicitar la eliminación de su cuenta y datos escribiendo a info@aibetech.es."
+        ]
+      },
+      {
+        "h": "8. Compartición de datos",
+        "p": [
+          "No vendemos datos personales.",
+          "Podemos compartir datos con proveedores tecnológicos necesarios para operar la plataforma (por ejemplo, hosting, base de datos, servicios de IA como OpenAI), bajo acuerdos y medidas de seguridad."
+        ]
+      },
+      {
+        "h": "9. Seguridad",
+        "p": [
+          "Aplicamos medidas técnicas y organizativas razonables para proteger los datos frente a accesos no autorizados, pérdida o alteración."
+        ]
+      },
+      {
+        "h": "10. Derechos RGPD",
+        "p": [
+          "Puedes ejercer tus derechos de acceso, rectificación, supresión, oposición, limitación y portabilidad contactando en info@aibetech.es."
+        ]
+      },
+      {
+        "h": "11. Revocación de permisos",
+        "p": [
+          "Puedes revocar el acceso de la aplicación desde tu Cuenta de Google (Seguridad > Acceso de terceros) en cualquier momento."
+        ]
+      },
+      {
+        "h": "12. Cambios",
+        "p": [
+          "Podemos actualizar esta política para reflejar cambios legales o técnicos. Publicaremos la versión vigente en esta página."
+        ]
+      }
+    ]
+  },
+  "terms": {
+    "title": "Términos del Servicio",
+    "lastUpdated": "Última actualización: 10/02/2026",
+    "sections": [
+      {
+        "h": "1. Titular del servicio",
+        "p": [
+          "Nombre comercial / Marca: Aibe Technologies (aibetech.es).",
+          "Titular: Eduardo Martínez Perdomo (persona física), España.",
+          "Contacto: info@aibetech.es."
+        ]
+      },
+      {
+        "h": "2. Descripción del servicio",
+        "p": [
+          "Aibe Technologies ofrece una plataforma para extraer, visualizar y analizar reseñas de Google Business Profile mediante inteligencia artificial, y generar insights y borradores de respuesta."
+        ]
+      },
+      {
+        "h": "3. Acceso y autorización",
+        "p": [
+          "Para usar el servicio es necesario iniciar sesión con una cuenta de Google y otorgar permisos mediante Google OAuth.",
+          "El usuario declara que tiene derecho a acceder y gestionar los perfiles/ubicaciones seleccionados (por ejemplo, es propietario o administrador autorizado)."
+        ]
+      },
+      {
+        "h": "4. Uso permitido y prohibido",
+        "p": [
+          "El usuario se compromete a utilizar la plataforma de forma legal y conforme a estas condiciones.",
+          "Queda prohibido usar el servicio para spam, contenido ilegal, suplantación, o cualquier actividad que infrinja derechos de terceros o políticas de Google."
+        ]
+      },
+      {
+        "h": "5. IA y limitaciones",
+        "p": [
+          "Las salidas generadas por IA (análisis o borradores) son orientativas y pueden contener errores.",
+          "El usuario es responsable de revisar decisiones y contenidos antes de aplicarlos o publicarlos."
+        ]
+      },
+      {
+  "h": "6. Respuestas a reseñas",
+  "p": [
+    "Actualmente, el servicio no publica respuestas automáticamente sin intervención del usuario.",
+    "Si el usuario decide publicar respuestas generadas, será responsable del contenido final publicado.",
+    "La plataforma no modifica otros datos del Perfil de Empresa salvo autorización expresa del usuario."
+  ]
+},
+
+      {
+  "h": "7. Disponibilidad y cambios",
+  "p": [
+    "Podemos modificar, actualizar o interrumpir el servicio (total o parcialmente) por motivos técnicos, de seguridad o de mejora.",
+    "El usuario puede solicitar la cancelación y eliminación de su cuenta y datos escribiendo a info@aibetech.es.",
+    "También puede revocar el acceso desde su Cuenta de Google en cualquier momento."
+  ]
+},
+
+
+      {
+        "h": "8. Suspensión",
+        "p": [
+          "Podemos suspender o cancelar el acceso si detectamos uso indebido, incumplimiento de estos términos o riesgos de seguridad."
+        ]
+      },
+      {
+        "h": "9. Propiedad intelectual",
+        "p": [
+          "La plataforma, su diseño y su código son propiedad del titular, salvo que se indique lo contrario.",
+          "Las reseñas y contenidos originales pertenecen a sus respectivos autores o titulares, conforme a las políticas aplicables."
+        ]
+      },
+      {
+        "h": "10. Protección de datos",
+        "p": [
+          "El tratamiento de datos personales se rige por la Política de Privacidad, disponible en el sitio web."
+        ]
+      },
+      {
+        "h": "11. Limitación de responsabilidad",
+        "p": [
+          "En la medida permitida por la ley, no seremos responsables de pérdidas indirectas, lucro cesante, o daños derivados del uso del servicio.",
+          "No garantizamos resultados específicos ni la ausencia total de errores."
+        ]
+      },
+      {
+  "h": "12. Legislación aplicable",
+  "p": [
+    "Estas condiciones se rigen por la legislación española. Salvo normativa imperativa distinta, cualquier disputa se someterá a los juzgados y tribunales competentes en España.",
+    "Publicaremos la versión vigente de estos términos en el sitio web indicando la fecha de última actualización."
+  ]
+}
+
+    ]
   }
+}
+
 }

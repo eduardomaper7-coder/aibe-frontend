@@ -47,5 +47,195 @@
     "noBusinessFound": "I couldn’t find that business. Try adding the city or neighborhood.",
     "searchFailed": "I couldn’t search for the business. Please try again.",
     "startAnalysisFailed": "I couldn’t start the analysis with that option."
+  },
+
+"legal": {
+  "privacy": {
+    "title": "Privacy Policy",
+    "lastUpdated": "Last updated: 2026-02-10",
+    "sections": [
+      {
+        "h": "1. Data Controller",
+        "p": [
+          "Trade name / Brand: Aibe Technologies (aibetech.es).",
+          "Owner / Controller: Eduardo Martínez Perdomo (individual), Spain.",
+          "Contact: info@aibetech.es."
+        ]
+      },
+      {
+        "h": "2. Data we process",
+        "p": [
+          "Account data: email address obtained via Google OAuth (userinfo.email) and a session identifier (OpenID).",
+          "Google Business Profile data: business accounts and locations, and related reviews (review text, rating, public author name if available, and timestamps).",
+          "Derived data: metrics, reports, and analytics outputs generated from reviews.",
+          "Technical data: basic security and usage logs (e.g., access time, technical identifiers, errors) to operate and secure the service."
+        ]
+      },
+      {
+        "h": "3. Google OAuth permissions and scope",
+        "p": [
+          "The application uses Google OAuth to authenticate users and access data authorized by the user.",
+          "Requested permissions: openid, userinfo.email, and business.manage (Google Business Profile).",
+          "The business.manage permission is required by Google Business Profile APIs to access locations/reviews and, if the user chooses, manage review replies."
+        ]
+      },
+      {
+        "h": "4. Purposes",
+        "p": [
+          "Connect the user’s Google account and allow selecting a Business Profile/location.",
+          "Fetch and display reviews in a dashboard for analysis.",
+          "Use AI to analyze reviews (topics, sentiment, metrics) and generate reply drafts.",
+          "Customer support and prevention of abuse or fraudulent use."
+        ]
+      },
+      {
+        "h": "5. AI and processors (OpenAI)",
+        "p": [
+          "To generate analytics and reply drafts, we may send necessary content (e.g., review text and minimal context) to OpenAI to produce outputs.",
+          "We do not use data for targeted advertising.",
+          "We minimize the data shared to what is necessary to provide the service."
+        ]
+      },
+      {
+  "h": "6. Review replies",
+  "p": [
+    "Currently, the service does not publish replies automatically without user action.",
+    "If you publish AI-generated replies, you are responsible for the final content posted.",
+    "The platform does not modify Business Profile information (such as name, address, phone number, or hours) unless you explicitly request it."
+  ]
+},
+
+      {
+        "h": "7. Retention",
+        "p": [
+          "We retain data while the user account is active or as needed to provide the service and comply with legal obligations.",
+          "Users can request account and data deletion by emailing info@aibetech.es."
+        ]
+      },
+      {
+        "h": "8. Sharing",
+        "p": [
+          "We do not sell personal data.",
+          "We may share data with necessary service providers (e.g., hosting, database, AI providers such as OpenAI) under agreements and security measures."
+        ]
+      },
+      {
+        "h": "9. Security",
+        "p": [
+          "We implement reasonable technical and organizational measures to protect data against unauthorized access, loss, or alteration."
+        ]
+      },
+      {
+        "h": "10. Your rights",
+        "p": [
+          "You may exercise your applicable data protection rights by contacting info@aibetech.es."
+        ]
+      },
+      {
+        "h": "11. Revoking access",
+        "p": [
+          "You can revoke the app’s access at any time from your Google Account (Security > Third-party access)."
+        ]
+      },
+      {
+        "h": "12. Changes",
+        "p": [
+          "We may update this policy to reflect legal or technical changes. The current version will be published on this page."
+        ]
+      }
+    ]
+  },
+  "terms": {
+    "title": "Terms of Service",
+    "lastUpdated": "Last updated: 2026-02-10",
+    "sections": [
+      {
+        "h": "1. Service owner",
+        "p": [
+          "Trade name / Brand: Aibe Technologies (aibetech.es).",
+          "Owner: Eduardo Martínez Perdomo (individual), Spain.",
+          "Contact: info@aibetech.es."
+        ]
+      },
+      {
+        "h": "2. Service description",
+        "p": [
+          "Aibe Technologies provides a platform to fetch, display, and analyze Google Business Profile reviews using AI, generating insights and reply drafts."
+        ]
+      },
+      {
+        "h": "3. Access and authorization",
+        "p": [
+          "To use the service, you must sign in with a Google account and grant permissions via Google OAuth.",
+          "You represent that you have the right to access and manage the selected profiles/locations (e.g., you are an owner or authorized manager)."
+        ]
+      },
+      {
+        "h": "4. Acceptable use",
+        "p": [
+          "You agree to use the service lawfully and in accordance with these terms.",
+          "You must not use the service for spam, illegal content, impersonation, or activities that violate third-party rights or Google policies."
+        ]
+      },
+      {
+        "h": "5. AI limitations",
+        "p": [
+          "AI outputs (analytics or drafts) are informational and may contain errors.",
+          "You are responsible for reviewing decisions and content before applying or publishing it."
+        ]
+      },
+      {
+        "h": "6. Review replies",
+        "p": [
+          "Currently, the service does not publish replies automatically without user action.",
+          "If you publish AI-generated replies, you are responsible for the final content posted."
+        ]
+      },
+      {
+  "h": "7. Availability and changes",
+  "p": [
+    "We may modify, update, or discontinue the service (in whole or in part) for technical, security, or improvement reasons.",
+    "You may request account cancellation and data deletion by emailing info@aibetech.es.",
+    "You may also revoke access from your Google Account at any time."
+  ]
+},
+
+      {
+        "h": "8. Suspension",
+        "p": [
+          "We may suspend or terminate access if we detect misuse, violations of these terms, or security risks."
+        ]
+      },
+      {
+        "h": "9. Intellectual property",
+        "p": [
+          "The platform, its design, and code are owned by the service owner unless stated otherwise.",
+          "Reviews and original content belong to their respective authors/owners under applicable policies."
+        ]
+      },
+      {
+        "h": "10. Data protection",
+        "p": [
+          "Personal data processing is governed by the Privacy Policy available on the website."
+        ]
+      },
+      {
+        "h": "11. Limitation of liability",
+        "p": [
+          "To the maximum extent permitted by law, we are not liable for indirect damages, loss of profits, or damages arising from use of the service.",
+          "We do not guarantee specific outcomes or the complete absence of errors."
+        ]
+      },
+      {
+  "h": "12. Governing law",
+  "p": [
+    "These terms are governed by Spanish law. Unless mandatory rules provide otherwise, disputes will be handled by competent courts in Spain.",
+    "We will publish the current version of these terms on the website indicating the last update date."
+  ]
+}
+
+    ]
   }
+}
+
 }
