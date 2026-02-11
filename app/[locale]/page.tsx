@@ -5,7 +5,6 @@
 
 import { useEffect, useState } from 'react';
 
-import { useSession, signIn } from "next-auth/react";
 
 
 
@@ -38,7 +37,6 @@ export default function Home() {
 const locale = String((params as any)?.locale ?? "es");
   const [loading, setLoading] = useState(false);
   const API_BASE = process.env.NEXT_PUBLIC_API_URL;
-  const { status } = useSession();
 const router = useRouter();
 const [progressIndex, setProgressIndex] = useState(0);
 const PROGRESS_MESSAGES = [
@@ -67,11 +65,21 @@ useEffect(() => {
 
 
   function handleStart() {
-  if (status === "authenticated") {
-    router.push(`/${locale}/post-auth`);
+  const api = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/+$/, "");
+
+  if (!api) {
+    alert("Falta NEXT_PUBLIC_API_URL en el frontend");
     return;
   }
-  signIn("google", { callbackUrl: `/${locale}/post-auth` });
+
+  // user_id puede ser lo que quieras en el MVP (sirve para state).
+  // Si ya tienes userId real, pásalo aquí.
+  const userId = "web";
+
+  // Redirige al backend OAuth (controlado por backend)
+  window.location.href = `${api}/auth/google/login?user_id=${encodeURIComponent(
+    userId
+  )}`;
 }
 
 
