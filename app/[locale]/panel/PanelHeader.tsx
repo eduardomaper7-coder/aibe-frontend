@@ -1,17 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useParams, usePathname, useSearchParams } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 import { supabase } from "@/lib/supabase";
 
 type View = "menu" | "help" | "subscription" | "confirm-cancel";
 
 /* PanelLogo */
-function PanelLogo() {
+function PanelLogo({ href }: { href: string }) {
   return (
-    <Link href="/panel" className="flex items-center gap-3" aria-label="Panel">
-      {/* ICONO degradado */}
+    <Link href={href} className="flex items-center gap-3" aria-label="Panel">
       <div
         className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-cyan-400 shadow-md"
         aria-hidden="true"
@@ -24,7 +23,6 @@ function PanelLogo() {
         </span>
       </div>
 
-      {/* BLOQUE DE TEXTO */}
       <span className="leading-tight">
         <div className="flex items-baseline gap-1">
           <span
@@ -71,7 +69,9 @@ function PanelLogo() {
    Componente AccountMenu (export nombrado)
 ========================= */
 export function AccountMenu() {
-  const router = useRouter();
+  // (tu código igual, sin cambios)
+  // --- lo dejo idéntico para no tocar tu lógica ---
+  const router = require("next/navigation").useRouter();
 
   const [open, setOpen] = useState(false);
   const [view, setView] = useState<View>("menu");
@@ -86,7 +86,6 @@ export function AccountMenu() {
   const buttonRef = useRef<HTMLButtonElement | null>(null);
   const popRef = useRef<HTMLDivElement | null>(null);
 
-  // Cargar email y plan desde Supabase
   useEffect(() => {
     let mounted = true;
     (async () => {
@@ -120,7 +119,6 @@ export function AccountMenu() {
     };
   }, []);
 
-  // Cerrar al hacer click fuera o con Esc
   useEffect(() => {
     function onDocClick(e: MouseEvent) {
       const target = e.target as Node;
@@ -175,14 +173,7 @@ export function AccountMenu() {
           className="rounded-full p-1 hover:bg-gray-100"
           aria-label="Cerrar"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            className="h-5 w-5 text-gray-500"
-          >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-5 w-5 text-gray-500">
             <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
@@ -194,7 +185,6 @@ export function AccountMenu() {
     return (
       <>
         <Header title="Mi Cuenta" />
-        {/* Gmail */}
         <div className="mb-4 rounded-xl bg-gray-50 p-3 text-sm text-gray-700">
           <div className="font-medium text-gray-900">Gmail</div>
           <div className="mt-1">
@@ -210,7 +200,6 @@ export function AccountMenu() {
           </div>
         </div>
 
-        {/* Acciones */}
         <div className="space-y-2">
           <button
             onClick={() => setView("subscription")}
@@ -355,7 +344,6 @@ export function AccountMenu() {
 
   return (
     <div className="relative inline-block text-left">
-      {/* Botón avatar */}
       <button
         ref={buttonRef}
         aria-label="Perfil"
@@ -373,7 +361,6 @@ export function AccountMenu() {
         </svg>
       </button>
 
-      {/* Pop-up */}
       {open && (
         <div
           ref={popRef}
@@ -391,37 +378,41 @@ export function AccountMenu() {
   );
 }
 
-
 export default function PanelHeader() {
+  const params = useParams<{ locale: string }>();
+  const locale = params?.locale ?? "es";
+  const pathname = usePathname();
+  const search = useSearchParams();
+  const jobId = search.get("job_id");
+
+  const analysisHref = `/${locale}/panel${jobId ? `?job_id=${jobId}` : ""}`;
+  const requestHref = `/${locale}/panel/solicitar-resenas${jobId ? `?job_id=${jobId}` : ""}`;
+
+  const isAnalysis = pathname === `/${locale}/panel`;
+  const isRequest = pathname.startsWith(`/${locale}/panel/solicitar-resenas`);
+
+  const linkCls = (active: boolean) =>
+    `px-2 py-2 text-[15px] font-medium ${
+      active ? "text-slate-900" : "text-slate-700"
+    }`;
+
   return (
     <header className="sticky top-0 z-30 border-b bg-white/80 backdrop-blur">
       <div className="relative mx-auto flex w-full items-center px-4 py-3">
-        {/* Izquierda: logo */}
-        <PanelLogo />
+        <PanelLogo href={analysisHref} />
 
-        {/* Centro: navegación */}
         <nav
           className="pointer-events-auto absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 items-center gap-6 md:flex"
           aria-label="Secciones del panel"
         >
-          <a href="#temas" className="px-2 py-2 text-[15px] font-medium text-slate-700">
-            Temas
-          </a>
-          <a href="#sentimiento" className="px-2 py-2 text-[15px] font-medium text-slate-700">
-            Sentimiento
-          </a>
-          <a href="#oportunidades" className="px-2 py-2 text-[15px] font-medium text-slate-700">
-            Oportunidades
-          </a>
-          <a href="#volumen" className="px-2 py-2 text-[15px] font-medium text-slate-700">
-            Volumen
-          </a>
-          <a href="#respuestas" className="px-2 py-2 text-[15px] font-medium text-slate-700">
-            Respuestas IA
-          </a>
+          <Link href={analysisHref} className={linkCls(isAnalysis)}>
+            Análisis de reseñas
+          </Link>
+          <Link href={requestHref} className={linkCls(isRequest)}>
+            Solicitar reseñas
+          </Link>
         </nav>
 
-        {/* Derecha: cuenta */}
         <div className="ml-auto">
           <AccountMenu />
         </div>
