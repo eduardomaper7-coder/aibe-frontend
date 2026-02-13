@@ -1,14 +1,19 @@
+"use client";
+
 // app/[locale]/panel/solicitar-resenas/page.tsx
+import { useEffect, useState } from "react";
 import BusinessSettingsCard from "./components/BusinessSettingsCard";
 import CreateReviewRequestForm from "./components/CreateReviewRequestForm";
 import ReviewRequestsTable from "./components/ReviewRequestsTable";
 
-export default function SolicitarResenasPage({
-  searchParams,
-}: {
-  searchParams: { job_id?: string };
-}) {
-  const jobId = Number(searchParams?.job_id ?? 0);
+export default function SolicitarResenasPage() {
+  const [jobId, setJobId] = useState<number>(0);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const v = Number(params.get("job_id") ?? 0);
+    setJobId(Number.isFinite(v) ? v : 0);
+  }, []);
 
   return (
     <div className="mx-auto w-full max-w-6xl px-4 py-6">
@@ -21,7 +26,8 @@ export default function SolicitarResenasPage({
 
       {!jobId ? (
         <div className="rounded-2xl border bg-white p-5 text-slate-700">
-          Falta <span className="font-mono">job_id</span> en la URL. Ej: <span className="font-mono">?job_id=3</span>
+          Falta <span className="font-mono">job_id</span> en la URL. Ej:{" "}
+          <span className="font-mono">?job_id=3</span>
         </div>
       ) : (
         <div className="grid gap-6">
