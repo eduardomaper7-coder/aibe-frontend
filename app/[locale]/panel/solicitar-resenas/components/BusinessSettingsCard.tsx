@@ -1,17 +1,15 @@
 "use client";
 
-// app/[locale]/panel/solicitar-resenas/components/BusinessSettingsCard.tsx
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { BusinessSettings, getBusinessSettings, upsertBusinessSettings } from "../api";
 
-export default function BusinessSettingsCard({ jobId }: { jobId: number }) {
+export default function BusinessSettingsCard({ jobId, defaultBusinessName }: { jobId: number; defaultBusinessName: string | null }) {
   const [data, setData] = useState<BusinessSettings | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState<string | null>(null);
 
   const [businessName, setBusinessName] = useState("");
-  const [googleReviewUrl, setGoogleReviewUrl] = useState("");
 
   useEffect(() => {
     let mounted = true;
@@ -21,9 +19,11 @@ export default function BusinessSettingsCard({ jobId }: { jobId: number }) {
         setErr(null);
         const res = await getBusinessSettings(jobId);
         if (!mounted) return;
+
         setData(res);
-        setBusinessName(res.business_name ?? "");
-        setGoogleReviewUrl(res.google_review_url ?? "");
+
+        // nombre: primero settings, si no, el place_name de tu DB
+        setBusinessName(res.business_name ?? defaultBusinessName ?? "");
       } catch (e: any) {
         if (!mounted) return;
         setErr(e?.message || "Error cargando configuración");
@@ -34,15 +34,7 @@ export default function BusinessSettingsCard({ jobId }: { jobId: number }) {
     return () => {
       mounted = false;
     };
-  }, [jobId]);
-
-  const canSave = useMemo(() => {
-    if (!data) return true;
-    return (
-      (businessName ?? "") !== (data.business_name ?? "") ||
-      (googleReviewUrl ?? "") !== (data.google_review_url ?? "")
-    );
-  }, [data, businessName, googleReviewUrl]);
+  }, [jobId, defaultBusinessName]);
 
   async function onSave() {
     try {
@@ -51,7 +43,7 @@ export default function BusinessSettingsCard({ jobId }: { jobId: number }) {
       const res = await upsertBusinessSettings({
         job_id: jobId,
         business_name: businessName || null,
-        google_review_url: googleReviewUrl || null,
+        // google_review_url NO lo toca el usuario
       });
       setData(res);
     } catch (e: any) {
@@ -65,13 +57,11 @@ export default function BusinessSettingsCard({ jobId }: { jobId: number }) {
     <div className="rounded-2xl border bg-white p-5">
       <div className="flex items-center justify-between gap-3">
         <div>
-          <h2 className="text-lg font-semibold text-slate-900">Configuración del negocio</h2>
-          <p className="mt-1 text-sm text-slate-600">
-            Guarda el nombre y el enlace “bonito” para reseñas.
-          </p>
+          <h2 className="text-lg font-semibold text-slate-900">Configuración</h2>
+          <p className="mt-1 text-sm text-slate-600">Nombre usado en WhatsApp + enlace de reseña generado por nosotros.</p>
         </div>
         <button
-          disabled={loading || saving || !canSave}
+          disabled={loading || saving}
           onClick={onSave}
           className="rounded-xl bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-60"
         >
@@ -88,22 +78,20 @@ export default function BusinessSettingsCard({ jobId }: { jobId: number }) {
             value={businessName}
             onChange={(e) => setBusinessName(e.target.value)}
             placeholder="Ej: Restaurante Euro Pekín"
-            className="w-full rounded-xl border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full rounded-xl border bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-blue-500"
           />
+          <div className="mt-1 text-xs text-slate-500">Lo usaremos en los mensajes de WhatsApp.</div>
         </label>
 
-        <label className="block">
-          <div className="mb-1 text-sm font-medium text-slate-700">Link reseña Google (bonito)</div>
-          <input
-            value={googleReviewUrl}
-            onChange={(e) => setGoogleReviewUrl(e.target.value)}
-            placeholder="Ej: https://g.page/r/XXXX/review"
-            className="w-full rounded-xl border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <div className="mt-1 text-xs text-slate-500">
-            Recomendado: enlace tipo <span className="font-mono">g.page/.../review</span>
+        <div>
+          <div className="mb-1 text-sm font-medium text-slate-700">Link de reseña (lo damos nosotros)</div>
+          <div className="rounded-xl border bg-slate-50 px-3 py-2 text-sm text-slate-900 break-all">
+            {data?.google_review_url ? data.google_review_url : <span className="text-slate-500">Aún no disponible</span>}
           </div>
-        </label>
+          <div className="mt-1 text-xs text-slate-500">
+            Formato: <span className="font-mono">https://search.google.com/local/writereview?placeid=...</span>
+          </div>
+        </div>
       </div>
 
       {loading && <div className="mt-3 text-sm text-slate-500">Cargando...</div>}
