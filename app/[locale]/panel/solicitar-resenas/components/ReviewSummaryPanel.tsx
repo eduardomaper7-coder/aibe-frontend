@@ -10,6 +10,8 @@ type Stats = {
 };
 
 export default function ReviewSummaryPanel({ jobId }: { jobId: number }) {
+  const API_BASE = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/+$/, "");
+
   const [stats, setStats] = useState<Stats>({ messages_sent: 0, reviews_gained: 0, conversion_rate: 0 });
   const [name, setName] = useState("");
   const [editing, setEditing] = useState(false);
@@ -17,26 +19,32 @@ export default function ReviewSummaryPanel({ jobId }: { jobId: number }) {
 
   // ✅ stats
   useEffect(() => {
-    fetch(`/api/review-requests/stats?job_id=${jobId}`, { cache: "no-store" })
-      .then((r) => r.ok ? r.json() : Promise.reject(r))
+    if (!API_BASE) return;
+
+    fetch(`${API_BASE}/api/review-requests/stats?job_id=${jobId}`, { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : Promise.reject(r)))
       .then((d) => setStats(d))
       .catch(() => {});
-  }, [jobId]);
+  }, [jobId, API_BASE]);
 
   // ✅ nombre negocio
   useEffect(() => {
-    fetch(`/api/business-settings?job_id=${jobId}`, { cache: "no-store" })
-      .then((r) => r.ok ? r.json() : Promise.reject(r))
+    if (!API_BASE) return;
+
+    fetch(`${API_BASE}/api/business-settings?job_id=${jobId}`, { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : Promise.reject(r)))
       .then((d) => {
         if (d?.business_name) setName(String(d.business_name));
       })
       .catch(() => {});
-  }, [jobId]);
+  }, [jobId, API_BASE]);
 
   async function saveName() {
     try {
+      if (!API_BASE) return;
+
       setSaving(true);
-      await fetch("/api/business-settings", {
+      await fetch(`${API_BASE}/api/business-settings`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
