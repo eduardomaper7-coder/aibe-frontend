@@ -3,7 +3,7 @@ import type { Metadata, Viewport } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
 
-import TopbarGate from "../TopbarGate";
+import ClientTopbarWrapper from "../ClientTopbarWrapper";
 import Providers from "../providers";
 import PwaRegister from "../PwaRegister";
 import { Analytics } from "@vercel/analytics/react";
@@ -53,10 +53,10 @@ export default async function LocaleLayout({
   const messages = await getMessages();
 
   return (
-    <div className="bg-white text-black relative min-h-screen">
+    <div className="relative">
       <NextIntlClientProvider locale={locale} messages={messages}>
         <PwaRegister />
-        <TopbarGate />
+        <ClientTopbarWrapper />
         <div className="topbar-spacer" />
         <Providers>{children}</Providers>
         <Analytics />

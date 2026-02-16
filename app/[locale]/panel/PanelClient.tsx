@@ -24,7 +24,6 @@ import RespuestasSection from "./analisis/respuestas/respuestas";
 
 
 import Footer from "../Footer";
-import AnalisisSubnav from "./AnalisisSubnav";
 
 
 
@@ -458,7 +457,7 @@ function PanelUI() {
 
 
         {/* SECCIONES */}
-        <section id="temas" className="mt-8 px-4 sm:px-6 lg:px-8 scroll-mt-40">
+        <section id="temas" className="mt-8 px-4 sm:px-6 lg:px-8 scroll-mt-24">
 
           <TemasSection jobId={jobId} fromDate={fromDate} toDate={toDate} />
         </section>
@@ -466,7 +465,7 @@ function PanelUI() {
 
 
 
-        <section id="sentimiento" className="mt-10 px-4 sm:px-6 lg:px-8 scroll-mt-40">
+        <section id="sentimiento" className="mt-10 px-4 sm:px-6 lg:px-8 scroll-mt-24">
 
           <SentimientoSection
             jobId={jobId}
@@ -479,7 +478,7 @@ function PanelUI() {
 
 
 
-        <section id="volumen" className="mt-8 px-4 sm:px-6 lg:px-8 scroll-mt-40">
+        <section id="volumen" className="mt-8 px-4 sm:px-6 lg:px-8 scroll-mt-24">
 
           <VolumenSection
             jobId={jobId}
@@ -494,7 +493,7 @@ function PanelUI() {
 
         <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen bg-slate-100">
           <div className="mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
-            <section id="oportunidades" className="scroll-mt-40">
+            <section id="oportunidades" className="scroll-mt-24">
 
               <OportunidadesSection
                 jobId={jobId}
@@ -510,7 +509,7 @@ function PanelUI() {
 
         <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen bg-blue-100">
           <div className="mx-auto px-4 sm:px-6 lg:px-8 pt-4 md:pt-6 pb-10">
-            <section id="respuestas" className="scroll-mt-40">
+            <section id="respuestas" className="scroll-mt-24">
 
               <RespuestasSection jobId={Number(jobId)} />
             </section>
@@ -531,11 +530,9 @@ function PanelUI() {
 
 export default function PanelClient() {
   return (
-    <>
-      <AnalisisSubnav />
-      <Suspense fallback={<div>Cargando panel…</div>}>
-        <PanelUI />
-      </Suspense>
-    </>
+    <Suspense fallback={<div>Cargando panel…</div>}>
+      <PanelUI />
+    </Suspense>
   );
 }
+

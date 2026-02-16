@@ -395,28 +395,54 @@ export default function PanelHeader() {
     `px-2 py-2 text-[15px] font-medium ${
       active ? "text-slate-900" : "text-slate-700"
     }`;
+  const subItems = [
+    { id: "temas", label: "Temas" },
+    { id: "sentimiento", label: "Sentimiento" },
+    { id: "oportunidades", label: "Oportunidades" },
+    { id: "volumen", label: "Volumen" },
+    { id: "respuestas", label: "Respuestas" },
+  ];
 
   return (
-    <header className="sticky top-0 z-30 border-b bg-white/80 backdrop-blur">
-      <div className="relative mx-auto flex w-full items-center px-4 py-3">
-        <PanelLogo href={analysisHref} />
+  <header className="sticky top-0 z-30 border-b bg-white/80 backdrop-blur">
+    {/* FILA 1: logo + menú principal + cuenta */}
+    <div className="relative mx-auto flex w-full items-center px-4 py-2">
+      <PanelLogo href={analysisHref} />
 
-        <nav
-          className="pointer-events-auto absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 items-center gap-6 md:flex"
-          aria-label="Secciones del panel"
-        >
-          <Link href={analysisHref} className={linkCls(isAnalysis)}>
-            Análisis de reseñas
-          </Link>
-          <Link href={requestHref} className={linkCls(isRequest)}>
-            Solicitar reseñas
-          </Link>
-        </nav>
+      <nav
+        className="pointer-events-auto absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 items-center gap-6 md:flex"
+        aria-label="Secciones del panel"
+      >
+        <Link href={analysisHref} className={linkCls(isAnalysis)}>
+          Análisis de reseñas
+        </Link>
+        <Link href={requestHref} className={linkCls(isRequest)}>
+          Solicitar reseñas
+        </Link>
+      </nav>
 
-        <div className="ml-auto">
-          <AccountMenu />
-        </div>
+      <div className="ml-auto">
+        <AccountMenu />
       </div>
-    </header>
-  );
+    </div>
+
+    {/* FILA 2: submenú SOLO en análisis y SOLO desktop */}
+    {isAnalysis && (
+      <div className="hidden md:flex justify-center border-t bg-white/70">
+        <nav className="flex items-center gap-10 px-4 py-2" aria-label="Secciones del análisis">
+          {subItems.map((it) => (
+            <Link
+              key={it.id}
+              href={`${analysisHref}#${it.id}`}
+              className="text-sm font-medium text-slate-700 hover:text-slate-900"
+            >
+              {it.label}
+            </Link>
+          ))}
+        </nav>
+      </div>
+    )}
+  </header>
+);
+
 }

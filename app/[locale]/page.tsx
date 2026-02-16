@@ -206,7 +206,8 @@ useEffect(() => {
 
   return (
     <>
-     <section className="hero relative" aria-label="Sección inicial con video de fondo">
+     <section className="hero relative text-white" aria-label="Sección inicial con video de fondo">
+
 
 
 
