@@ -1,10 +1,14 @@
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default function SuscripcionCancelada() {
   return (
     <div className="mx-auto max-w-2xl rounded-2xl border bg-white p-8 text-center shadow-sm">
       <h1 className="text-2xl font-semibold">Suscripción cancelada con éxito</h1>
 
       <p className="mt-3 text-gray-700">
-        Gracias por confiar en <span className="font-medium">AIBE Technologies</span>.
+        Gracias por confiar en{" "}
+        <span className="font-medium">AIBE Technologies</span>.
         Esperamos que vuelva pronto.
       </p>
 
