@@ -3,9 +3,15 @@
 
 
 
-import { useEffect, useMemo, useState, useRef, Suspense } from "react";
+
+
+
+
+import { useEffect, useMemo, useState, Suspense } from "react";
 import { useSearchParams, useRouter, useParams } from "next/navigation";
 import { useSession, signIn } from "next-auth/react";
+
+
 
 
 import TemasSection from "./analisis/temas/TemasSection";
@@ -15,13 +21,19 @@ import VolumenSection from "./analisis/volumen/volumen";
 import RespuestasSection from "./analisis/respuestas/respuestas";
 
 
+
+
 import Footer from "../Footer";
 import AnalisisSubnav from "./AnalisisSubnav";
+
+
 
 
 import { Calendar, ChevronDown, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+
+
 
 
 /** -------- PANEL PRINCIPAL -------- */
@@ -31,17 +43,25 @@ function PanelUI() {
   const locale = String((params as any)?.locale ?? "es");
 
 
+
+
   const { status } = useSession();
   const searchParams = useSearchParams();
   const jobId = searchParams.get("job_id");
+
+
 
 
   const API_BASE = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/+$/, "");
   const [placeName, setPlaceName] = useState<string | null>(null);
 
 
+
+
   // ---------------- Periodos (hooks SIEMPRE arriba) ----------------
   type PeriodKey = "7d" | "30d" | "3m" | "6m" | "1y" | "all";
+
+
 
 
   const [period, setPeriod] = useState<PeriodKey>("all");
@@ -49,11 +69,17 @@ function PanelUI() {
   const [customTo, setCustomTo] = useState<string>("");
 
 
+
+
   const [showPeriodMenu, setShowPeriodMenu] = useState(false);
   const [showCustomMenu, setShowCustomMenu] = useState(false);
 
 
+
+
   const todayLocal = () => new Date().toLocaleDateString("en-CA");
+
+
 
 
   const { startLabel, endLabel, fromDate, toDate } = useMemo(() => {
@@ -67,8 +93,12 @@ function PanelUI() {
     }
 
 
+
+
     const endDate = new Date();
     const startDate = new Date(endDate);
+
+
 
 
     switch (period) {
@@ -97,7 +127,11 @@ function PanelUI() {
     }
 
 
+
+
     const fmt = (d: Date) => d.toLocaleDateString("en-CA");
+
+
 
 
     return {
@@ -109,12 +143,16 @@ function PanelUI() {
   }, [period, customFrom, customTo]);
 
 
+
+
   const bucket: "day" | "week" | "month" = useMemo(() => {
     if (customFrom && customTo) return "day";
     if (period === "7d") return "day";
     if (period === "30d" || period === "3m") return "week";
     return "month";
   }, [period, customFrom, customTo]);
+
+
 
 
   const selectPeriod = (p: PeriodKey) => {
@@ -125,7 +163,11 @@ function PanelUI() {
   };
 
 
+
+
   const applyCustom = () => setShowCustomMenu(false);
+
+
 
 
   const clearCustom = () => {
@@ -133,6 +175,8 @@ function PanelUI() {
     setCustomTo("");
     setShowCustomMenu(false);
   };
+
+
 
 
   // ✅ Guard: si no hay sesión → login con Google (hook siempre arriba)
@@ -146,11 +190,15 @@ function PanelUI() {
   }, [status, locale, jobId]);
 
 
+
+
   // ✅ Cargar meta del job (hook siempre arriba)
   useEffect(() => {
     if (status !== "authenticated") return;
     if (!jobId) return;
     if (!API_BASE) return;
+
+
 
 
     fetch(`${API_BASE}/jobs/${jobId}/meta`)
@@ -162,15 +210,21 @@ function PanelUI() {
   }, [status, jobId, API_BASE]);
 
 
+
+
   // ---------------- returns DESPUÉS de todos los hooks ----------------
   if (status === "loading") {
     return <div className="p-6 text-slate-700">Cargando…</div>;
   }
 
 
+
+
   if (status !== "authenticated") {
     return <div className="p-6 text-slate-700">Redirigiendo a login…</div>;
   }
+
+
 
 
   if (!jobId) {
@@ -182,6 +236,10 @@ function PanelUI() {
       </div>
     );
   }
+
+
+
+
 
 
 
@@ -209,6 +267,8 @@ function PanelUI() {
               </div>
 
 
+
+
               {/* CONTROLES DE PERIODO */}
               <div className="relative flex flex-wrap items-center gap-2 bg-white rounded-xl p-3 shadow-sm border border-slate-200">
                 <div className="flex items-center gap-2 text-slate-600">
@@ -217,6 +277,8 @@ function PanelUI() {
                     {startLabel} → {endLabel}
                   </span>
                 </div>
+
+
 
 
                 {/* BOTÓN PERIODO */}
@@ -237,6 +299,8 @@ function PanelUI() {
                     {period === "all" && "Periodo: histórico"}
                     <ChevronDown className="ml-2 h-4 w-4" />
                   </Button>
+
+
 
 
                   {showPeriodMenu && (
@@ -298,6 +362,8 @@ function PanelUI() {
                 </div>
 
 
+
+
                 {/* BOTÓN PERSONALIZADO */}
                 <div className="relative">
                   <Button
@@ -313,6 +379,8 @@ function PanelUI() {
                       : "Personalizado"}
                     <ChevronDown className="ml-2 h-4 w-4" />
                   </Button>
+
+
 
 
                   {showCustomMenu && (
@@ -331,6 +399,8 @@ function PanelUI() {
                           />
 
 
+
+
                           <label className="block text-xs font-medium text-slate-600">
                             Hasta
                           </label>
@@ -342,6 +412,8 @@ function PanelUI() {
                             max={todayLocal()}
                             onChange={(e) => setCustomTo(e.target.value)}
                           />
+
+
 
 
                           <div className="flex items-center justify-between">
@@ -359,6 +431,8 @@ function PanelUI() {
                             >
                               Aplicar
                             </Button>
+
+
 
 
                             <Button
@@ -381,13 +455,19 @@ function PanelUI() {
         </div>
 
 
+
+
         {/* SECCIONES */}
-        <section id="temas" className="mt-8 px-4 sm:px-6 lg:px-8">
+        <section id="temas" className="mt-8 px-4 sm:px-6 lg:px-8 scroll-mt-40">
+
           <TemasSection jobId={jobId} fromDate={fromDate} toDate={toDate} />
         </section>
 
 
-        <section id="sentimiento" className="mt-10 px-4 sm:px-6 lg:px-8">
+
+
+        <section id="sentimiento" className="mt-10 px-4 sm:px-6 lg:px-8 scroll-mt-40">
+
           <SentimientoSection
             jobId={jobId}
             fromDate={fromDate}
@@ -397,7 +477,10 @@ function PanelUI() {
         </section>
 
 
-        <section id="volumen" className="mt-8 px-4 sm:px-6 lg:px-8">
+
+
+        <section id="volumen" className="mt-8 px-4 sm:px-6 lg:px-8 scroll-mt-40">
+
           <VolumenSection
             jobId={jobId}
             fromDate={fromDate}
@@ -407,9 +490,12 @@ function PanelUI() {
         </section>
 
 
+
+
         <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen bg-slate-100">
           <div className="mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
-            <section id="oportunidades">
+            <section id="oportunidades" className="scroll-mt-40">
+
               <OportunidadesSection
                 jobId={jobId}
                 fromDate={fromDate}
@@ -420,14 +506,19 @@ function PanelUI() {
         </div>
 
 
+
+
         <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen bg-blue-100">
           <div className="mx-auto px-4 sm:px-6 lg:px-8 pt-4 md:pt-6 pb-10">
-            <section id="respuestas">
+            <section id="respuestas" className="scroll-mt-40">
+
               <RespuestasSection jobId={Number(jobId)} />
             </section>
           </div>
         </div>
       </div>
+
+
 
 
       <Footer />
@@ -436,12 +527,15 @@ function PanelUI() {
 }
 
 
+
+
 export default function PanelClient() {
   return (
-    <Suspense fallback={<div>Cargando panel…</div>}>
-      <PanelUI />
-    </Suspense>
+    <>
+      <AnalisisSubnav />
+      <Suspense fallback={<div>Cargando panel…</div>}>
+        <PanelUI />
+      </Suspense>
+    </>
   );
 }
-
-
