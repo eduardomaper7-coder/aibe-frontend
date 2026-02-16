@@ -22,22 +22,28 @@ export default function AnalisisSubnav() {
   const base = `/${locale}/panel${jobId ? `?job_id=${jobId}` : ""}`;
 
   return (
-    <div className="sticky top-[64px] z-20 border-b bg-white/90 backdrop-blur">
-      <div className="mx-auto w-full px-4 py-2">
-        <nav className="flex flex-wrap gap-2" aria-label="Secciones del análisis">
+  <div className="sticky top-[64px] z-20 border-b bg-white/90 backdrop-blur">
+    <div className="mx-auto w-full px-4 py-2">
+      <nav
+        className="flex justify-center"
+        aria-label="Secciones del análisis"
+      >
+        <div className="inline-flex flex-wrap items-center gap-1 rounded-full border bg-slate-50 p-1">
           {ITEMS.map((it) => (
             <Link
               key={it.id}
               href={`${base}#${it.id}`}
-              className="rounded-full border bg-white px-3 py-1.5 text-sm text-slate-800 hover:bg-slate-50"
+              className="rounded-full px-4 py-2 text-sm font-medium text-slate-700 hover:bg-white hover:text-slate-900 transition"
             >
               {it.label}
             </Link>
           ))}
-        </nav>
-      </div>
+        </div>
+      </nav>
     </div>
-  );
+  </div>
+);
+
 }
 
 // (Opcional pero recomendado para evitar “is not a module” raros)
