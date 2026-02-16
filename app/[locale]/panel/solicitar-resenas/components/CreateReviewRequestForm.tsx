@@ -14,6 +14,22 @@ export default function CreateReviewRequestForm({ jobId }: { jobId: number }) {
   const [msg, setMsg] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
 
+function normalizePhone(input: string) {
+  let v = (input || "").trim().replace(/\s+/g, "");
+
+  // Si el usuario escribe 699301819 (España) => +34699301819
+  if (/^[6789]\d{8}$/.test(v)) return `+34${v}`;
+
+  // Si escribe 34699301819 (sin +) => +34699301819
+  if (/^34\d{9}$/.test(v)) return `+${v}`;
+
+  return v;
+}
+
+function isValidE164(v: string) {
+  return /^\+\d{9,15}$/.test(v);
+}
+
   function toISO(dateStr: string, timeStr: string) {
     // interpreta como local y lo convierte a ISO UTC
     const d = new Date(`${dateStr}T${timeStr}:00`);
@@ -26,7 +42,12 @@ export default function CreateReviewRequestForm({ jobId }: { jobId: number }) {
     setErr(null);
 
     if (!name.trim()) return setErr("Falta el nombre.");
-    if (!phone.trim()) return setErr("Falta el teléfono en formato +34...");
+    const phoneNorm = normalizePhone(phone);
+
+if (!phoneNorm) return setErr("Falta el teléfono.");
+if (!phoneNorm.startsWith("+")) return setErr("El teléfono debe empezar por +34.");
+if (!isValidE164(phoneNorm)) return setErr("Formato inválido. Ej: +34699111222");
+
     if (!date || !time) return setErr("Falta fecha y hora de la cita.");
 
     try {
@@ -34,7 +55,7 @@ export default function CreateReviewRequestForm({ jobId }: { jobId: number }) {
       await createReviewRequest({
         job_id: jobId,
         customer_name: name.trim(),
-        phone_e164: phone.trim(),
+        phone_e164: phoneNorm,
         appointment_at: toISO(date, time),
       });
       setMsg("Cita añadida. El mensaje se enviará 60 min después.");
@@ -72,7 +93,7 @@ export default function CreateReviewRequestForm({ jobId }: { jobId: number }) {
           <div className="mb-1 text-sm font-medium text-slate-700">Teléfono (E.164)</div>
           <input
             value={phone}
-            onChange={(e) => setPhone(e.target.value)}
+            onChange={(e) => setPhone(normalizePhone(e.target.value))}
             placeholder="Ej: +34699111222"
             className="w-full rounded-xl border bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-blue-500"
           />
