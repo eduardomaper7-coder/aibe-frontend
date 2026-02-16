@@ -53,7 +53,7 @@ export default async function LocaleLayout({
   const messages = await getMessages();
 
   return (
-    <div className="bg-black text-white relative">
+    <div className="bg-white text-black relative min-h-screen">
       <NextIntlClientProvider locale={locale} messages={messages}>
         <PwaRegister />
         <TopbarGate />
