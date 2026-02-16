@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import CreateReviewRequestForm from "./components/CreateReviewRequestForm";
 import ReviewRequestsTable from "./components/ReviewRequestsTable";
@@ -9,6 +10,22 @@ export default function SolicitarResenasClient() {
   const searchParams = useSearchParams();
   const jobIdParam = searchParams.get("job_id");
   const jobId = jobIdParam ? Number(jobIdParam) : 0;
+
+  const API_BASE = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/+$/, "");
+  const [placeName, setPlaceName] = useState<string | null>(null);
+
+  // ✅ Cargar nombre del negocio (de la cuenta/job) como fallback por defecto
+  useEffect(() => {
+    if (!jobId) return;
+    if (!API_BASE) return;
+
+    fetch(`${API_BASE}/jobs/${jobId}/meta`, { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : Promise.reject(r)))
+      .then((d) => {
+        if (d?.place_name) setPlaceName(String(d.place_name));
+      })
+      .catch(() => {});
+  }, [jobId, API_BASE]);
 
   return (
     <div className="mx-auto w-full max-w-6xl px-4 py-6">
@@ -27,7 +44,9 @@ export default function SolicitarResenasClient() {
         <div className="grid gap-6">
           <div className="grid gap-6 lg:grid-cols-2">
             <CreateReviewRequestForm jobId={jobId} />
-            <ReviewSummaryPanel jobId={jobId} />
+
+            {/* ✅ aquí va el fallback */}
+            <ReviewSummaryPanel jobId={jobId} defaultBusinessName={placeName} />
           </div>
 
           <ReviewRequestsTable jobId={jobId} />

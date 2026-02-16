@@ -1,4 +1,5 @@
 // app/[locale]/panel/solicitar-resenas/api.ts
+
 export type ReviewRequestStatus = "scheduled" | "sent" | "cancelled" | "failed";
 
 export type ReviewRequest = {
@@ -35,11 +36,20 @@ function apiBase() {
   return (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/+$/, "");
 }
 
-// ✅ IMPORTANTE: tu router en backend tiene prefix="/api"
+/**
+ * Construye la URL final del backend.
+ * Tu backend tiene prefix="/api", PERO a veces NEXT_PUBLIC_API_URL ya puede incluir "/api".
+ * Esta función evita accidentalmente terminar con "/api/api".
+ */
 function url(path: string) {
   const base = apiBase();
   if (!base) throw new Error("NEXT_PUBLIC_API_URL no está configurado");
-  return `${base}/api${path}`;
+
+  // Si el usuario ya puso .../api en el env, no lo duplicamos.
+  const hasApiSuffix = base.endsWith("/api");
+  const prefix = hasApiSuffix ? "" : "/api";
+
+  return `${base}${prefix}${path}`;
 }
 
 async function safeJson(res: Response) {
@@ -56,7 +66,6 @@ async function http<T>(input: RequestInfo, init?: RequestInit): Promise<T> {
 
   if (!res.ok) {
     const j: any = await safeJson(res);
-
     throw new Error(
       typeof j?.detail === "string"
         ? j.detail
@@ -67,9 +76,10 @@ async function http<T>(input: RequestInfo, init?: RequestInit): Promise<T> {
   return (await res.json()) as T;
 }
 
-
 export function listReviewRequests(jobId: number, limit = 200) {
-  return http<ReviewRequestListOut>(url(`/review-requests?job_id=${jobId}&limit=${limit}`));
+  return http<ReviewRequestListOut>(
+    url(`/review-requests?job_id=${jobId}&limit=${limit}`)
+  );
 }
 
 export function createReviewRequest(payload: {
@@ -85,18 +95,24 @@ export function createReviewRequest(payload: {
   });
 }
 
-
-
 export function cancelReviewRequest(requestId: number) {
-  return http<{ ok: boolean; status: ReviewRequestStatus }>(url(`/review-requests/${requestId}/cancel`), {
-    method: "PATCH",
-  });
+  return http<{ ok: boolean; status: ReviewRequestStatus }>(
+    url(`/review-requests/${requestId}/cancel`),
+    { method: "PATCH" }
+  );
 }
 
+/**
+ * ✅ Aquí es de donde vamos a sacar el nombre del negocio por defecto:
+ * business_name viene del backend en este endpoint.
+ */
 export function getBusinessSettings(jobId: number) {
   return http<BusinessSettingsOut>(url(`/business-settings?job_id=${jobId}`));
 }
 
+/**
+ * ✅ Aquí es donde guardamos cambios del nombre del negocio (y/o URL de reseñas).
+ */
 export function patchBusinessSettings(payload: {
   job_id: number;
   business_name?: string | null;
@@ -106,6 +122,17 @@ export function patchBusinessSettings(payload: {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
+  });
+}
+
+/**
+ * Helper opcional: actualizar solo el nombre (por comodidad).
+ * No es obligatorio usarlo.
+ */
+export function updateBusinessName(jobId: number, businessName: string | null) {
+  return patchBusinessSettings({
+    job_id: jobId,
+    business_name: businessName,
   });
 }
 

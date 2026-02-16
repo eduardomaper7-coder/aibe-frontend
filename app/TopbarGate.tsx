@@ -1,15 +1,16 @@
-// app/TopbarGate.tsx
 "use client";
 
-
-import { usePathname } from 'next/navigation';
-import GlobalTopbar from '@/app/[locale]/GlobalTopbar';
-
+import { usePathname } from "next/navigation";
+import GlobalTopbar from "@/app/[locale]/GlobalTopbar";
 
 export default function TopbarGate() {
   const pathname = usePathname();
-  const isMarketingHome = pathname === '/'; // ajusta si tu landing es otra ruta
-  if (!isMarketingHome) return null;
+
+  // Ocultar el topbar negro en cualquier ruta del panel
+  const isPanel = pathname.includes("/panel");
+  if (isPanel) return null;
+
+  // Mostrarlo en el resto (landing, login, legales, etc.)
   return <GlobalTopbar />;
 }
 

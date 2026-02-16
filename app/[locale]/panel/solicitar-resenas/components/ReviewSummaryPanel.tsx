@@ -9,10 +9,21 @@ type Stats = {
   conversion_rate: number; // 0..1
 };
 
-export default function ReviewSummaryPanel({ jobId }: { jobId: number }) {
+export default function ReviewSummaryPanel({
+  jobId,
+  defaultBusinessName,
+}: {
+  jobId: number;
+  defaultBusinessName?: string | null;
+}) {
   const API_BASE = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/+$/, "");
 
-  const [stats, setStats] = useState<Stats>({ messages_sent: 0, reviews_gained: 0, conversion_rate: 0 });
+  const [stats, setStats] = useState<Stats>({
+    messages_sent: 0,
+    reviews_gained: 0,
+    conversion_rate: 0,
+  });
+
   const [name, setName] = useState("");
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -27,31 +38,48 @@ export default function ReviewSummaryPanel({ jobId }: { jobId: number }) {
       .catch(() => {});
   }, [jobId, API_BASE]);
 
-  // ✅ nombre negocio
+  // ✅ nombre negocio (business_settings con fallback a placeName)
   useEffect(() => {
-    if (!API_BASE) return;
+    if (!API_BASE) {
+      // si no hay API base, al menos pinta el fallback
+      setName(String(defaultBusinessName ?? ""));
+      return;
+    }
 
     fetch(`${API_BASE}/api/business-settings?job_id=${jobId}`, { cache: "no-store" })
       .then((r) => (r.ok ? r.json() : Promise.reject(r)))
       .then((d) => {
-        if (d?.business_name) setName(String(d.business_name));
+        const businessName = d?.business_name;
+        const fallback = defaultBusinessName ?? "";
+        // si business_name es null/"" usa el fallback (placeName)
+        setName(String(businessName ?? fallback));
       })
-      .catch(() => {});
-  }, [jobId, API_BASE]);
+      .catch(() => {
+        // si falla, usa fallback
+        setName(String(defaultBusinessName ?? ""));
+      });
+  }, [jobId, API_BASE, defaultBusinessName]);
 
   async function saveName() {
     try {
       if (!API_BASE) return;
 
       setSaving(true);
-      await fetch(`${API_BASE}/api/business-settings`, {
+
+      const res = await fetch(`${API_BASE}/api/business-settings`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           job_id: jobId,
-          business_name: name,
+          business_name: name || null,
         }),
       });
+
+      if (!res.ok) {
+        const txt = await res.text();
+        throw new Error(txt || "No se pudo guardar el nombre del negocio");
+      }
+
       setEditing(false);
     } finally {
       setSaving(false);
@@ -123,7 +151,9 @@ export default function ReviewSummaryPanel({ jobId }: { jobId: number }) {
         </div>
 
         {!editing ? (
-          <div className="mt-2 text-slate-900">{name || <span className="text-slate-500">—</span>}</div>
+          <div className="mt-2 text-slate-900">
+            {name || <span className="text-slate-500">—</span>}
+          </div>
         ) : (
           <input
             value={name}

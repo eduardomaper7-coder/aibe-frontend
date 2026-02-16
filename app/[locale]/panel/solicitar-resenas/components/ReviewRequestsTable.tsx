@@ -66,12 +66,13 @@ export default function ReviewRequestsTable({ jobId }: { jobId: number }) {
           </p>
         </div>
         <button
-          onClick={load}
-          className="rounded-xl border px-3 py-2 text-sm hover:bg-slate-50"
-          disabled={loading}
-        >
-          {loading ? "Cargando..." : "Refrescar"}
-        </button>
+  onClick={load}
+  className="rounded-xl border bg-white px-3 py-2 text-sm text-slate-900 hover:bg-slate-50 disabled:opacity-60"
+  disabled={loading}
+>
+  {loading ? "Cargando..." : "Refrescar"}
+</button>
+
       </div>
 
       {err && <div className="mt-3 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">{err}</div>}

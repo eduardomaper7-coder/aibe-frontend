@@ -16,7 +16,7 @@ import RespuestasSection from "./analisis/respuestas/respuestas";
 
 
 import Footer from "../Footer";
-import PanelHeader from "./PanelHeader";
+import AnalisisSubnav from "./AnalisisSubnav";
 
 
 import { Calendar, ChevronDown, X } from "lucide-react";
@@ -438,12 +438,9 @@ function PanelUI() {
 
 export default function PanelClient() {
   return (
-    <>
-      <PanelHeader />
-      <Suspense fallback={<div>Cargando panel…</div>}>
-        <PanelUI />
-      </Suspense>
-    </>
+    <Suspense fallback={<div>Cargando panel…</div>}>
+      <PanelUI />
+    </Suspense>
   );
 }
 
