@@ -53,12 +53,20 @@ async function safeJson(res: Response) {
 
 async function http<T>(input: RequestInfo, init?: RequestInit): Promise<T> {
   const res = await fetch(input, { ...init, cache: "no-store" });
+
   if (!res.ok) {
     const j: any = await safeJson(res);
-    throw new Error(j?.detail || `Error HTTP ${res.status}`);
+
+    throw new Error(
+      typeof j?.detail === "string"
+        ? j.detail
+        : JSON.stringify(j?.detail ?? j)
+    );
   }
+
   return (await res.json()) as T;
 }
+
 
 export function listReviewRequests(jobId: number, limit = 200) {
   return http<ReviewRequestListOut>(url(`/review-requests?job_id=${jobId}&limit=${limit}`));
@@ -70,12 +78,15 @@ export function createReviewRequest(payload: {
   phone_e164: string;
   appointment_at: string; // ISO
 }) {
-  return http<ReviewRequest>(url(`/review-requests`), {
+  const { job_id, ...body } = payload;
+
+  return http<ReviewRequest>(url(`/review-requests?job_id=${job_id}`), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
+    body: JSON.stringify(body),
   });
 }
+
 
 export function cancelReviewRequest(requestId: number) {
   return http<{ ok: boolean; status: ReviewRequestStatus }>(url(`/review-requests/${requestId}/cancel`), {
