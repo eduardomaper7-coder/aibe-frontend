@@ -52,6 +52,7 @@ if (!isValidE164(phoneNorm)) return setErr("Formato inválido. Ej: +34699111222"
 
     try {
       setLoading(true);
+      console.log("SUBMIT jobId:", jobId);
       await createReviewRequest({
         job_id: jobId,
         customer_name: name.trim(),
