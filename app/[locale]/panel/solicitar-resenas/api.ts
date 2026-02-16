@@ -78,14 +78,13 @@ export function createReviewRequest(payload: {
   phone_e164: string;
   appointment_at: string; // ISO
 }) {
-  const { job_id, ...body } = payload;
-
-  return http<ReviewRequest>(url(`/review-requests?job_id=${job_id}`), {
+  return http<ReviewRequest>(url(`/review-requests`), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
+    body: JSON.stringify(payload), // ✅ incluye job_id en el body
   });
 }
+
 
 
 export function cancelReviewRequest(requestId: number) {
