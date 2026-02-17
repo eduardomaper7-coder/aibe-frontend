@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useParams, usePathname, useSearchParams } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { useSearchParams } from "next/navigation";
 
 type View = "menu" | "help" | "subscription";
 
