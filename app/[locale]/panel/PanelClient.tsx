@@ -26,7 +26,7 @@ function PanelUI() {
   const [isPro, setIsPro] = useState(false);
 
   const searchParams = useSearchParams();
-  const jobIdStr = searchParams.get("job_id");
+  const jobIdStr = searchParams.get("job_id") ?? "";
   const jobIdNum = jobIdStr ? Number(jobIdStr) : 0;
 
   const API_BASE = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/+$/, "");
