@@ -13,7 +13,24 @@ export default async function PlanPage({
   const checkoutHref = `/${locale}/checkout${jobId ? `?job_id=${encodeURIComponent(jobId)}` : ""}`;
 
   return (
-    <main className="mx-auto w-full max-w-3xl px-4 py-10">
+    <main className="relative min-h-screen overflow-hidden">
+  {/* VIDEO DE FONDO */}
+  <video
+    className="fixed inset-0 -z-10 h-full w-full object-cover"
+    src="/videos/videoreseñas.mp4"
+    autoPlay
+    muted
+    loop
+    playsInline
+    preload="metadata"
+  />
+
+  {/* FILTRO OSCURO */}
+  <div className="fixed inset-0 -z-10 bg-black/50" />
+
+  {/* CONTENIDO */}
+  <div className="relative mx-auto w-full max-w-3xl px-4 py-10">
+
       <div className="rounded-2xl border bg-white p-6 shadow-sm">
         <h1 className="text-2xl font-semibold text-slate-900">
           Plan Reputación Automática
@@ -104,6 +121,8 @@ export default async function PlanPage({
           </div>
         </div>
       </div>
-    </main>
+      </div>
+</main>
+
   );
 }
