@@ -66,7 +66,7 @@ export const authOptions: NextAuthOptions = {
           try {
             const API_BASE = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/+$/, "");
             if (API_BASE) {
-              await fetch(`${API_BASE}/auth/nextauth/link`, {
+              await fetch(`${API_BASE}/auth/google/nextauth/link`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
