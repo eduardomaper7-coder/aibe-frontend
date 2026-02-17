@@ -5,72 +5,9 @@ import { useParams, usePathname, useSearchParams } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 import { supabase } from "@/lib/supabase";
 
-type View = "menu" | "help" | "subscription" | "confirm-cancel";
+type View = "menu" | "help" | "subscription";
 
-/* PanelLogo */
-function PanelLogo({ href }: { href: string }) {
-  return (
-    <Link href={href} className="flex items-center gap-3" aria-label="Panel">
-      <div
-        className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-cyan-400 shadow-md"
-        aria-hidden="true"
-      >
-        <span
-          className="font-semibold leading-none text-white"
-          style={{ fontFamily: "Poppins, sans-serif", fontSize: 14 }}
-        >
-          AI
-        </span>
-      </div>
-
-      <span className="leading-tight">
-        <div className="flex items-baseline gap-1">
-          <span
-            className="tracking-tight"
-            style={{
-              color: "#111111",
-              fontFamily: "Poppins, sans-serif",
-              fontWeight: 700,
-              fontSize: 18,
-              lineHeight: 1,
-            }}
-          >
-            AIBE
-          </span>
-          <span
-            style={{
-              color: "#111111",
-              fontFamily: "Poppins, sans-serif",
-              fontWeight: 300,
-              fontSize: 15,
-              lineHeight: 1,
-            }}
-          >
-            Technologies
-          </span>
-        </div>
-        <div
-          className="text-slate-500"
-          style={{
-            fontFamily: "Inter, sans-serif",
-            fontWeight: 300,
-            fontSize: 12,
-            lineHeight: 1.1,
-          }}
-        >
-          Artificial Intelligence for Business Efficiency
-        </div>
-      </span>
-    </Link>
-  );
-}
-
-/* =========================
-   Componente AccountMenu (export nombrado)
-========================= */
 export function AccountMenu() {
-  // (tu código igual, sin cambios)
-  // --- lo dejo idéntico para no tocar tu lógica ---
   const router = require("next/navigation").useRouter();
 
   const [open, setOpen] = useState(false);
@@ -81,7 +18,6 @@ export function AccountMenu() {
   const [error, setError] = useState<string | null>(null);
 
   const [plan, setPlan] = useState<string | null>(null);
-  const [loadingCancel, setLoadingCancel] = useState(false);
 
   const buttonRef = useRef<HTMLButtonElement | null>(null);
   const popRef = useRef<HTMLDivElement | null>(null);
@@ -105,11 +41,12 @@ export function AccountMenu() {
           (user?.user_metadata?.plan as string | undefined) ||
           (user?.app_metadata?.subscription as string | undefined) ||
           null;
-        setPlan(metaPlan ?? "X suscripción");
+
+        setPlan(metaPlan ?? null);
       } catch (e: any) {
         if (!mounted) return;
         setError(e?.message || "No se pudo obtener el usuario");
-        setPlan("X suscripción");
+        setPlan(null);
       } finally {
         if (mounted) setLoadingEmail(false);
       }
@@ -173,8 +110,19 @@ export function AccountMenu() {
           className="rounded-full p-1 hover:bg-gray-100"
           aria-label="Cerrar"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-5 w-5 text-gray-500">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            className="h-5 w-5 text-gray-500"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M6 18L18 6M6 6l12 12"
+            />
           </svg>
         </button>
       </div>
@@ -186,7 +134,7 @@ export function AccountMenu() {
       <>
         <Header title="Mi Cuenta" />
         <div className="mb-4 rounded-xl bg-gray-50 p-3 text-sm text-gray-700">
-          <div className="font-medium text-gray-900">Gmail</div>
+          <div className="font-medium text-gray-900">Email</div>
           <div className="mt-1">
             {loadingEmail ? (
               <span className="italic text-gray-500">cargando…</span>
@@ -231,18 +179,27 @@ export function AccountMenu() {
         <div className="space-y-3 text-sm text-gray-800">
           <p>
             <span className="font-medium">Gmail:</span>{" "}
-            <a href="mailto:aibe.technologies7@gmail.com" className="text-blue-600 hover:underline">
+            <a
+              href="mailto:aibe.technologies7@gmail.com"
+              className="text-blue-600 hover:underline"
+            >
               aibe.technologies7@gmail.com
             </a>
           </p>
           <p>
             <span className="font-medium">Teléfono / WhatsApp:</span>{" "}
-            <a href="https://wa.me/34699301819" target="_blank" className="text-blue-600 hover:underline" rel="noreferrer">
+            <a
+              href="https://wa.me/34699301819"
+              target="_blank"
+              className="text-blue-600 hover:underline"
+              rel="noreferrer"
+            >
               699 301 819
             </a>
           </p>
           <p className="text-gray-600">
-            El servicio técnico se pondrá en contacto con usted en menos de <span className="font-semibold">24 horas</span>.
+            El servicio técnico se pondrá en contacto con usted en menos de{" "}
+            <span className="font-semibold">24 horas</span>.
           </p>
         </div>
 
@@ -257,21 +214,56 @@ export function AccountMenu() {
   }
 
   function SubscriptionView() {
+    const planName = plan ? "Plan reputación automática" : null;
+
     return (
       <>
         <Header title="Suscripción" />
-        <div className="mb-4 rounded-xl bg-gray-50 p-3 text-sm text-gray-700">
-          <div className="text-gray-600">
-            Suscripción actual: <span className="font-medium text-gray-900">{plan ?? "X suscripción"}</span>
-          </div>
-        </div>
 
-        <button
-          onClick={() => setView("confirm-cancel")}
-          className="w-full rounded-xl bg-red-600 px-4 py-2.5 text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
-        >
-          Cancelar suscripción
-        </button>
+        {!planName ? (
+          <div className="mb-4 rounded-xl bg-gray-50 p-3 text-sm text-gray-700">
+            Todavía no tienes ninguna suscripción activa.
+          </div>
+        ) : (
+          <>
+            <div className="mb-4 rounded-xl bg-gray-50 p-3 text-sm text-gray-700">
+              <div className="text-gray-600">
+                Suscripción actual:{" "}
+                <span className="font-medium text-gray-900">{planName}</span>
+              </div>
+            </div>
+
+            <div className="mb-4 rounded-xl border border-gray-200 bg-white p-4 text-sm text-gray-800">
+              <p className="font-semibold text-gray-900">
+                Para cancelar la suscripción
+              </p>
+              <p className="mt-2 text-gray-700">
+                Si desea cancelar la suscripción contacte con:
+              </p>
+
+              <div className="mt-2 space-y-1">
+                <div>
+                  <span className="font-medium">WhatsApp o llamada:</span>{" "}
+                  <a
+                    className="text-blue-600 hover:underline"
+                    href="tel:+34699301819"
+                  >
+                    699 301 819
+                  </a>
+                </div>
+                <div>
+                  <span className="font-medium">Email:</span>{" "}
+                  <a
+                    className="text-blue-600 hover:underline"
+                    href="mailto:info@aibetech.es"
+                  >
+                    info@aibetech.es
+                  </a>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
 
         <button
           onClick={() => setView("menu")}
@@ -279,65 +271,6 @@ export function AccountMenu() {
         >
           Volver
         </button>
-      </>
-    );
-  }
-
-  function ConfirmCancelView() {
-    async function onYes() {
-      try {
-        setLoadingCancel(true);
-        const {
-          data: { session },
-        } = await supabase.auth.getSession();
-        if (!session) {
-          router.push("/login");
-          return;
-        }
-        const res = await fetch("/api/stripe/cancel-subscription", {
-          method: "POST",
-          headers: { Authorization: `Bearer ${session.access_token}` },
-        });
-        const json = await res.json();
-        if (!json?.ok) {
-          console.error("Error cancelando:", json);
-          alert("No se pudo cancelar la suscripción. Intenta más tarde.");
-          return;
-        }
-        await supabase.auth.signOut();
-        setOpen(false);
-        setView("menu");
-        router.push("/panel/cuenta/suscripcion-cancelada");
-      } finally {
-        setLoadingCancel(false);
-      }
-    }
-
-    function onNo() {
-      setOpen(false);
-      setView("menu");
-      router.push("/panel");
-    }
-
-    return (
-      <>
-        <Header title="Confirmar" />
-        <p className="text-sm font-medium">¿Estás seguro que deseas cancelar tu suscripción?</p>
-        <div className="mt-4 flex items-center gap-3">
-          <button
-            disabled={loadingCancel}
-            onClick={onYes}
-            className="rounded-xl bg-red-600 px-4 py-2.5 text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 disabled:opacity-60"
-          >
-            SI
-          </button>
-          <button
-            onClick={onNo}
-            className="rounded-xl border px-4 py-2.5 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            NO
-          </button>
-        </div>
       </>
     );
   }
@@ -371,7 +304,6 @@ export function AccountMenu() {
           {view === "menu" && <MenuView />}
           {view === "help" && <HelpView />}
           {view === "subscription" && <SubscriptionView />}
-          {view === "confirm-cancel" && <ConfirmCancelView />}
         </div>
       )}
     </div>
