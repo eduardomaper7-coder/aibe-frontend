@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useParams, usePathname, useSearchParams } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import { useSearchParams } from "next/navigation";
 
 type View = "menu" | "help" | "subscription";
 
@@ -76,9 +77,17 @@ export function AccountMenu() {
   const [error, setError] = useState<string | null>(null);
 
   const [plan, setPlan] = useState<string | null>(null);
+const searchParams = useSearchParams();
+const jobId = searchParams.get("job_id");
+
+const API_BASE = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/+$/, "");
+
+const [placeName, setPlaceName] = useState<string | null>(null);
 
   const buttonRef = useRef<HTMLButtonElement | null>(null);
   const popRef = useRef<HTMLDivElement | null>(null);
+const [isPro, setIsPro] = useState(false);
+const [loadingPro, setLoadingPro] = useState(true);
 
   useEffect(() => {
     let mounted = true;
@@ -113,6 +122,52 @@ export function AccountMenu() {
       mounted = false;
     };
   }, []);
+
+  // ✅ Comprobar suscripción en Stripe
+useEffect(() => {
+  let mounted = true;
+
+  (async () => {
+    try {
+      setLoadingPro(true);
+
+      const res = await fetch("/api/billing/status", {
+        cache: "no-store",
+      });
+
+      if (!res.ok) throw new Error("Error billing status");
+
+      const data = await res.json();
+
+      if (!mounted) return;
+
+      setIsPro(Boolean(data?.isPro));
+    } catch (e) {
+      console.error("Error cargando suscripción:", e);
+      if (mounted) setIsPro(false);
+    } finally {
+      if (mounted) setLoadingPro(false);
+    }
+  })();
+
+  return () => {
+    mounted = false;
+  };
+}, []);
+
+
+  useEffect(() => {
+  if (!jobId) return;
+  if (!API_BASE) return;
+
+  fetch(`${API_BASE}/jobs/${jobId}/meta`)
+    .then((res) => res.json())
+    .then((data) => {
+      if (data?.place_name) setPlaceName(data.place_name);
+    })
+    .catch(() => {});
+}, [jobId, API_BASE]);
+
 
   useEffect(() => {
     function onDocClick(e: MouseEvent) {
@@ -192,18 +247,15 @@ export function AccountMenu() {
       <>
         <Header title="Mi Cuenta" />
         <div className="mb-4 rounded-xl bg-gray-50 p-3 text-sm text-gray-700">
-          <div className="font-medium text-gray-900">Email</div>
+          <div className="font-medium text-gray-900">Negocio</div>
           <div className="mt-1">
-            {loadingEmail ? (
-              <span className="italic text-gray-500">cargando…</span>
-            ) : error ? (
-              <span className="text-red-600">{error}</span>
-            ) : email ? (
-              <span className="break-all">{email}</span>
-            ) : (
-              <span className="text-gray-500">No has iniciado sesión</span>
-            )}
-          </div>
+  {placeName ? (
+    <span className="break-all">{placeName}</span>
+  ) : (
+    <span className="text-gray-500">Cargando negocio…</span>
+  )}
+</div>
+
         </div>
 
         <div className="space-y-2">
@@ -272,66 +324,80 @@ export function AccountMenu() {
   }
 
   function SubscriptionView() {
-    const planName = plan ? "Plan reputación automática" : null;
+  return (
+    <>
+      <Header title="Suscripción" />
 
-    return (
-      <>
-        <Header title="Suscripción" />
+      {/* Cargando estado */}
+      {loadingPro && (
+        <div className="mb-4 rounded-xl bg-gray-50 p-3 text-sm text-gray-700">
+          Comprobando suscripción…
+        </div>
+      )}
 
-        {!planName ? (
+      {/* NO es Pro */}
+      {!loadingPro && !isPro && (
+        <div className="mb-4 rounded-xl bg-gray-50 p-3 text-sm text-gray-700">
+          Todavía no tienes ninguna suscripción activa.
+        </div>
+      )}
+
+      {/* ES Pro */}
+      {!loadingPro && isPro && (
+        <>
           <div className="mb-4 rounded-xl bg-gray-50 p-3 text-sm text-gray-700">
-            Todavía no tienes ninguna suscripción activa.
+            <div className="text-gray-600">
+              Suscripción actual:{" "}
+              <span className="font-medium text-gray-900">
+                Plan reputación automática
+              </span>
+            </div>
           </div>
-        ) : (
-          <>
-            <div className="mb-4 rounded-xl bg-gray-50 p-3 text-sm text-gray-700">
-              <div className="text-gray-600">
-                Suscripción actual:{" "}
-                <span className="font-medium text-gray-900">{planName}</span>
+
+          <div className="mb-4 rounded-xl border border-gray-200 bg-white p-4 text-sm text-gray-800">
+            <p className="font-semibold text-gray-900">
+              Para cancelar la suscripción
+            </p>
+
+            <p className="mt-2 text-gray-700">
+              Si desea cancelar la suscripción contacte con:
+            </p>
+
+            <div className="mt-2 space-y-1">
+              <div>
+                <span className="font-medium">WhatsApp o llamada:</span>{" "}
+                <a
+                  className="text-blue-600 hover:underline"
+                  href="tel:+34699301819"
+                >
+                  699 301 819
+                </a>
+              </div>
+
+              <div>
+                <span className="font-medium">Email:</span>{" "}
+                <a
+                  className="text-blue-600 hover:underline"
+                  href="mailto:info@aibetech.es"
+                >
+                  info@aibetech.es
+                </a>
               </div>
             </div>
+          </div>
+        </>
+      )}
 
-            <div className="mb-4 rounded-xl border border-gray-200 bg-white p-4 text-sm text-gray-800">
-              <p className="font-semibold text-gray-900">
-                Para cancelar la suscripción
-              </p>
-              <p className="mt-2 text-gray-700">
-                Si desea cancelar la suscripción contacte con:
-              </p>
+      <button
+        onClick={() => setView("menu")}
+        className="mt-2 w-full rounded-xl border px-4 py-2.5 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      >
+        Volver
+      </button>
+    </>
+  );
+}
 
-              <div className="mt-2 space-y-1">
-                <div>
-                  <span className="font-medium">WhatsApp o llamada:</span>{" "}
-                  <a
-                    className="text-blue-600 hover:underline"
-                    href="tel:+34699301819"
-                  >
-                    699 301 819
-                  </a>
-                </div>
-                <div>
-                  <span className="font-medium">Email:</span>{" "}
-                  <a
-                    className="text-blue-600 hover:underline"
-                    href="mailto:info@aibetech.es"
-                  >
-                    info@aibetech.es
-                  </a>
-                </div>
-              </div>
-            </div>
-          </>
-        )}
-
-        <button
-          onClick={() => setView("menu")}
-          className="mt-2 w-full rounded-xl border px-4 py-2.5 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
-          Volver
-        </button>
-      </>
-    );
-  }
 
   return (
     <div className="relative inline-block text-left">
