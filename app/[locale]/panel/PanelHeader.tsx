@@ -7,6 +7,64 @@ import { supabase } from "@/lib/supabase";
 
 type View = "menu" | "help" | "subscription";
 
+function PanelLogo({ href }: { href: string }) {
+  return (
+    <Link href={href} className="flex items-center gap-3" aria-label="Panel">
+      <div
+        className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-cyan-400 shadow-md"
+        aria-hidden="true"
+      >
+        <span
+          className="font-semibold leading-none text-white"
+          style={{ fontFamily: "Poppins, sans-serif", fontSize: 14 }}
+        >
+          AI
+        </span>
+      </div>
+
+      <span className="leading-tight">
+        <div className="flex items-baseline gap-1">
+          <span
+            className="tracking-tight"
+            style={{
+              color: "#111111",
+              fontFamily: "Poppins, sans-serif",
+              fontWeight: 700,
+              fontSize: 18,
+              lineHeight: 1,
+            }}
+          >
+            AIBE
+          </span>
+          <span
+            style={{
+              color: "#111111",
+              fontFamily: "Poppins, sans-serif",
+              fontWeight: 300,
+              fontSize: 15,
+              lineHeight: 1,
+            }}
+          >
+            Technologies
+          </span>
+        </div>
+        <div
+          className="text-slate-500"
+          style={{
+            fontFamily: "Inter, sans-serif",
+            fontWeight: 300,
+            fontSize: 12,
+            lineHeight: 1.1,
+          }}
+        >
+          Artificial Intelligence for Business Efficiency
+        </div>
+      </span>
+    </Link>
+  );
+}
+
+
 export function AccountMenu() {
   const router = require("next/navigation").useRouter();
 
