@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
-
+import ReviewImportBox from "./components/ReviewImportBox";
 import CreateReviewRequestForm from "./components/CreateReviewRequestForm";
 import ReviewRequestsTable from "./components/ReviewRequestsTable";
 import ReviewSummaryPanel from "./components/ReviewSummaryPanel";
@@ -107,6 +107,10 @@ export default function SolicitarResenasClient() {
               ) : null}
             </div>
           )}
+<ReviewImportBox
+  jobId={jobId}
+  onDone={() => window.location.reload()}
+/>
 
           <div className="grid gap-6 lg:grid-cols-2">
             <CreateReviewRequestForm jobId={jobId} />
