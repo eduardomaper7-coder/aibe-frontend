@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useState, Suspense } from "react";
-import { useSearchParams, useParams } from "next/navigation";
+import { useSearchParams, useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
+
 import TemasSection from "./analisis/temas/TemasSection";
 import SentimientoSection from "./analisis/sentimiento/sentimiento";
 import OportunidadesSection from "./analisis/oportunidades/oportunidades";
@@ -24,32 +25,15 @@ function PanelUI() {
   const searchParams = useSearchParams();
   const jobIdStr = searchParams.get("job_id") ?? "";
   const jobIdNum = jobIdStr ? Number(jobIdStr) : 0;
-const router = useRouter();
+
+  const router = useRouter();
+  const { data: session } = useSession();
+
   const API_BASE = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/+$/, "");
 
   const [isPro, setIsPro] = useState(false);
   const [placeName, setPlaceName] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!jobIdNum || !API_BASE) return;
-
-    fetch(`${API_BASE}/jobs/${jobIdNum}/entitlements`, { cache: "no-store" })
-      .then((r) => (r.ok ? r.json() : Promise.reject(r)))
-      .then((d) => setIsPro(Boolean(d?.isPro)))
-      .catch(() => setIsPro(false));
-  }, [jobIdNum, API_BASE]);
-  
-  
-
-useEffect(() => {
-  // si no hay job_id en URL, intenta recuperarlo
-  if (jobIdStr) return;
-
-  const stored = typeof window !== "undefined" ? localStorage.getItem("job_id") : null;
-  if (stored) {
-    router.replace(`/${locale}/panel?job_id=${encodeURIComponent(stored)}`);
-  }
-}, [jobIdStr, locale, router]);
   // ---------------- Periodos (hooks SIEMPRE arriba) ----------------
   type PeriodKey = "7d" | "30d" | "3m" | "6m" | "1y" | "all";
 
@@ -61,6 +45,66 @@ useEffect(() => {
   const [showCustomMenu, setShowCustomMenu] = useState(false);
 
   const todayLocal = () => new Date().toLocaleDateString("en-CA");
+
+  // ✅ Redirect si no hay job_id: intenta backend -> fallback localStorage
+  useEffect(() => {
+    if (jobIdStr) return;
+    if (!API_BASE) return;
+
+    const uid = (session as any)?.userId;
+
+    if (uid) {
+      fetch(`${API_BASE}/jobs/my-latest/${uid}`, { cache: "no-store" })
+        .then((r) => (r.ok ? r.json() : Promise.reject(r)))
+        .then((d) => {
+          if (d?.job_id) {
+            router.replace(
+              `/${locale}/panel?job_id=${encodeURIComponent(String(d.job_id))}`
+            );
+          }
+        })
+        .catch(() => {
+          const stored =
+            typeof window !== "undefined" ? localStorage.getItem("job_id") : null;
+          if (stored) {
+            router.replace(
+              `/${locale}/panel?job_id=${encodeURIComponent(stored)}`
+            );
+          }
+        });
+
+      return;
+    }
+
+    const stored =
+      typeof window !== "undefined" ? localStorage.getItem("job_id") : null;
+    if (stored) {
+      router.replace(`/${locale}/panel?job_id=${encodeURIComponent(stored)}`);
+    }
+  }, [jobIdStr, API_BASE, session, locale, router]);
+
+  // ✅ Entitlements (solo si hay jobId válido)
+  useEffect(() => {
+    if (!jobIdNum || !API_BASE) return;
+
+    fetch(`${API_BASE}/jobs/${jobIdNum}/entitlements`, { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : Promise.reject(r)))
+      .then((d) => setIsPro(Boolean(d?.isPro)))
+      .catch(() => setIsPro(false));
+  }, [jobIdNum, API_BASE]);
+
+  // ✅ Cargar meta del job
+  useEffect(() => {
+    if (!jobIdNum) return;
+    if (!API_BASE) return;
+
+    fetch(`${API_BASE}/jobs/${jobIdNum}/meta`)
+      .then((res) => (res.ok ? res.json() : Promise.reject(res)))
+      .then((data) => {
+        if (data?.place_name) setPlaceName(data.place_name);
+      })
+      .catch(() => {});
+  }, [jobIdNum, API_BASE]);
 
   const { startLabel, endLabel, fromDate, toDate } = useMemo(() => {
     if (customFrom && customTo) {
@@ -132,45 +176,17 @@ useEffect(() => {
     setShowCustomMenu(false);
   };
 
- 
-
-  // ✅ Cargar meta del job
-  useEffect(() => {
-  if (!jobIdNum) return;
-  if (!API_BASE) return;
-
-  fetch(`${API_BASE}/jobs/${jobIdNum}/meta`)
-    .then((res) => (res.ok ? res.json() : Promise.reject(res)))
-    .then((data) => {
-      if (data?.place_name) setPlaceName(data.place_name);
-    })
-    .catch(() => {});
-}, [jobIdNum, API_BASE]);
-
-  
-  
-
   // ---------------- returns DESPUÉS de todos los hooks ----------------
-
   if (!jobIdStr) {
-  return (
-    <div className="p-8 text-slate-600">
-      Cargando tu análisis…
-    </div>
-  );
-}
+    return <div className="p-8 text-slate-600">Cargando tu análisis…</div>;
+  }
 
-if (!jobIdNum) {
-  return (
-    <div className="p-8 text-slate-600">
-      job_id inválido.
-    </div>
-  );
-}
+  if (!jobIdNum) {
+    return <div className="p-8 text-slate-600">job_id inválido.</div>;
+  }
 
-  const planHref = `/${locale}/plan?job_id=${encodeURIComponent(jobIdStr ?? "")}`;
+  const planHref = `/${locale}/plan?job_id=${encodeURIComponent(jobIdStr)}`;
 
-  /* ========== RETURN COMPLETO ========== */
   return (
     <div className="text-black bg-white min-h-screen">
       <div className="w-full pb-0">
@@ -326,7 +342,13 @@ if (!jobIdNum) {
                               variant="default"
                               className="rounded-xl"
                               onClick={applyCustom}
-                              disabled={!(customFrom && customTo && customFrom <= customTo)}
+                              disabled={
+                                !(
+                                  customFrom &&
+                                  customTo &&
+                                  customFrom <= customTo
+                                )
+                              }
                             >
                               Aplicar
                             </Button>
@@ -351,11 +373,17 @@ if (!jobIdNum) {
         </div>
 
         {/* SECCIONES */}
-        <section id="temas" className="mt-8 px-4 sm:px-6 lg:px-8 scroll-mt-24">
+        <section
+          id="temas"
+          className="mt-8 px-4 sm:px-6 lg:px-8 scroll-mt-24"
+        >
           <TemasSection jobId={jobIdStr} fromDate={fromDate} toDate={toDate} />
         </section>
 
-        <section id="sentimiento" className="mt-10 px-4 sm:px-6 lg:px-8 scroll-mt-24">
+        <section
+          id="sentimiento"
+          className="mt-10 px-4 sm:px-6 lg:px-8 scroll-mt-24"
+        >
           <SentimientoSection
             jobId={jobIdStr}
             fromDate={fromDate}
@@ -366,7 +394,10 @@ if (!jobIdNum) {
 
         {isPro ? (
           <>
-            <section id="volumen" className="mt-8 px-4 sm:px-6 lg:px-8 scroll-mt-24">
+            <section
+              id="volumen"
+              className="mt-8 px-4 sm:px-6 lg:px-8 scroll-mt-24"
+            >
               <VolumenSection
                 jobId={jobIdStr}
                 fromDate={fromDate}
@@ -378,7 +409,11 @@ if (!jobIdNum) {
             <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen bg-slate-100">
               <div className="mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
                 <section id="oportunidades" className="scroll-mt-24">
-                  <OportunidadesSection jobId={jobIdStr} fromDate={fromDate} toDate={toDate} />
+                  <OportunidadesSection
+                    jobId={jobIdStr}
+                    fromDate={fromDate}
+                    toDate={toDate}
+                  />
                 </section>
               </div>
             </div>
@@ -395,7 +430,10 @@ if (!jobIdNum) {
           <div className="relative mt-10">
             {/* contenido borroso */}
             <div className="pointer-events-none select-none blur-[6px] opacity-90">
-              <section id="volumen" className="mt-8 px-4 sm:px-6 lg:px-8 scroll-mt-24">
+              <section
+                id="volumen"
+                className="mt-8 px-4 sm:px-6 lg:px-8 scroll-mt-24"
+              >
                 <VolumenSection
                   jobId={jobIdStr}
                   fromDate={fromDate}
@@ -407,7 +445,11 @@ if (!jobIdNum) {
               <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen bg-slate-100">
                 <div className="mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
                   <section id="oportunidades" className="scroll-mt-24">
-                    <OportunidadesSection jobId={jobIdStr} fromDate={fromDate} toDate={toDate} />
+                    <OportunidadesSection
+                      jobId={jobIdStr}
+                      fromDate={fromDate}
+                      toDate={toDate}
+                    />
                   </section>
                 </div>
               </div>
@@ -429,7 +471,8 @@ if (!jobIdNum) {
                 </h3>
 
                 <p className="mt-2 text-slate-600">
-                  Activa el Plan Reputación Automática para ver todas las métricas y automatizaciones.
+                  Activa el Plan Reputación Automática para ver todas las métricas
+                  y automatizaciones.
                 </p>
 
                 <div className="mt-4">
