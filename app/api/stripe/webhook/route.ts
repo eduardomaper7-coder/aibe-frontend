@@ -1,15 +1,20 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 
+export const runtime = "nodejs"; // importante para raw body
+
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 export async function POST(req: Request) {
   const sig = req.headers.get("stripe-signature");
   const rawBody = await req.text();
 
-  if (!sig) return new NextResponse("Missing signature", { status: 400 });
+  if (!sig) {
+    return new NextResponse("Missing signature", { status: 400 });
+  }
 
   let event: Stripe.Event;
+
   try {
     event = stripe.webhooks.constructEvent(
       rawBody,
@@ -17,28 +22,48 @@ export async function POST(req: Request) {
       process.env.STRIPE_WEBHOOK_SECRET!
     );
   } catch (err: any) {
+    console.error("Stripe webhook error:", err.message);
     return new NextResponse(`Webhook Error: ${err.message}`, { status: 400 });
   }
 
-  // ejemplo: cuando completa checkout subscription
+  // ✅ Cuando se completa el checkout (suscripción creada)
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
+
     const jobId = session.metadata?.job_id;
     const userId = session.metadata?.user_id;
-    const subId = session.subscription;
+    const email = session.metadata?.email;
 
-    // notifica a tu backend Railway para persistirlo
+    const subId = session.subscription;
+    const customerId = session.customer;
+
+    if (!jobId || !userId || !subId || !customerId) {
+      console.warn("Webhook incompleto:", session.metadata);
+      return NextResponse.json({ received: true });
+    }
+
     const API_BASE = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/+$/, "");
-    if (API_BASE && jobId && userId && subId) {
-      await fetch(`${API_BASE}/stripe/webhook/checkout-completed`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          job_id: Number(jobId),
-          user_id: String(userId),
-          subscription_id: String(subId),
-        }),
-      }).catch(() => {});
+if (!API_BASE) console.error("NEXT_PUBLIC_API_URL missing");
+
+    if (API_BASE) {
+      try {
+        await fetch(`${API_BASE}/stripe/sync`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            job_id: Number(jobId),
+            user_id: String(userId),
+            email,
+            subscription_id: String(subId),
+            customer_id: String(customerId),
+            status: "active",
+          }),
+        });
+      } catch (e) {
+        console.error("Error syncing Stripe → backend:", e);
+      }
     }
   }
 
