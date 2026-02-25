@@ -28,17 +28,29 @@ export async function GET(req: NextRequest) {
     const cancelUrl  = new URL(`/es/plan?job_id=${encodeURIComponent(jobId)}`, siteUrl).toString();
 
     const stripeSession = await stripe.checkout.sessions.create({
-      mode: "subscription",
-      customer_email: session.user.email,
-      line_items: [{ price: process.env.STRIPE_PRICE_ID!, quantity: 1 }],
-      success_url: successUrl,
-      cancel_url: cancelUrl,
-      metadata: {
-        job_id: jobId,
-        user_id: String((session as any).userId),
-        email: session.user.email,
-      },
-    });
+  mode: "subscription",
+  customer_email: session.user.email,
+
+  line_items: [
+    {
+      price: process.env.STRIPE_PRICE_ID!,
+      quantity: 1,
+    },
+  ],
+
+  subscription_data: {
+    trial_period_days: 7, // 👈 TRIAL DE 7 DÍAS
+  },
+
+  success_url: `https://www.aibetech.es/es/panel?job_id=${jobId}`,
+  cancel_url: `https://www.aibetech.es/es/plan?job_id=${jobId}`,
+
+  metadata: {
+    job_id: jobId,
+    user_id: String((session as any).userId),
+    email: session.user.email,
+  },
+});
 
     return NextResponse.redirect(stripeSession.url!);
   } catch (e) {
