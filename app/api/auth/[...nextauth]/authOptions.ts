@@ -1,5 +1,6 @@
 import GoogleProvider from "next-auth/providers/google";
 import type { NextAuthOptions } from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
 
 async function refreshAccessToken(token: any) {
   try {
@@ -33,25 +34,58 @@ async function refreshAccessToken(token: any) {
 
 export const authOptions: NextAuthOptions = {
   providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-      authorization: {
-        params: {
-          scope: [
-            "openid",
-            "email",
-            "profile",
-            "https://www.googleapis.com/auth/business.manage",
-          ].join(" "),
-          access_type: "offline",
-          prompt: "consent",
-          include_granted_scopes: "true",
-          response_type: "code",
-        },
+  CredentialsProvider({
+    name: "Credentials",
+    credentials: {
+      email: { label: "Email", type: "email" },
+      password: { label: "Password", type: "password" },
+    },
+
+    async authorize(credentials) {
+      const email = credentials?.email?.toLowerCase().trim();
+      const password = credentials?.password;
+
+      if (!email || !password) return null;
+
+      const API_BASE = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/+$/, "");
+
+      const res = await fetch(`${API_BASE}/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!res.ok) return null;
+
+      const user = await res.json();
+
+      return {
+        id: user.id,
+        email: user.email,
+      };
+    },
+  }),
+
+  // 👇 Dejas Google como estaba
+  GoogleProvider({
+    clientId: process.env.GOOGLE_CLIENT_ID!,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    authorization: {
+      params: {
+        scope: [
+          "openid",
+          "email",
+          "profile",
+          "https://www.googleapis.com/auth/business.manage",
+        ].join(" "),
+        access_type: "offline",
+        prompt: "consent",
+        include_granted_scopes: "true",
+        response_type: "code",
       },
-    }),
-  ],
+    },
+  }),
+],
   session: { strategy: "jwt" },
   callbacks: {
     async jwt({ token, account }) {
