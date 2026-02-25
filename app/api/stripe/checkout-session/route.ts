@@ -10,12 +10,11 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const jobId = searchParams.get("job_id");
-
   if (!jobId) return NextResponse.json({ error: "missing job_id" }, { status: 400 });
 
-  const sessionAuth = await getServerSession(authOptions);
-  const email = sessionAuth?.user?.email ?? (sessionAuth as any)?.email;
-  const userId = (sessionAuth as any)?.userId ?? (sessionAuth as any)?.user?.id;
+  const s = await getServerSession(authOptions);
+  const email = s?.user?.email;
+  const userId = (s as any)?.userId;
 
   if (!email || !userId) {
     return NextResponse.json({ error: "not authenticated" }, { status: 401 });
