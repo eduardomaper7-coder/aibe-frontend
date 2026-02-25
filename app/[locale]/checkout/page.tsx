@@ -1,20 +1,27 @@
-"use client";
+import { redirect } from "next/navigation";
+
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
-import { useEffect } from "react";
-import { useSearchParams, useParams } from "next/navigation";
 
-export default function CheckoutPage() {
-  const sp = useSearchParams();
-  const params = useParams();
-  const locale = String((params as any)?.locale ?? "es");
-  const jobId = sp.get("job_id") ?? "";
+export default async function CheckoutPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ locale: string }>;
+  searchParams: Promise<{ job_id?: string }>;
+}) {
+  const { locale } = await params;
+  const { job_id } = await searchParams;
 
-  useEffect(() => {
-    const qs = jobId ? `?job_id=${encodeURIComponent(jobId)}` : "";
-    // ✅ IMPORTANTE: esta ruta es del API de Next (GET) y ella redirige a Stripe
-    window.location.assign(`/api/stripe/checkout-session${qs}`);
-  }, [jobId]);
+  const jobId = job_id ?? "";
 
-  return <div className="p-8 text-white">Redirigiendo a Stripe…</div>;
+  if (!jobId) {
+    return (
+      <div className="p-8 text-white">
+        Falta <b>job_id</b> (ej: /{locale}/checkout?job_id=123)
+      </div>
+    );
+  }
+
+  redirect(`/api/stripe/checkout-session?job_id=${encodeURIComponent(jobId)}`);
 }
