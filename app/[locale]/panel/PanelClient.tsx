@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState, Suspense } from "react";
 import { useSearchParams, useParams } from "next/navigation";
 import Link from "next/link";
-
+import { useRouter } from "next/navigation";
 import TemasSection from "./analisis/temas/TemasSection";
 import SentimientoSection from "./analisis/sentimiento/sentimiento";
 import OportunidadesSection from "./analisis/oportunidades/oportunidades";
@@ -20,14 +20,16 @@ import { Card, CardContent } from "@/components/ui/card";
 function PanelUI() {
   const params = useParams();
   const locale = String((params as any)?.locale ?? "es");
+
   const searchParams = useSearchParams();
   const jobIdStr = searchParams.get("job_id") ?? "";
   const jobIdNum = jobIdStr ? Number(jobIdStr) : 0;
-
+const router = useRouter();
   const API_BASE = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/+$/, "");
-  const [isPro, setIsPro] = useState(false);
 
-  // ✅ AHORA sí: useEffect que usa jobIdNum/API_BASE
+  const [isPro, setIsPro] = useState(false);
+  const [placeName, setPlaceName] = useState<string | null>(null);
+
   useEffect(() => {
     if (!jobIdNum || !API_BASE) return;
 
@@ -37,8 +39,17 @@ function PanelUI() {
       .catch(() => setIsPro(false));
   }, [jobIdNum, API_BASE]);
   
-  const [placeName, setPlaceName] = useState<string | null>(null);
+  
 
+useEffect(() => {
+  // si no hay job_id en URL, intenta recuperarlo
+  if (jobIdStr) return;
+
+  const stored = typeof window !== "undefined" ? localStorage.getItem("job_id") : null;
+  if (stored) {
+    router.replace(`/${locale}/panel?job_id=${encodeURIComponent(stored)}`);
+  }
+}, [jobIdStr, locale, router]);
   // ---------------- Periodos (hooks SIEMPRE arriba) ----------------
   type PeriodKey = "7d" | "30d" | "3m" | "6m" | "1y" | "all";
 
@@ -141,15 +152,21 @@ function PanelUI() {
 
   // ---------------- returns DESPUÉS de todos los hooks ----------------
 
-  if (!jobIdNum) {
-    return (
-      <div className="p-8 text-slate-600">
-        Aún no tienes ningún análisis.
-        <br />
-        Empieza creando uno nuevo.
-      </div>
-    );
-  }
+  if (!jobIdStr) {
+  return (
+    <div className="p-8 text-slate-600">
+      Cargando tu análisis…
+    </div>
+  );
+}
+
+if (!jobIdNum) {
+  return (
+    <div className="p-8 text-slate-600">
+      job_id inválido.
+    </div>
+  );
+}
 
   const planHref = `/${locale}/plan?job_id=${encodeURIComponent(jobIdStr ?? "")}`;
 

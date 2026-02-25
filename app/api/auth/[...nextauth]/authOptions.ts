@@ -34,68 +34,79 @@ async function refreshAccessToken(token: any) {
 
 export const authOptions: NextAuthOptions = {
   providers: [
-  CredentialsProvider({
-    name: "Credentials",
-    credentials: {
-      email: { label: "Email", type: "email" },
-      password: { label: "Password", type: "password" },
-    },
-
-    async authorize(credentials) {
-      const email = credentials?.email?.toLowerCase().trim();
-      const password = credentials?.password;
-
-      if (!email || !password) return null;
-
-      const API_BASE = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/+$/, "");
-
-      const res = await fetch(`${API_BASE}/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (!res.ok) return null;
-
-      const user = await res.json();
-
-      return {
-        id: user.id,
-        email: user.email,
-      };
-    },
-  }),
-
-  // 👇 Dejas Google como estaba
-  GoogleProvider({
-    clientId: process.env.GOOGLE_CLIENT_ID!,
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    authorization: {
-      params: {
-        scope: [
-          "openid",
-          "email",
-          "profile",
-          "https://www.googleapis.com/auth/business.manage",
-        ].join(" "),
-        access_type: "offline",
-        prompt: "consent",
-        include_granted_scopes: "true",
-        response_type: "code",
+    CredentialsProvider({
+      name: "Credentials",
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
       },
-    },
-  }),
-],
+
+      async authorize(credentials) {
+        const email = credentials?.email?.toLowerCase().trim();
+        const password = credentials?.password;
+
+        if (!email || !password) return null;
+
+        const API_BASE = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/+$/, "");
+        if (!API_BASE) return null;
+
+        const res = await fetch(`${API_BASE}/auth/login`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+        });
+
+        if (!res.ok) return null;
+
+        const user = await res.json();
+        return { id: user.id, email: user.email };
+      },
+    }),
+
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      authorization: {
+        params: {
+          scope: [
+            "openid",
+            "email",
+            "profile",
+            "https://www.googleapis.com/auth/business.manage",
+          ].join(" "),
+          access_type: "offline",
+          prompt: "consent",
+          include_granted_scopes: "true",
+          response_type: "code",
+        },
+      },
+    }),
+  ],
+
   session: { strategy: "jwt" },
+
   callbacks: {
-    async jwt({ token, account }) {
-      // 1) Primer login
-      if (account) {
+    async jwt({ token, account, user }) {
+      // ✅ Login con Credentials
+      if (account?.provider === "credentials") {
+        // `user` viene desde authorize()
+        if (user) {
+          token.userId = (user as any).id;
+          token.email = (user as any).email;
+        }
+        token.provider = "credentials";
+        return token;
+      }
+
+      // ✅ Login con Google
+      if (account?.provider === "google") {
+        token.provider = "google";
         token.accessToken = account.access_token;
         token.accessTokenExpires = (account.expires_at ?? 0) * 1000;
-        token.refreshToken = account.refresh_token; // puede venir undefined
+        token.refreshToken = account.refresh_token;
+        token.email = token.email ?? (token as any).email;
 
-        // 2) Si viene refresh_token, guardarlo en Railway via backend
+        // guardar refresh_token en backend si viene
         if (account.refresh_token) {
           try {
             const API_BASE = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/+$/, "");
@@ -119,19 +130,20 @@ export const authOptions: NextAuthOptions = {
         return token;
       }
 
-      // 3) Si no hay expiración, no rompemos
+      // ✅ Solo Google necesita refresh
+      if (token.provider !== "google") return token;
+
       if (!token.accessTokenExpires) return token;
-
-      // 4) Si aún no expira, ok
       if (Date.now() < (token.accessTokenExpires as number) - 60_000) return token;
-
-      // 5) Expiró: refrescar si hay refreshToken
       if (!token.refreshToken) return token;
 
       return await refreshAccessToken(token);
     },
 
     async session({ session, token }) {
+      (session as any).provider = (token as any).provider;
+      (session as any).userId = (token as any).userId;
+      (session as any).email = (token as any).email;
       (session as any).accessToken = (token as any).accessToken;
       (session as any).error = (token as any).error;
       return session;
