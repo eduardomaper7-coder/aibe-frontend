@@ -1,10 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
 import Link from "next/link";
-import { supabase } from "@/lib/supabase";
-import { useRouter } from "next/navigation";
-
+import { useRouter, useParams } from "next/navigation";
+import { signIn } from "next-auth/react";
+import React, { useEffect, useState } from "react";
 type Props = {
   variant?: "page" | "modal";
   onSuccess?: () => void;
@@ -12,7 +11,6 @@ type Props = {
   jobId?: string | null;
 };
 
-// ✅ FUERA del componente para que no se recree en cada render
 function Wrapper({
   variant,
   children,
@@ -36,6 +34,10 @@ export default function SignupClient({
   jobId = null,
 }: Props) {
   const router = useRouter();
+  const params = useParams();
+  const locale = String((params as any)?.locale ?? "es");
+
+  const API_BASE = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/+$/, "");
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -43,86 +45,80 @@ export default function SignupClient({
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const jobIdEffective =
+  jobId ??
+  (typeof window !== "undefined" ? localStorage.getItem("job_id") : null);
+
+  useEffect(() => {
+  if (jobId) localStorage.setItem("job_id", String(jobId));
+}, [jobId]);
   async function handleEmail(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
     setMessage(null);
 
-    if (!email || !password) {
+    const safeEmail = email.trim().toLowerCase();
+    if (!safeEmail || !password) {
       setError("Introduce un correo y una contraseña.");
       return;
     }
 
-    if (!jobId) {
-      setError("Falta job_id en la URL (ej: /registro?job_id=123).");
-      return;
-    }
+    if (!jobIdEffective) {
+  setError("Falta job_id (ej: /registro?job_id=123).");
+  return;
+}
 
-    const jobIdNumber = Number(jobId);
-    if (!Number.isFinite(jobIdNumber)) {
-      setError("job_id inválido.");
+const jobIdNumber = Number(jobIdEffective);
+if (!Number.isFinite(jobIdNumber)) {
+  setError("job_id inválido.");
+  return;
+}
+
+
+    if (!API_BASE) {
+      setError("NEXT_PUBLIC_API_URL no está configurado");
       return;
     }
 
     setLoading(true);
     try {
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo:
-            typeof window !== "undefined"
-              ? `${window.location.origin}/auth/callback`
-              : undefined,
-        },
+      // 1) Signup en tu backend (Railway)
+      const r = await fetch(`${API_BASE}/auth/signup`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: safeEmail, password }),
       });
 
-      if (error) throw error;
+      if (!r.ok) throw new Error(await r.text());
 
-      // Caso 1: Supabase devuelve sesión inmediata
-      if (data.session) {
-        const userId = data.session.user.id;
-
-        const { error: updateError } = await supabase
-          .from("analyses")
-          .update({ user_id: userId, email })
-          .eq("id", jobIdNumber);
-
-        if (updateError) throw updateError;
-
-        onSuccess?.();
-        router.push(`/panel?job_id=${jobId}`);
-        return;
-      }
-
-      // Caso 2: No hay sesión (p.ej. confirmación por email). Intentamos login.
-      const { error: loginErr } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+      // 2) Link job_id -> user/email en backend
+      const link = await fetch(`${API_BASE}/auth/link-job`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ job_id: jobIdNumber, email: safeEmail }),
       });
-      if (loginErr) {
-        // Si tu proyecto requiere confirmación por email, puede caer aquí.
-        setMessage(
-          "Cuenta creada. Revisa tu email para confirmar tu cuenta y luego inicia sesión."
-        );
-        return;
-      }
 
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
+      if (!link.ok) throw new Error(await link.text());
 
-      if (!session?.user) throw new Error("No se pudo obtener la sesión del usuario");
+      // 3) Auto login con NextAuth credentials
+      const login = await signIn("credentials", {
+  email: safeEmail,
+  password,
+  redirect: false,
+});
 
-      const { error: updateError } = await supabase
-        .from("analyses")
-        .update({ user_id: session.user.id, email })
-        .eq("id", jobIdNumber);
+if (login?.error) {
+  setError("Cuenta creada, pero no se pudo iniciar sesión automáticamente. Intenta iniciar sesión de nuevo.");
+  return;
+}
 
-      if (updateError) throw updateError;
+onSuccess?.();
 
-      onSuccess?.();
-      router.push(`/panel?job_id=${jobId}`);
+// ✅ ir a Stripe
+window.location.href = `/${locale}/checkout?job_id=${encodeURIComponent(jobIdEffective)}`;
+return;
+      // 4) Entra al panel
+      
     } catch (err: any) {
       setError(err?.message ?? "No se pudo crear la cuenta.");
     } finally {
@@ -133,46 +129,38 @@ export default function SignupClient({
   return (
     <Wrapper variant={variant}>
       <div className="rounded-3xl bg-white p-10 md:p-12 shadow-2xl ring-1 ring-black/5">
-        <div className="mb-4 text-right">
-          <span className="text-sm text-neutral-500">ES • España</span>
-        </div>
-
-        <h1 className="text-3xl font-bold tracking-tight">Mira y Guarda tu análisis Gratis</h1>
+        <h1 className="text-3xl font-bold tracking-tight">
+          Mira y Guarda tu análisis Gratis
+        </h1>
         <p className="mt-3 text-base text-neutral-600">
-          Crea tu cuenta para guardar este análisis y volver a él cuando quieras, con actualizaciones cada 24 horas
+          Crea tu cuenta para guardar este análisis y volver a él cuando quieras.
         </p>
 
         <form onSubmit={handleEmail} className="mt-8 space-y-5">
-          <label htmlFor="email" className="block text-base font-medium text-neutral-800">
+          <label className="block text-base font-medium text-neutral-800">
             Correo electrónico
           </label>
           <input
-            id="email"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="tu@correo.com"
-            autoComplete="email"
-            className="w-full rounded-2xl border border-neutral-300 bg-white px-5 py-4 text-base outline-none transition focus:border-neutral-400 focus:ring-2 focus:ring-neutral-200"
+            className="w-full rounded-2xl border border-neutral-300 bg-white px-5 py-4 text-base outline-none"
           />
 
-          <label htmlFor="password" className="block text-base font-medium text-neutral-800">
+          <label className="block text-base font-medium text-neutral-800">
             Contraseña
           </label>
           <input
-            id="password"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="••••••••"
-            autoComplete="new-password"
-            className="w-full rounded-2xl border border-neutral-300 bg-white px-5 py-4 text-base outline-none transition focus:border-neutral-400 focus:ring-2 focus:ring-neutral-200"
+            className="w-full rounded-2xl border border-neutral-300 bg-white px-5 py-4 text-base outline-none"
           />
 
           <button
             type="submit"
             disabled={loading}
-            className="mt-4 inline-flex w-full items-center justify-center rounded-2xl bg-black px-5 py-4 text-base font-semibold text-white transition hover:bg-neutral-800 disabled:opacity-60"
+            className="mt-4 inline-flex w-full items-center justify-center rounded-2xl bg-black px-5 py-4 text-base font-semibold text-white disabled:opacity-60"
           >
             {loading ? "Creando cuenta…" : "Registrarse"}
           </button>
@@ -182,8 +170,8 @@ export default function SignupClient({
           <div className="mt-6 flex items-center justify-center">
             <span className="text-base text-neutral-600">¿Ya tienes cuenta?</span>
             <Link
-              href="/login"
-              className="ml-2 text-base font-semibold text-neutral-900 underline-offset-4 hover:underline"
+              href={`/${locale}/login${jobIdEffective ? `?job_id=${encodeURIComponent(jobIdEffective)}` : ""}`}
+              className="ml-2 text-base font-semibold text-neutral-900 hover:underline"
             >
               Iniciar sesión →
             </Link>
@@ -191,23 +179,17 @@ export default function SignupClient({
         )}
 
         {message && (
-          <div className="mt-6 rounded-xl bg-emerald-500/10 p-4 text-base text-emerald-700 ring-1 ring-emerald-500/30">
+          <div className="mt-6 rounded-xl bg-emerald-500/10 p-4 text-base text-emerald-700">
             {message}
           </div>
         )}
 
         {error && (
-          <div className="mt-6 rounded-xl bg-rose-500/10 p-4 text-base text-rose-700 ring-1 ring-rose-500/30">
+          <div className="mt-6 rounded-xl bg-rose-500/10 p-4 text-base text-rose-700">
             {error}
           </div>
         )}
       </div>
-
-      {variant === "page" && (
-        <div className="mt-8 text-center text-sm text-neutral-500">
-          Ayuda · Privacidad · Términos
-        </div>
-      )}
     </Wrapper>
   );
 }

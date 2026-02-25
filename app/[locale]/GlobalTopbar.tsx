@@ -145,7 +145,7 @@ const locale = String((params as any)?.locale ?? "es");
 
           {/* ENLACES NUEVOS */}
           <nav className="nav-inline" aria-label="Menú principal">
-  <Link href={`/${locale}/contact`} className="nav-link">Contacto</Link>
+  <Link href={`/${locale}/contact`} className="nav-link">contacto</Link>
   <Link href={`/${locale}/privacy`} className="nav-link">Privacidad</Link>
   <Link href={`/${locale}/terms`} className="nav-link">Términos</Link>
 </nav>
@@ -165,7 +165,9 @@ const locale = String((params as any)?.locale ?? "es");
             alignItems: 'center',
           }}
         >
-
+<Link href={`/${locale}/login`} className="login-button">
+    Iniciar sesión
+  </Link>
 
 
 

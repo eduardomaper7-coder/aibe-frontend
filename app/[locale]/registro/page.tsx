@@ -1,9 +1,10 @@
 import SignupClient from "./SignupClient";
 
-export default function SignupPage({
+export default async function SignupPage({
   searchParams,
 }: {
-  searchParams: { job_id?: string };
+  searchParams?: Promise<{ job_id?: string }>;
 }) {
-  return <SignupClient variant="page" jobId={searchParams.job_id ?? null} />;
+  const sp = (await searchParams) ?? {};
+  return <SignupClient variant="page" jobId={sp.job_id ?? null} />;
 }
