@@ -53,13 +53,15 @@ export default async function LocaleLayout({
   const messages = await getMessages();
 
   return (
-    <div className="relative">
-      <NextIntlClientProvider locale={locale} messages={messages}>
-        <PwaRegister />
+  <div className="relative">
+    <NextIntlClientProvider locale={locale} messages={messages}>
+      <PwaRegister />
+      <Providers>
         <TopbarGate />
-        <Providers>{children}</Providers>
-        <Analytics />
-      </NextIntlClientProvider>
-    </div>
-  );
+        {children}
+      </Providers>
+      <Analytics />
+    </NextIntlClientProvider>
+  </div>
+);
 }

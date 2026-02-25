@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState, Suspense } from "react";
 import { useSearchParams, useParams } from "next/navigation";
-import { useSession, signIn } from "next-auth/react";
 import Link from "next/link";
 
 import TemasSection from "./analisis/temas/TemasSection";
@@ -21,15 +20,23 @@ import { Card, CardContent } from "@/components/ui/card";
 function PanelUI() {
   const params = useParams();
   const locale = String((params as any)?.locale ?? "es");
-
-  const { status } = useSession();
-  const [isPro, setIsPro] = useState(false);
-
   const searchParams = useSearchParams();
   const jobIdStr = searchParams.get("job_id") ?? "";
   const jobIdNum = jobIdStr ? Number(jobIdStr) : 0;
 
   const API_BASE = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/+$/, "");
+  const [isPro, setIsPro] = useState(false);
+
+  // ✅ AHORA sí: useEffect que usa jobIdNum/API_BASE
+  useEffect(() => {
+    if (!jobIdNum || !API_BASE) return;
+
+    fetch(`${API_BASE}/jobs/${jobIdNum}/entitlements`, { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : Promise.reject(r)))
+      .then((d) => setIsPro(Boolean(d?.isPro)))
+      .catch(() => setIsPro(false));
+  }, [jobIdNum, API_BASE]);
+  
   const [placeName, setPlaceName] = useState<string | null>(null);
 
   // ---------------- Periodos (hooks SIEMPRE arriba) ----------------
@@ -114,48 +121,25 @@ function PanelUI() {
     setShowCustomMenu(false);
   };
 
-  // ✅ Guard: si no hay sesión → login con Google
-  useEffect(() => {
-    if (status === "unauthenticated") {
-      const callbackUrl = `/${locale}/panel${
-        jobIdStr ? `?job_id=${encodeURIComponent(jobIdStr)}` : ""
-      }`;
-      signIn("google", { callbackUrl });
-    }
-  }, [status, locale, jobIdStr]);
+ 
 
   // ✅ Cargar meta del job
   useEffect(() => {
-    if (status !== "authenticated") return;
-    if (!jobIdNum) return;
-    if (!API_BASE) return;
+  if (!jobIdNum) return;
+  if (!API_BASE) return;
 
-    fetch(`${API_BASE}/jobs/${jobIdNum}/meta`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (data?.place_name) setPlaceName(data.place_name);
-      })
-      .catch(() => {});
-  }, [status, jobIdNum, API_BASE]);
+  fetch(`${API_BASE}/jobs/${jobIdNum}/meta`)
+    .then((res) => (res.ok ? res.json() : Promise.reject(res)))
+    .then((data) => {
+      if (data?.place_name) setPlaceName(data.place_name);
+    })
+    .catch(() => {});
+}, [jobIdNum, API_BASE]);
 
-  // ✅ Comprobar si el usuario ya es PRO (trialing/active en Stripe)
-  useEffect(() => {
-    if (status !== "authenticated") return;
-
-    fetch("/api/billing/status", { cache: "no-store" })
-      .then((r) => (r.ok ? r.json() : Promise.reject(r)))
-      .then((d) => setIsPro(Boolean(d?.isPro)))
-      .catch(() => {});
-  }, [status]);
+  
+  
 
   // ---------------- returns DESPUÉS de todos los hooks ----------------
-  if (status === "loading") {
-    return <div className="p-6 text-slate-700">Cargando…</div>;
-  }
-
-  if (status !== "authenticated") {
-    return <div className="p-6 text-slate-700">Redirigiendo a login…</div>;
-  }
 
   if (!jobIdNum) {
     return (
