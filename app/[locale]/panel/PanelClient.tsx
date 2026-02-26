@@ -84,14 +84,20 @@ function PanelUI() {
   }, [jobIdStr, API_BASE, session, locale, router]);
 
   // ✅ Entitlements (solo si hay jobId válido)
-  useEffect(() => {
-    if (!jobIdNum || !API_BASE) return;
+useEffect(() => {
+  if (!jobIdNum || !API_BASE) return;
 
-    fetch(`${API_BASE}/jobs/${jobIdNum}/entitlements`, { cache: "no-store" })
-      .then((r) => (r.ok ? r.json() : Promise.reject(r)))
-      .then((d) => setIsPro(Boolean(d?.isPro)))
-      .catch(() => setIsPro(false));
-  }, [jobIdNum, API_BASE]);
+  const adminUnlock = searchParams.get("admin_unlock");
+
+  const entitlementsUrl = adminUnlock
+    ? `${API_BASE}/jobs/${jobIdNum}/entitlements?admin_unlock=${encodeURIComponent(adminUnlock)}`
+    : `${API_BASE}/jobs/${jobIdNum}/entitlements`;
+
+  fetch(entitlementsUrl, { cache: "no-store" })
+    .then((r) => (r.ok ? r.json() : Promise.reject(r)))
+    .then((d) => setIsPro(Boolean(d?.isPro)))
+    .catch(() => setIsPro(false));
+}, [jobIdNum, API_BASE, searchParams]);
 
   // ✅ Cargar meta del job
   useEffect(() => {
