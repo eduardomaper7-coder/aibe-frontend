@@ -205,7 +205,7 @@ function Categoria({
             Reseñas relacionadas
           </h4>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {reseñas.map((r, i) => (
+            {reseñas.slice(0, 3).map((r, i) => (
   <ReviewCard
     key={i}
     autor={r.autor}
@@ -232,21 +232,43 @@ function ReviewCard({
   rating: number;
   fecha_publicacion: string;
 }) {
+  const [expanded, setExpanded] = React.useState(false);
+
+  const limit = 220; // ajusta a gusto
+  const needsClamp = (texto?.length ?? 0) > limit;
+
+  const shownText =
+    expanded || !needsClamp ? texto : (texto || "").slice(0, limit).trimEnd() + "…";
+
   return (
-    <article className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+    <article className="relative rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+      {/* Botón ver más/menos */}
+      {needsClamp && (
+        <button
+          type="button"
+          onClick={() => setExpanded((v) => !v)}
+          className="absolute right-3 top-3 text-xs font-medium text-sky-700 hover:text-sky-800"
+        >
+          {expanded ? "Ver menos" : "Ver más"}
+        </button>
+      )}
+
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Avatar />
           <div>
             <p className="text-sm font-medium text-slate-900">{autor}</p>
             <p className="text-xs text-slate-500">
-  Reseña seleccionada · {formatDate(fecha_publicacion ?? "")}
-</p>
+              Reseña seleccionada · {formatDate(fecha_publicacion ?? "")}
+            </p>
           </div>
         </div>
         <Stars rating={rating} />
       </div>
-      <p className="mt-3 text-sm text-slate-700 leading-relaxed">{texto}</p>
+
+      <p className="mt-3 text-sm text-slate-700 leading-relaxed whitespace-pre-line">
+        {shownText}
+      </p>
     </article>
   );
 }
