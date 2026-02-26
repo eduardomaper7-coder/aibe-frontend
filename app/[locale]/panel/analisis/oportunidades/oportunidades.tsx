@@ -240,8 +240,8 @@ function ReviewCard({
           <div>
             <p className="text-sm font-medium text-slate-900">{autor}</p>
             <p className="text-xs text-slate-500">
-              Reseña seleccionada · {formatDate(fecha_publicacion)}
-            </p>
+  Reseña seleccionada · {formatDate(fecha_publicacion ?? "")}
+</p>
           </div>
         </div>
         <Stars rating={rating} />
@@ -252,16 +252,18 @@ function ReviewCard({
 }
 
 function Stars({ rating }: { rating: number }) {
-  const r = clamp(Math.round(rating), 0, 5);
+  const raw = Number(rating);
+  const safe = Number.isFinite(raw) ? raw : 0;
+  const r = clamp(Math.round(safe), 0, 5);
 
   return (
     <div className="flex items-center gap-0.5" aria-label={`${r} estrellas`}>
-      {[...Array(r)].map((_, i) => (
+      {Array.from({ length: r }).map((_, i) => (
         <svg key={`f${i}`} viewBox="0 0 20 20" className="h-4 w-4 fill-amber-400">
           <path d="M10 15l-5.878 3.09 1.122-6.545L.488 6.91l6.562-.954L10 0l2.95 5.956 6.562.954-4.756 4.635 1.122 6.545z" />
         </svg>
       ))}
-      {[...Array(5 - r)].map((_, i) => (
+      {Array.from({ length: 5 - r }).map((_, i) => (
         <svg key={`e${i}`} viewBox="0 0 20 20" className="h-4 w-4 fill-slate-200">
           <path d="M10 15l-5.878 3.09 1.122-6.545L.488 6.91l6.562-.954L10 0l2.95 5.956 6.562.954-4.756 4.635 1.122 6.545z" />
         </svg>
