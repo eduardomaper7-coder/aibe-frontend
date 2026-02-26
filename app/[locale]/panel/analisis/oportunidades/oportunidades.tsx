@@ -5,6 +5,8 @@ import React, { useEffect, useState } from "react";
 type ReviewSnippet = {
   autor: string;
   texto: string;
+  rating: number;          // 👈 NUEVO (1..5)
+  fecha_publicacion: string;
 };
 
 type CategoriaPlan = {
@@ -204,8 +206,14 @@ function Categoria({
           </h4>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {reseñas.map((r, i) => (
-              <ReviewCard key={i} autor={r.autor} texto={r.texto} />
-            ))}
+  <ReviewCard
+    key={i}
+    autor={r.autor}
+    texto={r.texto}
+    rating={r.rating}
+    fecha_publicacion={r.fecha_publicacion}
+  />
+))}
           </div>
         </div>
       )}
@@ -213,7 +221,17 @@ function Categoria({
   );
 }
 
-function ReviewCard({ autor, texto }: { autor: string; texto: string }) {
+function ReviewCard({
+  autor,
+  texto,
+  rating,
+  fecha_publicacion,
+}: {
+  autor: string;
+  texto: string;
+  rating: number;
+  fecha_publicacion: string;
+}) {
   return (
     <article className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
       <div className="flex items-center justify-between">
@@ -221,36 +239,39 @@ function ReviewCard({ autor, texto }: { autor: string; texto: string }) {
           <Avatar />
           <div>
             <p className="text-sm font-medium text-slate-900">{autor}</p>
-            <p className="text-xs text-slate-500">Reseña seleccionada</p>
+            <p className="text-xs text-slate-500">
+              Reseña seleccionada · {formatDate(fecha_publicacion)}
+            </p>
           </div>
         </div>
-        <Stars />
+        <Stars rating={rating} />
       </div>
       <p className="mt-3 text-sm text-slate-700 leading-relaxed">{texto}</p>
     </article>
   );
 }
 
-function Stars() {
-  // De momento fijo 2/5 como en tu demo original
+function Stars({ rating }: { rating: number }) {
+  const r = clamp(Math.round(rating), 0, 5);
+
   return (
-    <div className="flex items-center gap-0.5" aria-label="2 estrellas">
-      {[...Array(2)].map((_, i) => (
-        <svg key={i} viewBox="0 0 20 20" className="h-4 w-4 fill-amber-400">
+    <div className="flex items-center gap-0.5" aria-label={`${r} estrellas`}>
+      {[...Array(r)].map((_, i) => (
+        <svg key={`f${i}`} viewBox="0 0 20 20" className="h-4 w-4 fill-amber-400">
           <path d="M10 15l-5.878 3.09 1.122-6.545L.488 6.91l6.562-.954L10 0l2.95 5.956 6.562.954-4.756 4.635 1.122 6.545z" />
         </svg>
       ))}
-      {[...Array(3)].map((_, i) => (
-        <svg
-          key={`o${i}`}
-          viewBox="0 0 20 20"
-          className="h-4 w-4 fill-slate-200"
-        >
+      {[...Array(5 - r)].map((_, i) => (
+        <svg key={`e${i}`} viewBox="0 0 20 20" className="h-4 w-4 fill-slate-200">
           <path d="M10 15l-5.878 3.09 1.122-6.545L.488 6.91l6.562-.954L10 0l2.95 5.956 6.562.954-4.756 4.635 1.122 6.545z" />
         </svg>
       ))}
     </div>
   );
+}
+
+function clamp(n: number, min: number, max: number) {
+  return Math.max(min, Math.min(max, n));
 }
 
 function Avatar() {
@@ -265,4 +286,15 @@ function Dot(props: React.SVGProps<SVGSVGElement>) {
       <circle cx="4" cy="4" r="4" />
     </svg>
   );
+}
+function formatDate(value: string) {
+  // Si te llega ISO tipo "2025-02-01T10:12:00Z"
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return value; // si ya viene formateada, la devolvemos tal cual
+
+  return new Intl.DateTimeFormat("es-ES", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  }).format(d);
 }
