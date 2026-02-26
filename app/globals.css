@@ -1014,3 +1014,11 @@ body {
   .hero-cta-row { display: grid !important; grid-template-columns: 1fr !important; }
   .hero-form-row { display: grid !important; grid-template-columns: 1fr !important; }
 }
+
+@media (max-width: 640px) {
+
+  .hero-subtitle {
+    margin-bottom: 80px !important;  /* aumenta separación */
+  }
+
+}

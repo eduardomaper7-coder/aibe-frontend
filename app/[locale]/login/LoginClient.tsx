@@ -1,10 +1,39 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import Link from "next/link";
+import React, { useEffect, useState } from "react";
 import { signIn, useSession } from "next-auth/react";
 import { useParams, useRouter } from "next/navigation";
 
-export default function LoginClient({ jobId }: { jobId: string | null }) {
+type Props = {
+  variant?: "page" | "modal";
+  onSuccess?: () => void;
+  showSignupLink?: boolean;
+  jobId?: string | null;
+};
+
+function Wrapper({
+  variant,
+  children,
+}: {
+  variant: "page" | "modal";
+  children: React.ReactNode;
+}) {
+  if (variant === "modal") return <div>{children}</div>;
+
+  return (
+    <div className="min-h-screen w-full grid place-items-center bg-neutral-50 text-neutral-900">
+      <div className="w-full max-w-2xl px-6">{children}</div>
+    </div>
+  );
+}
+
+export default function LoginClient({
+  variant = "page",
+  onSuccess,
+  showSignupLink = true,
+  jobId = null,
+}: Props) {
   const params = useParams();
   const locale = String((params as any)?.locale ?? "es");
   const router = useRouter();
@@ -18,11 +47,14 @@ export default function LoginClient({ jobId }: { jobId: string | null }) {
 
   const API_BASE = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/+$/, "");
 
-  // Si viene job_id en URL, guárdalo para futuras veces (opcional)
+  const jobIdEffective =
+    jobId ?? (typeof window !== "undefined" ? localStorage.getItem("job_id") : null);
+
+  // Si viene job_id, guárdalo
   useEffect(() => {
     if (!jobId) return;
     try {
-      localStorage.setItem("job_id", jobId);
+      localStorage.setItem("job_id", String(jobId));
     } catch {}
   }, [jobId]);
 
@@ -42,13 +74,18 @@ export default function LoginClient({ jobId }: { jobId: string | null }) {
           try {
             localStorage.setItem("job_id", jid);
           } catch {}
+          onSuccess?.();
           router.replace(`/${locale}/panel?job_id=${encodeURIComponent(jid)}`);
         } else {
+          onSuccess?.();
           router.replace(`/${locale}/plan`);
         }
       })
-      .catch(() => router.replace(`/${locale}/plan`));
-  }, [status, session, API_BASE, locale, router]);
+      .catch(() => {
+        onSuccess?.();
+        router.replace(`/${locale}/plan`);
+      });
+  }, [status, session, API_BASE, locale, router, onSuccess]);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -65,7 +102,7 @@ export default function LoginClient({ jobId }: { jobId: string | null }) {
     const res = await signIn("credentials", {
       email: safeEmail,
       password,
-      redirect: false, // <-- importante
+      redirect: false,
     });
 
     if (res?.error) {
@@ -74,37 +111,70 @@ export default function LoginClient({ jobId }: { jobId: string | null }) {
       return;
     }
 
-    // Si no hay error, useSession pasará a authenticated y el useEffect redirige
+    // useSession pasará a authenticated y el useEffect redirige
     setLoading(false);
   }
 
   return (
-    <form onSubmit={onSubmit} className="max-w-md mx-auto p-6">
-      <h1 className="text-2xl font-semibold">Iniciar sesión</h1>
+    <Wrapper variant={variant}>
+      <div className="rounded-3xl bg-white p-10 md:p-12 shadow-2xl ring-1 ring-black/5">
+        <h1 className="text-3xl font-bold tracking-tight">Iniciar sesión</h1>
+        <p className="mt-3 text-base text-neutral-600">
+          Accede a tu cuenta para continuar.
+        </p>
 
-      <input
-        className="border w-full p-3 mt-4"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        placeholder="Email"
-        type="email"
-      />
-      <input
-        className="border w-full p-3 mt-3"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        placeholder="Contraseña"
-        type="password"
-      />
+        <form onSubmit={onSubmit} className="mt-8 space-y-5">
+          <label className="block text-base font-medium text-neutral-800">
+            Correo electrónico
+          </label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full rounded-2xl border border-neutral-300 bg-white px-5 py-4 text-base outline-none"
+            placeholder="Email"
+          />
 
-      {err && <p className="text-red-600 mt-3">{err}</p>}
+          <label className="block text-base font-medium text-neutral-800">
+            Contraseña
+          </label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full rounded-2xl border border-neutral-300 bg-white px-5 py-4 text-base outline-none"
+            placeholder="Contraseña"
+          />
 
-      <button
-        className="mt-4 w-full bg-black text-white p-3 rounded-xl disabled:opacity-60"
-        disabled={loading}
-      >
-        {loading ? "Entrando..." : "Entrar"}
-      </button>
-    </form>
+          <button
+            type="submit"
+            disabled={loading}
+            className="mt-4 inline-flex w-full items-center justify-center rounded-2xl bg-black px-5 py-4 text-base font-semibold text-white disabled:opacity-60"
+          >
+            {loading ? "Entrando…" : "Entrar"}
+          </button>
+        </form>
+
+        {showSignupLink && (
+          <div className="mt-6 flex items-center justify-center">
+            <span className="text-base text-neutral-600">¿No tienes cuenta?</span>
+            <Link
+              href={`/${locale}/registro${
+                jobIdEffective ? `?job_id=${encodeURIComponent(jobIdEffective)}` : ""
+              }`}
+              className="ml-2 text-base font-semibold text-neutral-900 hover:underline"
+            >
+              Crear cuenta →
+            </Link>
+          </div>
+        )}
+
+        {err && (
+          <div className="mt-6 rounded-xl bg-rose-500/10 p-4 text-base text-rose-700">
+            {err}
+          </div>
+        )}
+      </div>
+    </Wrapper>
   );
 }

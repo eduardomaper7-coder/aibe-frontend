@@ -130,10 +130,10 @@ return;
     <Wrapper variant={variant}>
       <div className="rounded-3xl bg-white p-10 md:p-12 shadow-2xl ring-1 ring-black/5">
         <h1 className="text-3xl font-bold tracking-tight">
-          Mira y Guarda tu análisis Gratis
+          Regístrate antes de continuar
         </h1>
         <p className="mt-3 text-base text-neutral-600">
-          Crea tu cuenta para guardar este análisis y volver a él cuando quieras.
+          Crea una cuenta para poder volver a iniciar sesión cuando quieras.
         </p>
 
         <form onSubmit={handleEmail} className="mt-8 space-y-5">
