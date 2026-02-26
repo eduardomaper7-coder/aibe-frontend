@@ -7,7 +7,23 @@
 
 
 
+
+
+
+
+
+
+
+
 import { useEffect, useState } from 'react';
+
+
+
+
+
+
+
+
 
 
 
@@ -31,7 +47,14 @@ import Image from "next/image";
 import { useTranslations } from "next-intl";
 
 
+
+
 import { useRouter, useParams } from "next/navigation";
+
+
+
+
+
 
 
 
@@ -45,6 +68,8 @@ const t = useTranslations();
 const router = useRouter();
 
 
+
+
   const [loading, setLoading] = useState(false);
   const API_BASE = process.env.NEXT_PUBLIC_API_URL;
 const [progressIndex, setProgressIndex] = useState(0);
@@ -52,11 +77,16 @@ const PROGRESS_MESSAGES = t.raw("home.progress.messages") as string[];
 const params = useParams();
 const locale = String((params as any)?.locale ?? "es");
 
+
 useEffect(() => {
   if (!loading) {
     setProgressIndex(0);
     return;
   }
+
+
+
+
 
 
 
@@ -70,14 +100,24 @@ useEffect(() => {
 
 
 
+
+
+
+
   return () => clearInterval(id);
 }, [loading]);
 
 
 
 
+
+
+
+
   async function runScrapeWithCandidate(c: any) {
   const apiBase = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/+$/, "");
+
+
 
 
   const res = await fetch(`${apiBase}/scrape`, {
@@ -91,14 +131,22 @@ useEffect(() => {
 }),
 
 
+
+
   });
+
+
 
 
   if (!res.ok) throw new Error(await res.text());
   const data = await res.json();
 
 
+
+
   if (!data?.job_id) throw new Error("No llegó job_id");
+
+
 
 
   router.push(`/${locale}/panel?job_id=${encodeURIComponent(data.job_id)}`);
@@ -107,17 +155,25 @@ useEffect(() => {
   const PHRASES = t.raw("home.hero.dynamicPhrases") as string[];
 
 
+
+
   const el = document.getElementById("dynamicPart");
   if (!el || !PHRASES?.length) return;
+
+
 
 
   let i = 0;
   el.textContent = PHRASES[0];
 
 
+
+
   const id = setInterval(() => {
     i = (i + 1) % PHRASES.length;
     el.style.opacity = "0";
+
+
 
 
     setTimeout(() => {
@@ -127,8 +183,16 @@ useEffect(() => {
   }, 3000);
 
 
+
+
   return () => clearInterval(id);
 }, [t]);
+
+
+
+
+
+
 
 
 
@@ -181,42 +245,7 @@ async function handleStart() {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   const sectionCx = 'bg-black px-4 md:px-6 py-6 md:py-8';
-
-
 
 
 
@@ -234,17 +263,6 @@ async function handleStart() {
 
 
 
-  {/* IMAGEN fija detrás de todo */}
-  {/* Fondo */}
-  <div className="hero-video-wrapper">
-    <Image
-      src="/imagenes/hero-imagen.png"
-      alt="Hero"
-      fill
-      priority
-      className="hero-video"
-    />
-  </div>
 
 
 
@@ -253,93 +271,43 @@ async function handleStart() {
 
 
 
+  {/* Fondo azul moderno */}
+<div className="hero-bg" aria-hidden="true" />
+ 
 
 
+{/* Contenido */}
+<div className="shell relative z-[1] hero-inner">
+  {/* Columna izquierda */}
+  <div className="hero-left">
+    <h1 className="hero-title">
+      Más reseñas en Google para tu clínica.
+    </h1>
 
 
+    <p className="hero-price">Todo incluido por 12€ al mes.</p>
 
 
+    <p className="hero-subtitle">
+      Fácil de integrar. Atención personalizada.
+    </p>
 
 
+   
 
 
-
-
-
-
-
-
-  {/* Contenido encima del video */}
-  <div className="shell relative z-[1]">
-        <div className="center">
-      <div className="title-slot">
-        <div className="title-layer">
-          <h1 className="title">
-  {t("home.hero.titlePrefix")}{" "}
-  <span id="dynamicPart" className="text-white/90" />
-</h1>
-
-
-
-
-
-
-        </div>
-      </div>
-      <p className="subtitle">{t("home.hero.subtitle")}</p>
-
-
-
-
-    </div>
-  </div>
-
-
-
-
-
-
-
-
-{/* Input + botón (Nombre + Zona) */}
-
-
-<div className="relative z-[50] mt-8">
-  <div className="mx-auto w-full max-w-[820px] px-4">
-    <div
-      className="
-        flex flex-col gap-3
-        rounded-2xl
-        bg-white/10 backdrop-blur-md
-        border border-white/15
-        shadow-[0_20px_60px_rgba(0,0,0,0.35)]
-        p-3
-      "
-    >
-      {/* Inputs row */}
-      <div className="flex flex-col md:flex-row items-stretch gap-3">
-        {/* Nombre */}
-        <div className="flex items-center gap-3 w-full md:flex-1 rounded-xl bg-white border border-black/10 px-4 h-12 text-black/70">
-          <svg
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            className="opacity-80 shrink-0"
-            aria-hidden="true"
-          >
-            <path
-              d="M10.5 18a7.5 7.5 0 1 1 5.3-12.8"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-            />
-            <path
-              d="M16 16l5 5"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-            />
+    {/* Recuadro grande abajo izquierda */}
+    <div className="hero-form-card">
+      {/* Texto dentro del recuadro */}
+  <p className="hero-form-hint">
+    Escribe el nombre de tu clínica y tu ciudad para analizar todas tus reseñas en segundos.
+  </p>
+      <div className="hero-form-row">
+        {/* Nombre clínica */}
+        <div className="hero-input">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="opacity-80 shrink-0" aria-hidden="true">
+            <path d="M10.5 18a7.5 7.5 0 1 1 5.3-12.8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            <path d="M16 16l5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
           </svg>
 
 
@@ -347,28 +315,15 @@ async function handleStart() {
             type="text"
             value={placeName}
             onChange={(e) => setPlaceName(e.target.value)}
-            placeholder={t("home.hero.placeholders.businessName")}
+            placeholder="Nombre de la clínica"
             disabled={loading}
-            className="
-  w-full bg-transparent text-black placeholder:text-gray-500
-  outline-none text-[15px]
-"
-
-
           />
         </div>
 
 
-        {/* Zona */}
-        <div className="flex items-center gap-3 md:w-[280px] rounded-xl bg-white border border-black/10 px-4 h-12 text-black/70">
-          <svg
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            className="opacity-80 shrink-0"
-            aria-hidden="true"
-          >
+        {/* Ciudad */}
+        <div className="hero-input hero-input-city">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="opacity-80 shrink-0" aria-hidden="true">
             <path
               d="M12 22s7-4.4 7-12a7 7 0 1 0-14 0c0 7.6 7 12 7 12Z"
               stroke="currentColor"
@@ -390,30 +345,19 @@ async function handleStart() {
             type="text"
             value={placeZone}
             onChange={(e) => setPlaceZone(e.target.value)}
-            placeholder={t("home.hero.placeholders.city")}
+            placeholder="Ciudad"
             disabled={loading}
-            className="
-  w-full bg-transparent text-black placeholder:text-gray-500
-  outline-none text-[15px]
-"
-
-
           />
         </div>
       </div>
 
 
-      {/* CTA row */}
-      <div className="flex flex-col md:flex-row items-stretch md:items-center gap-3">
-        <div className="flex-1">
+      <div className="hero-cta-row">
+        <div className="hero-progress">
           {!loading ? (
-            <p className="text-xs text-white/60 md:pl-1">
-             
-            </p>
+            <span />
           ) : (
-            <p className="text-xs text-white/60 md:pl-1">
-              {PROGRESS_MESSAGES[progressIndex]}
-            </p>
+            <p>{PROGRESS_MESSAGES[progressIndex]}</p>
           )}
         </div>
 
@@ -422,25 +366,16 @@ async function handleStart() {
           type="button"
           onClick={handleStart}
           disabled={loading || !placeName.trim()}
-          className="
-            h-12 px-6 rounded-xl font-medium
-            bg-white text-black
-            hover:bg-white/90
-            disabled:opacity-50 disabled:cursor-not-allowed
-            transition
-            flex items-center justify-center gap-2
-            whitespace-nowrap
-          "
+          className="hero-cta"
         >
           {loading ? (
             <>
-              <span className="h-4 w-4 animate-spin rounded-full border-2 border-black border-t-transparent" />
+              <span className="hero-spinner" />
               {t("home.hero.cta.analyzing")}
             </>
           ) : (
             <>
-              {t("home.hero.cta.startFree")}
-  <span aria-hidden="true">→</span>
+              Analizar reseñas <span aria-hidden="true">→</span>
             </>
           )}
         </button>
@@ -448,12 +383,72 @@ async function handleStart() {
     </div>
 
 
-    {/* Microcopy */}
     {!loading && (
-      <p className="mt-3 text-xs text-white/60 text-center">
+      <p className="hero-microcopy">
         {t("home.hero.microcopy")}
       </p>
     )}
+
+
+    {/* Candidates igual que lo tienes (solo muévelo aquí debajo si quieres que aparezca bajo el recuadro) */}
+    {candidates?.length ? (
+      <div className="hero-candidates">
+        <div className="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-md p-3">
+          <p className="text-sm text-white/80 mb-2">{t("home.candidates.title")}</p>
+          <div className="flex flex-col gap-2">
+            {candidates.map((c, idx) => (
+              <button
+                key={c.place_id || idx}
+                type="button"
+                className="text-left rounded-xl px-4 py-3 bg-black/30 hover:bg-black/40 border border-white/10 transition"
+                onClick={async () => {
+                  try {
+                    setLoading(true);
+                    await runScrapeWithCandidate(c);
+                  } catch (e) {
+                    console.error(e);
+                    alert(t("errors.startAnalysisFailed"));
+                  } finally {
+                    setLoading(false);
+                  }
+                }}
+                disabled={loading}
+              >
+                <div className="text-white font-medium">{c.name}</div>
+                <div className="text-white/70 text-sm">{c.address}</div>
+                <div className="text-white/60 text-xs mt-1">
+                  {c.rating ? `⭐ ${c.rating}` : ""}{" "}
+                  {c.user_ratings_total ? `(${c.user_ratings_total} ${t("home.candidates.reviewsLabel")})` : ""}
+                </div>
+              </button>
+            ))}
+          </div>
+
+
+          <button
+            type="button"
+            className="mt-3 text-xs text-white/70 hover:text-white"
+            onClick={() => setCandidates(null)}
+            disabled={loading}
+          >
+            {t("home.candidates.cancel")}
+          </button>
+        </div>
+      </div>
+    ) : null}
+  </div>
+
+
+  {/* Columna derecha */}
+  <div className="hero-right" aria-hidden="true">
+    <Image
+  src="/imagenes/hero.png"
+  alt="Ilustración reseñas clínicas"
+  width={900}
+  height={900}
+  className="hero-illustration"
+  priority
+/>
   </div>
 </div>
 
@@ -462,107 +457,7 @@ async function handleStart() {
 
 
 
-{candidates?.length ? (
-  <div className="mx-auto mt-4 w-full max-w-[760px] px-4">
-    <div className="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-md p-3">
-      <p className="text-sm text-white/80 mb-2">
-        {t("home.candidates.title")}
-      </p>
-
-
-      <div className="flex flex-col gap-2">
-        {candidates.map((c, idx) => (
-          <button
-            key={c.place_id || idx}
-            type="button"
-            className="text-left rounded-xl px-4 py-3 bg-black/30 hover:bg-black/40 border border-white/10 transition"
-            onClick={async () => {
-  try {
-    setLoading(true);
-    await runScrapeWithCandidate(c);
-  } catch (e) {
-    console.error(e);
-    alert(t("errors.startAnalysisFailed"));
-  } finally {
-    setLoading(false);
-  }
-}}
-
-
-            disabled={loading}
-          >
-            <div className="text-white font-medium">{c.name}</div>
-            <div className="text-white/70 text-sm">{c.address}</div>
-            <div className="text-white/60 text-xs mt-1">
-              {c.rating ? `⭐ ${c.rating}` : ""}{" "}
-              {c.user_ratings_total ? `(${c.user_ratings_total} ${t("home.candidates.reviewsLabel")})` : ""}
-            </div>
-          </button>
-        ))}
-      </div>
-
-
-      <button
-        type="button"
-        className="mt-3 text-xs text-white/70 hover:text-white"
-        onClick={() => setCandidates(null)}
-        disabled={loading}
-      >
-        {t("home.candidates.cancel")}
-      </button>
-    </div>
-  </div>
-) : null}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 </section>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-   
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -575,8 +470,6 @@ async function handleStart() {
   <SeoBeneficio />
 </section>
 */}
-
-
 
 
 
@@ -602,8 +495,24 @@ async function handleStart() {
 
 
 
+
+
+
+
+
+
+
+
       <VideoInicio />
       <TresRecuadros />
+
+
+
+
+
+
+
+
 
 
 
@@ -632,6 +541,14 @@ async function handleStart() {
 
 
 
+
+
+
+
+
+
+
+
       <div className="md:col-span-7">
         <h2 className="mt-0 text-2xl md:text-4xl lg:text-5xl font-light leading-tight text-gray-100">
           {t("home.blueSection.headline")}
@@ -645,7 +562,23 @@ async function handleStart() {
 
 
 
+
+
+
+
+
+
+
+
       <div className="md:col-span-5 flex flex-col items-end justify-start space-y-1">
+
+
+
+
+
+
+
+
 
 
 
@@ -673,7 +606,33 @@ async function handleStart() {
 
 
 
+
+
+
+
+
+
+
+
+
+
 </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -693,6 +652,46 @@ async function handleStart() {
     </div>
   </div>
 </section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -742,7 +741,23 @@ async function handleStart() {
 
 
 
+
+
+
+
+
+
+
+
      
+
+
+
+
+
+
+
+
 
 
 
@@ -769,6 +784,14 @@ async function handleStart() {
 
 
 
+
+
+
+
+
+
+
+
             {/* Volumen */}
             <div className="flex justify-start w-full">
               <div className="w-full max-w-[980px]">
@@ -778,6 +801,14 @@ async function handleStart() {
           </div>
         </div>
       </section>
+
+
+
+
+
+
+
+
 
 
 
@@ -797,10 +828,26 @@ async function handleStart() {
 
 
 
+
+
+
+
+
+
+
+
       {/* Resto de secciones */}
       <section className="bg-black px-4 md:px-6 pt-0 pb-6 md:pb-8">
         <SeccionResenasIA />
       </section>
+
+
+
+
+
+
+
+
 
 
 
