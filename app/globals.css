@@ -735,3 +735,282 @@ body {
 .hero-form-hint{
   white-space: nowrap;        /* fuerza una sola línea */
 }
+
+
+/* =========================
+   HERO — Ajustes SOLO móvil
+   (no afecta a escritorio)
+   ========================= */
+@media (max-width: 640px) {
+
+  /* Más aire lateral y menos altura “vacía” */
+  .hero {
+    padding-top: 16px;
+    padding-bottom: 18px;
+  }
+
+  /* Si tu .shell tiene un max-width y padding, en móvil lo controlamos */
+  .hero .shell,
+  .hero-inner {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  /* Columna derecha (imagen) fuera en móvil o debajo.
+     Si quieres que desaparezca para que el texto respire: */
+  .hero-right {
+    display: none;
+  }
+
+  /* Títulos: más pequeños y con mejor corte */
+  .hero-title {
+    font-size: 34px;      /* prueba 32–36 */
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin-bottom: 10px;
+  }
+
+  .hero-price {
+    font-size: 28px;      /* clave: bajar de tamaño */
+    line-height: 1.1;
+    margin-top: 6px;
+    margin-bottom: 8px;
+  }
+
+  .hero-subtitle {
+    font-size: 15px;
+    line-height: 1.35;
+    opacity: 0.9;
+    margin-bottom: 14px;
+  }
+
+  /* Card (recuadro): menos grande, padding más compacto */
+  .hero-form-card {
+    border-radius: 22px;
+    padding: 14px;
+    margin-top: 10px;
+  }
+
+  .hero-form-hint {
+    font-size: 14px;
+    line-height: 1.35;
+    margin-bottom: 10px;
+  }
+
+  /* Inputs en columna (uno debajo del otro) */
+  .hero-form-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .hero-input {
+    height: 48px;
+    border-radius: 14px;
+  }
+
+  .hero-input input {
+    font-size: 16px; /* evita zoom en iOS al enfocar */
+  }
+
+  /* CTA: apilado y botón full width */
+  .hero-cta-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    align-items: start;
+    margin-top: 10px;
+  }
+
+  .hero-cta {
+    width: 100%;
+    height: 48px;
+    border-radius: 14px;
+    font-size: 15px;
+  }
+
+  .hero-progress p {
+    font-size: 12px;
+    line-height: 1.2;
+    opacity: 0.85;
+  }
+
+  .hero-microcopy {
+    font-size: 12px;
+    opacity: 0.75;
+    margin-top: 10px;
+  }
+
+  /* Por si hay desbordes raros en móvil */
+  .hero,
+  .hero * {
+    max-width: 100%;
+  }
+}
+
+/* =========================================
+   HERO — Móvil (más compacto)
+   NO afecta a escritorio
+   ========================================= */
+@media (max-width: 640px) {
+
+  /* Quita altura “de sobra” del hero */
+  .hero{
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+
+  /* Reduce el ancho útil del contenido (clave para que no parezca “gigante”) */
+  .hero-inner{
+    max-width: 420px;     /* controla el “zoom” visual */
+    margin: 0 auto;
+  }
+
+  /* Títulos: usa clamp para que baje de verdad en móvil */
+  .hero-title{
+    font-size: clamp(24px, 7.2vw, 30px);
+    line-height: 1.05;
+    margin: 0 0 8px 0;
+    letter-spacing: -0.02em;
+  }
+
+  .hero-price{
+    font-size: clamp(18px, 5.8vw, 24px);
+    line-height: 1.15;
+    margin: 0 0 6px 0;
+  }
+
+  .hero-subtitle{
+    font-size: 13px;
+    line-height: 1.35;
+    margin: 0 0 12px 0;
+    opacity: .9;
+  }
+
+  /* Card: menos padding y menos “alto” */
+  .hero-form-card{
+    padding: 12px;
+    border-radius: 18px;
+    margin-top: 8px;
+  }
+
+  .hero-form-hint{
+    font-size: 13px;
+    line-height: 1.35;
+    margin: 0 0 10px 0;
+  }
+
+  /* Inputs más compactos */
+  .hero-form-row{
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .hero-input{
+    height: 44px;          /* baja de 48 */
+    border-radius: 12px;
+  }
+
+  .hero-input svg{
+    width: 16px;
+    height: 16px;
+  }
+
+  .hero-input input{
+    font-size: 16px;       /* evita zoom iOS */
+    padding: 10px 12px;
+  }
+
+  /* CTA: full width pero más baja */
+  .hero-cta-row{
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .hero-cta{
+    height: 44px;
+    width: 100%;
+    border-radius: 12px;
+    font-size: 14px;
+  }
+
+  .hero-progress p{
+    font-size: 12px;
+  }
+
+  .hero-microcopy{
+    font-size: 12px;
+    margin-top: 10px;
+    opacity: .75;
+  }
+
+  /* Si la imagen derecha sigue existiendo, fuera en móvil */
+  .hero-right{
+    display: none !important;
+  }
+}
+
+/* Aún más compacto en pantallas muy pequeñas */
+@media (max-width: 380px) {
+  .hero-inner{ max-width: 360px; }
+  .hero-title{ font-size: 24px; }
+  .hero-price{ font-size: 18px; }
+}
+
+
+/* =========================================
+   HOTFIX MÓVIL — anula reglas que pisan el hero
+   (NO afecta a escritorio)
+   PÉGALO AL FINAL DEL ARCHIVO
+   ========================================= */
+@media (max-width: 640px) {
+
+  /* Permitir saltos de línea (esto es clave) */
+  .hero-title,
+  .hero-form-hint {
+    white-space: normal !important;
+  }
+
+  /* Quitar márgenes enormes que están agrandando el hero */
+  .hero-form-card {
+    margin-top: 12px !important; /* anula tu margin-top:150px */
+  }
+
+  /* En móvil no necesitamos altura mínima de desktop */
+  .hero-left,
+  .hero-right {
+    min-height: unset !important;
+  }
+
+  /* Si quieres que el hero no sea tan alto */
+  .hero {
+    height: auto !important;
+    min-height: 0 !important;
+    padding: 64px 0 22px !important; /* mantiene separación de topbar */
+  }
+
+  /* Tamaños de texto realmente mobile */
+  .hero-title {
+    font-size: 28px !important;
+    line-height: 1.08 !important;
+  }
+
+  .hero-price {
+    font-size: 22px !important;
+    line-height: 1.12 !important;
+  }
+
+  .hero-form-hint {
+    font-size: 13px !important;
+    line-height: 1.35 !important;
+  }
+
+  /* Inputs y CTA compactos */
+  .hero-input { height: 44px !important; }
+  .hero-cta { height: 44px !important; width: 100% !important; }
+  .hero-cta-row { display: grid !important; grid-template-columns: 1fr !important; }
+  .hero-form-row { display: grid !important; grid-template-columns: 1fr !important; }
+}

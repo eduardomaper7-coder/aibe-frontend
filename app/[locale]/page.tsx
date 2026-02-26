@@ -29,7 +29,7 @@ import { useEffect, useState } from 'react';
 
 
 
-
+import HeroResenas from "@/components/ui/HeroResenas";
 
 
 import SeccionResenasIA from '@/components/ui/SeccionResenasIA';
@@ -474,7 +474,7 @@ async function handleStart() {
 
 
 
-
+<HeroResenas />
 
      {/* Secciones */}
 <section
@@ -652,27 +652,6 @@ async function handleStart() {
     </div>
   </div>
 </section>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
