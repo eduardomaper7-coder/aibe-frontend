@@ -11,9 +11,7 @@ export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const jobId = searchParams.get("job_id");
-    if (!jobId) {
-      return NextResponse.json({ error: "missing job_id" }, { status: 400 });
-    }
+    if (!jobId) return NextResponse.json({ error: "missing job_id" }, { status: 400 });
 
     const session = await getServerSession(authOptions);
     if (!session || !(session as any).userId || !session.user?.email) {
@@ -26,37 +24,33 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "NEXT_PUBLIC_SITE_URL invalid" }, { status: 500 });
     }
 
-    // Construidos (por si quieres volver a usarlos en vez de hardcodear URLs)
-    const successUrl = new URL(`/es/panel?job_id=${encodeURIComponent(jobId)}`, siteUrl).toString();
-    const cancelUrl = new URL(`/es/plan?job_id=${encodeURIComponent(jobId)}`, siteUrl).toString();
+    const successUrl = new URL(/es/panel?job_id=${encodeURIComponent(jobId)}, siteUrl).toString();
+    const cancelUrl  = new URL(/es/plan?job_id=${encodeURIComponent(jobId)}, siteUrl).toString();
 
     const stripeSession = await stripe.checkout.sessions.create({
-      mode: "subscription",
-      customer_email: session.user.email,
+  mode: "subscription",
+  customer_email: session.user.email,
 
-      // ✅ Permite meter códigos promocionales en la pasarela (Stripe Checkout)
-      allow_promotion_codes: true,
+  line_items: [
+    {
+      price: process.env.STRIPE_PRICE_ID!,
+      quantity: 1,
+    },
+  ],
 
-      line_items: [
-        {
-          price: process.env.STRIPE_PRICE_ID!,
-          quantity: 1,
-        },
-      ],
+  subscription_data: {
+    trial_period_days: 7, // 👈 TRIAL DE 7 DÍAS
+  },
 
-      // ❌ Trial eliminado (solo descuento por código)
-      // subscription_data: { trial_period_days: 7 },
+  success_url: https://www.aibetech.es/es/panel?job_id=${jobId},
+  cancel_url: https://www.aibetech.es/es/plan?job_id=${jobId},
 
-      // Puedes usar las URLs construidas arriba o tus hardcodeadas
-      success_url: successUrl,
-      cancel_url: cancelUrl,
-
-      metadata: {
-        job_id: jobId,
-        user_id: String((session as any).userId),
-        email: session.user.email,
-      },
-    });
+  metadata: {
+    job_id: jobId,
+    user_id: String((session as any).userId),
+    email: session.user.email,
+  },
+});
 
     return NextResponse.redirect(stripeSession.url!);
   } catch (e) {
