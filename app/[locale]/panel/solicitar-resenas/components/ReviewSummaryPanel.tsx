@@ -27,7 +27,8 @@ export default function ReviewSummaryPanel({
   const [name, setName] = useState("");
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
-
+const [preventDup, setPreventDup] = useState(false);
+const [savingPreventDup, setSavingPreventDup] = useState(false);
   // ✅ stats
   useEffect(() => {
     if (!API_BASE) return;
@@ -49,11 +50,13 @@ export default function ReviewSummaryPanel({
     fetch(`${API_BASE}/api/business-settings?job_id=${jobId}`, { cache: "no-store" })
       .then((r) => (r.ok ? r.json() : Promise.reject(r)))
       .then((d) => {
-        const businessName = d?.business_name;
-        const fallback = defaultBusinessName ?? "";
-        // si business_name es null/"" usa el fallback (placeName)
-        setName(String(businessName ?? fallback));
-      })
+  const businessName = d?.business_name;
+  const fallback = defaultBusinessName ?? "";
+  setName(String(businessName ?? fallback));
+
+  // ✅ NUEVO
+  setPreventDup(Boolean(d?.prevent_duplicate_whatsapp));
+})
       .catch(() => {
         // si falla, usa fallback
         setName(String(defaultBusinessName ?? ""));
@@ -85,7 +88,31 @@ export default function ReviewSummaryPanel({
       setSaving(false);
     }
   }
+async function savePreventDup(next: boolean) {
+  try {
+    if (!API_BASE) return;
 
+    setSavingPreventDup(true);
+    setPreventDup(next);
+
+    const res = await fetch(`${API_BASE}/api/business-settings`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        job_id: jobId,
+        prevent_duplicate_whatsapp: next,
+      }),
+    });
+
+    if (!res.ok) {
+      throw new Error("No se pudo guardar el ajuste");
+    }
+  } catch {
+    setPreventDup((prev) => !prev);
+  } finally {
+    setSavingPreventDup(false);
+  }
+}
   const convPct = Math.round((stats?.conversion_rate ?? 0) * 100);
 
   return (
@@ -165,6 +192,34 @@ export default function ReviewSummaryPanel({
 
         <p className="mt-2 text-xs text-slate-500">Lo usaremos en los mensajes de WhatsApp.</p>
       </div>
+      {/* Evitar duplicados */}
+<div className="mt-5 border-t border-slate-200 pt-4">
+  <div className="flex items-start justify-between gap-4">
+    <div>
+      <div className="text-sm font-semibold text-slate-900">
+        No repetir envíos
+      </div>
+      <p className="mt-1 text-xs text-slate-500">
+        Si está activado, nunca se enviará WhatsApp a un número al que ya se le envió antes.
+      </p>
     </div>
+
+    <label className="inline-flex items-center gap-2">
+      <input
+        type="checkbox"
+        checked={preventDup}
+        disabled={savingPreventDup}
+        onChange={(e) => savePreventDup(e.target.checked)}
+        className="h-4 w-4"
+      />
+      <span className="text-sm text-slate-700">
+        {preventDup ? "Activado" : "Desactivado"}
+      </span>
+    </label>
+  </div>
+</div>
+    </div>
+
+
   );
 }

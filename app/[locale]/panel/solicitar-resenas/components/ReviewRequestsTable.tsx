@@ -107,7 +107,13 @@ export default function ReviewRequestsTable({ jobId }: { jobId: number }) {
                 <td className="border-b p-3">
                   {r.status === "scheduled" && <span className="rounded-full bg-amber-50 px-2 py-1 text-amber-800">Programado</span>}
                   {r.status === "sent" && <span className="rounded-full bg-green-50 px-2 py-1 text-green-800">Mensaje enviado</span>}
-                  {r.status === "cancelled" && <span className="rounded-full bg-slate-100 px-2 py-1 text-slate-700">Cancelado</span>}
+                  {r.status === "cancelled" && (
+  <span className="rounded-full bg-slate-100 px-2 py-1 text-slate-700">
+    {r.error_message === "ALREADY_SENT"
+      ? "Enviado anteriormente"
+      : "Cancelado"}
+  </span>
+)}
                   {r.status === "failed" && <span className="rounded-full bg-red-50 px-2 py-1 text-red-700">Falló</span>}
                   {r.status === "failed" && r.error_message ? (
                     <div className="mt-1 text-xs text-red-700/80">{r.error_message}</div>
@@ -115,16 +121,20 @@ export default function ReviewRequestsTable({ jobId }: { jobId: number }) {
                 </td>
                 <td className="border-b p-3 text-right">
                   {r.status === "scheduled" ? (
-                    <button
-                      onClick={() => onCancel(r.id)}
-                      disabled={busyId === r.id}
-                      className="rounded-xl border border-red-200 bg-white px-3 py-2 text-sm text-red-700 hover:bg-red-50 disabled:opacity-60"
-                    >
-                      {busyId === r.id ? "Cancelando..." : "Cancelar envío"}
-                    </button>
-                  ) : (
-                    <span className="text-xs text-slate-500">—</span>
-                  )}
+  <button
+    onClick={() => onCancel(r.id)}
+    disabled={busyId === r.id}
+    className="rounded-xl border border-red-200 bg-white px-3 py-2 text-sm text-red-700 hover:bg-red-50 disabled:opacity-60"
+  >
+    {busyId === r.id ? "Cancelando..." : "Cancelar envío"}
+  </button>
+) : r.status === "cancelled" && r.error_message === "ALREADY_SENT" ? (
+  <span className="text-xs text-slate-500">
+    Mensaje enviado anteriormente
+  </span>
+) : (
+  <span className="text-xs text-slate-500">—</span>
+)}
                 </td>
               </tr>
             ))}

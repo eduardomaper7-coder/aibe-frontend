@@ -138,8 +138,8 @@ export default async function PlanPage({
             <p className="mt-2 text-sm text-slate-700">
               Sin permanencia. Puedes cancelar cuando quieras.
               <br />
-              <span className="font-semibold text-slate-900">7 días gratis</span>{" "}
-              para probar todas las funciones.
+              <span className="font-semibold text-slate-900"></span>{" "}
+              
             </p>
 
             <div className="mt-5 flex flex-col gap-3 sm:flex-row">
