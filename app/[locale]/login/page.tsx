@@ -1,9 +1,12 @@
 import LoginClient from "./LoginClient";
 
-export default function LoginPage({
-  searchParams,
-}: {
-  searchParams?: { job_id?: string };
-}) {
-  return <LoginClient jobId={searchParams?.job_id ?? null} />;
+type PageProps = {
+  searchParams?: Record<string, string | string[] | undefined>;
+};
+
+export default function LoginPage({ searchParams }: PageProps) {
+  const raw = searchParams?.job_id;
+  const jobId = Array.isArray(raw) ? raw[0] : raw;
+
+  return <LoginClient jobId={jobId ?? null} />;
 }
