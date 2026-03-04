@@ -1,32 +1,23 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
-import { useSession } from "next-auth/react";
 import ReviewImportBox from "./components/ReviewImportBox";
 import CreateReviewRequestForm from "./components/CreateReviewRequestForm";
 import ReviewRequestsTable from "./components/ReviewRequestsTable";
 import ReviewSummaryPanel from "./components/ReviewSummaryPanel";
+import CreditsPanel from "./components/CreditsPanel";
 
 export default function SolicitarResenasClient() {
   const params = useParams();
-  const locale = String((params as any)?.locale ?? "es");
+  const locale = String((params as any)?.locale ?? "es"); // (se mantiene aunque no lo uses ahora)
 
   const searchParams = useSearchParams();
   const jobIdParam = searchParams.get("job_id");
   const jobId = jobIdParam ? Number(jobIdParam) : 0;
 
-  const planHref = jobId
-    ? `/${locale}/plan?job_id=${encodeURIComponent(String(jobId))}`
-    : `/${locale}/plan`;
-
   const API_BASE = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/+$/, "");
   const [placeName, setPlaceName] = useState<string | null>(null);
-
-  // ✅ PRO gating (Stripe)
-  const { status } = useSession();
-  const [isPro, setIsPro] = useState(false);
 
   // ✅ Cargar nombre del negocio (de la cuenta/job) como fallback por defecto
   useEffect(() => {
@@ -40,16 +31,6 @@ export default function SolicitarResenasClient() {
       })
       .catch(() => {});
   }, [jobId, API_BASE]);
-
-  // ✅ Comprobar si el usuario ya es PRO (trialing/active en Stripe)
-  useEffect(() => {
-    if (status !== "authenticated") return;
-
-    fetch("/api/billing/status", { cache: "no-store" })
-      .then((r) => (r.ok ? r.json() : Promise.reject(r)))
-      .then((d) => setIsPro(Boolean(d?.isPro)))
-      .catch(() => {});
-  }, [status]);
 
   return (
     <div className="mx-auto w-full max-w-6xl px-4 py-6">
@@ -68,54 +49,15 @@ export default function SolicitarResenasClient() {
         </div>
       ) : (
         <div className="grid gap-6">
-          {/* ✅ CTA arriba (solo si NO es PRO) */}
-          {!isPro ? (
-            <div className="rounded-2xl border bg-white p-5 shadow-sm flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <h3 className="text-lg font-semibold text-slate-900">
-                  Activa tu WhatsApp profesional
-                </h3>
-                <p className="mt-1 text-slate-600">
-                  Comienza a ganar reseñas Google rápidamente
-                </p>
-                {placeName ? (
-                  <p className="mt-1 text-sm text-slate-500">
-                    Negocio: <span className="font-medium">{placeName}</span>
-                  </p>
-                ) : null}
-              </div>
+          {/* ✅ Nuevo panel de créditos + botón Aumentar saldo (planes) */}
+          <CreditsPanel jobId={jobId} />
 
-              <Link
-                href={planHref}
-                className="inline-flex items-center justify-center rounded-xl bg-slate-900 px-4 py-3 text-white font-semibold hover:bg-slate-800"
-              >
-                Activar ahora
-              </Link>
-            </div>
-          ) : (
-            <div className="rounded-2xl border bg-white p-5 shadow-sm">
-              <h3 className="text-lg font-semibold text-slate-900">
-                Tu cuenta profesional de WhatsApp estará lista en 24–48 horas
-              </h3>
-              <p className="mt-1 text-slate-600">
-                No te cobraremos nada hasta que tu número esté aprobado.
-              </p>
-              {placeName ? (
-                <p className="mt-2 text-sm text-slate-500">
-                  Negocio: <span className="font-medium">{placeName}</span>
-                </p>
-              ) : null}
-            </div>
-          )}
-<ReviewImportBox
-  jobId={jobId}
-  onDone={() => window.location.reload()}
-/>
+          <ReviewImportBox jobId={jobId} onDone={() => window.location.reload()} />
 
           <div className="grid gap-6 lg:grid-cols-2">
             <CreateReviewRequestForm jobId={jobId} />
 
-            {/* ✅ aquí va el fallback */}
+            {/* ✅ Resumen actual (con nombre negocio + evitar duplicados) */}
             <ReviewSummaryPanel jobId={jobId} defaultBusinessName={placeName} />
           </div>
 

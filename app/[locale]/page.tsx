@@ -149,7 +149,22 @@ useEffect(() => {
 
 
 
-  router.push(`/${locale}/panel?job_id=${encodeURIComponent(data.job_id)}`);
+  const jobId = Number(data.job_id);
+
+// preguntamos si ya está vinculado
+const linkedRes = await fetch(`${apiBase}/auth/job-linked?job_id=${encodeURIComponent(String(jobId))}`, {
+  cache: "no-store",
+});
+if (!linkedRes.ok) throw new Error(await linkedRes.text());
+
+const linkedData = await linkedRes.json();
+const linked = Boolean(linkedData?.linked);
+
+if (linked) {
+  router.push(`/${locale}/login?job_id=${encodeURIComponent(String(jobId))}`);
+} else {
+  router.push(`/${locale}/registro?job_id=${encodeURIComponent(String(jobId))}`);
+}
 }
 useEffect(() => {
   const PHRASES = t.raw("home.hero.dynamicPhrases") as string[];

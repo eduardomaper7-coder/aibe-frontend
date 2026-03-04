@@ -32,10 +32,14 @@ export async function POST(req: Request) {
 
     const jobId = session.metadata?.job_id;
     const userId = session.metadata?.user_id;
-    const email = session.metadata?.email;
+
+    const plan = session.metadata?.plan ?? null;
+    const credit_eur = session.metadata?.credit_eur
+      ? Number(session.metadata.credit_eur)
+      : null;
 
     const subId = session.subscription;
-    const customerId = session.customer;
+    const customerId = session.customer; // no lo usamos en backend, pero lo validamos si quieres
 
     if (!jobId || !userId || !subId || !customerId) {
       console.warn("Webhook incompleto:", session.metadata);
@@ -43,22 +47,19 @@ export async function POST(req: Request) {
     }
 
     const API_BASE = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/+$/, "");
-if (!API_BASE) console.error("NEXT_PUBLIC_API_URL missing");
+    if (!API_BASE) console.error("NEXT_PUBLIC_API_URL missing");
 
     if (API_BASE) {
       try {
-        await fetch(`${API_BASE}/stripe/sync`, {
+        await fetch(`${API_BASE}/stripe/webhook/checkout-completed`, {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             job_id: Number(jobId),
             user_id: String(userId),
-            email,
             subscription_id: String(subId),
-            customer_id: String(customerId),
-            status: "active",
+            plan,
+            credit_eur,
           }),
         });
       } catch (e) {

@@ -115,7 +115,7 @@ if (login?.error) {
 onSuccess?.();
 
 // ✅ ir a Stripe
-window.location.href = `/${locale}/checkout?job_id=${encodeURIComponent(jobIdEffective)}`;
+router.replace(`/${locale}/panel?job_id=${encodeURIComponent(jobIdEffective)}`);
 return;
       // 4) Entra al panel
       
