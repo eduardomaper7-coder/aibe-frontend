@@ -287,7 +287,7 @@ export default function SeccionGraficasAvanzadas() {
                           <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#0f2f27" />
                           <XAxis dataKey="mes" tickLine={false} axisLine={false} fontSize={12} stroke="#9CA3AF" />
                           <YAxis domain={[3.5, 5]} tickLine={false} axisLine={false} allowDecimals fontSize={12} stroke="#9CA3AF" />
-                          <Tooltip formatter={(value: number) => `${(value as number).toFixed(1)}★`} labelFormatter={(l) => `Mes: ${l}`} />
+                          <Tooltip formatter={(value) => `${Number(value ?? 0).toFixed(1)}★`} labelFormatter={(l) => `Mes: ${l}`} />
                           <Line type="monotone" dataKey="rating" strokeWidth={2} dot={{ r: 2 }} activeDot={{ r: 4 }} isAnimationActive={inView} animationDuration={700} stroke="#22c55e" />
                         </LineChart>
                       </ResponsiveContainer>

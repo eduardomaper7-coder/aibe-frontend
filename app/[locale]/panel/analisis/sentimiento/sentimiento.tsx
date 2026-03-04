@@ -498,9 +498,7 @@ useEffect(() => {
     border: "none",
     boxShadow: "none",
   }}
-  formatter={(value: number) =>
-    `${(value as number).toFixed(1)}★`
-  }
+  formatter={(value) => `${((value ?? 0) as number).toFixed(1)}★`}
   labelFormatter={(l) => `Periodo: ${l}`}
 />
 
