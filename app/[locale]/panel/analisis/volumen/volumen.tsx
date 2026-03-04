@@ -229,14 +229,17 @@ export default function GraficoPuntuacionVsVolumen({
               />
 
               <Tooltip
-                cursor={{ fill: "rgba(148,163,184,0.12)" }}
-                formatter={(value: any, name: string) => {
-                  if (name === "Puntuación media") {
-                    return [`${(value as number).toFixed(1)}★`, name];
-                  }
-                  return [value, name];
-                }}
-              />
+  cursor={{ fill: "rgba(148,163,184,0.12)" }}
+  formatter={(value, name) => {
+    const safeName = name ?? "";
+
+    if (safeName === "Puntuación media") {
+      return [`${Number(value ?? 0).toFixed(1)}★`, safeName];
+    }
+
+    return [value ?? 0, safeName];
+  }}
+/>
 
               <Legend wrapperStyle={{ color: "#0f172a", fontSize: 11 }} />
 
