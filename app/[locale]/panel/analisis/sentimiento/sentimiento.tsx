@@ -373,10 +373,10 @@ useEffect(() => {
     border: "none",
     boxShadow: "none",
   }}
-  formatter={(value: number, name: string) => [
-    `${value}%`,
-    name,
-  ]}
+  formatter={(value, name) => [
+  `${(value ?? 0)}%`,
+  name,
+]}
 />
 
                     <Pie

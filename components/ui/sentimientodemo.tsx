@@ -195,7 +195,7 @@ export default function SeccionGraficasAvanzadas() {
                     <ResponsiveContainer>
                       <PieChart>
                         {defs}
-                        <Tooltip formatter={(value: number, name: string) => [`${value}%`, name]} />
+                        <Tooltip formatter={(value, name) => [`${value ?? 0}%`, name]} />
                         <Pie
                           {...(activeIndex != null ? { activeIndex } : {})}
                           data={dataSentimiento}
