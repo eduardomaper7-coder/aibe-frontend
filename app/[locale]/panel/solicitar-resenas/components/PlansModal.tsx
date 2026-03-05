@@ -82,11 +82,11 @@ export default function PlansModal({ open, onClose, jobId }: Props) {
                   </button>
                 ) : (
                   <a
-                    className="block w-full rounded-xl bg-slate-900 px-4 py-3 text-center font-semibold text-white hover:bg-slate-800"
-                    href={`/${locale}/api/stripe/checkout-session?job_id=${encodeURIComponent(String(jobId))}&plan=${encodeURIComponent(p.key)}`}
-                  >
-                    Elegir {p.name}
-                  </a>
+  className="block w-full rounded-xl bg-slate-900 px-4 py-3 text-center font-semibold text-white hover:bg-slate-800"
+  href={`/api/stripe/checkout-session?job_id=${encodeURIComponent(String(jobId))}&plan=${encodeURIComponent(p.key)}`}
+>
+  Elegir {p.name}
+</a>
                 )}
               </div>
             </div>
