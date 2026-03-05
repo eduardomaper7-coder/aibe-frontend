@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions"; // 👈 ajusta esta ruta a la tuya
+import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
 
 export const runtime = "nodejs";
 
@@ -15,7 +15,7 @@ const PRICE_MAP: Record<string, string | undefined> = {
 
 export async function GET(req: Request) {
   try {
-    // ✅ 1) Usuario autenticado (necesario para user_id/email en metadata)
+    // 1) Usuario autenticado
     const session = await getServerSession(authOptions);
     const userId =
       (session as any)?.userId ?? (session as any)?.user?.id ?? null;
@@ -28,29 +28,33 @@ export async function GET(req: Request) {
       );
     }
 
-    // ✅ 2) Params
+    // 2) Params
     const { searchParams } = new URL(req.url);
     const jobId = searchParams.get("job_id");
     const plan = (searchParams.get("plan") || "").toLowerCase();
 
-    if (!jobId)
+    if (!jobId) {
       return NextResponse.json({ error: "missing job_id" }, { status: 400 });
+    }
 
-    if (!plan || !(plan in PRICE_MAP))
+    if (!plan || !(plan in PRICE_MAP)) {
       return NextResponse.json({ error: "invalid plan" }, { status: 400 });
+    }
 
-    // ✅ 3) Price
+    // 3) Price
     const price = PRICE_MAP[plan];
-    if (!price)
+    if (!price) {
       return NextResponse.json(
         { error: `missing STRIPE_PRICE for plan=${plan}` },
         { status: 500 }
       );
+    }
 
-    // ✅ 4) URLs
+    // 4) URLs
     const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "")
       .trim()
       .replace(/\/+$/, "");
+
     if (!siteUrl || !/^https?:\/\//.test(siteUrl)) {
       return NextResponse.json(
         { error: "NEXT_PUBLIC_SITE_URL missing/invalid" },
@@ -68,14 +72,14 @@ export async function GET(req: Request) {
       siteUrl
     ).toString();
 
-    // ✅ 5) Crear checkout session con metadata COMPLETA
+    // 5) Checkout session (metadata al NIVEL RAÍZ ✅)
     const stripeSession = await stripe.checkout.sessions.create({
       mode: "subscription",
       line_items: [{ price, quantity: 1 }],
       success_url: successUrl,
       cancel_url: cancelUrl,
 
-      // ✅ CLAVE para que el webhook pueda hacer /stripe/sync bien
+      // ✅ esto es lo que tu webhook necesita
       metadata: {
         job_id: String(jobId),
         plan: String(plan),
@@ -83,13 +87,15 @@ export async function GET(req: Request) {
         email: String(email ?? ""),
       },
 
-      // ✅ Recomendado: también en Customer (fallback futuro)
-      customer_creation: "always",
+      // opcional (útil para ver el usuario en Stripe)
+      client_reference_id: String(userId),
+      customer_email: email ?? undefined,
+
+      // ✅ customer_update SOLO admite estos campos (sin metadata)
       customer_update: {
         name: "auto",
         address: "auto",
         shipping: "auto",
-        metadata: "auto",
       },
     });
 
