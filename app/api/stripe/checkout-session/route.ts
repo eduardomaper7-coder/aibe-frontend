@@ -72,30 +72,23 @@ export async function GET(req: Request) {
       siteUrl
     ).toString();
 
-    // 5) Checkout session (metadata al NIVEL RAÍZ ✅)
+    // 5) Checkout session
     const stripeSession = await stripe.checkout.sessions.create({
       mode: "subscription",
       line_items: [{ price, quantity: 1 }],
       success_url: successUrl,
       cancel_url: cancelUrl,
 
-      // ✅ esto es lo que tu webhook necesita
+      // ✅ Identificación usuario (clave para webhook y para verlo en Stripe)
+      client_reference_id: String(userId),
+      customer_email: email ?? undefined,
+
+      // ✅ Lo que el webhook necesita para /stripe/sync
       metadata: {
         job_id: String(jobId),
         plan: String(plan),
         user_id: String(userId),
         email: String(email ?? ""),
-      },
-
-      // opcional (útil para ver el usuario en Stripe)
-      client_reference_id: String(userId),
-      customer_email: email ?? undefined,
-
-      // ✅ customer_update SOLO admite estos campos (sin metadata)
-      customer_update: {
-        name: "auto",
-        address: "auto",
-        shipping: "auto",
       },
     });
 
