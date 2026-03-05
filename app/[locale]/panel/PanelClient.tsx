@@ -31,7 +31,7 @@ function PanelUI() {
 
   const API_BASE = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/+$/, "");
 
-  const [isPro, setIsPro] = useState(false);
+  
   const [placeName, setPlaceName] = useState<string | null>(null);
 
   // ---------------- Periodos (hooks SIEMPRE arriba) ----------------
@@ -83,21 +83,7 @@ function PanelUI() {
     }
   }, [jobIdStr, API_BASE, session, locale, router]);
 
-  // ✅ Entitlements (solo si hay jobId válido)
-useEffect(() => {
-  if (!jobIdNum || !API_BASE) return;
-
-  const adminUnlock = searchParams.get("admin_unlock");
-
-  const entitlementsUrl = adminUnlock
-    ? `${API_BASE}/jobs/${jobIdNum}/entitlements?admin_unlock=${encodeURIComponent(adminUnlock)}`
-    : `${API_BASE}/jobs/${jobIdNum}/entitlements`;
-
-  fetch(entitlementsUrl, { cache: "no-store" })
-    .then((r) => (r.ok ? r.json() : Promise.reject(r)))
-    .then((d) => setIsPro(Boolean(d?.isPro)))
-    .catch(() => setIsPro(false));
-}, [jobIdNum, API_BASE, searchParams]);
+  
 
   // ✅ Cargar meta del job
   useEffect(() => {
@@ -387,116 +373,54 @@ useEffect(() => {
         </section>
 
         <section
-          id="sentimiento"
-          className="mt-10 px-4 sm:px-6 lg:px-8 scroll-mt-24"
-        >
-          <SentimientoSection
-            jobId={jobIdStr}
-            fromDate={fromDate}
-            toDate={toDate}
-            bucket={bucket}
-          />
-        </section>
+  id="sentimiento"
+  className="mt-10 px-4 sm:px-6 lg:px-8 scroll-mt-24"
+>
+  <SentimientoSection
+    jobId={jobIdStr}
+    fromDate={fromDate}
+    toDate={toDate}
+    bucket={bucket}
+  />
+</section>
 
-        {isPro ? (
-          <>
-            <section
-              id="volumen"
-              className="mt-8 px-4 sm:px-6 lg:px-8 scroll-mt-24"
-            >
-              <VolumenSection
-                jobId={jobIdStr}
-                fromDate={fromDate}
-                toDate={toDate}
-                bucket={period === "7d" ? "day" : period === "30d" ? "week" : "month"}
-              />
-            </section>
+<>
+  <section
+    id="volumen"
+    className="mt-8 px-4 sm:px-6 lg:px-8 scroll-mt-24"
+  >
+    <VolumenSection
+      jobId={jobIdStr}
+      fromDate={fromDate}
+      toDate={toDate}
+      bucket={period === "7d" ? "day" : period === "30d" ? "week" : "month"}
+    />
+  </section>
 
-            <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen bg-slate-100">
-              <div className="mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
-                <section id="oportunidades" className="scroll-mt-24">
-                  <OportunidadesSection
-                    jobId={jobIdStr}
-                    fromDate={fromDate}
-                    toDate={toDate}
-                  />
-                </section>
-              </div>
-            </div>
-
-            <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen bg-blue-100">
-              <div className="mx-auto px-4 sm:px-6 lg:px-8 pt-4 md:pt-6 pb-10">
-                <section id="respuestas" className="scroll-mt-24">
-                  <RespuestasSection jobId={jobIdNum} />
-                </section>
-              </div>
-            </div>
-          </>
-        ) : (
-          <div className="relative mt-10">
-            {/* contenido borroso */}
-            <div className="pointer-events-none select-none blur-[6px] opacity-90">
-              <section
-                id="volumen"
-                className="mt-8 px-4 sm:px-6 lg:px-8 scroll-mt-24"
-              >
-                <VolumenSection
-                  jobId={jobIdStr}
-                  fromDate={fromDate}
-                  toDate={toDate}
-                  bucket={period === "7d" ? "day" : period === "30d" ? "week" : "month"}
-                />
-              </section>
-
-              <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen bg-slate-100">
-                <div className="mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
-                  <section id="oportunidades" className="scroll-mt-24">
-                    <OportunidadesSection
-                      jobId={jobIdStr}
-                      fromDate={fromDate}
-                      toDate={toDate}
-                    />
-                  </section>
-                </div>
-              </div>
-
-              <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen bg-blue-100">
-                <div className="mx-auto px-4 sm:px-6 lg:px-8 pt-4 md:pt-6 pb-10">
-                  <section id="respuestas" className="scroll-mt-24">
-                    <RespuestasSection jobId={jobIdNum} />
-                  </section>
-                </div>
-              </div>
-            </div>
-
-            {/* overlay */}
-            <div className="absolute inset-0 flex items-center justify-center px-4">
-              <div className="w-full max-w-xl rounded-2xl border bg-white/90 p-6 shadow-lg backdrop-blur-md text-center">
-                <h3 className="text-xl font-semibold text-slate-900">
-                  Desbloquea el resto de tu análisis ahora
-                </h3>
-
-                <p className="mt-2 text-slate-600">
-                  Activa el Plan Reputación Automática para ver todas las métricas
-                  y automatizaciones.
-                </p>
-
-                <div className="mt-4">
-                  <Link
-                    href={planHref}
-                    className="inline-flex items-center justify-center rounded-xl bg-slate-900 px-4 py-3 text-white font-semibold hover:bg-slate-800"
-                  >
-                    Desbloquear
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-
-      <Footer />
+  <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen bg-slate-100">
+    <div className="mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
+      <section id="oportunidades" className="scroll-mt-24">
+        <OportunidadesSection
+          jobId={jobIdStr}
+          fromDate={fromDate}
+          toDate={toDate}
+        />
+      </section>
     </div>
+  </div>
+
+  <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen bg-blue-100">
+    <div className="mx-auto px-4 sm:px-6 lg:px-8 pt-4 md:pt-6 pb-10">
+      <section id="respuestas" className="scroll-mt-24">
+        <RespuestasSection jobId={jobIdNum} />
+      </section>
+    </div>
+  </div>
+</>
+</div>
+
+<Footer />
+</div>
   );
 }
 
