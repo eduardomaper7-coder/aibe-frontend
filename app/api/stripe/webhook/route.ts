@@ -1,9 +1,34 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 
-export const runtime = "nodejs"; // importante para raw body
+export const runtime = "nodejs";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+
+const PLAN_CONFIG: Record<string, { credit_eur: number; included_reviews: number }> = {
+  starter: { credit_eur: 9, included_reviews: 45 },
+  growth: { credit_eur: 29, included_reviews: 145 },
+  pro: { credit_eur: 79, included_reviews: 395 },
+};
+
+async function postToBackend(path: string, payload: any) {
+  const API_BASE = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/+$/, "");
+  if (!API_BASE) {
+    console.error("NEXT_PUBLIC_API_URL missing");
+    return;
+  }
+
+  const r = await fetch(`${API_BASE}${path}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+
+  if (!r.ok) {
+    const txt = await r.text();
+    console.error(`Backend sync failed ${path}:`, r.status, txt);
+  }
+}
 
 export async function POST(req: Request) {
   const sig = req.headers.get("stripe-signature");
@@ -26,46 +51,78 @@ export async function POST(req: Request) {
     return new NextResponse(`Webhook Error: ${err.message}`, { status: 400 });
   }
 
-  // ✅ Cuando se completa el checkout (suscripción creada)
-  if (event.type === "checkout.session.completed") {
-    const session = event.data.object as Stripe.Checkout.Session;
+  try {
+    if (event.type === "checkout.session.completed") {
+      const session = event.data.object as Stripe.Checkout.Session;
 
-    const jobId = session.metadata?.job_id;
-    const userId = session.metadata?.user_id;
+      const jobId = session.metadata?.job_id;
+      const userId = session.metadata?.user_id;
+      const plan = (session.metadata?.plan || "").toLowerCase();
+      const subId = session.subscription;
+      const customerId = session.customer;
 
-    const plan = session.metadata?.plan ?? null;
-    const credit_eur = session.metadata?.credit_eur
-      ? Number(session.metadata.credit_eur)
-      : null;
-
-    const subId = session.subscription;
-    const customerId = session.customer; // no lo usamos en backend, pero lo validamos si quieres
-
-    if (!jobId || !userId || !subId || !customerId) {
-      console.warn("Webhook incompleto:", session.metadata);
-      return NextResponse.json({ received: true });
-    }
-
-    const API_BASE = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/+$/, "");
-    if (!API_BASE) console.error("NEXT_PUBLIC_API_URL missing");
-
-    if (API_BASE) {
-      try {
-        await fetch(`${API_BASE}/stripe/webhook/checkout-completed`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            job_id: Number(jobId),
-            user_id: String(userId),
-            subscription_id: String(subId),
-            plan,
-            credit_eur,
-          }),
+      if (jobId && userId && subId && customerId && PLAN_CONFIG[plan]) {
+        await postToBackend("/stripe/webhook/checkout-completed", {
+          job_id: Number(jobId),
+          user_id: String(userId),
+          subscription_id: String(subId),
+          customer_id: String(customerId),
+          plan,
         });
-      } catch (e) {
-        console.error("Error syncing Stripe → backend:", e);
+      } else {
+        console.warn("checkout.session.completed incompleto", {
+          jobId,
+          userId,
+          plan,
+          subId,
+          customerId,
+        });
       }
     }
+
+    if (event.type === "customer.subscription.created") {
+      const sub = event.data.object as Stripe.Subscription;
+
+      const jobId = sub.metadata?.job_id;
+      const userId = sub.metadata?.user_id;
+      const plan = (sub.metadata?.plan || "").toLowerCase();
+      const customerId = sub.customer;
+
+      if (jobId && userId && sub.id && customerId && PLAN_CONFIG[plan]) {
+        await postToBackend("/stripe/webhook/checkout-completed", {
+          job_id: Number(jobId),
+          user_id: String(userId),
+          subscription_id: String(sub.id),
+          customer_id: String(customerId),
+          plan,
+        });
+      } else {
+        console.warn("customer.subscription.created incompleto", {
+          jobId,
+          userId,
+          plan,
+          subscriptionId: sub.id,
+          customerId,
+        });
+      }
+    }
+
+    if (event.type === "invoice.paid") {
+      const invoice = event.data.object as Stripe.Invoice;
+      const subscriptionId =
+        typeof invoice.subscription === "string"
+          ? invoice.subscription
+          : invoice.subscription?.id;
+
+      if (subscriptionId) {
+        await postToBackend("/stripe/webhook/invoice-paid", {
+          subscription_id: subscriptionId,
+          status: "active",
+        });
+      }
+    }
+  } catch (e) {
+    console.error("Stripe webhook handler error:", e);
   }
 
   return NextResponse.json({ received: true });
