@@ -108,11 +108,12 @@ export async function POST(req: Request) {
     }
 
     if (event.type === "invoice.paid") {
-      const invoice = event.data.object as Stripe.Invoice;
-      const subscriptionId =
-        typeof invoice.subscription === "string"
-          ? invoice.subscription
-          : invoice.subscription?.id;
+      const invoice = event.data.object as any;
+
+const subscriptionId =
+  typeof invoice.subscription === "string"
+    ? invoice.subscription
+    : invoice.subscription?.id;
 
       if (subscriptionId) {
         await postToBackend("/stripe/webhook/invoice-paid", {
