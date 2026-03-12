@@ -1,7 +1,5 @@
 "use client";
 
-import { useParams } from "next/navigation";
-
 type Props = {
   open: boolean;
   onClose: () => void;
@@ -9,10 +7,9 @@ type Props = {
 };
 
 const PLANS = [
-  { key: "free", name: "Free", price: "0€", credit: 5, reviews: 25, recommended: false },
-  { key: "starter", name: "Starter", price: "9€", credit: 9, reviews: 45, recommended: true },
-  { key: "growth", name: "Growth", price: "29€", credit: 29, reviews: 145, recommended: false },
-  { key: "pro", name: "Pro", price: "79€", credit: 79, reviews: 395, recommended: false },
+  { key: "starter", name: "Starter", monthlyPrice: 9, credit: 9, reviews: 45, recommended: true },
+  { key: "growth", name: "Growth", monthlyPrice: 29, credit: 29, reviews: 145, recommended: false },
+  { key: "pro", name: "Pro", monthlyPrice: 79, credit: 79, reviews: 395, recommended: false },
 ];
 
 const FEATURES = [
@@ -23,9 +20,6 @@ const FEATURES = [
 ];
 
 export default function PlansModal({ open, onClose, jobId }: Props) {
-  const params = useParams();
-  const locale = String((params as any)?.locale ?? "es");
-
   if (!open) return null;
 
   return (
@@ -38,14 +32,10 @@ export default function PlansModal({ open, onClose, jobId }: Props) {
                 Planes y precios
               </p>
               <h3 className="mt-1 text-2xl font-bold tracking-tight text-slate-900 md:text-3xl">
-                Elige el plan que mejor se adapta a tu clínica
+                Empieza gratis hoy. Paga cuando consigas tus primeras 25 reseñas.
               </h3>
               <p className="mt-2 max-w-3xl text-sm text-slate-600 md:text-base">
-                Activa tu plan en menos de un minuto y empieza a convertir pacientes
-                satisfechos en nuevas reseñas.{" "}
-                <span className="font-medium text-slate-800">
-                  1 reseña ganada = 0,20€
-                </span>
+                Hoy no pagas nada. Elige el plan que se activará después.
               </p>
             </div>
 
@@ -61,7 +51,7 @@ export default function PlansModal({ open, onClose, jobId }: Props) {
         </div>
 
         <div className="px-6 py-6 md:px-10 md:py-8 lg:px-12">
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-6 md:grid-cols-3">
             {PLANS.map((p) => (
               <div
                 key={p.key}
@@ -72,27 +62,28 @@ export default function PlansModal({ open, onClose, jobId }: Props) {
                     : "border-slate-200 shadow-sm hover:shadow-md",
                 ].join(" ")}
               >
-                {p.recommended ? (
+                {p.recommended && (
                   <div className="absolute -top-3 left-5">
                     <span className="rounded-full bg-slate-900 px-3 py-1 text-xs font-semibold text-white shadow-sm">
                       Más popular
                     </span>
                   </div>
-                ) : null}
+                )}
 
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <h4 className="text-lg font-semibold text-slate-900">{p.name}</h4>
                     <p className="mt-1 text-sm text-slate-500">
-                      {p.key === "free"
-                        ? "Empieza sin compromiso"
-                        : "Ideal para aumentar tus reseñas"}
+                      Ideal para aumentar tus reseñas
                     </p>
                   </div>
 
                   <div className="text-right">
-                    <div className="text-3xl font-bold tracking-tight text-slate-900">
-                      {p.price}
+                    <div className="text-sm font-medium uppercase tracking-wide text-emerald-600">
+                      Hoy: 0€
+                    </div>
+                    <div className="mt-1 text-3xl font-bold tracking-tight text-slate-900">
+                      {p.monthlyPrice}€
                     </div>
                     <div className="text-sm text-slate-500">/ mes</div>
                   </div>
@@ -100,62 +91,51 @@ export default function PlansModal({ open, onClose, jobId }: Props) {
 
                 <div className="mt-5 rounded-2xl bg-slate-50 p-4 ring-1 ring-slate-100">
                   <div className="flex items-center justify-between gap-4 text-sm">
-                    <span className="text-slate-600">Crédito incluido</span>
-                    <span className="whitespace-nowrap font-semibold text-slate-900">
-                      {p.credit.toFixed(2)}€
-                    </span>
+                    <span className="text-slate-600">Empiezas con</span>
+                    <span className="font-semibold text-slate-900">25 reseñas gratis</span>
                   </div>
 
                   <div className="mt-2 flex items-center justify-between gap-4 text-sm">
-                    <span className="text-slate-600">Reseñas incluidas</span>
-                    <span className="whitespace-nowrap font-semibold text-slate-900">
-                      {p.reviews} reseñas
-                    </span>
+                    <span className="text-slate-600">Saldo inicial</span>
+                    <span className="font-semibold text-slate-900">5.00€</span>
+                  </div>
+
+                  <div className="mt-2 border-t border-slate-200 pt-2 flex items-center justify-between gap-4 text-sm">
+                    <span className="text-slate-600">Luego se activará</span>
+                    <span className="font-semibold text-slate-900">{p.monthlyPrice.toFixed(2)}€/mes</span>
+                  </div>
+
+                  <div className="mt-2 flex items-center justify-between gap-4 text-sm">
+                    <span className="text-slate-600">Incluye</span>
+                    <span className="font-semibold text-slate-900">{p.reviews} reseñas</span>
                   </div>
                 </div>
 
                 <div className="mt-5 flex-1">
-                  {p.key !== "free" ? (
-                    <ul className="space-y-3 text-sm text-slate-600">
-                      {FEATURES.map((f) => (
-                        <li key={f} className="flex items-start gap-2">
-                          <span className="mt-0.5 text-slate-900">✓</span>
-                          <span>{f}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p className="text-sm leading-6 text-slate-600">
-                      Incluye el crédito gratuito inicial para empezar a probar la
-                      plataforma y validar resultados desde el primer día.
-                    </p>
-                  )}
+                  <ul className="space-y-3 text-sm text-slate-600">
+                    {FEATURES.map((f) => (
+                      <li key={f} className="flex items-start gap-2">
+                        <span className="mt-0.5 text-slate-900">✓</span>
+                        <span>{f}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
 
                 <div className="mt-6">
-                  {p.key === "free" ? (
-                    <button
-                      type="button"
-                      onClick={onClose}
-                      className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-900 transition hover:bg-slate-50"
-                    >
-                      Mantener plan Free
-                    </button>
-                  ) : (
-                    <a
-                      className={[
-                        "block w-full rounded-xl px-4 py-3 text-center text-sm font-semibold text-white transition",
-                        p.recommended
-                          ? "bg-slate-900 hover:bg-slate-800"
-                          : "bg-slate-800 hover:bg-slate-700",
-                      ].join(" ")}
-                      href={`/api/stripe/checkout-session?job_id=${encodeURIComponent(
-                        String(jobId)
-                      )}&plan=${encodeURIComponent(p.key)}`}
-                    >
-                      Elegir {p.name}
-                    </a>
-                  )}
+                  <a
+                    className={[
+                      "block w-full rounded-xl px-4 py-3 text-center text-sm font-semibold text-white transition",
+                      p.recommended
+                        ? "bg-slate-900 hover:bg-slate-800"
+                        : "bg-slate-800 hover:bg-slate-700",
+                    ].join(" ")}
+                    href={`/api/stripe/checkout-session?job_id=${encodeURIComponent(
+                      String(jobId)
+                    )}&plan=${encodeURIComponent(p.key)}`}
+                  >
+                    Empezar gratis con {p.name}
+                  </a>
                 </div>
               </div>
             ))}
@@ -163,7 +143,7 @@ export default function PlansModal({ open, onClose, jobId }: Props) {
 
           <div className="mt-6 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
             <span className="font-medium text-slate-900">Pago seguro con Stripe.</span>{" "}
-            Al continuar, serás redirigido a Stripe para completar el pago.
+            Hoy pagarás 0€. El cargo se realizará cuando consigas tus primeras 25 reseñas y, a partir de ahí, se renovará mensualmente.
           </div>
         </div>
       </div>

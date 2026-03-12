@@ -13,9 +13,10 @@ const PRICE_MAP: Record<string, string | undefined> = {
   pro: process.env.STRIPE_PRICE_PRO,
 };
 
+const TRIAL_DAYS = 365; // trial largo; lo terminamos manualmente al llegar a 25 reseñas
+
 export async function GET(req: Request) {
   try {
-    // 1) Usuario autenticado
     const session = await getServerSession(authOptions);
     const userId =
       (session as any)?.userId ?? (session as any)?.user?.id ?? null;
@@ -28,7 +29,6 @@ export async function GET(req: Request) {
       );
     }
 
-    // 2) Params
     const { searchParams } = new URL(req.url);
     const jobId = searchParams.get("job_id");
     const plan = (searchParams.get("plan") || "").toLowerCase();
@@ -41,7 +41,6 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: "invalid plan" }, { status: 400 });
     }
 
-    // 3) Price
     const price = PRICE_MAP[plan];
     if (!price) {
       return NextResponse.json(
@@ -50,7 +49,6 @@ export async function GET(req: Request) {
       );
     }
 
-    // 4) URLs
     const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "")
       .trim()
       .replace(/\/+$/, "");
@@ -68,27 +66,35 @@ export async function GET(req: Request) {
     ).toString();
 
     const cancelUrl = new URL(
-      `/es/plan?job_id=${encodeURIComponent(jobId)}&canceled=1`,
+      `/es/panel/solicitar-resenas?job_id=${encodeURIComponent(jobId)}&canceled=1`,
       siteUrl
     ).toString();
 
-    // 5) Checkout session
     const stripeSession = await stripe.checkout.sessions.create({
       mode: "subscription",
       line_items: [{ price, quantity: 1 }],
       success_url: successUrl,
       cancel_url: cancelUrl,
-
-      // ✅ Identificación usuario (clave para webhook y para verlo en Stripe)
       client_reference_id: String(userId),
       customer_email: email ?? undefined,
 
-      // ✅ Lo que el webhook necesita para /stripe/sync
       metadata: {
         job_id: String(jobId),
         plan: String(plan),
         user_id: String(userId),
         email: String(email ?? ""),
+      },
+
+      subscription_data: {
+        trial_period_days: TRIAL_DAYS,
+        metadata: {
+          job_id: String(jobId),
+          plan: String(plan),
+          user_id: String(userId),
+          email: String(email ?? ""),
+          trial_reviews: "25",
+          trial_credit_eur: "5",
+        },
       },
     });
 
