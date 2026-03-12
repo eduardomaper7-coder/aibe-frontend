@@ -16,13 +16,10 @@ type Sub = {
 };
 
 function planDefaults(plan: string | null) {
-  // Free por defecto si no hay suscripción
   if (!plan) return { plan: "free", creditEur: 5 };
-
   if (plan === "starter") return { plan: "starter", creditEur: 9 };
   if (plan === "growth") return { plan: "growth", creditEur: 29 };
   if (plan === "pro") return { plan: "pro", creditEur: 79 };
-
   return { plan, creditEur: 5 };
 }
 
@@ -30,6 +27,9 @@ export default function CreditsPanel({ jobId }: { jobId: number }) {
   const API_BASE = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/+$/, "");
 
   const [open, setOpen] = useState(false);
+  const [checking, setChecking] = useState(false);
+  const [checkMessage, setCheckMessage] = useState<string | null>(null);
+
   const [stats, setStats] = useState<Stats>({
     messages_sent: 0,
     reviews_gained: 0,
@@ -38,23 +38,70 @@ export default function CreditsPanel({ jobId }: { jobId: number }) {
 
   const [sub, setSub] = useState<Sub>({ plan: null, credit_eur: null, status: null });
 
-  // 1) stats (ya existe)
-  useEffect(() => {
+  const loadStats = async () => {
     if (!API_BASE) return;
-    fetch(`${API_BASE}/api/review-requests/stats?job_id=${jobId}`, { cache: "no-store" })
-      .then((r) => (r.ok ? r.json() : Promise.reject(r)))
-      .then((d) => setStats(d))
-      .catch(() => {});
+    const r = await fetch(`${API_BASE}/api/review-requests/stats?job_id=${jobId}`, {
+      cache: "no-store",
+    });
+    if (!r.ok) throw new Error("No se pudieron cargar stats");
+    const d = await r.json();
+    setStats(d);
+  };
+
+  const loadSubscription = async () => {
+    if (!API_BASE) return;
+    const r = await fetch(`${API_BASE}/stripe/subscription-by-job?job_id=${jobId}`, {
+      cache: "no-store",
+    });
+    if (!r.ok) throw new Error("No se pudo cargar suscripción");
+    const d = await r.json();
+    setSub(d);
+  };
+
+  useEffect(() => {
+    loadStats().catch(() => {});
   }, [API_BASE, jobId]);
 
-  // 2) plan/credit desde backend
   useEffect(() => {
-    if (!API_BASE) return;
-    fetch(`${API_BASE}/stripe/subscription-by-job?job_id=${jobId}`, { cache: "no-store" })
-      .then((r) => (r.ok ? r.json() : Promise.reject(r)))
-      .then((d) => setSub(d))
-      .catch(() => {});
+    loadSubscription().catch(() => {});
   }, [API_BASE, jobId]);
+
+  const handleCheckReviews = async () => {
+    if (!API_BASE || checking) return;
+
+    setChecking(true);
+    setCheckMessage(null);
+
+    try {
+      const r = await fetch(
+        `${API_BASE}/api/review-requests/check-new-reviews?job_id=${jobId}`,
+        {
+          method: "POST",
+        }
+      );
+
+      const data = await r.json();
+
+      if (!r.ok) {
+        throw new Error(data?.detail || "No se pudieron comprobar las reseñas");
+      }
+
+      const inserted = Number(data?.new_reviews_inserted || 0);
+      const checked = Number(data?.checked_count || 0);
+
+      if (inserted > 0) {
+        setCheckMessage(`Se comprobaron ${checked} reseñas y se añadieron ${inserted} nuevas.`);
+      } else {
+        setCheckMessage(`Se comprobaron ${checked} reseñas y no había reseñas nuevas.`);
+      }
+
+      await loadStats();
+    } catch (e: any) {
+      setCheckMessage(e?.message || "Error al comprobar reseñas");
+    } finally {
+      setChecking(false);
+    }
+  };
 
   const { plan, creditEur } = useMemo(() => {
     const base = planDefaults(sub.plan);
@@ -66,12 +113,14 @@ export default function CreditsPanel({ jobId }: { jobId: number }) {
 
   const reviewsGained = Number(stats.reviews_gained || 0);
   const usedEur = Number((reviewsGained * 0.2).toFixed(2));
-  const maxReviews = Math.floor((creditEur / 0.2) + 1e-9); // evita flotantes raros
+  const maxReviews = Math.floor((creditEur / 0.2) + 1e-9);
   const usedReviews = Math.min(reviewsGained, maxReviews);
 
   return (
     <div className="rounded-2xl border bg-white p-5 shadow-sm">
-      <h3 className="text-lg font-semibold text-slate-900">Consigue {maxReviews} reseñas gratis</h3>
+      <h3 className="text-lg font-semibold text-slate-900">
+        Consigue {maxReviews} reseñas gratis
+      </h3>
 
       <div className="mt-2 text-slate-700">
         <div>Reseñas conseguidas {usedReviews}/{maxReviews} reseñas</div>
@@ -81,13 +130,30 @@ export default function CreditsPanel({ jobId }: { jobId: number }) {
         </div>
       </div>
 
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        className="mt-4 inline-flex items-center justify-center rounded-xl bg-slate-900 px-4 py-3 text-white font-semibold hover:bg-slate-800"
-      >
-        Aumentar saldo
-      </button>
+      {checkMessage && (
+        <div className="mt-3 rounded-xl bg-slate-50 px-3 py-2 text-sm text-slate-700 border">
+          {checkMessage}
+        </div>
+      )}
+
+      <div className="mt-4 flex flex-wrap gap-3">
+        <button
+          type="button"
+          onClick={handleCheckReviews}
+          disabled={checking}
+          className="inline-flex items-center justify-center rounded-xl border border-slate-300 bg-white px-4 py-3 text-slate-900 font-semibold hover:bg-slate-50 disabled:opacity-50"
+        >
+          {checking ? "Comprobando..." : "Comprobar reseñas"}
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          className="inline-flex items-center justify-center rounded-xl bg-slate-900 px-4 py-3 text-white font-semibold hover:bg-slate-800"
+        >
+          Aumentar saldo
+        </button>
+      </div>
 
       <PlansModal open={open} onClose={() => setOpen(false)} jobId={jobId} />
     </div>
