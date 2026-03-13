@@ -300,7 +300,7 @@ async function handleStart() {
     </h1>
 
 
-    <p className="hero-price">Todo incluido por 12€ al mes.</p>
+    <p className="hero-price">Al mejor precio: 0,20€ por reseña ganada</p>
 
 
     <p className="hero-subtitle">
