@@ -194,3 +194,15 @@ export async function importAppointments(payload: {
 
   return (await res.json()) as ImportAppointmentsResponse;
 }
+
+export function sendReviewRequestNow(payload: {
+  job_id: number;
+  customer_name: string;
+  phone_e164: string;
+}) {
+  return http<ReviewRequest>(url(`/review-requests/send-now`), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+}

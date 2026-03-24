@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { createReviewRequest } from "../api";
+import { createReviewRequest, sendReviewRequestNow } from "../api";
 
 function todayISODate() {
   const d = new Date();
@@ -75,7 +75,38 @@ export default function CreateReviewRequestForm({ jobId }: { jobId: number }) {
       setLoading(false);
     }
   }
+async function onSendNow() {
+  setMsg(null);
+  setErr(null);
 
+  if (!name.trim()) return setErr("Falta el nombre.");
+
+  const phoneDigits = normalizeSpainDigits(phone);
+  if (!phoneDigits) return setErr("Falta el teléfono.");
+  if (!isValidSpainMobile(phoneDigits)) return setErr("Formato inválido. Ej: 699111222");
+
+  const phoneNorm = `+34${phoneDigits}`;
+
+  try {
+    setLoading(true);
+
+    await sendReviewRequestNow({
+      job_id: jobId,
+      customer_name: name.trim(),
+      phone_e164: phoneNorm,
+    });
+
+    setMsg("Mensaje enviado correctamente.");
+    setName("");
+    setPhone("");
+    setDate(todayISODate());
+    setTime("");
+  } catch (e: any) {
+    setErr(e?.message || "No se pudo enviar el mensaje.");
+  } finally {
+    setLoading(false);
+  }
+}
   return (
     <div className="rounded-2xl border bg-white p-5">
       <h2 className="text-lg font-semibold text-slate-900">Añadir cita</h2>
@@ -145,14 +176,26 @@ export default function CreateReviewRequestForm({ jobId }: { jobId: number }) {
           </label>
         </div>
 
-        <button
-          disabled={loading}
-          className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-60"
-          type="submit"
-        >
-          {loading ? "Guardando..." : "Programar mensaje"}
-        </button>
+        <div className="grid gap-3 md:grid-cols-2">
+  <button
+    disabled={loading}
+    className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-60"
+    type="submit"
+  >
+    {loading ? "Guardando..." : "Programar mensaje"}
+  </button>
+
+  <button
+    disabled={loading}
+    type="button"
+    onClick={onSendNow}
+    className="rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-60"
+  >
+    {loading ? "Enviando..." : "Enviar mensaje ahora"}
+  </button>
+</div>
       </form>
     </div>
   );
 }
+
