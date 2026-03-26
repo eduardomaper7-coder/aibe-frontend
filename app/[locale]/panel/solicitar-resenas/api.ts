@@ -73,6 +73,9 @@ export type ImportAppointmentsResponse = {
   batch_id: number;
   summary: ImportSummary;
   items: ImportItem[];
+  manual_review_required?: boolean;
+  manual_review_reason?: string | null;
+  user_message?: string | null;
 };
 
 function apiBase() {

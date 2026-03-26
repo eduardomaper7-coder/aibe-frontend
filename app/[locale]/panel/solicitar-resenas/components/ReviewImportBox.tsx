@@ -55,36 +55,48 @@ export default function ReviewImportBox({
   const fileNames = useMemo(() => files.map((f) => f.name).join(", "), [files]);
 
   async function handleImport() {
-    setMsg(null);
-    setErr(null);
-    setResult(null);
+  setMsg(null);
+  setErr(null);
+  setResult(null);
 
-    if (!files.length) {
-      setErr("Sube al menos un archivo.");
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const data = await importAppointments({
-        job_id: jobId,
-        files,
-      });
-
-      setResult(data);
-
-      const s = data.summary;
-      setMsg(
-        `Importación completada. Programadas: ${s.scheduled_now}. Incompletas: ${s.incomplete}. Duplicadas: ${s.duplicates}. Antiguas: ${s.too_old}.`
-      );
-
-      onDone();
-    } catch (e: any) {
-      setErr(e?.message || "No se pudo importar.");
-    } finally {
-      setLoading(false);
-    }
+  if (!files.length) {
+    setErr("Sube al menos un archivo.");
+    return;
   }
+
+  setLoading(true);
+  try {
+    const data = await importAppointments({
+      job_id: jobId,
+      files,
+    });
+
+    setResult(data);
+
+    if (data.manual_review_required) {
+  setMsg(
+    data.user_message ||
+      "Tu archivo se ha recibido correctamente. En menos de 24 horas, uno de nuestros especialistas configurará el flujo adecuado para tu negocio."
+  );
+} else {
+  const s = data.summary;
+  setMsg(
+    `Importación completada. Programadas: ${s.scheduled_now}. Incompletas: ${s.incomplete}. Duplicadas: ${s.duplicates}. Antiguas: ${s.too_old}.`
+  );
+}
+
+// 👇 mantener mensaje 40s + retrasar refresh
+setTimeout(() => {
+  setMsg(null);
+  onDone();
+}, 40000);
+
+} catch (e: any) {
+  setErr(e?.message || "No se pudo importar.");
+} finally {
+  setLoading(false);
+}
+}
 
   return (
     <div className="rounded-2xl border bg-white p-5">
@@ -139,7 +151,7 @@ export default function ReviewImportBox({
         </div>
       </div>
 
-      {result && (
+      {result && !result.manual_review_required && (
         <div className="mt-6 space-y-4">
           <div className="rounded-2xl border bg-slate-50 p-4">
             <h3 className="text-sm font-semibold text-slate-900">Resumen</h3>
