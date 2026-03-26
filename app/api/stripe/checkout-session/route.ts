@@ -13,8 +13,6 @@ const PRICE_MAP: Record<string, string | undefined> = {
   pro: process.env.STRIPE_PRICE_PRO,
 };
 
-const TRIAL_DAYS = 365; // trial largo; lo terminamos manualmente al llegar a 25 reseñas
-
 export async function GET(req: Request) {
   try {
     const session = await getServerSession(authOptions);
@@ -86,7 +84,6 @@ export async function GET(req: Request) {
       },
 
       subscription_data: {
-        trial_period_days: TRIAL_DAYS,
         metadata: {
           job_id: String(jobId),
           plan: String(plan),

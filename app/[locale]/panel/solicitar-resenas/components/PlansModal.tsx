@@ -7,9 +7,30 @@ type Props = {
 };
 
 const PLANS = [
-  { key: "starter", name: "Starter", monthlyPrice: 9, credit: 9, reviews: 45, recommended: true },
-  { key: "growth", name: "Growth", monthlyPrice: 29, credit: 29, reviews: 145, recommended: false },
-  { key: "pro", name: "Pro", monthlyPrice: 79, credit: 79, reviews: 395, recommended: false },
+  {
+    key: "starter",
+    name: "Starter",
+    monthlyPrice: 9,
+    credit: 9,
+    reviews: 45,
+    recommended: true,
+  },
+  {
+    key: "growth",
+    name: "Growth",
+    monthlyPrice: 29,
+    credit: 29,
+    reviews: 145,
+    recommended: false,
+  },
+  {
+    key: "pro",
+    name: "Pro",
+    monthlyPrice: 79,
+    credit: 79,
+    reviews: 395,
+    recommended: false,
+  },
 ];
 
 const FEATURES = [
@@ -32,10 +53,12 @@ export default function PlansModal({ open, onClose, jobId }: Props) {
                 Planes y precios
               </p>
               <h3 className="mt-1 text-2xl font-bold tracking-tight text-slate-900 md:text-3xl">
-                Empieza gratis hoy. Paga cuando consigas tus primeras 25 reseñas.
+                Activa tu plan hoy. Empiezas con 25 reseñas gratis incluidas.
               </h3>
               <p className="mt-2 max-w-3xl text-sm text-slate-600 md:text-base">
-                Hoy no pagas nada. Elige el plan que se activará después.
+                El plan se cobra hoy. Seguirás disfrutando primero de tus 25
+                reseñas gratis y, al agotarlas, se activará automáticamente el
+                saldo del plan sin volver a cobrarte.
               </p>
             </div>
 
@@ -72,7 +95,9 @@ export default function PlansModal({ open, onClose, jobId }: Props) {
 
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <h4 className="text-lg font-semibold text-slate-900">{p.name}</h4>
+                    <h4 className="text-lg font-semibold text-slate-900">
+                      {p.name}
+                    </h4>
                     <p className="mt-1 text-sm text-slate-500">
                       Ideal para aumentar tus reseñas
                     </p>
@@ -80,7 +105,7 @@ export default function PlansModal({ open, onClose, jobId }: Props) {
 
                   <div className="text-right">
                     <div className="text-sm font-medium uppercase tracking-wide text-emerald-600">
-                      Hoy: 0€
+                      Hoy: {p.monthlyPrice.toFixed(2)}€
                     </div>
                     <div className="mt-1 text-3xl font-bold tracking-tight text-slate-900">
                       {p.monthlyPrice}€
@@ -92,7 +117,9 @@ export default function PlansModal({ open, onClose, jobId }: Props) {
                 <div className="mt-5 rounded-2xl bg-slate-50 p-4 ring-1 ring-slate-100">
                   <div className="flex items-center justify-between gap-4 text-sm">
                     <span className="text-slate-600">Empiezas con</span>
-                    <span className="font-semibold text-slate-900">25 reseñas gratis</span>
+                    <span className="font-semibold text-slate-900">
+                      25 reseñas gratis
+                    </span>
                   </div>
 
                   <div className="mt-2 flex items-center justify-between gap-4 text-sm">
@@ -101,13 +128,17 @@ export default function PlansModal({ open, onClose, jobId }: Props) {
                   </div>
 
                   <div className="mt-2 border-t border-slate-200 pt-2 flex items-center justify-between gap-4 text-sm">
-                    <span className="text-slate-600">Luego se activará</span>
-                    <span className="font-semibold text-slate-900">{p.monthlyPrice.toFixed(2)}€/mes</span>
+                    <span className="text-slate-600">Plan ya pagado</span>
+                    <span className="font-semibold text-slate-900">
+                      {p.monthlyPrice.toFixed(2)}€
+                    </span>
                   </div>
 
                   <div className="mt-2 flex items-center justify-between gap-4 text-sm">
                     <span className="text-slate-600">Incluye</span>
-                    <span className="font-semibold text-slate-900">{p.reviews} reseñas</span>
+                    <span className="font-semibold text-slate-900">
+                      {p.reviews} reseñas
+                    </span>
                   </div>
                 </div>
 
@@ -134,7 +165,7 @@ export default function PlansModal({ open, onClose, jobId }: Props) {
                       String(jobId)
                     )}&plan=${encodeURIComponent(p.key)}`}
                   >
-                    Empezar gratis con {p.name}
+                    Contratar {p.name}
                   </a>
                 </div>
               </div>
@@ -142,8 +173,13 @@ export default function PlansModal({ open, onClose, jobId }: Props) {
           </div>
 
           <div className="mt-6 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
-            <span className="font-medium text-slate-900">Pago seguro con Stripe.</span>{" "}
-            Hoy pagarás 0€. El cargo se realizará cuando consigas tus primeras 25 reseñas y, a partir de ahí, se renovará mensualmente.
+            <span className="font-medium text-slate-900">
+              Pago seguro con Stripe.
+            </span>{" "}
+            Hoy se realizará el cobro del plan seleccionado. Seguirás teniendo
+            25 reseñas gratis y 5€ de saldo promocional. Cuando agotes esas 25
+            reseñas, se activará el saldo del plan sin realizar un segundo
+            cobro.
           </div>
         </div>
       </div>
