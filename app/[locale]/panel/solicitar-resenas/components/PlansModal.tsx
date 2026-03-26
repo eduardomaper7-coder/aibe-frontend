@@ -53,13 +53,14 @@ export default function PlansModal({ open, onClose, jobId }: Props) {
                 Planes y precios
               </p>
               <h3 className="mt-1 text-2xl font-bold tracking-tight text-slate-900 md:text-3xl">
-                Activa tu plan hoy. Empiezas con 25 reseñas gratis incluidas.
-              </h3>
+  Activa tu plan hoy y empieza con 25 reseñas gratis
+</h3>
               <p className="mt-2 max-w-3xl text-sm text-slate-600 md:text-base">
-                El plan se cobra hoy. Seguirás disfrutando primero de tus 25
-                reseñas gratis y, al agotarlas, se activará automáticamente el
-                saldo del plan sin volver a cobrarte.
-              </p>
+  Pagas ahora, pero primero aprovechas tus 25 reseñas gratuitas.
+  Cuando se agoten, se activará tu saldo automáticamente sin cargos
+  adicionales. Además, puedes solicitar un reembolso del saldo no
+  utilizado en cualquier momento.
+</p>
             </div>
 
             <button
