@@ -13,15 +13,28 @@ const PLANS = [
     monthlyPrice: 9,
     credit: 9,
     reviews: 45,
-    recommended: true,
+    recommended: false,
+    description: "Ideal para empezar a conseguir reseñas",
+    highlight: "",
+    extraFeatures: [] as string[],
   },
   {
     key: "growth",
-    name: "Growth",
-    monthlyPrice: 29,
-    credit: 29,
+    name: "Captación Local",
+    monthlyPrice: 39,
+    credit: 39,
     reviews: 145,
-    recommended: false,
+    recommended: true,
+    description: "Atrae más pacientes y posiciona tu clínica en Google",
+    highlight: "Incluye estrategia SEO + ejecución mensual",
+    extraFeatures: [
+      "Acceso ilimitado al panel de posicionamiento y visibilidad",
+      "Auditoría SEO completa de tu Google Business Profile y tu web",
+      "Publicación de artículos en medios locales y prensa digital",
+      "1 artículo optimizado a la semana en tu web",
+      "Alta en directorios y plataformas clave del sector",
+      "Optimización continua para aparecer en Google Maps",
+    ],
   },
   {
     key: "pro",
@@ -30,6 +43,15 @@ const PLANS = [
     credit: 79,
     reviews: 395,
     recommended: false,
+    description: "Para clínicas que quieren delegarlo todo",
+    highlight: "Más velocidad, más soporte, mismo sistema",
+    extraFeatures: [
+      "Todo lo incluido en Captación Local",
+      "Prioridad en soporte y atención",
+      "Optimización SEO más frecuente",
+      "Revisión mensual personalizada",
+      "Ajustes estratégicos continuos",
+    ],
   },
 ];
 
@@ -46,22 +68,23 @@ export default function PlansModal({ open, onClose, jobId }: Props) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-6 backdrop-blur-sm">
       <div className="relative max-h-[92vh] w-full max-w-[90vw] overflow-y-auto rounded-3xl bg-white shadow-2xl ring-1 ring-slate-200 xl:max-w-[1400px]">
-        <div className="border-b border-slate-200 px-6 py-5 md:px-8 lg:px-10">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <p className="text-sm font-medium uppercase tracking-wide text-slate-500">
-                Planes y precios
-              </p>
-              <h3 className="mt-1 text-2xl font-bold tracking-tight text-slate-900 md:text-3xl">
-  Activa tu plan hoy y empieza con 25 reseñas gratis
-</h3>
-              <p className="mt-2 max-w-3xl text-sm text-slate-600 md:text-base">
-  Pagas ahora, pero primero aprovechas tus 25 reseñas gratuitas.
-  Cuando se agoten, se activará tu saldo automáticamente sin cargos
-  adicionales. Además, puedes solicitar un reembolso del saldo no
-  utilizado en cualquier momento.
-</p>
-            </div>
+        
+        {/* HEADER */}
+<div className="border-b border-slate-200 px-6 py-5 md:px-8 lg:px-10">
+  <div className="flex items-start justify-between gap-4">
+    <div>
+      <p className="text-sm font-medium uppercase tracking-wide text-slate-500">
+        Garantía total en todos los planes
+      </p>
+
+      <h3 className="mt-1 text-2xl font-bold tracking-tight text-slate-900 md:text-3xl">
+        25 reseñas gratis cada mes + devolución garantizada
+      </h3>
+
+      <p className="mt-2 max-w-3xl text-sm text-slate-600 md:text-base">
+        Todos los planes incluyen 25 reseñas gratuitas cada mes. Puedes probar el servicio sin riesgo y solicitar la devolución del saldo no utilizado hasta 1 meses después.
+      </p>
+    </div>
 
             <button
               type="button"
@@ -74,6 +97,7 @@ export default function PlansModal({ open, onClose, jobId }: Props) {
           </div>
         </div>
 
+        {/* CONTENT */}
         <div className="px-6 py-6 md:px-10 md:py-8 lg:px-12">
           <div className="grid gap-6 md:grid-cols-3">
             {PLANS.map((p) => (
@@ -86,22 +110,30 @@ export default function PlansModal({ open, onClose, jobId }: Props) {
                     : "border-slate-200 shadow-sm hover:shadow-md",
                 ].join(" ")}
               >
+                {/* BADGE */}
                 {p.recommended && (
                   <div className="absolute -top-3 left-5">
                     <span className="rounded-full bg-slate-900 px-3 py-1 text-xs font-semibold text-white shadow-sm">
-                      Más popular
+                      Más recomendado
                     </span>
                   </div>
                 )}
 
+                {/* TITLE */}
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <h4 className="text-lg font-semibold text-slate-900">
                       {p.name}
                     </h4>
                     <p className="mt-1 text-sm text-slate-500">
-                      Ideal para aumentar tus reseñas
+                      {p.description}
                     </p>
+
+                    {p.highlight && (
+                      <p className="mt-2 text-xs font-medium text-emerald-600">
+                        {p.highlight}
+                      </p>
+                    )}
                   </div>
 
                   <div className="text-right">
@@ -115,27 +147,30 @@ export default function PlansModal({ open, onClose, jobId }: Props) {
                   </div>
                 </div>
 
+                {/* SUMMARY */}
                 <div className="mt-5 rounded-2xl bg-slate-50 p-4 ring-1 ring-slate-100">
-                  <div className="flex items-center justify-between gap-4 text-sm">
+                  <div className="flex items-center justify-between text-sm">
                     <span className="text-slate-600">Empiezas con</span>
                     <span className="font-semibold text-slate-900">
                       25 reseñas gratis
                     </span>
                   </div>
 
-                  <div className="mt-2 flex items-center justify-between gap-4 text-sm">
+                  <div className="mt-2 flex items-center justify-between text-sm">
                     <span className="text-slate-600">Saldo inicial</span>
-                    <span className="font-semibold text-slate-900">5.00€</span>
+                    <span className="font-semibold text-slate-900">
+                      5.00€
+                    </span>
                   </div>
 
-                  <div className="mt-2 border-t border-slate-200 pt-2 flex items-center justify-between gap-4 text-sm">
+                  <div className="mt-2 border-t border-slate-200 pt-2 flex items-center justify-between text-sm">
                     <span className="text-slate-600">Plan ya pagado</span>
                     <span className="font-semibold text-slate-900">
                       {p.monthlyPrice.toFixed(2)}€
                     </span>
                   </div>
 
-                  <div className="mt-2 flex items-center justify-between gap-4 text-sm">
+                  <div className="mt-2 flex items-center justify-between text-sm">
                     <span className="text-slate-600">Incluye</span>
                     <span className="font-semibold text-slate-900">
                       {p.reviews} reseñas
@@ -143,6 +178,7 @@ export default function PlansModal({ open, onClose, jobId }: Props) {
                   </div>
                 </div>
 
+                {/* FEATURES */}
                 <div className="mt-5 flex-1">
                   <ul className="space-y-3 text-sm text-slate-600">
                     {FEATURES.map((f) => (
@@ -151,9 +187,17 @@ export default function PlansModal({ open, onClose, jobId }: Props) {
                         <span>{f}</span>
                       </li>
                     ))}
+
+                    {p.extraFeatures.map((f) => (
+                      <li key={f} className="flex items-start gap-2">
+                        <span className="mt-0.5 text-slate-900">✓</span>
+                        <span>{f}</span>
+                      </li>
+                    ))}
                   </ul>
                 </div>
 
+                {/* CTA */}
                 <div className="mt-6">
                   <a
                     className={[
@@ -166,13 +210,16 @@ export default function PlansModal({ open, onClose, jobId }: Props) {
                       String(jobId)
                     )}&plan=${encodeURIComponent(p.key)}`}
                   >
-                    Contratar {p.name}
+                    {p.key === "growth"
+                      ? "Empezar a captar pacientes"
+                      : `Contratar ${p.name}`}
                   </a>
                 </div>
               </div>
             ))}
           </div>
 
+          {/* FOOTER */}
           <div className="mt-6 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
             <span className="font-medium text-slate-900">
               Pago seguro con Stripe.

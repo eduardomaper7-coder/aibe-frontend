@@ -440,11 +440,17 @@ export default function PanelHeader() {
   const search = useSearchParams();
   const jobId = search.get("job_id");
 
-  const analysisHref = `/${locale}/panel${jobId ? `?job_id=${jobId}` : ""}`;
-  const requestHref = `/${locale}/panel/solicitar-resenas${jobId ? `?job_id=${jobId}` : ""}`;
+  const qs = jobId ? `?job_id=${jobId}` : "";
 
-  const isAnalysis = pathname === `/${locale}/panel`;
-  const isRequest = pathname.startsWith(`/${locale}/panel/solicitar-resenas`);
+const analysisHref = `/${locale}/panel${qs}`;
+const requestHref = `/${locale}/panel/solicitar-resenas${qs}`;
+const posicionamientoHref = `/${locale}/panel/posicionamiento${qs}`;
+const presenceOnlineHref = `/${locale}/panel/presencia-online${qs}`;
+
+const isPresenceOnline = pathname.startsWith(`/${locale}/panel/presencia-online`);
+const isAnalysis = pathname === `/${locale}/panel`;
+const isRequest = pathname.startsWith(`/${locale}/panel/solicitar-resenas`);
+const isPosicionamiento = pathname.startsWith(`/${locale}/panel/posicionamiento`);
 
   const linkCls = (active: boolean) =>
     `px-2 py-2 text-[15px] font-medium ${
@@ -465,16 +471,22 @@ export default function PanelHeader() {
       <PanelLogo href={analysisHref} />
 
       <nav
-        className="pointer-events-auto absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 items-center gap-6 md:flex"
-        aria-label="Secciones del panel"
-      >
-        <Link href={analysisHref} className={linkCls(isAnalysis)}>
-          Análisis de reseñas
-        </Link>
-        <Link href={requestHref} className={linkCls(isRequest)}>
-          Solicitar reseñas
-        </Link>
-      </nav>
+  className="pointer-events-auto absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 items-center gap-6 md:flex"
+  aria-label="Secciones del panel"
+>
+  <Link href={analysisHref} className={linkCls(isAnalysis)}>
+    Análisis de reseñas
+  </Link>
+  <Link href={requestHref} className={linkCls(isRequest)}>
+    Solicitar reseñas
+  </Link>
+  <Link href={posicionamientoHref} className={linkCls(isPosicionamiento)}>
+    Posicionamiento &amp; visibilidad
+  </Link>
+  <Link href={presenceOnlineHref} className={linkCls(isPresenceOnline)}>
+    Presencia online
+  </Link>
+</nav>
 
       <div className="ml-auto">
         <AccountMenu />

@@ -296,11 +296,11 @@ async function handleStart() {
   {/* Columna izquierda */}
   <div className="hero-left">
     <h1 className="hero-title">
-      Más reseñas en Google para tu clínica.
+      Tu clínica en la 1ª posición de Google
     </h1>
 
 
-    <p className="hero-price">Al mejor precio: 0,20€ por reseña ganada</p>
+    <p className="hero-price">Más visibilidad, más citas, sin gastar de más</p>
 
 
     <p className="hero-subtitle">
