@@ -232,12 +232,12 @@ export default function PosicionamientoClient() {
           <div>
             <p className="text-sm text-slate-500">Mapa GeoGrid</p>
             <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-  Posicionamiento &amp; visibilidad
-</h1>
+              Posicionamiento &amp; visibilidad
+            </h1>
 
-<p className="mt-1 text-sm text-slate-600">
-  · Visualiza cómo aparece la clínica en Google según la zona
-</p>
+            <p className="mt-1 text-sm text-slate-600">
+              · Visualiza cómo aparece la clínica en Google según la zona
+            </p>
           </div>
 
           <div className="grid w-full gap-3 md:grid-cols-4 xl:w-auto">
