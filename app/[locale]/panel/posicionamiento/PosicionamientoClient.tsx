@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "next/navigation";
 import GeoGridMap from "../components/GeoGridMap";
 
 type GridPoint = {
@@ -25,16 +24,19 @@ type JobMetaResponse = {
   longitude?: number | null;
 };
 
+type PosicionamientoClientProps = {
+  jobId: string | null;
+};
+
 function getRankColor(rank: number) {
   if (rank <= 3) return "bg-green-100 text-green-700 border-green-200";
   if (rank <= 10) return "bg-yellow-100 text-yellow-700 border-yellow-200";
   return "bg-red-100 text-red-700 border-red-200";
 }
 
-export default function PosicionamientoClient() {
-  const searchParams = useSearchParams();
-  const jobId = searchParams.get("job_id");
-
+export default function PosicionamientoClient({
+  jobId,
+}: PosicionamientoClientProps) {
   const API_BASE = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/+$/, "");
 
   const [loading, setLoading] = useState(true);
