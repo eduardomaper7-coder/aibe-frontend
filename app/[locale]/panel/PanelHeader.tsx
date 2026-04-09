@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useParams, usePathname, useSearchParams } from "next/navigation";
+import { useParams, usePathname } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 import { supabase } from "@/lib/supabase";
 
@@ -76,8 +76,10 @@ export function AccountMenu() {
   const [error, setError] = useState<string | null>(null);
 
   const [plan, setPlan] = useState<string | null>(null);
-const searchParams = useSearchParams();
-const jobId = searchParams.get("job_id");
+const jobId =
+  typeof window !== "undefined"
+    ? new URLSearchParams(window.location.search).get("job_id")
+    : null;
 
 const API_BASE = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/+$/, "");
 
@@ -437,8 +439,10 @@ export default function PanelHeader() {
   const params = useParams<{ locale: string }>();
   const locale = params?.locale ?? "es";
   const pathname = usePathname();
-  const search = useSearchParams();
-  const jobId = search.get("job_id");
+  const jobId =
+  typeof window !== "undefined"
+    ? new URLSearchParams(window.location.search).get("job_id")
+    : null;
 
   const qs = jobId ? `?job_id=${jobId}` : "";
 
