@@ -180,7 +180,10 @@ export async function importAppointments(payload: {
     form.append("files", file);
   }
 
-  const res = await fetch(url(`/reviews/import-appointments`), {
+  const finalUrl = url(`/reviews/import-appointments`);
+  console.log("IMPORT URL:", finalUrl);
+
+  const res = await fetch(finalUrl, {
     method: "POST",
     body: form,
     cache: "no-store",
