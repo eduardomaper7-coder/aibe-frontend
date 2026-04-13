@@ -47,7 +47,9 @@ export default function CreateReviewRequestForm({ jobId }: { jobId: number }) {
 
     const phoneDigits = normalizeSpainDigits(phone);
     if (!phoneDigits) return setErr("Falta el teléfono.");
-    if (!isValidSpainMobile(phoneDigits)) return setErr("Formato inválido. Ej: 699111222");
+    if (!isValidSpainMobile(phoneDigits)) {
+      return setErr("Formato inválido. Ej: 699111222");
+    }
 
     if (!date || !time) return setErr("Falta fecha y hora de la cita.");
 
@@ -75,70 +77,77 @@ export default function CreateReviewRequestForm({ jobId }: { jobId: number }) {
       setLoading(false);
     }
   }
-async function onSendNow() {
-  setMsg(null);
-  setErr(null);
 
-  if (!name.trim()) return setErr("Falta el nombre.");
+  async function onSendNow() {
+    setMsg(null);
+    setErr(null);
 
-  const phoneDigits = normalizeSpainDigits(phone);
-  if (!phoneDigits) return setErr("Falta el teléfono.");
-  if (!isValidSpainMobile(phoneDigits)) return setErr("Formato inválido. Ej: 699111222");
+    if (!name.trim()) return setErr("Falta el nombre.");
 
-  const phoneNorm = `+34${phoneDigits}`;
+    const phoneDigits = normalizeSpainDigits(phone);
+    if (!phoneDigits) return setErr("Falta el teléfono.");
+    if (!isValidSpainMobile(phoneDigits)) {
+      return setErr("Formato inválido. Ej: 699111222");
+    }
 
-  try {
-    setLoading(true);
+    const phoneNorm = `+34${phoneDigits}`;
 
-    await sendReviewRequestNow({
-      job_id: jobId,
-      customer_name: name.trim(),
-      phone_e164: phoneNorm,
-    });
+    try {
+      setLoading(true);
 
-    setMsg("Mensaje enviado correctamente.");
-    setName("");
-    setPhone("");
-    setDate(todayISODate());
-    setTime("");
-  } catch (e: any) {
-    setErr(e?.message || "No se pudo enviar el mensaje.");
-  } finally {
-    setLoading(false);
+      await sendReviewRequestNow({
+        job_id: jobId,
+        customer_name: name.trim(),
+        phone_e164: phoneNorm,
+      });
+
+      setMsg("Mensaje enviado correctamente.");
+      setName("");
+      setPhone("");
+      setDate(todayISODate());
+      setTime("");
+    } catch (e: any) {
+      setErr(e?.message || "No se pudo enviar el mensaje.");
+    } finally {
+      setLoading(false);
+    }
   }
-}
+
   return (
-    <div className="rounded-2xl border bg-white p-5">
+    <div className="box-border w-full min-w-0 max-w-full overflow-x-hidden rounded-2xl border bg-white p-4 sm:p-5">
       <h2 className="text-lg font-semibold text-slate-900">Añadir cita</h2>
-      <p className="mt-1 text-sm text-slate-600">El mensaje se enviará automáticamente 60 min después.</p>
+      <p className="mt-1 text-sm leading-6 text-slate-600">
+        El mensaje se enviará automáticamente 60 min después.
+      </p>
 
       {msg && (
         <div className="mt-3 rounded-xl border border-green-200 bg-green-50 p-3 text-sm text-green-800">
           {msg}
         </div>
       )}
+
       {err && (
         <div className="mt-3 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">
           {err}
         </div>
       )}
 
-      <form onSubmit={onSubmit} className="mt-4 grid gap-4">
-        <label className="block">
+      <form className="mt-4 grid min-w-0 gap-4" onSubmit={onSubmit}>
+        <label className="block min-w-0">
           <div className="mb-1 text-sm font-medium text-slate-700">Nombre</div>
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Ej: Marta"
-            className="w-full rounded-xl border bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-blue-500"
+            className="box-border block w-full min-w-0 max-w-full rounded-xl border bg-white px-3 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-blue-500"
           />
         </label>
 
-        <label className="block">
+        <label className="block min-w-0">
           <div className="mb-1 text-sm font-medium text-slate-700">Teléfono</div>
 
-          <div className="flex">
-            <div className="flex items-center rounded-l-xl border border-r-0 bg-slate-50 px-3 text-sm text-slate-700">
+          <div className="flex min-w-0 max-w-full">
+            <div className="flex shrink-0 items-center rounded-l-xl border border-r-0 bg-slate-50 px-3 py-2.5 text-sm text-slate-700">
               +34
             </div>
 
@@ -147,55 +156,62 @@ async function onSendNow() {
               onChange={(e) => setPhone(normalizeSpainDigits(e.target.value))}
               placeholder="Ej: 699111222"
               inputMode="numeric"
-              className="w-full rounded-r-xl rounded-l-none border bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-blue-500"
+              className="box-border block w-full min-w-0 max-w-full rounded-r-xl rounded-l-none border bg-white px-3 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
-          <p className="mt-1 text-xs text-slate-500">Escribe el número sin el prefijo.</p>
+          <p className="mt-1 text-xs leading-5 text-slate-500">
+            Escribe el número sin el prefijo.
+          </p>
         </label>
 
-        <div className="grid gap-4 md:grid-cols-2">
-          <label className="block">
+        <div className="grid min-w-0 grid-cols-1 gap-4 md:grid-cols-2">
+          <label className="block min-w-0">
             <div className="mb-1 text-sm font-medium text-slate-700">Fecha</div>
             <input
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="w-full rounded-xl border bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:ring-2 focus:ring-blue-500"
+              className="box-border block w-full min-w-0 max-w-full rounded-xl border bg-white px-3 py-2.5 text-sm text-slate-900 outline-none focus:ring-2 focus:ring-blue-500"
             />
           </label>
 
-          <label className="block">
+          <label className="block min-w-0">
             <div className="mb-1 text-sm font-medium text-slate-700">Hora</div>
             <input
               type="time"
               value={time}
               onChange={(e) => setTime(e.target.value)}
-              className="w-full rounded-xl border bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:ring-2 focus:ring-blue-500"
+              className="box-border block w-full min-w-0 max-w-full rounded-xl border bg-white px-3 py-2.5 text-sm text-slate-900 outline-none focus:ring-2 focus:ring-blue-500"
             />
           </label>
         </div>
 
-        <div className="grid gap-3 md:grid-cols-2">
-  <button
-    disabled={loading}
-    className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-60"
-    type="submit"
-  >
-    {loading ? "Guardando..." : "Programar mensaje"}
-  </button>
+        <div className="grid min-w-0 grid-cols-1 gap-3 md:grid-cols-2">
+          <button
+            disabled={loading}
+            type="submit"
+            className="block w-full min-w-0 max-w-full rounded-xl bg-blue-600 px-4 py-3 text-center text-sm font-medium leading-tight text-white hover:bg-blue-700 disabled:opacity-60"
+          >
+            <span className="sm:hidden">{loading ? "Guardando..." : "Programar"}</span>
+            <span className="hidden sm:inline">
+              {loading ? "Guardando..." : "Programar mensaje"}
+            </span>
+          </button>
 
-  <button
-    disabled={loading}
-    type="button"
-    onClick={onSendNow}
-    className="rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-60"
-  >
-    {loading ? "Enviando..." : "Enviar mensaje ahora"}
-  </button>
-</div>
+          <button
+            disabled={loading}
+            type="button"
+            onClick={onSendNow}
+            className="block w-full min-w-0 max-w-full rounded-xl bg-emerald-600 px-4 py-3 text-center text-sm font-medium leading-tight text-white hover:bg-emerald-700 disabled:opacity-60"
+          >
+            <span className="sm:hidden">{loading ? "Enviando..." : "Enviar ahora"}</span>
+            <span className="hidden sm:inline">
+              {loading ? "Enviando..." : "Enviar mensaje ahora"}
+            </span>
+          </button>
+        </div>
       </form>
     </div>
   );
 }
-

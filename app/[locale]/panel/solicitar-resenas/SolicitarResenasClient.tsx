@@ -33,8 +33,8 @@ export default function SolicitarResenasClient() {
   }, [jobId, API_BASE]);
 
   return (
-    <div className="mx-auto w-full max-w-6xl px-4 py-6">
-      <div className="mb-6">
+    <div className="mx-auto w-full min-w-0 max-w-6xl overflow-x-hidden px-4 py-6 sm:px-4">
+      <div className="mb-6 min-w-0">
         <h1 className="text-2xl font-semibold text-slate-900">
           Solicitar reseñas
         </h1>
@@ -44,24 +44,38 @@ export default function SolicitarResenasClient() {
       </div>
 
       {!jobId ? (
-        <div className="rounded-2xl border bg-white p-5 text-slate-700">
+        <div className="min-w-0 rounded-2xl border bg-white p-5 text-slate-700">
           Falta <span className="font-mono">job_id</span> en la URL.
         </div>
       ) : (
-        <div className="grid gap-6">
-          {/* ✅ Nuevo panel de créditos + botón Aumentar saldo (planes) */}
-          <CreditsPanel jobId={jobId} />
-
-          <ReviewImportBox jobId={jobId} onDone={() => window.location.reload()} />
-
-          <div className="grid gap-6 lg:grid-cols-2">
-            <CreateReviewRequestForm jobId={jobId} />
-
-            {/* ✅ Resumen actual (con nombre negocio + evitar duplicados) */}
-            <ReviewSummaryPanel jobId={jobId} defaultBusinessName={placeName} />
+        <div className="grid min-w-0 gap-6">
+          <div className="min-w-0">
+            <CreditsPanel jobId={jobId} />
           </div>
 
-          <ReviewRequestsTable jobId={jobId} />
+          <div className="min-w-0">
+            <ReviewImportBox
+              jobId={jobId}
+              onDone={() => window.location.reload()}
+            />
+          </div>
+
+          <div className="grid min-w-0 grid-cols-1 gap-6 lg:grid-cols-2">
+            <div className="min-w-0">
+              <CreateReviewRequestForm jobId={jobId} />
+            </div>
+
+            <div className="min-w-0">
+              <ReviewSummaryPanel
+                jobId={jobId}
+                defaultBusinessName={placeName}
+              />
+            </div>
+          </div>
+
+          <div className="min-w-0">
+            <ReviewRequestsTable jobId={jobId} />
+          </div>
         </div>
       )}
     </div>
