@@ -457,9 +457,9 @@ const isRequest = pathname.startsWith(`/${locale}/panel/solicitar-resenas`);
 const isPosicionamiento = pathname.startsWith(`/${locale}/panel/posicionamiento`);
 
   const linkCls = (active: boolean) =>
-    `px-2 py-2 text-[15px] font-medium ${
-      active ? "text-slate-900" : "text-slate-700"
-    }`;
+  `px-2 py-2 text-[14px] font-medium whitespace-nowrap ${
+    active ? "text-slate-900" : "text-slate-700"
+  }`;
   const subItems = [
     { id: "temas", label: "Temas" },
     { id: "sentimiento", label: "Sentimiento" },
@@ -472,9 +472,12 @@ const isPosicionamiento = pathname.startsWith(`/${locale}/panel/posicionamiento`
   <header className="sticky top-0 z-30 border-b bg-white/80 backdrop-blur">
     {/* FILA 1: logo + menú principal + cuenta */}
     <div className="relative mx-auto flex w-full items-center px-4 py-2">
-      <PanelLogo href={analysisHref} />
+      <div className="hidden md:block">
+  <PanelLogo href={analysisHref} />
+</div>
 
-      <nav
+      {/* Desktop */}
+<nav
   className="pointer-events-auto absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 items-center gap-6 md:flex"
   aria-label="Secciones del panel"
 >
@@ -489,6 +492,19 @@ const isPosicionamiento = pathname.startsWith(`/${locale}/panel/posicionamiento`
   </Link>
   <Link href={presenceOnlineHref} className={linkCls(isPresenceOnline)}>
     Presencia online
+  </Link>
+</nav>
+
+{/* Mobile */}
+<nav
+  className="flex w-full justify-center gap-6 border-t pt-2 md:hidden"
+  aria-label="Secciones del panel móvil"
+>
+  <Link href={analysisHref} className={linkCls(isAnalysis)}>
+    Análisis de reseñas
+  </Link>
+  <Link href={requestHref} className={linkCls(isRequest)}>
+    Solicitar reseñas
   </Link>
 </nav>
 
