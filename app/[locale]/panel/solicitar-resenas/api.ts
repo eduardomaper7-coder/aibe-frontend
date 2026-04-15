@@ -23,6 +23,12 @@ export type BusinessSettingsOut = {
   google_review_url: string | null;
   business_name: string | null;
   prevent_duplicate_whatsapp?: boolean;
+
+  whatsapp_provider?: "twilio" | "personal_number";
+  whatsapp_personal_number?: string | null;
+  whatsapp_personal_enabled?: boolean;
+  whatsapp_session_status?: string | null;
+  whatsapp_last_error?: string | null;
 };
 
 export type StatsOut = {
@@ -151,6 +157,12 @@ export function patchBusinessSettings(payload: {
   business_name?: string | null;
   google_review_url?: string | null;
   prevent_duplicate_whatsapp?: boolean | null;
+
+  whatsapp_provider?: "twilio" | "personal_number" | null;
+  whatsapp_personal_number?: string | null;
+  whatsapp_personal_enabled?: boolean | null;
+  whatsapp_session_status?: string | null;
+  whatsapp_last_error?: string | null;
 }) {
   return http<BusinessSettingsOut>(url(`/business-settings`), {
     method: "PATCH",
