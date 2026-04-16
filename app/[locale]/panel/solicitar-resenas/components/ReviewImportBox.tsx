@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { importAppointments, type ImportAppointmentsResponse } from "../api";
 
 function statusLabel(status: string) {
@@ -47,10 +47,11 @@ export default function ReviewImportBox({
   onDone: () => void;
 }) {
   const [files, setFiles] = useState<File[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [msg, setMsg] = useState<string | null>(null);
-  const [err, setErr] = useState<string | null>(null);
-  const [result, setResult] = useState<ImportAppointmentsResponse | null>(null);
+const [loading, setLoading] = useState(false);
+const [elapsedSeconds, setElapsedSeconds] = useState(0);
+const [msg, setMsg] = useState<string | null>(null);
+const [err, setErr] = useState<string | null>(null);
+const [result, setResult] = useState<ImportAppointmentsResponse | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const cameraInputRef = useRef<HTMLInputElement | null>(null);
@@ -62,7 +63,29 @@ export default function ReviewImportBox({
     );
 
   const fileNames = useMemo(() => files.map((f) => f.name).join(", "), [files]);
+useEffect(() => {
+  if (!loading) {
+    setElapsedSeconds(0);
+    return;
+  }
 
+  const interval = window.setInterval(() => {
+    setElapsedSeconds((prev) => prev + 1);
+  }, 1000);
+
+  return () => window.clearInterval(interval);
+}, [loading]);
+
+function formatElapsedTime(totalSeconds: number) {
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+
+  if (minutes === 0) {
+    return `${seconds} s`;
+  }
+
+  return `${minutes} min ${seconds.toString().padStart(2, "0")} s`;
+}
   function appendFiles(newFiles: File[]) {
     setFiles((prev) => {
       const merged = [...prev, ...newFiles];
@@ -165,11 +188,22 @@ export default function ReviewImportBox({
         entre archivos y programa solo las citas válidas.
       </p>
 
-      {msg && (
-        <div className="mt-3 rounded-xl border border-green-200 bg-green-50 p-3 text-sm text-green-800">
-          {msg}
-        </div>
-      )}
+      {loading && (
+  <div className="mt-3 rounded-xl border border-blue-200 bg-blue-50 p-3 text-sm text-blue-800">
+    <div className="font-medium">
+      Subiendo y procesando los archivos. Por favor, espera.
+    </div>
+    <div className="mt-1 text-xs text-blue-700">
+      Tiempo transcurrido: {formatElapsedTime(elapsedSeconds)}
+    </div>
+  </div>
+)}
+
+{msg && !loading && (
+  <div className="mt-3 rounded-xl border border-green-200 bg-green-50 p-3 text-sm text-green-800">
+    {msg}
+  </div>
+)}
 
       {err && (
         <div className="mt-3 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">
@@ -180,13 +214,12 @@ export default function ReviewImportBox({
       <div className="mt-4 flex flex-col gap-3">
         <div className="flex flex-wrap gap-2">
           <input
-            ref={fileInputRef}
-            type="file"
-            multiple
-            accept=".csv,.xlsx,.xls,.pdf,image/*"
-            onChange={handleFileSelection}
-            className="hidden"
-          />
+  ref={fileInputRef}
+  type="file"
+  multiple
+  onChange={handleFileSelection}
+  className="hidden"
+/>
 
           <button
             type="button"
