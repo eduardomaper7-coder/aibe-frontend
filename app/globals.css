@@ -1022,3 +1022,24 @@ body {
   }
 
 }
+
+
+.hero-title {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.05;
+}
+
+.hero-title-main {
+  display: block;
+}
+
+.hero-title-dynamic {
+  display: block;
+  margin-top: 10px;
+  font-size: 1.15em;
+  font-family: "Caveat", cursive;
+  font-weight: 700;
+  line-height: 0.95;
+}

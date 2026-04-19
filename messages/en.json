@@ -2,13 +2,7 @@
   "home": {
     "hero": {
       "titlePrefix": "Analyze your Google reviews and",
-      "dynamicPhrases": [
-        "see what to improve",
-        "increase your customers",
-        "improve your online reputation",
-        "reply automatically with AI",
-        "spot problems before anyone else"
-      ],
+      "dynamicPhrases": ["Clinic", "Restaurant", "Hotel", "Business"],
       "subtitle": "Type your business name and your city to analyze all your reviews in seconds.",
       "placeholders": {
         "businessName": "Business name (e.g., La Tagliatella)",

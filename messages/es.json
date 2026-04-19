@@ -2,13 +2,7 @@
   "home": {
     "hero": {
       "titlePrefix": "Analiza tus reseñas de Google y",
-      "dynamicPhrases": [
-        "descubre qué mejorar",
-        "aumenta tus clientes",
-        "mejora tu reputación online",
-        "responde con IA automáticamente",
-        "detecta problemas antes que nadie"
-      ],
+      "dynamicPhrases": ["Clínica", "Restaurante", "Hotel", "Negocio"],
       "subtitle": "Escribe el nombre de tu negocio y tu ciudad para analizar todas tus reseñas en segundos.",
       "placeholders": {
         "businessName": "Nombre del negocio (ej: La Tagliatella)",
@@ -35,7 +29,7 @@
       "cancel": "Cancelar"
     },
     "blueSection": {
-      "headline": "Especialistas en aumentar las ventas y mejorar la reputación online de clínicas.",
+      "headline": "Especialistas en aumentar las ventas y mejorar la reputación online de clínicas y restaurantes.",
       "bullets": [
         "Mejore la puntuación media y consiga más reseñas Google",
         "Resultados comprobados en el primer mes.",

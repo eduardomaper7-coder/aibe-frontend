@@ -40,7 +40,7 @@ export default function HeroResenas() {
                   +120
                 </div>
                 <div className="mt-3 text-3xl md:text-4xl font-bold leading-tight text-white/85">
-                  clínicas en toda España
+                  negocios en toda España
                 </div>
               </div>
             </div>

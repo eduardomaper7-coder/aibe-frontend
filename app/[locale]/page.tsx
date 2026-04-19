@@ -30,8 +30,11 @@ import { useEffect, useState } from 'react';
 
 
 import HeroResenas from "@/components/ui/HeroResenas";
-
-
+import { Caveat } from "next/font/google";
+const caveat = Caveat({
+  subsets: ["latin"],
+  weight: ["700"],
+});
 import SeccionResenasIA from '@/components/ui/SeccionResenasIA';
 // import TemasDemo from '@/components/ui/temasdemo'; // <- no se usa, lo dejamos fuera
 import SentimientoDemo from '@/components/ui/sentimientodemo';
@@ -296,8 +299,18 @@ async function handleStart() {
   {/* Columna izquierda */}
   <div className="hero-left">
     <h1 className="hero-title">
-      Tu clínica en la 1ª posición de Google
-    </h1>
+  <span className="hero-title-main">
+    Mas reseñas de Google para tu
+  </span>
+
+  <span
+    id="dynamicPart"
+    className={`hero-title-dynamic ${caveat.className}`}
+    style={{ transition: "opacity 0.3s ease" }}
+  >
+    Clínica
+  </span>
+</h1>
 
 
     <p className="hero-price">Más visibilidad, más citas, sin gastar de más</p>
@@ -315,7 +328,7 @@ async function handleStart() {
     <div className="hero-form-card">
       {/* Texto dentro del recuadro */}
   <p className="hero-form-hint">
-    Escribe el nombre de tu clínica y tu ciudad para analizar todas tus reseñas en segundos.
+    Escribe el nombre de tu negocio y tu ciudad para comenzar.
   </p>
       <div className="hero-form-row">
         {/* Nombre clínica */}
@@ -330,7 +343,7 @@ async function handleStart() {
             type="text"
             value={placeName}
             onChange={(e) => setPlaceName(e.target.value)}
-            placeholder="Nombre de la clínica"
+            placeholder="Nombre del negocio"
             disabled={loading}
           />
         </div>
