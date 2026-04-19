@@ -10,7 +10,7 @@ const PLANS = [
   {
     key: "starter",
     name: "Starter",
-    monthlyPrice: 9,
+    monthlyPrice: 18,
     credit: 9,
     reviews: 45,
     recommended: false,
