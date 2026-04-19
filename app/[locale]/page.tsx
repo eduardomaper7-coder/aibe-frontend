@@ -15,13 +15,12 @@
 
 
 
-import { useEffect, useState } from 'react';
 
 
 
 
 
-
+import LandingSignupCard from "./LandingSignupCard";
 
 
 
@@ -49,10 +48,8 @@ import SeoBeneficio from '@/components/ui/seo-beneficio'
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 
+import { useEffect } from "react";
 
-
-
-import { useRouter, useParams } from "next/navigation";
 
 
 
@@ -64,28 +61,13 @@ import { useRouter, useParams } from "next/navigation";
 
 
 export default function Home() {
-const [placeName, setPlaceName] = useState("");
-const [placeZone, setPlaceZone] = useState("");
-const [candidates, setCandidates] = useState<any[] | null>(null);
+
 const t = useTranslations();
-const router = useRouter();
 
 
 
 
-  const [loading, setLoading] = useState(false);
-  const API_BASE = process.env.NEXT_PUBLIC_API_URL;
-const [progressIndex, setProgressIndex] = useState(0);
-const PROGRESS_MESSAGES = t.raw("home.progress.messages") as string[];
-const params = useParams();
-const locale = String((params as any)?.locale ?? "es");
-
-
-useEffect(() => {
-  if (!loading) {
-    setProgressIndex(0);
-    return;
-  }
+  
 
 
 
@@ -94,81 +76,9 @@ useEffect(() => {
 
 
 
-  const id = setInterval(() => {
-    setProgressIndex((prev) =>
-      prev < PROGRESS_MESSAGES.length - 1 ? prev + 1 : prev
-    );
-  }, 1500); // cambia cada 1.5s
 
 
-
-
-
-
-
-
-  return () => clearInterval(id);
-}, [loading]);
-
-
-
-
-
-
-
-
-  async function runScrapeWithCandidate(c: any) {
-  const apiBase = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/+$/, "");
-
-
-
-
-  const res = await fetch(`${apiBase}/scrape`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-  google_maps_url: c.google_maps_url,
-  place_name: placeName.trim(), // ✅ nombre del usuario
-  max_reviews: 10000,
-  personal_data: false,
-}),
-
-
-
-
-  });
-
-
-
-
-  if (!res.ok) throw new Error(await res.text());
-  const data = await res.json();
-
-
-
-
-  if (!data?.job_id) throw new Error("No llegó job_id");
-
-
-
-
-  const jobId = Number(data.job_id);
-
-// preguntamos si ya está vinculado
-const linkedRes = await fetch(`${apiBase}/auth/job-linked?job_id=${encodeURIComponent(String(jobId))}`, {
-  cache: "no-store",
-});
-if (!linkedRes.ok) throw new Error(await linkedRes.text());
-
-const linkedData = await linkedRes.json();
-const linked = Boolean(linkedData?.linked);
-
-if (linked) {
-  router.push(`/${locale}/login?job_id=${encodeURIComponent(String(jobId))}`);
-} else {
-  router.push(`/${locale}/registro?job_id=${encodeURIComponent(String(jobId))}`);
-}
-}
+  
 useEffect(() => {
   const PHRASES = t.raw("home.hero.dynamicPhrases") as string[];
 
@@ -217,50 +127,7 @@ useEffect(() => {
 
 
 
-async function handleStart() {
-  const name = placeName.trim();
-  const zone = placeZone.trim();
-  const q = zone ? `${name}, ${zone}` : name;
 
-
-  if (!name) return;
-
-
-  try {
-    setLoading(true);
-    setCandidates(null);
-
-
-    const apiBase = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/+$/, "");
-    if (!apiBase) throw new Error("NEXT_PUBLIC_API_URL no está configurado");
-
-
-    const r = await fetch(`${apiBase}/places/search?q=${encodeURIComponent(q)}`);
-    if (!r.ok) throw new Error(await r.text());
-    const data = await r.json();
-
-
-    const list = data?.candidates ?? [];
-    if (!list.length) {
-      alert(t("errors.noBusinessFound"));
-      return;
-    }
-
-
-    if (list.length === 1) {
-      await runScrapeWithCandidate(list[0]);
-      return;
-    }
-
-
-    setCandidates(list);
-  } catch (e) {
-    console.error(e);
-    alert(t("errors.searchFailed"));
-  } finally {
-    setLoading(false);
-  }
-}
 
 
   const sectionCx = 'bg-black px-4 md:px-6 py-6 md:py-8';
@@ -273,218 +140,53 @@ async function handleStart() {
   return (
     <>
      <section className="hero relative" aria-label="Sección inicial con video de fondo">
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   {/* Fondo azul moderno */}
-<div className="hero-bg" aria-hidden="true" />
- 
+  <div className="hero-bg" aria-hidden="true" />
 
+  {/* Contenido */}
+  <div className="shell relative z-[1] hero-inner">
+    {/* Columna izquierda */}
+    <div className="hero-left">
+      <h1 className="hero-title">
+        <span className="hero-title-main">
+          Mas reseñas de Google para tu
+        </span>
 
-{/* Contenido */}
-<div className="shell relative z-[1] hero-inner">
-  {/* Columna izquierda */}
-  <div className="hero-left">
-    <h1 className="hero-title">
-  <span className="hero-title-main">
-    Mas reseñas de Google para tu
-  </span>
-
-  <span
-    id="dynamicPart"
-    className={`hero-title-dynamic ${caveat.className}`}
-    style={{ transition: "opacity 0.3s ease" }}
-  >
-    Clínica
-  </span>
-</h1>
-
-
-    <p className="hero-price">Más visibilidad, más citas, sin gastar de más</p>
-
-
-    <p className="hero-subtitle">
-      Fácil de integrar. Atención personalizada.
-    </p>
-
-
-   
-
-
-    {/* Recuadro grande abajo izquierda */}
-    <div className="hero-form-card">
-      {/* Texto dentro del recuadro */}
-  <p className="hero-form-hint">
-    Escribe el nombre de tu negocio y tu ciudad para comenzar.
-  </p>
-      <div className="hero-form-row">
-        {/* Nombre clínica */}
-        <div className="hero-input">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="opacity-80 shrink-0" aria-hidden="true">
-            <path d="M10.5 18a7.5 7.5 0 1 1 5.3-12.8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-            <path d="M16 16l5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-          </svg>
-
-
-          <input
-            type="text"
-            value={placeName}
-            onChange={(e) => setPlaceName(e.target.value)}
-            placeholder="Nombre del negocio"
-            disabled={loading}
-          />
-        </div>
-
-
-        {/* Ciudad */}
-        <div className="hero-input hero-input-city">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="opacity-80 shrink-0" aria-hidden="true">
-            <path
-              d="M12 22s7-4.4 7-12a7 7 0 1 0-14 0c0 7.6 7 12 7 12Z"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            <path
-              d="M12 13.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4Z"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-
-
-          <input
-            type="text"
-            value={placeZone}
-            onChange={(e) => setPlaceZone(e.target.value)}
-            placeholder="Ciudad"
-            disabled={loading}
-          />
-        </div>
-      </div>
-
-
-      <div className="hero-cta-row">
-        <div className="hero-progress">
-          {!loading ? (
-            <span />
-          ) : (
-            <p>{PROGRESS_MESSAGES[progressIndex]}</p>
-          )}
-        </div>
-
-
-        <button
-          type="button"
-          onClick={handleStart}
-          disabled={loading || !placeName.trim()}
-          className="hero-cta"
+        <span
+          id="dynamicPart"
+          className={`hero-title-dynamic ${caveat.className}`}
+          style={{ transition: "opacity 0.3s ease" }}
         >
-          {loading ? (
-            <>
-              <span className="hero-spinner" />
-              {t("home.hero.cta.analyzing")}
-            </>
-          ) : (
-            <>
-              Empezar <span aria-hidden="true">→</span>
-            </>
-          )}
-        </button>
-      </div>
+          Clínica
+        </span>
+      </h1>
+
+      <p className="hero-price">
+        Más visibilidad, más citas, sin gastar de más
+      </p>
+
+      <p className="hero-subtitle">
+        Fácil de integrar. Atención personalizada.
+      </p>
+
+      {/* Signup */}
+      <div className="hero-form-card mt-2 md:mt-4">
+  <LandingSignupCard />
+</div>
     </div>
 
-
-    {!loading && (
-      <p className="hero-microcopy">
-        {t("home.hero.microcopy")}
-      </p>
-    )}
-
-
-    {/* Candidates igual que lo tienes (solo muévelo aquí debajo si quieres que aparezca bajo el recuadro) */}
-    {candidates?.length ? (
-      <div className="hero-candidates">
-        <div className="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-md p-3">
-          <p className="text-sm text-white/80 mb-2">{t("home.candidates.title")}</p>
-          <div className="flex flex-col gap-2">
-            {candidates.map((c, idx) => (
-              <button
-                key={c.place_id || idx}
-                type="button"
-                className="text-left rounded-xl px-4 py-3 bg-black/30 hover:bg-black/40 border border-white/10 transition"
-                onClick={async () => {
-                  try {
-                    setLoading(true);
-                    await runScrapeWithCandidate(c);
-                  } catch (e) {
-                    console.error(e);
-                    alert(t("errors.startAnalysisFailed"));
-                  } finally {
-                    setLoading(false);
-                  }
-                }}
-                disabled={loading}
-              >
-                <div className="text-white font-medium">{c.name}</div>
-                <div className="text-white/70 text-sm">{c.address}</div>
-                <div className="text-white/60 text-xs mt-1">
-                  {c.rating ? `⭐ ${c.rating}` : ""}{" "}
-                  {c.user_ratings_total ? `(${c.user_ratings_total} ${t("home.candidates.reviewsLabel")})` : ""}
-                </div>
-              </button>
-            ))}
-          </div>
-
-
-          <button
-            type="button"
-            className="mt-3 text-xs text-white/70 hover:text-white"
-            onClick={() => setCandidates(null)}
-            disabled={loading}
-          >
-            {t("home.candidates.cancel")}
-          </button>
-        </div>
-      </div>
-    ) : null}
+    {/* Columna derecha */}
+    <div className="hero-right" aria-hidden="true">
+      <Image
+        src="/imagenes/hero.png"
+        alt="Ilustración reseñas clínicas"
+        width={900}
+        height={900}
+        className="hero-illustration"
+        priority
+      />
+    </div>
   </div>
-
-
-  {/* Columna derecha */}
-  <div className="hero-right" aria-hidden="true">
-    <Image
-  src="/imagenes/hero.png"
-  alt="Ilustración reseñas clínicas"
-  width={900}
-  height={900}
-  className="hero-illustration"
-  priority
-/>
-  </div>
-</div>
-
-
-
-
-
-
 </section>
 
 

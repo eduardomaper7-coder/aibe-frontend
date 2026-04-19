@@ -4,8 +4,9 @@ import Link from "next/link";
 import { useRouter, useParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import React, { useEffect, useState } from "react";
+
 type Props = {
-  variant?: "page" | "modal";
+  variant?: "page" | "modal" | "hero";
   onSuccess?: () => void;
   showLoginLink?: boolean;
   jobId?: string | null;
@@ -15,7 +16,7 @@ function Wrapper({
   variant,
   children,
 }: {
-  variant: "page" | "modal";
+  variant: "page" | "modal" | "hero";
   children: React.ReactNode;
 }) {
   if (variant === "modal") return <div>{children}</div>;
@@ -46,12 +47,13 @@ export default function SignupClient({
   const [error, setError] = useState<string | null>(null);
 
   const jobIdEffective =
-  jobId ??
-  (typeof window !== "undefined" ? localStorage.getItem("job_id") : null);
+    jobId ??
+    (typeof window !== "undefined" ? localStorage.getItem("job_id") : null);
 
   useEffect(() => {
-  if (jobId) localStorage.setItem("job_id", String(jobId));
-}, [jobId]);
+    if (jobId) localStorage.setItem("job_id", String(jobId));
+  }, [jobId]);
+
   async function handleEmail(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
@@ -63,18 +65,6 @@ export default function SignupClient({
       return;
     }
 
-    if (!jobIdEffective) {
-  setError("Falta job_id (ej: /registro?job_id=123).");
-  return;
-}
-
-const jobIdNumber = Number(jobIdEffective);
-if (!Number.isFinite(jobIdNumber)) {
-  setError("job_id inválido.");
-  return;
-}
-
-
     if (!API_BASE) {
       setError("NEXT_PUBLIC_API_URL no está configurado");
       return;
@@ -82,7 +72,6 @@ if (!Number.isFinite(jobIdNumber)) {
 
     setLoading(true);
     try {
-      // 1) Signup en tu backend (Railway)
       const r = await fetch(`${API_BASE}/auth/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -91,34 +80,31 @@ if (!Number.isFinite(jobIdNumber)) {
 
       if (!r.ok) throw new Error(await r.text());
 
-      // 2) Link job_id -> user/email en backend
-      const link = await fetch(`${API_BASE}/auth/link-job`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ job_id: jobIdNumber, email: safeEmail }),
+      const signupData = await r.json();
+      const createdJobId = signupData?.job_id;
+
+      if (!createdJobId) {
+        throw new Error("El registro no devolvió job_id.");
+      }
+
+      localStorage.setItem("job_id", String(createdJobId));
+
+      const login = await signIn("credentials", {
+        email: safeEmail,
+        password,
+        redirect: false,
       });
 
-      if (!link.ok) throw new Error(await link.text());
+      if (login?.error) {
+        setError("Cuenta creada, pero no se pudo iniciar sesión automáticamente. Intenta iniciar sesión de nuevo.");
+        return;
+      }
 
-      // 3) Auto login con NextAuth credentials
-      const login = await signIn("credentials", {
-  email: safeEmail,
-  password,
-  redirect: false,
-});
+      onSuccess?.();
 
-if (login?.error) {
-  setError("Cuenta creada, pero no se pudo iniciar sesión automáticamente. Intenta iniciar sesión de nuevo.");
-  return;
-}
-
-onSuccess?.();
-
-// ✅ ir a Stripe
-router.replace(`/${locale}/panel?job_id=${encodeURIComponent(jobIdEffective)}`);
-return;
-      // 4) Entra al panel
-      
+      router.replace(
+        `/${locale}/panel/solicitar-resenas?job_id=${encodeURIComponent(String(createdJobId))}`
+      );
     } catch (err: any) {
       setError(err?.message ?? "No se pudo crear la cuenta.");
     } finally {
@@ -130,10 +116,13 @@ return;
     <Wrapper variant={variant}>
       <div className="rounded-3xl bg-white p-10 md:p-12 shadow-2xl ring-1 ring-black/5">
         <h1 className="text-3xl font-bold tracking-tight">
-          Regístrate antes de continuar
+          {variant === "modal" ? "Comienza Gratis Hoy" : "Regístrate antes de continuar"}
         </h1>
+
         <p className="mt-3 text-base text-neutral-600">
-          Crea una cuenta para poder volver a iniciar sesión cuando quieras.
+          {variant === "modal"
+            ? "Regístrate para continuar."
+            : "Crea una cuenta para poder volver a iniciar sesión cuando quieras."}
         </p>
 
         <form onSubmit={handleEmail} className="mt-8 space-y-5">

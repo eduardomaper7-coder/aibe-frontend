@@ -50,7 +50,6 @@ export default function LoginClient({
   const jobIdEffective =
     jobId ?? (typeof window !== "undefined" ? localStorage.getItem("job_id") : null);
 
-  // Si viene job_id, guárdalo
   useEffect(() => {
     if (!jobId) return;
     try {
@@ -58,7 +57,6 @@ export default function LoginClient({
     } catch {}
   }, [jobId]);
 
-  // Tras login OK, recupera job_id del backend y redirige
   useEffect(() => {
     if (status !== "authenticated") return;
     if (!API_BASE) return;
@@ -70,20 +68,25 @@ export default function LoginClient({
       .then((r) => (r.ok ? r.json() : Promise.reject(r)))
       .then((d) => {
         const jid = d?.job_id ? String(d.job_id) : null;
+
         if (jid) {
           try {
             localStorage.setItem("job_id", jid);
           } catch {}
+
           onSuccess?.();
-          router.replace(`/${locale}/panel?job_id=${encodeURIComponent(jid)}`);
-        } else {
-          onSuccess?.();
-          router.replace(`/${locale}/plan`);
+          router.replace(
+            `/${locale}/panel/solicitar-resenas?job_id=${encodeURIComponent(jid)}`
+          );
+          return;
         }
+
+        onSuccess?.();
+        router.replace(`/${locale}/panel/solicitar-resenas`);
       })
       .catch(() => {
         onSuccess?.();
-        router.replace(`/${locale}/plan`);
+        router.replace(`/${locale}/panel/solicitar-resenas`);
       });
   }, [status, session, API_BASE, locale, router, onSuccess]);
 
@@ -111,7 +114,6 @@ export default function LoginClient({
       return;
     }
 
-    // useSession pasará a authenticated y el useEffect redirige
     setLoading(false);
   }
 
