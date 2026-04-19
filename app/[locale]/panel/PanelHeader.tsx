@@ -487,14 +487,7 @@ const isPosicionamiento = pathname.startsWith(`/${locale}/panel/posicionamiento`
   <Link href={requestHref} className={linkCls(isRequest)}>
     Solicitar reseñas
   </Link>
-  <Link href={posicionamientoHref} className={linkCls(isPosicionamiento)}>
-    Posicionamiento &amp; visibilidad
-  </Link>
-  <Link href={presenceOnlineHref} className={linkCls(isPresenceOnline)}>
-    Presencia online
-  </Link>
 </nav>
-
 {/* Mobile */}
 <nav
   className="flex w-full justify-center gap-6 border-t pt-2 md:hidden"

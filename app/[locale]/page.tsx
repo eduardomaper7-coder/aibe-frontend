@@ -403,7 +403,7 @@ async function handleStart() {
             </>
           ) : (
             <>
-              Analizar reseñas <span aria-hidden="true">→</span>
+              Empezar <span aria-hidden="true">→</span>
             </>
           )}
         </button>
