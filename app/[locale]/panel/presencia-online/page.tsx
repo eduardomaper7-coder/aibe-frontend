@@ -31,6 +31,14 @@ type PageProps = {
   searchParams: Promise<{ job_id?: string }>;
 };
 
+function normalizePlanName(plan: string | null) {
+  return (plan ?? "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim();
+}
+
 async function getClinicSubscriptionStatus(jobId?: string): Promise<boolean> {
   const API_BASE = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/+$/, "");
 
@@ -46,11 +54,18 @@ async function getClinicSubscriptionStatus(jobId?: string): Promise<boolean> {
 
     const data: SubscriptionResponse = await res.json();
 
-    return (
+    const hasActiveStatus =
       data?.status === "prepaid" ||
       data?.status === "pending_activation" ||
-      data?.status === "active"
-    );
+      data?.status === "active";
+
+    const planName = normalizePlanName(data?.plan);
+
+    const isCaptacionLocalPlan =
+      planName.includes("captacion local") ||
+      planName.includes("captacion_local");
+
+    return hasActiveStatus && isCaptacionLocalPlan;
   } catch (error) {
     console.error("Error comprobando suscripción de Presencia Online:", error);
     return false;

@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import GeoGridMap from "../components/GeoGridMap";
+import PlansModal from "../solicitar-resenas/components/PlansModal";
 
 type GridPoint = {
   lat: number;
@@ -26,6 +27,7 @@ type JobMetaResponse = {
 
 type PosicionamientoClientProps = {
   jobId: string | null;
+  hasSubscription: boolean;
 };
 
 function getRankColor(rank: number) {
@@ -36,6 +38,7 @@ function getRankColor(rank: number) {
 
 export default function PosicionamientoClient({
   jobId,
+  hasSubscription,
 }: PosicionamientoClientProps) {
   const API_BASE = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/+$/, "");
 
@@ -47,7 +50,13 @@ export default function PosicionamientoClient({
   const [city, setCity] = useState("");
   const [keyword, setKeyword] = useState("fisioterapia");
 
-  const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
+  const [coords, setCoords] = useState<{ lat: number; lng: number }>({
+  lat: 40.4168,
+  lng: -3.7038,
+});
+
+  const [showDemoModal, setShowDemoModal] = useState(!hasSubscription);
+  const [showPlansModal, setShowPlansModal] = useState(false);
 
   async function loadJobMeta(currentJobId: string) {
     if (!API_BASE || !currentJobId) return;
@@ -240,6 +249,11 @@ export default function PosicionamientoClient({
             <p className="mt-1 text-sm text-slate-600">
               · Visualiza cómo aparece la clínica en Google según la zona
             </p>
+
+            <div className="mt-3 inline-flex w-fit items-center gap-2 rounded-full bg-slate-100 px-3 py-2 text-sm font-medium text-slate-700 ring-1 ring-slate-200">
+              <span className="h-2.5 w-2.5 rounded-full bg-slate-500" />
+              {hasSubscription ? "Suscripción activa" : "Modo demo"}
+            </div>
           </div>
 
           <div className="grid w-full gap-3 md:grid-cols-4 xl:w-auto">
@@ -372,6 +386,63 @@ export default function PosicionamientoClient({
           </div>
         </div>
       </section>
+
+      {!hasSubscription && showDemoModal ? (
+<div className="fixed -inset-y-32 inset-x-0 z-[99999] flex items-center justify-center bg-slate-950/70 p-4 backdrop-blur-sm">
+<div className="relative z-[100000] w-full max-w-xl rounded-3xl bg-white shadow-2xl">
+            <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4">
+              <h3 className="text-lg font-semibold text-slate-900">
+                Está viendo una versión demo de Captación Local
+              </h3>
+
+              <button
+                type="button"
+                onClick={() => setShowDemoModal(false)}
+                className="rounded-full p-2 text-slate-500 transition hover:bg-slate-100 hover:text-slate-700"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-5 p-6 text-center">
+              <p className="text-lg font-semibold text-slate-900">
+                Contrate el Plan y posicione su clínica la nº 1 en Google
+              </p>
+
+              <div className="flex justify-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (!jobId) return;
+                    setShowDemoModal(false);
+                    setShowPlansModal(true);
+                  }}
+                  disabled={!jobId}
+                  className="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-sky-600 to-emerald-500 px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Empezar
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setShowDemoModal(false)}
+                  className="inline-flex items-center justify-center rounded-xl border border-slate-300 px-6 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+                >
+                  Ver demo
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {showPlansModal ? (
+        <PlansModal
+          open={showPlansModal}
+          onClose={() => setShowPlansModal(false)}
+          jobId={Number(jobId)}
+        />
+      ) : null}
     </div>
   );
 }

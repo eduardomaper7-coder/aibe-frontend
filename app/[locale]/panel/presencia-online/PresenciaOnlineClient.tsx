@@ -17,7 +17,7 @@ import {
   Link2,
 } from "lucide-react";
 import type { PresenceArticle, PresenceData, PresencePlatform } from "./types";
-
+import PlansModal from "../solicitar-resenas/components/PlansModal";
 type Props = {
   initialData: PresenceData;
   jobId: string | null;
@@ -298,8 +298,8 @@ function ModalShell({
   maxWidth?: string;
 }) {
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/45 p-4">
-      <div className={`w-full ${maxWidth} rounded-3xl bg-white shadow-2xl`}>
+   <div className="fixed -inset-y-32 inset-x-0 z-[99999] flex items-center justify-center bg-slate-950/60 p-4 backdrop-blur-sm">
+  <div className={`relative z-[100000] w-full ${maxWidth} rounded-3xl bg-white shadow-2xl`}>
         <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4">
           <h3 className="text-lg font-semibold text-slate-900">{title}</h3>
           <button
@@ -323,6 +323,8 @@ export default function PresenciaOnlineClient({
   hasSubscription,
 }: Props) {
   const [data, setData] = useState(initialData);
+  const [showDemoModal, setShowDemoModal] = useState(!hasSubscription);
+const [showPlansModal, setShowPlansModal] = useState(false);
 
   const [platformModal, setPlatformModal] = useState<PresencePlatform | null>(null);
   const [platformUrlInput, setPlatformUrlInput] = useState("");
@@ -680,6 +682,50 @@ export default function PresenciaOnlineClient({
           </div>
         </ModalShell>
       ) : null}
+            {!hasSubscription && showDemoModal ? (
+        <ModalShell
+          title="Está viendo una versión demo de Captación Local"
+          onClose={() => setShowDemoModal(false)}
+          maxWidth="max-w-xl"
+        >
+          <div className="space-y-5 text-center">
+  <p className="text-lg font-semibold text-slate-900">
+    Contrate el Plan y posicione su clínica la nº 1 en Google
+  </p>
+
+  <div className="flex justify-center gap-3">
+    <button
+      type="button"
+      onClick={() => {
+        if (!jobId) return;
+        setShowDemoModal(false);
+        setShowPlansModal(true);
+      }}
+      disabled={!jobId}
+      className="rounded-xl bg-gradient-to-r from-sky-600 to-emerald-500 px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-50"
+    >
+      Empezar
+    </button>
+
+    <button
+      type="button"
+      onClick={() => setShowDemoModal(false)}
+      className="rounded-xl border border-slate-300 px-6 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+    >
+      Ver demo
+    </button>
+  </div>
+</div>
+        </ModalShell>
+      ) : null}
+
+      {showPlansModal ? (
+  <PlansModal
+    open={showPlansModal}
+    onClose={() => setShowPlansModal(false)}
+    jobId={Number(jobId)}
+  />
+) : null}
     </div>
   );
 }

@@ -450,12 +450,22 @@ const analysisHref = `/${locale}/panel${qs}`;
 const requestHref = `/${locale}/panel/solicitar-resenas${qs}`;
 const posicionamientoHref = `/${locale}/panel/posicionamiento${qs}`;
 const presenceOnlineHref = `/${locale}/panel/presencia-online${qs}`;
+const googleAdsHref = `/${locale}/panel/google-ads${qs}`;
+const seguimienoHref = `/${locale}/panel/seguimieno${qs}`;
+const isSeguimieno = pathname.startsWith(`/${locale}/panel/seguimieno`);
 
 const isPresenceOnline = pathname.startsWith(`/${locale}/panel/presencia-online`);
 const isAnalysis = pathname === `/${locale}/panel`;
 const isRequest = pathname.startsWith(`/${locale}/panel/solicitar-resenas`);
 const isPosicionamiento = pathname.startsWith(`/${locale}/panel/posicionamiento`);
-const isCaptacionLocal = isPresenceOnline || isPosicionamiento;
+const isGoogleAds = pathname.startsWith(`/${locale}/panel/google-ads`);
+const isFichaGoogleWeb = pathname.startsWith(`/${locale}/panel/ficha-google-web`);
+const isCaptacionLocal =
+  isPresenceOnline ||
+  isPosicionamiento ||
+  isGoogleAds ||
+  isFichaGoogleWeb ||
+  isSeguimieno;
 
 const captacionLocalItems = [
   {
@@ -469,15 +479,20 @@ const captacionLocalItems = [
     active: isPosicionamiento,
   },
   {
-    label: "Google Ads y más",
-    href: "#",
-    active: false,
-  },
+  label: "Google Ads",
+  href: googleAdsHref,
+  active: isGoogleAds,
+},
   {
-    label: "Ficha de Google y página web",
-    href: "#",
-    active: false,
-  },
+  label: "Ficha de Google y página web",
+  href: `/${locale}/panel/ficha-google-web${qs}`,
+  active: pathname.startsWith(`/${locale}/panel/ficha-google-web`),
+},
+{
+  label: "Seguimieno",
+  href: seguimienoHref,
+  active: isSeguimieno,
+},
 ];
 
   const linkCls = (active: boolean) =>
@@ -500,7 +515,7 @@ const captacionLocalItems = [
   <PanelLogo href={analysisHref} />
 </div>
 
-      {/* Desktop */}
+     {/* Desktop */}
 <nav
   className="pointer-events-auto absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 items-center gap-6 md:flex"
   aria-label="Secciones del panel"
@@ -533,27 +548,29 @@ const captacionLocalItems = [
       </svg>
     </button>
 
-    <div className="invisible absolute left-1/2 top-full z-40 mt-2 w-72 -translate-x-1/2 rounded-2xl border border-slate-200 bg-white p-2 opacity-0 shadow-xl ring-1 ring-black/5 transition group-hover:visible group-hover:opacity-100">
-      {captacionLocalItems.map((item) =>
-        item.href === "#" ? (
-          <span
-            key={item.label}
-            className="block cursor-not-allowed rounded-xl px-4 py-2.5 text-sm font-medium text-slate-400"
-          >
-            {item.label}
-          </span>
-        ) : (
-          <Link
-            key={item.label}
-            href={item.href}
-            className={`block rounded-xl px-4 py-2.5 text-sm font-medium hover:bg-slate-50 ${
-              item.active ? "bg-slate-50 text-slate-900" : "text-slate-700"
-            }`}
-          >
-            {item.label}
-          </Link>
-        )
-      )}
+    <div className="invisible absolute left-1/2 top-full z-40 w-72 -translate-x-1/2 pt-2 opacity-0 transition group-hover:visible group-hover:opacity-100">
+      <div className="rounded-2xl border border-slate-200 bg-white p-2 shadow-xl ring-1 ring-black/5">
+        {captacionLocalItems.map((item) =>
+          item.href === "#" ? (
+            <span
+              key={item.label}
+              className="block cursor-not-allowed rounded-xl px-4 py-2.5 text-sm font-medium text-slate-400"
+            >
+              {item.label}
+            </span>
+          ) : (
+            <Link
+              key={item.label}
+              href={item.href}
+              className={`block rounded-xl px-4 py-2.5 text-sm font-medium hover:bg-slate-50 ${
+                item.active ? "bg-slate-50 text-slate-900" : "text-slate-700"
+              }`}
+            >
+              {item.label}
+            </Link>
+          )
+        )}
+      </div>
     </div>
   </div>
 </nav>
