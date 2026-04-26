@@ -206,7 +206,13 @@ export default function CreditsPanel({ jobId }: { jobId: number }) {
   const ui = useMemo<PanelUI>(() => {
     const status = sub.status ?? "none";
 
-    if (status === "pending_activation" || status === "active" || status === "prepaid") {
+    if (
+  sub.plan &&
+  (status === "pending_activation" ||
+    status === "active" ||
+    status === "prepaid" ||
+    status === "trialing")
+) {
       const renewalDate = formatDate(sub.renewal_at);
 
       if (sub.plan === "growth") {
