@@ -455,6 +455,30 @@ const isPresenceOnline = pathname.startsWith(`/${locale}/panel/presencia-online`
 const isAnalysis = pathname === `/${locale}/panel`;
 const isRequest = pathname.startsWith(`/${locale}/panel/solicitar-resenas`);
 const isPosicionamiento = pathname.startsWith(`/${locale}/panel/posicionamiento`);
+const isCaptacionLocal = isPresenceOnline || isPosicionamiento;
+
+const captacionLocalItems = [
+  {
+    label: "Presencia online",
+    href: presenceOnlineHref,
+    active: isPresenceOnline,
+  },
+  {
+    label: "Posicionamiento y visibilidad",
+    href: posicionamientoHref,
+    active: isPosicionamiento,
+  },
+  {
+    label: "Google Ads y más",
+    href: "#",
+    active: false,
+  },
+  {
+    label: "Ficha de Google y página web",
+    href: "#",
+    active: false,
+  },
+];
 
   const linkCls = (active: boolean) =>
   `px-2 py-2 text-[14px] font-medium whitespace-nowrap ${
@@ -484,9 +508,54 @@ const isPosicionamiento = pathname.startsWith(`/${locale}/panel/posicionamiento`
   <Link href={analysisHref} className={linkCls(isAnalysis)}>
     Análisis de reseñas
   </Link>
+
   <Link href={requestHref} className={linkCls(isRequest)}>
     Solicitar reseñas
   </Link>
+
+  <div className="group relative">
+    <button
+      type="button"
+      className={`${linkCls(isCaptacionLocal)} flex items-center gap-1`}
+    >
+      Captación local
+      <svg
+        className="h-4 w-4"
+        viewBox="0 0 20 20"
+        fill="currentColor"
+        aria-hidden="true"
+      >
+        <path
+          fillRule="evenodd"
+          d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 11.17l3.71-3.94a.75.75 0 1 1 1.08 1.04l-4.25 4.5a.75.75 0 0 1-1.08 0l-4.25-4.5a.75.75 0 0 1 .02-1.06Z"
+          clipRule="evenodd"
+        />
+      </svg>
+    </button>
+
+    <div className="invisible absolute left-1/2 top-full z-40 mt-2 w-72 -translate-x-1/2 rounded-2xl border border-slate-200 bg-white p-2 opacity-0 shadow-xl ring-1 ring-black/5 transition group-hover:visible group-hover:opacity-100">
+      {captacionLocalItems.map((item) =>
+        item.href === "#" ? (
+          <span
+            key={item.label}
+            className="block cursor-not-allowed rounded-xl px-4 py-2.5 text-sm font-medium text-slate-400"
+          >
+            {item.label}
+          </span>
+        ) : (
+          <Link
+            key={item.label}
+            href={item.href}
+            className={`block rounded-xl px-4 py-2.5 text-sm font-medium hover:bg-slate-50 ${
+              item.active ? "bg-slate-50 text-slate-900" : "text-slate-700"
+            }`}
+          >
+            {item.label}
+          </Link>
+        )
+      )}
+    </div>
+  </div>
 </nav>
 {/* Mobile */}
 <nav
