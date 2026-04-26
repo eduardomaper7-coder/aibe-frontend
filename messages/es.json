@@ -2,7 +2,7 @@
   "home": {
     "hero": {
       "titlePrefix": "Analiza tus reseñas de Google y",
-      "dynamicPhrases": ["Clínica", "Restaurante", "Hotel", "Negocio"],
+      "dynamicPhrases": ["Reseñas de Google", "visibilidad", "pacientes"],
       "subtitle": "Escribe el nombre de tu negocio y tu ciudad para analizar todas tus reseñas en segundos.",
       "placeholders": {
         "businessName": "Nombre del negocio (ej: La Tagliatella)",

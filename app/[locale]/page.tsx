@@ -148,22 +148,27 @@ useEffect(() => {
     {/* Columna izquierda */}
     <div className="hero-left">
       <h1 className="hero-title">
-        <span className="hero-title-main">
-          Mas reseñas de Google para tu
-        </span>
+  <span className="hero-title-main">
+    Consigue que tu Clínica
+  </span>
 
-        <span
-          id="dynamicPart"
-          className={`hero-title-dynamic ${caveat.className}`}
-          style={{ transition: "opacity 0.3s ease" }}
-        >
-          Clínica
-        </span>
-      </h1>
+  <span className="hero-title-main">
+    Sea la nº 1 en Google Maps Madrid
+  </span>
 
-      <p className="hero-price">
-        Más visibilidad, más citas, sin gastar de más
-      </p>
+  <span className="hero-more-line">
+  <span className="hero-more-static">Más </span>
+  <span
+    id="dynamicPart"
+    className="hero-more-dynamic"
+    style={{ transition: "opacity 0.3s ease" }}
+  >
+    Reseñas de Google
+  </span>
+</span>
+</h1>
+
+      
 
       <p className="hero-subtitle">
         Fácil de integrar. Atención personalizada.

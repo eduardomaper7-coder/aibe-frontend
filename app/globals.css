@@ -1043,3 +1043,20 @@ body {
   font-weight: 700;
   line-height: 0.95;
 }
+
+
+.hero-more-line {
+  display: inline-block;
+  font-family: Inter, sans-serif; /* distinta al título */
+  font-weight: 400;
+  font-size: clamp(28px, 4vw, 42px);
+  line-height: 1.2;
+}
+
+.hero-more-static {
+  color: #ffffff; /* "Más" en blanco */
+}
+
+.hero-more-dynamic {
+  color: #facc15; /* amarillo moderno (tipo Tailwind yellow-400) */
+}

@@ -22,6 +22,7 @@ type Sub = {
   included_reviews: number | null;
   trial_reviews: number | null;
   trial_credit_eur: number | null;
+  renewal_at?: string | null;
   billing_flow?: "prepaid" | "legacy_deferred" | null;
   prepaid_amount_eur?: number | null;
   prepaid_at?: string | null;
@@ -37,22 +38,17 @@ type PanelUI = {
   usageText: string;
   showStartFree: boolean;
   showIncreaseBalance: boolean;
-  showNextPlan: boolean;
   nextPlanText?: string | null;
 };
 
-function planLabel(plan: string | null) {
-  if (plan === "starter") return "Starter";
-  if (plan === "growth") return "Growth";
-  if (plan === "pro") return "Pro";
-  return null;
-}
+function formatDate(date?: string | null) {
+  if (!date) return null;
 
-function planBenefits(plan: string | null) {
-  if (plan === "starter") return { reviews: 45, credit: 9 };
-  if (plan === "growth") return { reviews: 145, credit: 29 };
-  if (plan === "pro") return { reviews: 395, credit: 79 };
-  return null;
+  return new Date(date).toLocaleDateString("es-ES", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
 }
 
 export default function CreditsPanel({ jobId }: { jobId: number }) {
@@ -78,6 +74,7 @@ export default function CreditsPanel({ jobId }: { jobId: number }) {
     included_reviews: null,
     trial_reviews: null,
     trial_credit_eur: null,
+    renewal_at: null,
     billing_flow: null,
     prepaid_amount_eur: null,
     prepaid_at: null,
@@ -89,25 +86,27 @@ export default function CreditsPanel({ jobId }: { jobId: number }) {
 
   const loadStats = async () => {
     if (!API_BASE) return;
+
     const r = await fetch(
       `${API_BASE}/api/review-requests/stats?job_id=${jobId}`,
-      {
-        cache: "no-store",
-      }
+      { cache: "no-store" }
     );
+
     if (!r.ok) throw new Error("No se pudieron cargar stats");
+
     setStats(await r.json());
   };
 
   const loadSubscription = async () => {
     if (!API_BASE) return;
+
     const r = await fetch(
       `${API_BASE}/stripe/subscription-by-job?job_id=${jobId}`,
-      {
-        cache: "no-store",
-      }
+      { cache: "no-store" }
     );
+
     if (!r.ok) throw new Error("No se pudo cargar suscripción");
+
     setSub(await r.json());
   };
 
@@ -136,17 +135,8 @@ export default function CreditsPanel({ jobId }: { jobId: number }) {
 
       const inserted = Number(data?.new_reviews_inserted || 0);
       const checked = Number(data?.checked_count || 0);
-      const activation = data?.subscription_activation;
 
-      if (activation?.activated && activation?.charged_now === false) {
-        setCheckMessage(
-          "Has alcanzado las 25 reseñas gratuitas. Tu plan ya pagado se ha activado correctamente."
-        );
-      } else if (activation?.activated && activation?.charged_now === true) {
-        setCheckMessage(
-          "Has alcanzado las 25 reseñas gratuitas. Estamos activando tu plan y procesando el cobro."
-        );
-      } else if (inserted > 0) {
+      if (inserted > 0) {
         setCheckMessage(
           `Se comprobaron ${checked} reseñas y se añadieron ${inserted} nuevas.`
         );
@@ -167,6 +157,11 @@ export default function CreditsPanel({ jobId }: { jobId: number }) {
 
   const handleRefundRequest = async () => {
     if (!API_BASE || refunding) return;
+
+    if (!sub.plan || sub.status === "none" || sub.status === null) {
+      setRefundMessage("Todavía no tiene ninguna suscripción activa.");
+      return;
+    }
 
     const firstConfirm = window.confirm(
       "¿Seguro que quieres solicitar el reembolso?"
@@ -207,116 +202,61 @@ export default function CreditsPanel({ jobId }: { jobId: number }) {
   };
 
   const reviewsGained = Number(stats.reviews_gained || 0);
-  const currentPlanLabel = planLabel(sub.plan);
-  const nextPlanBenefits = planBenefits(sub.plan);
 
   const ui = useMemo<PanelUI>(() => {
     const status = sub.status ?? "none";
 
-    if (status === "trialing") {
-      const totalReviews = sub.trial_reviews ?? 25;
-      const totalCredit = sub.trial_credit_eur ?? 5;
-      const usedEur = Number((reviewsGained * 0.2).toFixed(2));
+    if (status === "pending_activation" || status === "active" || status === "prepaid") {
+      const renewalDate = formatDate(sub.renewal_at);
+
+      if (sub.plan === "growth") {
+        return {
+          title: "Plan Captación Local",
+          reviewsText: "Reseñas conseguidas 0/∞",
+          usageText: "Uso ∞",
+          showStartFree: false,
+          showIncreaseBalance: false,
+          nextPlanText:
+            "Puede mandar tantos mensajes de WhatsApp como quiera, sin límites.",
+        };
+      }
 
       return {
-        title: "Tienes 25 reseñas gratis",
-        reviewsText: `Reseñas conseguidas ${Math.min(reviewsGained, totalReviews)}/${totalReviews} reseñas`,
-        usageText: `Uso ${usedEur.toFixed(2)}€/${totalCredit.toFixed(2)}€`,
+        title: "Plan Reseñas Google",
+        reviewsText: `Reseñas conseguidas ${Math.min(
+          reviewsGained,
+          45
+        )}/45 reseñas`,
+        usageText: `Uso ${Math.min(
+          Number((reviewsGained * 0.4).toFixed(2)),
+          18
+        ).toFixed(2)}€/18.00€`,
         showStartFree: false,
         showIncreaseBalance: false,
-        showNextPlan: true,
-        nextPlanText: null,
-      };
-    }
-
-    if (status === "prepaid") {
-      const totalReviews = sub.trial_reviews ?? 25;
-      const totalCredit = sub.trial_credit_eur ?? 5;
-      const usedEur = Number(
-        (Math.min(reviewsGained, totalReviews) * 0.2).toFixed(2)
-      );
-
-      return {
-        title: "Tienes 25 reseñas gratis",
-        reviewsText: `Reseñas conseguidas ${Math.min(reviewsGained, totalReviews)}/${totalReviews} reseñas`,
-        usageText: `Uso ${usedEur.toFixed(2)}€/${totalCredit.toFixed(2)}€`,
-        showStartFree: false,
-        showIncreaseBalance: false,
-        showNextPlan: true,
-        nextPlanText: currentPlanLabel
-          ? `Tu Plan ${currentPlanLabel} ya está pagado y se activará automáticamente cuando se agoten las 25 reseñas gratis.`
+        nextPlanText: renewalDate
+          ? `El ${renewalDate} se reiniciará el saldo.`
           : null,
       };
     }
 
-    if (status === "pending_activation" || status === "active") {
-      const totalCredit = sub.credit_eur ?? 0;
-      const totalReviews =
-        sub.included_reviews ?? Math.floor(totalCredit / 0.2);
-      const freeReviews = sub.trial_reviews ?? 25;
-      const paidReviewsUsed = Math.max(0, reviewsGained - freeReviews);
-      const usedEur = Number((paidReviewsUsed * 0.2).toFixed(2));
-
-      return {
-        title: currentPlanLabel ? `Plan ${currentPlanLabel}` : "Plan activo",
-        reviewsText: `Reseñas del plan utilizadas ${Math.min(
-          paidReviewsUsed,
-          totalReviews
-        )}/${totalReviews} reseñas`,
-        usageText: `Uso ${usedEur.toFixed(2)}€/${totalCredit.toFixed(2)}€`,
-        showStartFree: false,
-        showIncreaseBalance: true,
-        showNextPlan: false,
-        nextPlanText: null,
-      };
-    }
-
-    const totalReviews = 25;
-    const totalCredit = 5;
-    const usedEur = Number((reviewsGained * 0.2).toFixed(2));
-
     return {
-      title: "Consigue 25 reseñas gratis",
-      reviewsText: `Reseñas conseguidas ${Math.min(reviewsGained, totalReviews)}/${totalReviews} reseñas`,
-      usageText: `Uso ${usedEur.toFixed(2)}€/${totalCredit.toFixed(2)}€`,
+      title: "Activa alguno de nuestros Planes para Comenzar",
+      reviewsText: "",
+      usageText: "",
       showStartFree: true,
       showIncreaseBalance: false,
-      showNextPlan: false,
       nextPlanText: null,
     };
-  }, [
-    sub.status,
-    sub.credit_eur,
-    sub.included_reviews,
-    sub.trial_reviews,
-    sub.trial_credit_eur,
-    reviewsGained,
-    currentPlanLabel,
-  ]);
+  }, [sub.status, sub.plan, sub.renewal_at, reviewsGained]);
 
   return (
     <div className="rounded-2xl border bg-white p-5 shadow-sm">
       <h3 className="text-lg font-semibold text-slate-900">{ui.title}</h3>
 
       <div className="mt-2 text-slate-700">
-        <div>{ui.reviewsText}</div>
-        <div className="mt-1">{ui.usageText}</div>
+        {ui.reviewsText && <div>{ui.reviewsText}</div>}
+        {ui.usageText && <div className="mt-1">{ui.usageText}</div>}
       </div>
-
-      {ui.showNextPlan && sub.plan && nextPlanBenefits && (
-        <div className="mt-4 rounded-xl border bg-slate-50 px-4 py-3">
-          <div className="text-sm text-slate-600">Luego, se activará:</div>
-          <div className="mt-1 font-semibold text-slate-900">
-            Plan {currentPlanLabel}
-          </div>
-          <div className="mt-1 text-sm text-slate-700">
-            +{nextPlanBenefits.reviews} reseñas
-          </div>
-          <div className="text-sm text-slate-700">
-            +{nextPlanBenefits.credit.toFixed(2)}€
-          </div>
-        </div>
-      )}
 
       {ui.nextPlanText && (
         <div className="mt-3 text-sm text-slate-600">{ui.nextPlanText}</div>
@@ -334,7 +274,7 @@ export default function CreditsPanel({ jobId }: { jobId: number }) {
         </div>
       )}
 
-      <div className="mt-4 flex flex-wrap gap-3">
+      <div className="mt-4 flex flex-wrap items-center gap-3">
         <button
           type="button"
           onClick={handleCheckReviews}
@@ -343,21 +283,6 @@ export default function CreditsPanel({ jobId }: { jobId: number }) {
         >
           {checking ? "Comprobando..." : "Comprobar reseñas"}
         </button>
-
-        {sub.plan &&
-          (sub.status === "prepaid" ||
-            sub.status === "pending_activation" ||
-            sub.status === "active") &&
-          !sub.refund_requested && (
-            <button
-              type="button"
-              onClick={handleRefundRequest}
-              disabled={refunding}
-              className="inline-flex items-center justify-center rounded-xl border border-slate-300 bg-white px-4 py-3 font-semibold text-slate-900 hover:bg-slate-50 disabled:opacity-50"
-            >
-              {refunding ? "Solicitando..." : "Solicitar reembolso"}
-            </button>
-          )}
 
         {ui.showStartFree && (
           <button
@@ -376,6 +301,17 @@ export default function CreditsPanel({ jobId }: { jobId: number }) {
             className="inline-flex items-center justify-center rounded-xl bg-slate-900 px-4 py-3 font-semibold text-white hover:bg-slate-800"
           >
             Aumentar saldo
+          </button>
+        )}
+
+        {!sub.refund_requested && (
+          <button
+            type="button"
+            onClick={handleRefundRequest}
+            disabled={refunding}
+            className="ml-auto inline-flex items-center justify-center rounded-xl border border-slate-300 bg-white px-4 py-3 font-semibold text-slate-900 hover:bg-slate-50 disabled:opacity-50"
+          >
+            {refunding ? "Solicitando..." : "Solicitar reembolso"}
           </button>
         )}
       </div>
