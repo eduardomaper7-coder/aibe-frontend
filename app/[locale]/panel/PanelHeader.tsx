@@ -488,11 +488,7 @@ const captacionLocalItems = [
   href: `/${locale}/panel/ficha-google-web${qs}`,
   active: pathname.startsWith(`/${locale}/panel/ficha-google-web`),
 },
-{
-  label: "Seguimieno",
-  href: seguimienoHref,
-  active: isSeguimieno,
-},
+
 ];
 
   const linkCls = (active: boolean) =>
