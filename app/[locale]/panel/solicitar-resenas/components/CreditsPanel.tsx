@@ -22,6 +22,7 @@ type Sub = {
   included_reviews: number | null;
   trial_reviews: number | null;
   trial_credit_eur: number | null;
+  current_period_start?: string | null;
   renewal_at?: string | null;
   billing_flow?: "prepaid" | "legacy_deferred" | null;
   prepaid_amount_eur?: number | null;
@@ -74,6 +75,7 @@ export default function CreditsPanel({ jobId }: { jobId: number }) {
     included_reviews: null,
     trial_reviews: null,
     trial_credit_eur: null,
+    current_period_start: null,
     renewal_at: null,
     billing_flow: null,
     prepaid_amount_eur: null,
@@ -84,11 +86,19 @@ export default function CreditsPanel({ jobId }: { jobId: number }) {
     refund_requested_amount_eur: 0,
   });
 
-  const loadStats = async () => {
+  const loadStats = async (fromDate?: string | null) => {
     if (!API_BASE) return;
 
+    const qs = new URLSearchParams({
+      job_id: String(jobId),
+    });
+
+    if (fromDate) {
+      qs.set("from", fromDate);
+    }
+
     const r = await fetch(
-      `${API_BASE}/api/review-requests/stats?job_id=${jobId}`,
+      `${API_BASE}/api/review-requests/stats?${qs.toString()}`,
       { cache: "no-store" }
     );
 
@@ -98,7 +108,7 @@ export default function CreditsPanel({ jobId }: { jobId: number }) {
   };
 
   const loadSubscription = async () => {
-    if (!API_BASE) return;
+    if (!API_BASE) return null;
 
     const r = await fetch(
       `${API_BASE}/stripe/subscription-by-job?job_id=${jobId}`,
@@ -107,12 +117,18 @@ export default function CreditsPanel({ jobId }: { jobId: number }) {
 
     if (!r.ok) throw new Error("No se pudo cargar suscripción");
 
-    setSub(await r.json());
+    const data = await r.json();
+    setSub(data);
+    return data as Sub;
   };
 
   useEffect(() => {
-    loadStats().catch(() => {});
-    loadSubscription().catch(() => {});
+    const load = async () => {
+      const subscription = await loadSubscription();
+      await loadStats(subscription?.current_period_start ?? null);
+    };
+
+    load().catch(() => {});
   }, [API_BASE, jobId]);
 
   const handleCheckReviews = async () => {
@@ -146,8 +162,8 @@ export default function CreditsPanel({ jobId }: { jobId: number }) {
         );
       }
 
-      await loadStats();
-      await loadSubscription();
+      const subscription = await loadSubscription();
+      await loadStats(subscription?.current_period_start ?? null);
     } catch (e: any) {
       setCheckMessage(e?.message || "Error al comprobar reseñas");
     } finally {
@@ -193,7 +209,8 @@ export default function CreditsPanel({ jobId }: { jobId: number }) {
           "Reembolso confirmado, se procesará en menos de 72 horas."
       );
 
-      await loadSubscription();
+      const subscription = await loadSubscription();
+      await loadStats(subscription?.current_period_start ?? null);
     } catch (e: any) {
       setRefundMessage(e?.message || "Error al solicitar el reembolso");
     } finally {
@@ -207,12 +224,12 @@ export default function CreditsPanel({ jobId }: { jobId: number }) {
     const status = sub.status ?? "none";
 
     if (
-  sub.plan &&
-  (status === "pending_activation" ||
-    status === "active" ||
-    status === "prepaid" ||
-    status === "trialing")
-) {
+      sub.plan &&
+      (status === "pending_activation" ||
+        status === "active" ||
+        status === "prepaid" ||
+        status === "trialing")
+    ) {
       const renewalDate = formatDate(sub.renewal_at);
 
       if (sub.plan === "growth") {
