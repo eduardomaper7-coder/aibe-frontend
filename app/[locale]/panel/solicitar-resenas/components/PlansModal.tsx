@@ -21,7 +21,7 @@ const PLANS = [
   {
     key: "growth",
     name: "Captación Local",
-    monthlyPrice: 39,
+    monthlyPrice: 95,
     credit: "Ilimitado",
     reviews: "Reseñas ilimitadas",
     recommended: true,
