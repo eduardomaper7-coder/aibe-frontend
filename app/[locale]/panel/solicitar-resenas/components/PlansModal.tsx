@@ -10,7 +10,7 @@ const PLANS = [
   {
     key: "starter",
     name: "Plan Reseñas Google",
-    monthlyPrice: 18,
+    monthlyPrice: 39,
     credit: "Ilimitado",
     reviews: "Reseñas ilimitadas",
     recommended: false,
