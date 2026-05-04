@@ -6,11 +6,15 @@ type Props = {
   jobId: number;
 };
 
+// 👉 PRECIOS DINÁMICOS DESDE RAILWAY
+const STARTER_PRICE = Number(process.env.NEXT_PUBLIC_STARTER_PRICE ?? 39);
+const GROWTH_PRICE = Number(process.env.NEXT_PUBLIC_GROWTH_PRICE ?? 95);
+
 const PLANS = [
   {
     key: "starter",
     name: "Plan Reseñas Google",
-    monthlyPrice: 39,
+    monthlyPrice: STARTER_PRICE,
     credit: "Ilimitado",
     reviews: "Reseñas ilimitadas",
     recommended: false,
@@ -21,7 +25,7 @@ const PLANS = [
   {
     key: "growth",
     name: "Captación Local",
-    monthlyPrice: 95,
+    monthlyPrice: GROWTH_PRICE,
     credit: "Ilimitado",
     reviews: "Reseñas ilimitadas",
     recommended: true,
@@ -55,7 +59,7 @@ export default function PlansModal({ open, onClose, jobId }: Props) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-6 backdrop-blur-sm">
       <div className="relative max-h-[92vh] w-full max-w-[90vw] overflow-y-auto rounded-3xl bg-white shadow-2xl ring-1 ring-slate-200 xl:max-w-[1400px]">
-        
+
         {/* HEADER */}
         <div className="border-b border-slate-200 px-6 py-5 md:px-8 lg:px-10">
           <div className="flex items-start justify-between gap-4">
@@ -99,7 +103,6 @@ export default function PlansModal({ open, onClose, jobId }: Props) {
                     : "border-slate-200 shadow-sm hover:shadow-md",
                 ].join(" ")}
               >
-                {/* BADGE */}
                 {p.recommended && (
                   <div className="absolute -top-3 left-5">
                     <span className="rounded-full bg-slate-900 px-3 py-1 text-xs font-semibold text-white shadow-sm">
@@ -108,7 +111,6 @@ export default function PlansModal({ open, onClose, jobId }: Props) {
                   </div>
                 )}
 
-                {/* TITLE */}
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <h4 className="text-lg font-semibold text-slate-900">
@@ -133,7 +135,6 @@ export default function PlansModal({ open, onClose, jobId }: Props) {
                   </div>
                 </div>
 
-                {/* SUMMARY */}
                 <div className="mt-5 rounded-2xl bg-slate-50 p-4 ring-1 ring-slate-100">
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-slate-600">Saldo</span>
@@ -150,86 +151,17 @@ export default function PlansModal({ open, onClose, jobId }: Props) {
                   </div>
                 </div>
 
-                {/* FEATURES */}
                 <div className="mt-5 flex-1">
-                  {p.key === "growth" ? (
-                    <div className="grid gap-5 md:grid-cols-2">
-                      <div>
-                        <h5 className="mb-3 text-sm font-semibold text-slate-900">
-                          Base incluida
-                        </h5>
-                        <ul className="space-y-3 text-sm text-slate-600">
-                          {p.extraFeatures.slice(0, 1).map((f) => (
-                            <li key={f} className="flex items-start gap-2">
-                              <span className="mt-0.5 text-slate-900">✓</span>
-                              <span>{f}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-
-                      <div>
-                        <h5 className="mb-3 text-sm font-semibold text-slate-900">
-                          Posicionamiento local
-                        </h5>
-                        <ul className="space-y-3 text-sm text-slate-600">
-                          {p.extraFeatures.slice(1, 6).map((f) => (
-                            <li key={f} className="flex items-start gap-2">
-                              <span className="mt-0.5 text-slate-900">✓</span>
-                              <span>{f}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-
-                      <div>
-                        <h5 className="mb-3 text-sm font-semibold text-slate-900">
-                          Web y crecimiento
-                        </h5>
-                        <ul className="space-y-3 text-sm text-slate-600">
-                          {p.extraFeatures.slice(6, 8).map((f) => (
-                            <li key={f} className="flex items-start gap-2">
-                              <span className="mt-0.5 text-slate-900">✓</span>
-                              <span>{f}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-
-                      <div>
-                        <h5 className="mb-3 text-sm font-semibold text-slate-900">
-                          Seguimiento
-                        </h5>
-                        <ul className="space-y-3 text-sm text-slate-600">
-                          {p.extraFeatures.slice(8).map((f) => (
-                            <li key={f} className="flex items-start gap-2">
-                              <span className="mt-0.5 text-slate-900">✓</span>
-                              <span>{f}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
-                  ) : (
-                    <ul className="space-y-3 text-sm text-slate-600">
-                      {FEATURES.map((f) => (
-                        <li key={f} className="flex items-start gap-2">
-                          <span className="mt-0.5 text-slate-900">✓</span>
-                          <span>{f}</span>
-                        </li>
-                      ))}
-
-                      {p.extraFeatures.map((f) => (
-                        <li key={f} className="flex items-start gap-2">
-                          <span className="mt-0.5 text-slate-900">✓</span>
-                          <span>{f}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
+                  <ul className="space-y-3 text-sm text-slate-600">
+                    {(p.key === "starter" ? FEATURES : p.extraFeatures).map((f) => (
+                      <li key={f} className="flex items-start gap-2">
+                        <span className="mt-0.5 text-slate-900">✓</span>
+                        <span>{f}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
 
-                {/* CTA */}
                 <div className="mt-6">
                   <a
                     className={[
@@ -251,12 +183,11 @@ export default function PlansModal({ open, onClose, jobId }: Props) {
             ))}
           </div>
 
-          {/* FOOTER */}
           <div className="mt-6 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
             <span className="font-medium text-slate-900">
               Pago seguro con Stripe.
             </span>{" "}
-            Hoy se realizará el cobro del plan seleccionado. El saldo mensual se usará para activar las reseñas incluidas en tu plan.
+            Hoy se realizará el cobro del plan seleccionado.
           </div>
         </div>
       </div>
