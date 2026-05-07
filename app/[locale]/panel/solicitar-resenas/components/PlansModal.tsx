@@ -6,9 +6,9 @@ type Props = {
   jobId: number;
 };
 
-// 👉 PRECIOS DINÁMICOS DESDE RAILWAY
-const STARTER_PRICE = Number(process.env.NEXT_PUBLIC_STARTER_PRICE ?? 39);
-const GROWTH_PRICE = Number(process.env.NEXT_PUBLIC_GROWTH_PRICE ?? 65);
+// 👉 PRECIOS FIJOS
+const STARTER_PRICE = 39;
+const GROWTH_PRICE = 65;
 
 const PLANS = [
   {
