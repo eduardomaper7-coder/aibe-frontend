@@ -37,6 +37,7 @@ const PLANS = [
       "Publicación de 1 artículo a la semana en tu web con palabras que tus pacientes están buscando en Google",
       "Alta en directorios y plataformas clave del sector",
       "Publicación de artículos sobre la clínica en medios locales, prensa digital y otras webs del sector",
+      "Fotos y videos realizados con cámara profesional",
       "Incluye posibilidad de Google Ads, Facebook Ads, Instagram Ads y TikTok Ads",
       "Optimización continua para aparecer en Google Maps",
       "Creación, diseño y mantenimiento de una página web si lo desea",
@@ -132,6 +133,17 @@ export default function PlansModal({ open, onClose, jobId }: Props) {
                       {p.monthlyPrice}€
                     </div>
                     <div className="text-sm text-slate-500">/ mes</div>
+
+                    {p.key === "growth" && (
+                      <>
+                        <div className="mt-1 text-sm font-semibold text-slate-900">
+                          luego 95€ /mes
+                        </div>
+                        <div className="text-xs text-slate-500">
+                          Sin permanencia
+                        </div>
+                      </>
+                    )}
                   </div>
                 </div>
 
