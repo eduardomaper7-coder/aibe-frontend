@@ -117,6 +117,7 @@ export default function PlansModal({ open, onClose, jobId }: Props) {
                     <h4 className="text-lg font-semibold text-slate-900">
                       {p.name}
                     </h4>
+
                     <p className="mt-1 text-sm text-slate-500">
                       {p.description}
                     </p>
@@ -132,17 +133,15 @@ export default function PlansModal({ open, onClose, jobId }: Props) {
                     <div className="text-3xl font-bold tracking-tight text-slate-900">
                       {p.monthlyPrice}€
                     </div>
-                    <div className="text-sm text-slate-500">/ mes</div>
+
+                    <div className="text-sm text-slate-500">
+                      / mes
+                    </div>
 
                     {p.key === "growth" && (
-                      <>
-                        <div className="mt-1 text-sm font-semibold text-slate-900">
-                          luego 95€ /mes
-                        </div>
-                        <div className="text-xs text-slate-500">
-                          Sin permanencia
-                        </div>
-                      </>
+                      <div className="text-xs text-slate-500">
+                        Sin permanencia
+                      </div>
                     )}
                   </div>
                 </div>
@@ -150,6 +149,7 @@ export default function PlansModal({ open, onClose, jobId }: Props) {
                 <div className="mt-5 rounded-2xl bg-slate-50 p-4 ring-1 ring-slate-100">
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-slate-600">Saldo</span>
+
                     <span className="font-semibold text-slate-900">
                       {p.credit}
                     </span>
@@ -157,6 +157,7 @@ export default function PlansModal({ open, onClose, jobId }: Props) {
 
                   <div className="mt-2 flex items-center justify-between text-sm">
                     <span className="text-slate-600">Incluye</span>
+
                     <span className="font-semibold text-slate-900">
                       {p.reviews}
                     </span>
@@ -165,7 +166,10 @@ export default function PlansModal({ open, onClose, jobId }: Props) {
 
                 <div className="mt-5 flex-1">
                   <ul className="space-y-3 text-sm text-slate-600">
-                    {(p.key === "starter" ? FEATURES : p.extraFeatures).map((f) => (
+                    {(p.key === "starter"
+                      ? FEATURES
+                      : p.extraFeatures
+                    ).map((f) => (
                       <li key={f} className="flex items-start gap-2">
                         <span className="mt-0.5 text-slate-900">✓</span>
                         <span>{f}</span>
