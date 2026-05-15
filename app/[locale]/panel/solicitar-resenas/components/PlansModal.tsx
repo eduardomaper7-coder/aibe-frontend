@@ -8,7 +8,7 @@ type Props = {
 
 // 👉 PRECIOS FIJOS
 const STARTER_PRICE = 39;
-const GROWTH_PRICE = 65;
+const GROWTH_PRICE = 49;
 
 const PLANS = [
   {
