@@ -6,52 +6,82 @@ type Props = {
   jobId: number;
 };
 
-// 👉 PRECIOS FIJOS
+// PRECIOS
 const STARTER_PRICE = 39;
 const GROWTH_PRICE = 65;
+const SOCIAL_PRICE = 95;
+
+// STRIPE IDS
+const STARTER_PRODUCT_ID = "prod_starter";
+const STARTER_PRICE_ID = "price_starter";
+
+const GROWTH_PRODUCT_ID = "prod_growth";
+const GROWTH_PRICE_ID = "price_growth";
+
+const SOCIAL_PRODUCT_ID = "prod_social";
+const SOCIAL_PRICE_ID = "price_social";
 
 const PLANS = [
   {
     key: "starter",
     name: "Plan Reseñas Google",
     monthlyPrice: STARTER_PRICE,
-    credit: "Ilimitado",
-    reviews: "Reseñas ilimitadas",
+    productId: STARTER_PRODUCT_ID,
+    priceId: STARTER_PRICE_ID,
     recommended: false,
     description: "Ideal para mejorar la reputación online de tu clínica",
     highlight: "",
-    extraFeatures: [] as string[],
+    extraFeatures: [
+      "Acceso completo al análisis de reseñas",
+      "Respuestas a reseñas con IA (opcional)",
+      "Conectado al WhatsApp de la clínica",
+      "Servicio de atención al cliente",
+      "Mejora su valoración media",
+    ],
   },
+
   {
     key: "growth",
     name: "Captación Local",
     monthlyPrice: GROWTH_PRICE,
-    credit: "Ilimitado",
-    reviews: "Reseñas ilimitadas",
-    recommended: true,
+    productId: GROWTH_PRODUCT_ID,
+    priceId: GROWTH_PRICE_ID,
+    recommended: false,
     description: "Atrae más pacientes y posiciona tu clínica en Google",
-    highlight: "Estrategia completa de visibilidad local",
+    highlight: "Ideal para clínicas que quieren crecer",
     extraFeatures: [
       "Todo lo incluido en Plan Reseñas Google",
-      "Optimización de la ficha de Google y página web",
-      "Publicación de 1 artículo a la semana en tu web con palabras que tus pacientes están buscando en Google",
-      "Alta en directorios y plataformas clave del sector",
-      "Publicación de artículos sobre la clínica en medios locales, prensa digital y otras webs del sector",
-      "Fotos y videos realizados con cámara profesional",
-      "Incluye posibilidad de Google Ads, Facebook Ads, Instagram Ads y TikTok Ads",
-      "Optimización continua para aparecer en Google Maps",
-      "Creación, diseño y mantenimiento de una página web si lo desea",
-      "Visitas presenciales cada 2 meses con informes del posicionamiento actual de la clínica",
+      "Optimización de Google Business",
+      "Publicación semanal de artículos SEO",
+      "Alta en directorios del sector",
+      "Publicaciones en medios locales",
+      "Fotos y vídeos profesionales",
+      "Optimización para Google Maps",
+      "Creación y mantenimiento web",
+      "Visitas presenciales bimensuales",
     ],
   },
-];
 
-const FEATURES = [
-  "Acceso completo al análisis de reseñas",
-  "Respuestas a reseñas con IA (opcional)",
-  "Conectado al WhatsApp de la clínica",
-  "Servicio de atención al cliente",
-  "Mejora su valoración media la mayoría de veces",
+  {
+    key: "social",
+    name: "Captación 360",
+    monthlyPrice: SOCIAL_PRICE,
+    productId: SOCIAL_PRODUCT_ID,
+    priceId: SOCIAL_PRICE_ID,
+    recommended: true,
+    description:
+      "La solución más completa para captar pacientes y potenciar la imagen de tu clínica",
+    highlight: "Captación local + redes sociales + branding",
+    extraFeatures: [
+      "Todo lo incluido en Captación Local",
+      "Gestión completa de redes sociales",
+      "Creación y planificación estratégica",
+      "Publicación semanal de reels y posts",
+      "Contenido creativo y original",
+      "Optimización para aumentar interacción",
+      "Refuerzo de marca y autoridad local",
+    ],
+  },
 ];
 
 export default function PlansModal({ open, onClose, jobId }: Props) {
@@ -59,152 +89,86 @@ export default function PlansModal({ open, onClose, jobId }: Props) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-6 backdrop-blur-sm">
-      <div className="relative max-h-[92vh] w-full max-w-[90vw] overflow-y-auto rounded-3xl bg-white shadow-2xl ring-1 ring-slate-200 xl:max-w-[1400px]">
+      <div className="relative max-h-[92vh] w-full max-w-[1600px] overflow-y-auto rounded-3xl bg-white shadow-2xl ring-1 ring-slate-200">
 
         {/* HEADER */}
-        <div className="border-b border-slate-200 px-6 py-5 md:px-8 lg:px-10">
-          <div className="flex items-start justify-between gap-4">
+        <div className="border-b border-slate-200 px-8 py-6">
+          <div className="flex items-start justify-between">
             <div>
               <p className="text-sm font-medium uppercase tracking-wide text-slate-500">
                 Planes para clínicas
               </p>
 
-              <h3 className="mt-1 text-2xl font-bold tracking-tight text-slate-900 md:text-3xl">
+              <h3 className="mt-1 text-3xl font-bold text-slate-900">
                 Elige cómo quieres hacer crecer tu clínica
               </h3>
 
-              <p className="mt-2 max-w-3xl text-sm text-slate-600 md:text-base">
-                Mejora tus reseñas de Google, aumenta tu valoración media y consigue más visibilidad local para atraer nuevos pacientes.{" "}
-                <strong>Con garantía de reembolso siempre.</strong>
+              <p className="mt-2 text-slate-600">
+                Mejora tu reputación, aumenta visibilidad y consigue más pacientes.
               </p>
             </div>
 
             <button
-              type="button"
               onClick={onClose}
-              aria-label="Cerrar modal"
-              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 text-slate-500 transition hover:bg-slate-50 hover:text-slate-900"
+              className="rounded-full border border-slate-200 p-3"
             >
               ✕
             </button>
           </div>
         </div>
 
-        {/* CONTENT */}
-        <div className="px-6 py-6 md:px-10 md:py-8 lg:px-12">
-          <div className="grid gap-6 md:grid-cols-3">
-            {PLANS.map((p) => (
-              <div
-                key={p.key}
-                className={[
-                  "relative flex h-full min-h-[560px] flex-col rounded-2xl border bg-white p-5 transition",
-                  p.key === "starter" ? "md:col-span-1" : "md:col-span-2",
-                  p.recommended
-                    ? "border-slate-900 shadow-lg ring-2 ring-slate-900/10"
-                    : "border-slate-200 shadow-sm hover:shadow-md",
-                ].join(" ")}
-              >
-                {p.recommended && (
-                  <div className="absolute -top-3 left-5">
-                    <span className="rounded-full bg-slate-900 px-3 py-1 text-xs font-semibold text-white shadow-sm">
-                      Más recomendado
-                    </span>
-                  </div>
-                )}
-
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <h4 className="text-lg font-semibold text-slate-900">
-                      {p.name}
-                    </h4>
-
-                    <p className="mt-1 text-sm text-slate-500">
-                      {p.description}
-                    </p>
-
-                    {p.highlight && (
-                      <p className="mt-2 text-xs font-medium text-emerald-600">
-                        {p.highlight}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="text-right">
-                    <div className="text-3xl font-bold tracking-tight text-slate-900">
-                      {p.monthlyPrice}€
-                    </div>
-
-                    <div className="text-sm text-slate-500">
-                      / mes
-                    </div>
-
-                    {p.key === "growth" && (
-                      <div className="text-xs text-slate-500">
-                        Sin permanencia
-                      </div>
-                    )}
-                  </div>
+        {/* PLANES */}
+        <div className="grid gap-6 p-10 md:grid-cols-3">
+          {PLANS.map((p) => (
+            <div
+              key={p.key}
+              className={`relative flex flex-col rounded-2xl border p-6 ${
+                p.recommended
+                  ? "border-slate-900 shadow-xl ring-2 ring-slate-900/10 scale-105"
+                  : "border-slate-200 shadow-sm"
+              }`}
+            >
+              {p.recommended && (
+                <div className="absolute -top-3 left-6">
+                  <span className="rounded-full bg-slate-900 px-4 py-1 text-xs font-semibold text-white">
+                    MÁS RECOMENDADO
+                  </span>
                 </div>
+              )}
 
-                <div className="mt-5 rounded-2xl bg-slate-50 p-4 ring-1 ring-slate-100">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-slate-600">Saldo</span>
+              <h4 className="text-xl font-semibold">{p.name}</h4>
+              <p className="mt-2 text-sm text-slate-500">{p.description}</p>
 
-                    <span className="font-semibold text-slate-900">
-                      {p.credit}
-                    </span>
-                  </div>
-
-                  <div className="mt-2 flex items-center justify-between text-sm">
-                    <span className="text-slate-600">Incluye</span>
-
-                    <span className="font-semibold text-slate-900">
-                      {p.reviews}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="mt-5 flex-1">
-                  <ul className="space-y-3 text-sm text-slate-600">
-                    {(p.key === "starter"
-                      ? FEATURES
-                      : p.extraFeatures
-                    ).map((f) => (
-                      <li key={f} className="flex items-start gap-2">
-                        <span className="mt-0.5 text-slate-900">✓</span>
-                        <span>{f}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div className="mt-6">
-                  <a
-                    className={[
-                      "block w-full rounded-xl px-4 py-3 text-center text-sm font-semibold text-white transition",
-                      p.recommended
-                        ? "bg-slate-900 hover:bg-slate-800"
-                        : "bg-slate-800 hover:bg-slate-700",
-                    ].join(" ")}
-                    href={`/api/stripe/checkout-session?job_id=${encodeURIComponent(
-                      String(jobId)
-                    )}&plan=${encodeURIComponent(p.key)}`}
-                  >
-                    {p.key === "growth"
-                      ? "Empezar a captar pacientes"
-                      : `Contratar ${p.name}`}
-                  </a>
-                </div>
+              <div className="mt-5">
+                <span className="text-4xl font-bold">{p.monthlyPrice}€</span>
+                <span className="text-slate-500">/mes</span>
               </div>
-            ))}
-          </div>
 
-          <div className="mt-6 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
-            <span className="font-medium text-slate-900">
-              Pago seguro con Stripe.
-            </span>{" "}
-            Hoy se realizará el cobro del plan seleccionado.
-          </div>
+              <p className="mt-2 text-sm font-medium text-emerald-600">
+                {p.highlight}
+              </p>
+
+              <ul className="mt-6 space-y-3 flex-1 text-sm text-slate-600">
+                {p.extraFeatures.map((f) => (
+                  <li key={f} className="flex gap-2">
+                    <span>✓</span>
+                    <span>{f}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <a
+                className={`mt-8 block w-full rounded-xl px-4 py-3 text-center text-sm font-semibold text-white ${
+                  p.recommended
+                    ? "bg-slate-900 hover:bg-slate-800"
+                    : "bg-slate-700 hover:bg-slate-800"
+                }`}
+                href={`/api/stripe/checkout-session?job_id=${jobId}&plan=${p.key}&price_id=${p.priceId}&product_id=${p.productId}`}
+              >
+                Contratar {p.name}
+              </a>
+            </div>
+          ))}
         </div>
       </div>
     </div>
