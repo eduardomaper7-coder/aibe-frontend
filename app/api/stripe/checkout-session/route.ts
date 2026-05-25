@@ -10,7 +10,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 const PRICE_MAP: Record<string, string | undefined> = {
   starter: process.env.STRIPE_PRICE_STARTER,
   growth: process.env.STRIPE_PRICE_GROWTH,
-  pro: process.env.STRIPE_PRICE_PRO,
+  social: process.env.STRIPE_PRICE_SOCIAL,
 };
 
 export async function GET(req: Request) {
@@ -40,6 +40,7 @@ export async function GET(req: Request) {
     }
 
     const price = PRICE_MAP[plan];
+
     if (!price) {
       return NextResponse.json(
         { error: `missing STRIPE_PRICE for plan=${plan}` },
@@ -59,12 +60,16 @@ export async function GET(req: Request) {
     }
 
     const successUrl = new URL(
-      `/es/panel/solicitar-resenas?job_id=${encodeURIComponent(jobId)}&success=1`,
+      `/es/panel/solicitar-resenas?job_id=${encodeURIComponent(
+        jobId
+      )}&success=1`,
       siteUrl
     ).toString();
 
     const cancelUrl = new URL(
-      `/es/panel/solicitar-resenas?job_id=${encodeURIComponent(jobId)}&canceled=1`,
+      `/es/panel/solicitar-resenas?job_id=${encodeURIComponent(
+        jobId
+      )}&canceled=1`,
       siteUrl
     ).toString();
 
@@ -98,6 +103,7 @@ export async function GET(req: Request) {
     return NextResponse.redirect(stripeSession.url!);
   } catch (e: any) {
     console.error("checkout-session error:", e);
+
     return NextResponse.json(
       { error: "server error", message: e?.message ?? String(e) },
       { status: 500 }
