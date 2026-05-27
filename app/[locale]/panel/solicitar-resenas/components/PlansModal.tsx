@@ -8,7 +8,7 @@ type Props = {
 
 // PRECIOS
 const STARTER_PRICE = 39;
-const GROWTH_PRICE = 49;
+const GROWTH_PRICE = 65;
 const SOCIAL_PRICE = 95;
 
 // STRIPE IDS
