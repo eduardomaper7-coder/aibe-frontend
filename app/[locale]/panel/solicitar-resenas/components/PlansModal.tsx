@@ -8,7 +8,7 @@ type Props = {
 
 // PRECIOS
 const STARTER_PRICE = 39;
-const GROWTH_PRICE = 65;
+const GROWTH_PRICE = 49;
 const SOCIAL_PRICE = 95;
 
 // STRIPE IDS
@@ -59,6 +59,7 @@ const PLANS = [
       "Optimización para Google Maps",
       "Creación y mantenimiento web",
       "Visitas presenciales bimensuales",
+      "Edición de videos/fotos para redes sociales",
     ],
   },
 
