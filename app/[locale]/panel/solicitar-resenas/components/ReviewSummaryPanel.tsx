@@ -33,6 +33,7 @@ export default function ReviewSummaryPanel({
 
   const [whatsProvider, setWhatsProvider] = useState<"twilio" | "personal_number">("twilio");
   const [personalNumber, setPersonalNumber] = useState("");
+  const [timezone, setTimezone] = useState("Europe/Madrid");
   const [savingWhatsApp, setSavingWhatsApp] = useState(false);
 
   const [sessionStatus, setSessionStatus] = useState<string | null>(null);
@@ -72,6 +73,7 @@ export default function ReviewSummaryPanel({
           d?.whatsapp_provider === "personal_number" ? "personal_number" : "twilio"
         );
         setPersonalNumber(String(d?.whatsapp_personal_number ?? ""));
+        setTimezone(d?.timezone || "Europe/Madrid");
         setSessionStatus(d?.whatsapp_session_status ?? null);
         setSessionError(d?.whatsapp_last_error ?? null);
       })
@@ -180,6 +182,7 @@ export default function ReviewSummaryPanel({
           whatsapp_personal_number:
             whatsProvider === "personal_number" ? (personalNumber || null) : null,
           whatsapp_personal_enabled: whatsProvider === "personal_number",
+          timezone,
         }),
       });
 
@@ -382,7 +385,29 @@ export default function ReviewSummaryPanel({
           </label>
         </div>
       </div>
+<div className="mt-5 border-t border-slate-200 pt-4">
+  <div className="text-sm font-semibold text-slate-900">
+    Zona horaria de la clínica
+  </div>
 
+  <p className="mt-1 text-xs text-slate-500">
+    Determina a qué hora se programan los mensajes.
+  </p>
+
+  <select
+    value={timezone}
+    onChange={(e) => setTimezone(e.target.value)}
+    className="mt-3 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm"
+  >
+    <option value="Europe/Madrid">
+      España península / Madrid
+    </option>
+
+    <option value="Atlantic/Canary">
+      Canarias
+    </option>
+  </select>
+</div>
       {/* Canal de WhatsApp */}
       <div className="mt-5 border-t border-slate-200 pt-4">
         <div className="flex items-start justify-between gap-4">
