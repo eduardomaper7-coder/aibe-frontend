@@ -48,7 +48,7 @@ const CUSTOM_IMPORT_FLOWS: Record<
 > = {
   127: {
     clinicName: "Clínica Dental Dentopia",
-    label: "Flujo personalizado activo con doble verificación de IA",
+    label: "Flujo personalizado activo con doble verificación.",
   },
 };
 
