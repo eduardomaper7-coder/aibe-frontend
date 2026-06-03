@@ -7,6 +7,9 @@ export type ReviewRequest = {
   phone_e164: string;
   appointment_at: string;
   send_at: string;
+
+  timezone?: string; // <-- AÑADIR
+
   status: ReviewRequestStatus;
   error_message?: string | null;
   created_at?: string;

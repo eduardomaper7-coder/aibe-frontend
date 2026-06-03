@@ -4,10 +4,14 @@
 import { useEffect, useMemo, useState } from "react";
 import { ReviewRequest, cancelReviewRequest, listReviewRequests } from "../api";
 
-function fmt(dtIso: string) {
+function fmt(dtIso: string, timezone?: string) {
   try {
     const d = new Date(dtIso);
-    return d.toLocaleString();
+    return d.toLocaleString("es-ES", {
+      timeZone: timezone || "Europe/Madrid",
+      dateStyle: "short",
+      timeStyle: "short",
+    });
   } catch {
     return dtIso;
   }
@@ -154,14 +158,14 @@ export default function ReviewRequestsTable({ jobId }: { jobId: number }) {
                   <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                     Día y hora cita
                   </div>
-                  <div className="mt-1 text-slate-800">{fmt(r.appointment_at)}</div>
+                  <div className="mt-1 text-slate-800">{fmt(r.appointment_at, r.timezone)}</div>
                 </div>
 
                 <div>
                   <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                     Envío estimado
                   </div>
-                  <div className="mt-1 text-slate-800">{fmt(r.send_at)}</div>
+                  <div className="mt-1 text-slate-800">{fmt(r.send_at, r.timezone)}</div>
                 </div>
 
                 {r.status === "failed" && r.error_message ? (
@@ -225,8 +229,8 @@ export default function ReviewRequestsTable({ jobId }: { jobId: number }) {
               <tr key={r.id} className="text-sm text-slate-800">
                 <td className="border-b p-3 font-medium">{r.customer_name}</td>
                 <td className="border-b p-3 font-mono text-xs">{r.phone_e164}</td>
-                <td className="border-b p-3">{fmt(r.appointment_at)}</td>
-                <td className="border-b p-3">{fmt(r.send_at)}</td>
+                <td className="border-b p-3">{fmt(r.appointment_at, r.timezone)}</td>
+                <td className="border-b p-3">{fmt(r.send_at, r.timezone)}</td>
                 <td className="border-b p-3">
                   {r.status === "scheduled" && (
                     <span className="rounded-full bg-amber-50 px-2 py-1 text-amber-800">
