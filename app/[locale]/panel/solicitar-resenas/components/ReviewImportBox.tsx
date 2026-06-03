@@ -39,6 +39,20 @@ function missingLabel(key: string) {
   }
 }
 
+const CUSTOM_IMPORT_FLOWS: Record<
+  number,
+  {
+    clinicName: string;
+    label: string;
+  }
+> = {
+  127: {
+    clinicName: "Clínica Dental Dentopia",
+    label: "Flujo personalizado activo con doble verificación de IA",
+  },
+};
+
+
 export default function ReviewImportBox({
   jobId,
   onDone,
@@ -63,6 +77,7 @@ const [result, setResult] = useState<ImportAppointmentsResponse | null>(null);
     );
 
   const fileNames = useMemo(() => files.map((f) => f.name).join(", "), [files]);
+  const customFlow = CUSTOM_IMPORT_FLOWS[jobId] ?? null;
 useEffect(() => {
   if (!loading) {
     setElapsedSeconds(0);
@@ -187,6 +202,21 @@ function formatElapsedTime(totalSeconds: number) {
         teléfono, fecha y hora, guarda pacientes y citas parciales, une datos
         entre archivos y programa solo las citas válidas.
       </p>
+
+      {customFlow && (
+  <div className="mt-3 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800">
+    <div className="font-semibold">
+      Flujo seguro personalizado activo
+    </div>
+    <div className="mt-1">
+      {customFlow.clinicName}: {customFlow.label}.
+    </div>
+    <div className="mt-1 text-xs text-emerald-700">
+      El sistema aplica reglas específicas de esta clínica para fechas,
+      teléfonos y capturas de agenda.
+    </div>
+  </div>
+)}
 
       {loading && (
   <div className="mt-3 rounded-xl border border-blue-200 bg-blue-50 p-3 text-sm text-blue-800">
