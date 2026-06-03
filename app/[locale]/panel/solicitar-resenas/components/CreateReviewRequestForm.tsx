@@ -32,11 +32,7 @@ export default function CreateReviewRequestForm({ jobId }: { jobId: number }) {
   const [msg, setMsg] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
 
-  function toISO(dateStr: string, timeStr: string) {
-    // interpreta como local y lo convierte a ISO UTC
-    const d = new Date(`${dateStr}T${timeStr}:00`);
-    return d.toISOString();
-  }
+  
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -60,11 +56,12 @@ export default function CreateReviewRequestForm({ jobId }: { jobId: number }) {
       console.log("SUBMIT jobId:", jobId);
 
       await createReviewRequest({
-        job_id: jobId,
-        customer_name: name.trim(),
-        phone_e164: phoneNorm,
-        appointment_at: toISO(date, time),
-      });
+  job_id: jobId,
+  customer_name: name.trim(),
+  phone_e164: phoneNorm,
+  appointment_date: date,
+  appointment_time: time,
+});
 
       setMsg("Cita añadida. El mensaje se enviará 60 min después.");
       setName("");

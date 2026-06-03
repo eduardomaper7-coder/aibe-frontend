@@ -135,7 +135,8 @@ export function createReviewRequest(payload: {
   job_id: number;
   customer_name: string;
   phone_e164: string;
-  appointment_at: string;
+  appointment_date: string;
+  appointment_time: string;
 }) {
   return http<ReviewRequest>(url(`/review-requests`), {
     method: "POST",
