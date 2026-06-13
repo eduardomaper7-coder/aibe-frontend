@@ -135,7 +135,7 @@ const locale = String((params as any)?.locale ?? "es");
                   opacity: 0.9,
                 }}
               >
-                Artificial Intelligence for Business Efficiency
+                Artificial Intelligence for Business Efficiency hola
               </span>
             </div>
           </Link>

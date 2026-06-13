@@ -1,578 +1,374 @@
-'use client';
+"use client";
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-import LandingSignupCard from "./LandingSignupCard";
-
-
-
-
-
-
-
-import HeroResenas from "@/components/ui/HeroResenas";
-import { Caveat } from "next/font/google";
-const caveat = Caveat({
-  subsets: ["latin"],
-  weight: ["700"],
-});
-import SeccionResenasIA from '@/components/ui/SeccionResenasIA';
-// import TemasDemo from '@/components/ui/temasdemo'; // <- no se usa, lo dejamos fuera
-import SentimientoDemo from '@/components/ui/sentimientodemo';
-import VolumenDemo from '@/components/ui/volumendemo';
-import OportunidadesDemo from '@/components/ui/oportunidadesdemo';
-import Frases from '@/components/ui/frases';
-import VideoInicio from '@/components/ui/videoinicio';
-import Footer from './Footer';
-import TresRecuadros from '@/components/ui/3recuadros';
-import VideoTemas from '@/components/ui/videotemas';
-import SeoBeneficio from '@/components/ui/seo-beneficio'
+import { useEffect, useState } from "react";
 import Image from "next/image";
-import { useTranslations } from "next-intl";
-
-import { useEffect } from "react";
-
-
-
-
-
-
-
-
-
-
-
-export default function Home() {
-
-const t = useTranslations();
-
-
-
-
-  
-
-
-
-
-
-
-
-
-
-
-  
-useEffect(() => {
-  const PHRASES = t.raw("home.hero.dynamicPhrases") as string[];
-
-
-
-
-  const el = document.getElementById("dynamicPart");
-  if (!el || !PHRASES?.length) return;
-
-
-
-
-  let i = 0;
-  el.textContent = PHRASES[0];
-
-
-
-
-  const id = setInterval(() => {
-    i = (i + 1) % PHRASES.length;
-    el.style.opacity = "0";
-
-
-
-
-    setTimeout(() => {
-      el.textContent = PHRASES[i];
-      el.style.opacity = "1";
-    }, 300);
-  }, 3000);
-
-
-
-
-  return () => clearInterval(id);
-}, [t]);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  const sectionCx = 'bg-black px-4 md:px-6 py-6 md:py-8';
-
-
-
-
-
+import { PopupModal } from "react-calendly";
+import AibeSection from "../../components/ui/AibeSection";
+import GoogleSection from "../../components/ui/GoogleSection";
+import SearchRiseAnimation from "../../components/ui/SearchRiseAnimation";
+import SocialBoostAnimation from "../../components/ui/SocialBoostAnimation";
+import AiRecommendationAnimation from "../../components/ui/AiRecommendationAnimation";
+import AiAgentsSection from "../../components/ui/AiAgentsSection";
+import Footer from "../../components/ui/Footer";
+
+const words = ["clientes", "ventas", "reservas", "visibilidad"];
+
+export default function Page() {
+  const [index, setIndex] = useState(0);
+  const [fade, setFade] = useState(true);
+  const [scrolled, setScrolled] = useState(false);
+  const [activeAnimation, setActiveAnimation] = useState(0);
+  const [isCalendlyOpen, setIsCalendlyOpen] = useState(false);
+
+  const scrollToContact = () => {
+    document
+      .getElementById("contacto")
+      ?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setFade(false);
+
+      setTimeout(() => {
+        setIndex((prev) => (prev + 1) % words.length);
+        setFade(true);
+      }, 250);
+    }, 2200);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const timers = [5000, 7000, 14000];
+
+    const timeout = setTimeout(() => {
+      setActiveAnimation((prev) => (prev + 1) % 3);
+    }, timers[activeAnimation]);
+
+    return () => clearTimeout(timeout);
+  }, [activeAnimation]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+
+    handleScroll();
+    window.addEventListener("scroll", handleScroll);
+
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
     <>
-     <section className="hero relative" aria-label="Sección inicial con video de fondo">
-  {/* Fondo azul moderno */}
-  <div className="hero-bg" aria-hidden="true" />
-
-  {/* Contenido */}
-  <div className="shell relative z-[1] hero-inner">
-    {/* Columna izquierda */}
-    <div className="hero-left">
-      <h1 className="hero-title">
-  <span className="hero-title-main">
-    Consigue que tu Clínica
-  </span>
-
-  <span className="hero-title-main">
-    Sea la nº 1 en Google Maps Madrid
-  </span>
-
-  <span className="hero-more-line">
-  <span className="hero-more-static">Más </span>
-  <span
-    id="dynamicPart"
-    className="hero-more-dynamic"
-    style={{ transition: "opacity 0.3s ease" }}
-  >
-    Reseñas de Google
-  </span>
-</span>
-</h1>
-
-      
-
-      <p className="hero-subtitle">
-        Fácil de integrar. Atención personalizada.
-      </p>
-
-      {/* Signup */}
-      <div className="hero-form-card mt-2 md:mt-4">
-  <LandingSignupCard />
-</div>
-    </div>
-
-    {/* Columna derecha */}
-    <div className="hero-right" aria-hidden="true">
-      <Image
-        src="/imagenes/hero.png"
-        alt="Ilustración reseñas clínicas"
-        width={900}
-        height={900}
-        className="hero-illustration"
-        priority
-      />
-    </div>
-  </div>
-</section>
-
-
-
-
-
-
-{/* SEO Beneficio */}
-{/*
-<section className="relative z-[10] px-4 md:px-6 py-10">
-  <SeoBeneficio />
-</section>
-*/}
-
-
-
-
-<HeroResenas />
-
-     {/* Secciones */}
-<section
-  className="
-    bg-black
-    px-4 md:px-6 py-6 md:py-8
-    relative z-[2]
-    rounded-t-[60px]
-  "
->
-  <Frases />
-</section>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      <VideoInicio />
-      <TresRecuadros />
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      {/* Sección azul integrada (full-width) */}
-<section
-  className="
-    bg-blue-fullbleed
-    relative left-1/2 right-1/2 -mx-[50vw] w-screen
-    text-white font-sans
-    bg-[#0A1224]
-  "
-  style={{ fontFamily: 'Inter, sans-serif' }}
->
-  <div className="mx-auto max-w-7xl px-6 py-20 lg:px-8">
-    <div className="grid items-start gap-8 md:grid-cols-12">
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      <div className="md:col-span-7">
-        <h2 className="mt-0 text-2xl md:text-4xl lg:text-5xl font-light leading-tight text-gray-100">
-          {t("home.blueSection.headline")}
-        </h2>
-      </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      <div className="md:col-span-5 flex flex-col items-end justify-start space-y-1">
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  <p className="text-[13px] md:text-sm lg:text-base text-gray-400 leading-relaxed text-right">
-  {t("home.blueSection.bullets.0")}
-</p>
-<p className="text-[13px] md:text-sm lg:text-base text-gray-400 leading-relaxed text-right">
-  {t("home.blueSection.bullets.1")}
-</p>
-<p className="text-[13px] md:text-sm lg:text-base text-gray-400 leading-relaxed text-right">
-  {t("home.blueSection.bullets.2")}
-</p>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    </div>
-  </div>
-</section>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      <VideoTemas />
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-     
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      {/* Sección combinada: Sentimiento + Volumen */}
-      <section className="relative left-1/2 right-1/2 -mx-[50vw] w-screen bg-black py-10">
-        <div className="mx-auto w-[calc(100vw-2rem)] max-w-[2000px] px-0">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 items-start justify-center">
-            {/* Sentimiento */}
-            <div className="flex justify-end w-full">
-              <div className="w-full max-w-[980px]">
-                <SentimientoDemo />
-              </div>
-            </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            {/* Volumen */}
-            <div className="flex justify-start w-full">
-              <div className="w-full max-w-[980px]">
-                <VolumenDemo />
-              </div>
-            </div>
+      <header className={`heroHeader ${scrolled ? "scrolled" : ""}`}>
+        <nav className="navSide navLeft">
+          <a href="#aibe">¿Por qué AIBE?</a>
+
+          <button type="button" onClick={scrollToContact} className="navButton">
+            Contacto
+          </button>
+        </nav>
+
+        <Image
+          src="/imagenes/logo.png"
+          alt="AIBE"
+          width={170}
+          height={48}
+          priority
+          className="headerLogo"
+        />
+
+        <nav className="navSide navRight">
+          <a href="#google">Google</a>
+          <a href="#ia">Buscadores con IA</a>
+        </nav>
+      </header>
+
+      <main className="hero">
+        <section className="heroLeft">
+          <h1>
+            Consigue más{" "}
+            <span className={`rotatingWord ${fade ? "show" : "hide"}`}>
+              {words[index]}
+            </span>{" "}
+            para tu negocio
+          </h1>
+
+          <div className="heroAnimations">
+            {activeAnimation === 0 && <SearchRiseAnimation key="google" />}
+            {activeAnimation === 1 && <SocialBoostAnimation key="social" />}
+            {activeAnimation === 2 && <AiRecommendationAnimation key="ia" />}
           </div>
-        </div>
-      </section>
+        </section>
 
+        <aside className="card">
+  <h2>Consultoría gratuita para impulsar tu negocio</h2>
 
+  <p className="duration">30 minutos</p>
 
+  <ul>
+    <li>✓ Analizamos tu situación actual</li>
+    <li>✓ Detectamos oportunidades de crecimiento</li>
+    <li>✓ Presencial u online</li>
+  </ul>
 
+  <button
+    type="button"
+    onClick={() => setIsCalendlyOpen(true)}
+  >
+    Reservar Consulta
+  </button>
 
+  <p className="microcopy">
+    Sin compromiso · Respuesta en menos de 24h
+  </p>
+</aside>
+      </main>
 
-
-
-
-
-
-
-
-
-
-
-      <section className={sectionCx}>
-        <OportunidadesDemo />
-      </section>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      {/* Resto de secciones */}
-      <section className="bg-black px-4 md:px-6 pt-0 pb-6 md:pb-8">
-        <SeccionResenasIA />
-      </section>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+      <AibeSection />
+      <GoogleSection />
+      <AiAgentsSection />
       <Footer />
+
+      <PopupModal
+        url="https://calendly.com/aibe-technologies7/30min"
+        open={isCalendlyOpen}
+        onModalClose={() => setIsCalendlyOpen(false)}
+        rootElement={typeof window !== "undefined" ? document.body : null}
+      />
+
+      <style jsx>{`
+        :global(html) {
+          scroll-behavior: smooth;
+        }
+
+        .heroAnimations {
+          width: 100%;
+          aspect-ratio: 16 / 9;
+          position: relative;
+        }
+
+        .hero {
+          min-height: 100vh;
+          padding: 125px 6% 70px;
+          display: grid;
+          grid-template-columns: 1.15fr 0.85fr;
+          gap: 56px;
+          align-items: center;
+          background: #ffffff;
+          font-family: "Montserrat", sans-serif;
+        }
+
+        .heroLeft h1 {
+          font-size: clamp(2.3rem, 5vw, 4.8rem);
+          line-height: 1.05;
+          font-weight: 800;
+          letter-spacing: -0.04em;
+          color: #111111;
+          margin-bottom: 34px;
+        }
+
+        .rotatingWord {
+          color: #2e7bff;
+          display: inline-block;
+          transition: opacity 0.25s ease, transform 0.25s ease;
+        }
+
+        .rotatingWord.show {
+          opacity: 1;
+          transform: translateY(0);
+        }
+
+        .rotatingWord.hide {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+
+        .card {
+          background: #ffffff;
+          border: 1px solid #e8ecf3;
+          border-radius: 32px;
+          padding: 44px;
+          box-shadow: 0 28px 70px rgba(0, 0, 0, 0.09);
+          max-width: 470px;
+          margin-left: auto;
+        }
+
+        .card h2 {
+          font-size: clamp(1.8rem, 3vw, 2.7rem);
+          line-height: 1.1;
+          font-weight: 800;
+          letter-spacing: -0.03em;
+          color: #111111;
+          margin-bottom: 18px;
+        }
+
+        .duration {
+          color: #2e7bff;
+          font-weight: 700;
+          margin-bottom: 28px;
+        }
+
+        ul {
+          list-style: none;
+          display: grid;
+          gap: 16px;
+          margin: 0 0 34px;
+          padding: 0;
+        }
+
+        li {
+          color: #444b5a;
+          font-weight: 500;
+          line-height: 1.5;
+        }
+
+        button {
+          width: 100%;
+          border: none;
+          cursor: pointer;
+          background: #2e7bff;
+          color: white;
+          font: inherit;
+          font-weight: 700;
+          padding: 18px 28px;
+          border-radius: 999px;
+          box-shadow: 0 16px 34px rgba(46, 123, 255, 0.35);
+          transition: 0.25s ease;
+        }
+
+        button:hover {
+          transform: translateY(-3px);
+          background: #1769f5;
+        }
+
+        .microcopy {
+          margin-top: 18px;
+          text-align: center;
+          color: #6b7280;
+          font-size: 0.9rem;
+          font-weight: 500;
+        }
+
+        .heroHeader {
+          position: fixed;
+          top: 30px;
+          left: 50%;
+          transform: translateX(-50%);
+          z-index: 1000;
+          width: min(92%, 1200px);
+          display: grid;
+          grid-template-columns: 1fr auto 1fr;
+          align-items: center;
+          transition: background 0.3s ease, backdrop-filter 0.3s ease,
+            box-shadow 0.3s ease, padding 0.3s ease, border 0.3s ease;
+        }
+
+        .heroHeader.scrolled {
+          background: rgba(255, 255, 255, 0.55);
+          backdrop-filter: blur(22px);
+          -webkit-backdrop-filter: blur(22px);
+          border: 1px solid rgba(255, 255, 255, 0.55);
+          border-radius: 999px;
+          padding: 14px 28px;
+          box-shadow: 0 12px 35px rgba(0, 0, 0, 0.08);
+        }
+
+        .headerLogo {
+          width: 190px;
+          height: auto;
+          display: block;
+        }
+
+        .navSide {
+          display: flex;
+          align-items: center;
+        }
+
+        .navLeft {
+          justify-content: flex-end;
+          gap: 42px;
+          padding-right: 70px;
+        }
+
+        .navRight {
+          justify-content: flex-start;
+          gap: 42px;
+          padding-left: 70px;
+        }
+
+        .navSide a,
+        .navButton {
+          color: #2e7bff;
+          text-decoration: none;
+          font-family: "Montserrat", sans-serif;
+          font-size: 1rem;
+          font-weight: 700;
+          letter-spacing: -0.01em;
+          white-space: nowrap;
+          transition: all 0.2s ease;
+        }
+
+        .navButton {
+          width: auto;
+          border: none;
+          background: transparent;
+          cursor: pointer;
+          padding: 0;
+          box-shadow: none;
+          border-radius: 0;
+          appearance: none;
+          -webkit-appearance: none;
+        }
+
+        .navSide a:hover,
+        .navButton:hover {
+          color: #001a5c;
+          transform: translateY(-1px);
+          background: transparent;
+        }
+
+        @media (max-width: 1000px) {
+          .heroHeader {
+            grid-template-columns: 1fr;
+            justify-items: center;
+            gap: 18px;
+          }
+
+          .heroHeader.scrolled {
+            border-radius: 28px;
+            padding: 16px 22px;
+          }
+
+          .navSide {
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 18px 26px;
+          }
+
+          .navSide a,
+          .navButton {
+            font-size: 0.9rem;
+          }
+
+          .headerLogo {
+            width: 160px;
+          }
+        }
+
+        @media (max-width: 980px) {
+          .hero {
+            grid-template-columns: 1fr;
+          }
+
+          .card {
+            max-width: 100%;
+            margin-left: 0;
+          }
+        }
+      `}</style>
     </>
   );
 }
-
-
