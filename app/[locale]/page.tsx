@@ -19,6 +19,7 @@ export default function Page() {
   const [scrolled, setScrolled] = useState(false);
   const [activeAnimation, setActiveAnimation] = useState(0);
   const [isCalendlyOpen, setIsCalendlyOpen] = useState(false);
+  const [rootElement, setRootElement] = useState<HTMLElement | null>(null);
 
   const scrollToContact = () => {
     document
@@ -35,6 +36,10 @@ export default function Page() {
         setFade(true);
       }, 250);
     }, 2200);
+
+    useEffect(() => {
+  setRootElement(document.body);
+}, []);
 
     return () => clearInterval(interval);
   }, []);
@@ -132,12 +137,14 @@ export default function Page() {
       <AiAgentsSection />
       <Footer />
 
-      <PopupModal
-        url="https://calendly.com/aibe-technologies7/30min"
-        open={isCalendlyOpen}
-        onModalClose={() => setIsCalendlyOpen(false)}
-        rootElement={typeof window !== "undefined" ? document.body : null}
-      />
+      {rootElement && (
+  <PopupModal
+    url="https://calendly.com/aibe-technologies7/30min"
+    open={isCalendlyOpen}
+    onModalClose={() => setIsCalendlyOpen(false)}
+    rootElement={rootElement}
+  />
+)}
 
       <style jsx>{`
         :global(html) {
