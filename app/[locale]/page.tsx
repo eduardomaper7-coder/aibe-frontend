@@ -2,7 +2,13 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { PopupModal } from "react-calendly";
+import dynamic from "next/dynamic";
+
+const PopupModal = dynamic(
+  () => import("react-calendly").then((mod) => mod.PopupModal),
+  { ssr: false }
+);
+
 import AibeSection from "../../components/ui/AibeSection";
 import GoogleSection from "../../components/ui/GoogleSection";
 import SearchRiseAnimation from "../../components/ui/SearchRiseAnimation";
@@ -28,21 +34,23 @@ export default function Page() {
   };
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setFade(false);
+  const interval = setInterval(() => {
+    setFade(false);
 
-      setTimeout(() => {
-        setIndex((prev) => (prev + 1) % words.length);
-        setFade(true);
-      }, 250);
-    }, 2200);
+    setTimeout(() => {
+      setIndex((prev) => (prev + 1) % words.length);
+      setFade(true);
+    }, 250);
+  }, 2200);
 
-    useEffect(() => {
+  return () => clearInterval(interval);
+}, []);
+
+useEffect(() => {
   setRootElement(document.body);
 }, []);
 
-    return () => clearInterval(interval);
-  }, []);
+   
 
   useEffect(() => {
     const timers = [5000, 7000, 14000];
