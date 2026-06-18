@@ -134,12 +134,17 @@ useEffect(() => {
       <main className="hero">
         <section className="heroLeft">
           <h1>
-            Consigue más{" "}
-            <span className={`rotatingWord ${fade ? "show" : "hide"}`}>
-              {words[index]}
-            </span>{" "}
-            para tu negocio
-          </h1>
+  <span className="mobileTitleLine">Consigue más</span>
+
+  <span className="mobileTitleLine">
+    <span className={`rotatingWord ${fade ? "show" : "hide"}`}>
+      {words[index]}
+    </span>{" "}
+    para tu
+  </span>
+
+  <span className="mobileTitleLine">negocio</span>
+</h1>
 
           <div className="heroAnimations">
             {activeAnimation === 0 && <SearchRiseAnimation key="google" />}
@@ -450,10 +455,15 @@ useEffect(() => {
 }
 
   .heroLeft h1 {
-    text-align: center;
-    font-size: 2.5rem;
-    margin-bottom: 28px;
-  }
+  text-align: center;
+  font-size: 2.5rem;
+  line-height: 1.05;
+  margin-bottom: 28px;
+}
+
+.mobileTitleLine {
+  display: block;
+}
 
   .heroAnimations {
   width: 100%;
