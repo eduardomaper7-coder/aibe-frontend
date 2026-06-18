@@ -102,24 +102,26 @@ export default function GoogleSection() {
           max-width: 620px;
         }
 
-        @media (max-width: 900px) {
-          .googleSection {
-            grid-template-columns: 1fr;
-          }
+       @media (max-width: 900px) {
+  .googleSection {
+    grid-template-columns: 1fr;
+    padding: 60px 22px 20px;
+  }
+}
 
-          .sectionHeader {
-            margin-bottom: 22px;
-          }
+  .sectionHeader {
+    margin-bottom: 22px;
+  }
 
-          .sectionHeader h2 {
-            font-size: 2.3rem;
-          }
+  .sectionHeader h2 {
+    font-size: 2.3rem;
+  }
 
-          .left,
-          .right {
-            min-height: auto;
-          }
-        }
+  .left,
+  .right {
+    min-height: auto;
+  }
+}
       `}</style>
     </section>
   );
