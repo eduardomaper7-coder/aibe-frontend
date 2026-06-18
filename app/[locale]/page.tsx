@@ -26,6 +26,7 @@ export default function Page() {
   const [activeAnimation, setActiveAnimation] = useState(0);
   const [isCalendlyOpen, setIsCalendlyOpen] = useState(false);
   const [rootElement, setRootElement] = useState<HTMLElement | null>(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const scrollToContact = () => {
     document
@@ -76,28 +77,59 @@ useEffect(() => {
   return (
     <>
       <header className={`heroHeader ${scrolled ? "scrolled" : ""}`}>
-        <nav className="navSide navLeft">
-          <a href="#aibe">¿Por qué AIBE?</a>
+  <nav className="navSide navLeft desktopNav">
+    <a href="#aibe">¿Por qué AIBE?</a>
 
-          <button type="button" onClick={scrollToContact} className="navButton">
-            Contacto
-          </button>
-        </nav>
+    <button
+      type="button"
+      onClick={scrollToContact}
+      className="navButton"
+    >
+      Contacto
+    </button>
+  </nav>
 
-        <Image
-          src="/imagenes/logo.png"
-          alt="AIBE"
-          width={170}
-          height={48}
-          priority
-          className="headerLogo"
-        />
+  <Image
+    src="/imagenes/logo.png"
+    alt="AIBE"
+    width={170}
+    height={48}
+    priority
+    className="headerLogo"
+  />
 
-        <nav className="navSide navRight">
-          <a href="#google">Google</a>
-          <a href="#ia">Buscadores con IA</a>
-        </nav>
-      </header>
+  <button
+    className="mobileMenuButton"
+    onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+    aria-label="Abrir menú"
+  >
+    ☰
+  </button>
+
+  <nav className="navSide navRight desktopNav">
+    <a href="#google">Google</a>
+    <a href="#ia">Buscadores con IA</a>
+  </nav>
+
+  {mobileMenuOpen && (
+    <div className="mobileMenu">
+      <a href="#aibe">¿Por qué AIBE?</a>
+      <a href="#google">Google</a>
+      <a href="#ia">Buscadores con IA</a>
+
+      <button
+        type="button"
+        onClick={() => {
+          scrollToContact();
+          setMobileMenuOpen(false);
+        }}
+        className="navButton"
+      >
+        Contacto
+      </button>
+    </div>
+  )}
+</header>
 
       <main className="hero">
         <section className="heroLeft">
@@ -138,6 +170,21 @@ useEffect(() => {
     Sin compromiso · Respuesta en menos de 24h
   </p>
 </aside>
+
+<div className="mobileConsultancy">
+  <button
+    type="button"
+    onClick={() => setIsCalendlyOpen(true)}
+    className="consultancyButton"
+  >
+    Reservar Consultoría Gratuita
+  </button>
+
+  <p className="consultancyInfo">
+    30 minutos · Presencial u online · Sin compromiso ·
+    Respuesta en menos de 24h
+  </p>
+</div>
       </main>
 
       <AibeSection />
@@ -345,6 +392,20 @@ useEffect(() => {
           background: transparent;
         }
 
+        /* NUEVOS ESTILOS */
+
+.mobileMenuButton {
+  display: none;
+}
+
+.mobileMenu {
+  display: none;
+}
+
+.mobileConsultancy {
+  display: none;
+}
+
         @media (max-width: 1000px) {
           .heroHeader {
             grid-template-columns: 1fr;
@@ -374,16 +435,118 @@ useEffect(() => {
         }
 
         @media (max-width: 980px) {
-          .hero {
-            grid-template-columns: 1fr;
-          }
+  .hero {
+  grid-template-columns: 1fr;
+  padding: 130px 24px 30px;
+  gap: 20px;
+}
 
-          .card {
-            max-width: 100%;
-            margin-left: 0;
-          }
-        }
-      `}</style>
+.heroLeft {
+  padding-top: 55px;
+}
+
+  .heroLeft h1 {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 28px;
+  }
+
+  .heroAnimations {
+  width: 100%;
+  max-width: 360px;
+  min-height: 340px;
+  margin: 0 auto;
+  overflow: visible;
+}
+
+  .heroAnimations > * {
+    width: 100%;
+    max-width: 360px;
+    margin: 0 auto;
+  }
+
+  .card {
+    display: none;
+  }
+
+  .mobileConsultancy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  margin-top: -90px;
+}
+
+  .consultancyButton {
+    width: auto;
+    min-width: 280px;
+    max-width: 340px;
+    border: none;
+    cursor: pointer;
+    background: #2e7bff;
+    color: white;
+    font: inherit;
+    font-weight: 700;
+    padding: 18px 28px;
+    border-radius: 999px;
+    box-shadow: 0 16px 34px rgba(46, 123, 255, 0.35);
+  }
+
+  .consultancyInfo {
+    margin-top: 12px;
+    text-align: center;
+    color: #6b7280;
+    font-size: 0.82rem;
+    line-height: 1.5;
+    max-width: 340px;
+  }
+
+  .desktopNav {
+    display: none;
+  }
+
+  .heroHeader {
+    top: 12px;
+    width: calc(100% - 24px);
+    padding: 12px 18px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border-radius: 18px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+  }
+
+  .heroHeader.scrolled {
+    border-radius: 18px;
+    padding: 12px 18px;
+  }
+
+  .headerLogo {
+    width: 130px;
+    display: block;
+  }
+
+  .mobileMenuButton {
+    display: none;
+  }
+
+  .mobileMenu {
+    display: none;
+  }
+
+  .mobileMenu a,
+  .mobileMenu .navButton {
+    color: #2e7bff;
+    text-decoration: none;
+    text-align: center;
+    font-weight: 700;
+  }
+}
+`}</style>
     </>
   );
 }
+
