@@ -217,24 +217,36 @@ export default function SocialBoostAnimation() {
         }
 
         @media (max-width: 700px) {
-          .socialBoost {
-            padding: 24px;
-            gap: 22px;
-          }
+  .socialBoost {
+    min-height: 560px;
+    padding: 18px 24px 24px;
+    gap: 18px;
+    align-content: start;
+  }
 
-          .logos :global(img) {
-            width: 48px;
-            height: 48px;
-          }
+  .logos :global(img) {
+    width: 56px;
+    height: 56px;
+  }
 
-          .metrics {
-            grid-template-columns: 1fr;
-          }
+  .metrics {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    margin-top: -15px;
+  }
 
-          .chart {
-            display: none;
-          }
-        }
+  .metric {
+    padding: 20px;
+  }
+
+  .metric strong {
+    font-size: 2rem;
+  }
+
+  .chart {
+    display: none;
+  }
+}
       `}</style>
     </div>
   );

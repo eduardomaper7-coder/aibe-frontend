@@ -171,12 +171,54 @@ export default function AiAgentsAnimation() {
         }
 
         @media (max-width: 1000px) {
-          .animationBox {
-            grid-template-columns: 1fr;
-            min-height: auto;
-            padding: 24px;
-          }
-        }
+  .animationBox {
+    grid-template-columns: 1fr;
+    min-height: 760px;
+    padding: 24px;
+    gap: 28px;
+    align-content: start;
+  }
+
+  .questionCard,
+  .answerCard,
+  .agent {
+    border-radius: 22px;
+    padding: 20px;
+  }
+
+  .agents {
+    gap: 14px;
+  }
+
+  .agent {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .logoImage {
+    width: 52px;
+    height: 52px;
+    margin-bottom: 0;
+    flex-shrink: 0;
+  }
+
+  .answerCard {
+    margin-top: 70px;
+  }
+
+  h3 {
+    font-size: 1.55rem;
+  }
+
+  p {
+    font-size: 0.9rem;
+  }
+
+  .agent p {
+    font-size: 0.82rem;
+  }
+}
       `}</style>
     </div>
   );

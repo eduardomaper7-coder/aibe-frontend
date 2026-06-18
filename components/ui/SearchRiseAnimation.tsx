@@ -277,6 +277,67 @@ export default function SearchRiseAnimation() {
             opacity: 0;
           }
         }
+
+        @media (max-width: 640px) {
+  .animationWrap {
+    aspect-ratio: auto;
+    min-height: 380px;
+    border-radius: 28px;
+    padding: 22px;
+    gap: 22px;
+    justify-content: flex-start;
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.12);
+  }
+
+  .searchBar {
+    height: 56px;
+    padding: 0 18px;
+    border-color: #dfe5ee;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+  }
+
+  .searchIcon {
+    font-size: 1.2rem;
+  }
+
+  .typedText {
+    font-size: 0.95rem;
+  }
+
+  .results {
+    height: 270px;
+  }
+
+  .result {
+    height: 56px;
+    border-radius: 16px;
+    padding: 0 18px;
+    font-size: 0.95rem;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.04);
+  }
+
+  .a {
+    top: 0;
+  }
+
+  .b {
+    top: 70px;
+  }
+
+  .company {
+    top: 140px;
+  }
+
+  .c {
+    top: 210px;
+  }
+
+  .growthLine {
+    width: 118px;
+    right: 16px;
+    top: -44px;
+  }
+}
       `}</style>
     </div>
   );

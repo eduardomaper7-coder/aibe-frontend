@@ -12,9 +12,9 @@ export default function AiRecommendationAnimation() {
             <div className="logoDot" />
             <span>ChatGPT</span>
           </div>
-          <div className="sideItem active">Nueva conversación</div>
-          <div className="sideItem" />
-          <div className="sideItem short" />
+          <div className="sideItem active" />
+<div className="sideItem search" />
+<div className="sideItem short" />
         </aside>
 
         <main className="chatArea">
@@ -302,45 +302,114 @@ export default function AiRecommendationAnimation() {
           }
         }
 
-        @media (max-width: 640px) {
-          .chatShell {
-            grid-template-columns: 1fr;
-          }
+     @media (max-width: 640px) {
+  .aiAnimation {
+    aspect-ratio: auto;
+    height: 360px;
+    min-height: 360px;
+  }
 
-          .sidebar {
-            display: none;
-          }
+  .chatShell {
+    grid-template-columns: 58px 1fr;
+  }
 
-          .chatHeader {
-            height: 15%;
-          }
+  .sidebar {
+    padding: 12px 6px;
+    background: #f7f7f8;
+  }
 
-          .messages {
-            padding: 8% 5% 22%;
-          }
+  .sideTop {
+    justify-content: center;
+    margin-bottom: 14px;
+    text-align: center;
+  }
 
-          .userBubble {
-            right: 5%;
-            max-width: 28ch;
-          }
+  .logoDot {
+    display: none;
+  }
 
-          .aiRow {
-            left: 5%;
-            right: 5%;
-            gap: 9px;
-          }
+  .sideTop span {
+    display: block;
+    font-size: 11px;
+    font-weight: 800;
+  }
 
-          .aiBubble {
-            width: 59ch;
-            max-width: calc(100vw - 96px);
-            font-size: clamp(10px, 2.7vw, 14px);
-          }
+  .sideItem {
+    display: block;
+    width: 100%;
+    height: 34px;
+    min-height: 34px;
+    padding: 0;
+    margin-bottom: 9px;
+    border-radius: 12px;
+    background: #eeeeee;
+    font-size: 0;
+    overflow: hidden;
+  }
 
-          .promptBox {
-            width: 86%;
-            bottom: 6%;
-          }
-        }
+  .sideItem.active {
+    background: #ffffff;
+    box-shadow: inset 0 0 0 1px #dddddd;
+  }
+
+  .sideItem {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 36px;
+  min-height: 36px;
+  margin-bottom: 10px;
+  border-radius: 12px;
+  background: #eeeeee;
+}
+
+.sideItem.active::before {
+  content: "+";
+  font-size: 18px;
+  font-weight: 700;
+  color: #202123;
+}
+
+.sideItem.search::before {
+  content: "⌕";
+  font-size: 16px;
+  color: #555;
+}
+
+.sideItem.short::before {
+  content: "▣";
+  font-size: 13px;
+  color: #555;
+}
+
+  .userBubble {
+    top: 22%;
+    left: 12px;
+    right: 12px;
+    max-width: none;
+    font-size: 12px;
+    white-space: normal;
+  }
+
+  .aiRow {
+    top: 50%;
+    left: 5%;
+    right: 5%;
+    gap: 9px;
+  }
+
+  .aiBubble {
+    width: auto;
+    max-width: calc(100vw - 175px);
+    font-size: 12px;
+  }
+
+  .promptBox {
+    width: 84%;
+    height: 48px;
+    bottom: 18px;
+  }
+}
       `}</style>
     </div>
   );

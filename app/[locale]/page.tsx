@@ -407,6 +407,10 @@ useEffect(() => {
 }
 
         @media (max-width: 1000px) {
+
+        .consultancyInfo {
+  display: none;
+}
           .heroHeader {
             grid-template-columns: 1fr;
             justify-items: center;
@@ -474,8 +478,12 @@ useEffect(() => {
   flex-direction: column;
   align-items: center;
   width: 100%;
+
   margin-top: -90px;
+  position: relative;
+  z-index: 20;
 }
+  
 
   .consultancyButton {
     width: auto;

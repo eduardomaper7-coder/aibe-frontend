@@ -90,6 +90,62 @@ export default function GoogleSearchAnimation() {
           0%, 100% { box-shadow: 0 0 0 rgba(46,123,255,0); }
           50% { box-shadow: 0 14px 34px rgba(46,123,255,.22); }
         }
+
+       @media (max-width: 1000px) {
+  .searchBox {
+    min-height: 420px;
+    padding: 20px;
+    border-radius: 24px;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+  }
+
+  .bar {
+    height: 56px;
+    border-radius: 28px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 2px 10px rgba(0,0,0,.06);
+    margin-bottom: 24px;
+    padding: 0 18px;
+    font-size: 15px;
+  }
+
+  .bar span {
+    font-size: 18px;
+  }
+
+  .results {
+    gap: 16px;
+  }
+
+  .result {
+    padding: 16px;
+    border-radius: 16px;
+    background: #ffffff;
+    border: 1px solid #eef2f7;
+  }
+
+  .first {
+    background: #f8fbff;
+    border: 1px solid rgba(46,123,255,.18);
+  }
+
+  p {
+    margin: 0 0 6px;
+    font-size: 1rem;
+    font-weight: 700;
+  }
+
+  small {
+    display: block;
+    font-size: 0.8rem;
+    color: #188038; /* verde estilo Google */
+    font-weight: 500;
+  }
+}
       `}</style>
     </div>
   );
