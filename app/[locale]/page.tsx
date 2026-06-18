@@ -458,16 +458,21 @@ useEffect(() => {
   .heroAnimations {
   width: 100%;
   max-width: 360px;
-  min-height: 340px;
+  height: 360px;
+  min-height: 360px;
   margin: 0 auto;
-  overflow: visible;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
 }
 
   .heroAnimations > * {
-    width: 100%;
-    max-width: 360px;
-    margin: 0 auto;
-  }
+  width: 100%;
+  max-width: 360px;
+  height: 100%;
+  min-height: 100%;
+  margin: 0 auto;
+}
 
   .card {
     display: none;
@@ -514,28 +519,28 @@ useEffect(() => {
   }
 
   .heroHeader {
-    top: 12px;
-    width: calc(100% - 24px);
-    padding: 12px 18px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: rgba(255, 255, 255, 0.92);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-    border-radius: 18px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
-  }
+  top: 8px;
+  width: calc(100% - 28px);
+  padding: 8px 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-radius: 16px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+}
 
-  .heroHeader.scrolled {
-    border-radius: 18px;
-    padding: 12px 18px;
-  }
+.heroHeader.scrolled {
+  border-radius: 16px;
+  padding: 8px 16px;
+}
 
-  .headerLogo {
-    width: 130px;
-    display: block;
-  }
+.headerLogo {
+  width: 110px;
+  display: block;
+}
 
   .mobileMenuButton {
     display: none;
