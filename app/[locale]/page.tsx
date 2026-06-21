@@ -143,7 +143,7 @@ useEffect(() => {
     para tu
   </span>
 
-  <span className="mobileTitleLine">negocio</span>
+  <span className="mobileTitleLine"> negocio</span>
 </h1>
 
           <div className="heroAnimations">
