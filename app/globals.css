@@ -32,6 +32,28 @@ body {
   overflow-x: hidden;
 }
 
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: #ffffff;
+  color: #111111;
+  overflow-x: hidden;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+img,
+svg {
+  display: block;
+}
+
 /* TOPBAR BASE */
 #global-topbar.topbar {
   position: fixed;

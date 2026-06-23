@@ -10,15 +10,20 @@ const images = [
 ];
 
 export default function AibeSection() {
+  const [mounted, setMounted] = useState(false);
   const [mobileImage, setMobileImage] = useState(0);
 
   useEffect(() => {
+    setMounted(true);
+
     const interval = setInterval(() => {
       setMobileImage((prev) => (prev + 1) % images.length);
     }, 4000);
 
     return () => clearInterval(interval);
   }, []);
+
+  if (!mounted) return null;
 
   return (
     <section id="aibe" className="aibeSection">
@@ -35,7 +40,9 @@ export default function AibeSection() {
             <Image
               src={images[mobileImage]}
               alt="Proyecto AIBE"
-              fill
+              width={900}
+              height={520}
+              priority={mobileImage === 0}
               className="image"
             />
           </div>
@@ -43,122 +50,146 @@ export default function AibeSection() {
 
         <div className="group">
           <div className="imageCard wide">
-            <Image src={images[0]} alt="Proyecto AIBE" fill className="image" />
+            <Image
+              src={images[0]}
+              alt="Proyecto AIBE"
+              width={900}
+              height={520}
+              priority
+              className="image"
+            />
           </div>
 
           <div className="imageCard vertical">
-            <Image src={images[1]} alt="Proyecto AIBE" fill className="image" />
+            <Image
+              src={images[1]}
+              alt="Proyecto AIBE"
+              width={500}
+              height={520}
+              className="image"
+            />
           </div>
 
           <div className="imageCard extraWide">
-            <Image src={images[2]} alt="Proyecto AIBE" fill className="image" />
+            <Image
+              src={images[2]}
+              alt="Proyecto AIBE"
+              width={900}
+              height={520}
+              className="image"
+            />
           </div>
         </div>
       </div>
 
       <style jsx>{`
-  .aibeSection {
-    padding: 110px 0 40px;
-    background: #ffffff;
-    overflow: hidden;
-    font-family: "Montserrat", sans-serif;
-  }
+        .aibeSection {
+          padding: 110px 0 40px;
+          background: #ffffff;
+          overflow: hidden;
+          font-family: "Montserrat", sans-serif;
+        }
 
-  .titleWrap {
-    width: 100vw;
-    margin: 0 0 70px;
-    padding: 0 4%;
-  }
+        .titleWrap {
+          width: 100vw;
+          margin: 0 0 70px;
+          padding: 0 4%;
+        }
 
-  h2 {
-    max-width: 1350px;
-    color: #111111;
-    font-size: clamp(2.8rem, 4.4vw, 5rem);
-    line-height: 1.08;
-    letter-spacing: -0.06em;
-    font-weight: 300;
-    text-align: left;
-  }
+        h2 {
+          max-width: 1350px;
+          color: #111111;
+          font-size: clamp(2.8rem, 4.4vw, 5rem);
+          line-height: 1.08;
+          letter-spacing: -0.06em;
+          font-weight: 300;
+          text-align: left;
+        }
 
-  h2 span {
-    display: block;
-  }
+        h2 span {
+          display: block;
+        }
 
-  h2 span:nth-child(2) {
-    color: #2e7bff;
-  }
+        h2 span:nth-child(2) {
+          color: #2e7bff;
+        }
 
-  .slider {
-    width: 100%;
-    overflow: hidden;
-  }
+        .slider {
+          width: 100%;
+          overflow: hidden;
+        }
 
-  .mobileSingleImage {
-    display: none;
-  }
+        .mobileSingleImage {
+          display: none;
+        }
 
-  .group {
-    width: 100vw;
-    display: flex;
-    gap: 16px;
-    padding-left: 2%;
-    padding-right: 0;
-  }
+        .group {
+          width: 100vw;
+          display: flex;
+          gap: 16px;
+          padding-left: 2%;
+          padding-right: 0;
+        }
 
-  .imageCard {
-    position: relative;
-    height: 460px;
-    overflow: hidden;
-    border-radius: 18px;
-    background: #f3f7ff;
-    flex-shrink: 0;
-  }
+        .imageCard {
+          position: relative;
+          height: 460px;
+          overflow: hidden;
+          border-radius: 18px;
+          background: #f3f7ff;
+          flex-shrink: 0;
+          isolation: isolate;
+        }
 
-  .imageCard.extraWide {
-    width: 38%;
-  }
+        .imageCard.extraWide {
+          width: 38%;
+        }
 
-  .imageCard.wide {
-    width: 36%;
-  }
+        .imageCard.wide {
+          width: 36%;
+        }
 
-  .imageCard.vertical {
-    width: 20%;
-  }
+        .imageCard.vertical {
+          width: 20%;
+        }
 
-  .image {
-    object-fit: cover;
-  }
+        .image {
+          display: block;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          max-width: 100%;
+        }
 
-  @media (max-width: 900px) {
-    .aibeSection {
-      padding: 80px 0 10px;
-    }
+        @media (max-width: 900px) {
+          .aibeSection {
+            padding: 80px 0 10px;
+          }
 
-    .titleWrap {
-      padding: 0 22px;
-      margin-bottom: 40px;
-    }
+          .titleWrap {
+            padding: 0 22px;
+            margin-bottom: 40px;
+          }
 
-    h2 {
-      font-size: 2.3rem;
-    }
+          h2 {
+            font-size: 2.3rem;
+          }
 
-    .group {
-      display: none;
-    }
+          .group {
+            display: none;
+          }
 
-    .mobileSingleImage {
-      display: block;
-      padding: 0 22px;
-    }
+          .mobileSingleImage {
+            display: block;
+            padding: 0 22px;
+          }
 
-    .mobileCard {
-      width: 100%;
-      height: 360px;
-    }
-  }
-`}</style>
+          .mobileCard {
+            width: 100%;
+            height: min(360px, 60vh);
+          }
+        }
+      `}</style>
     </section>
   );
 }

@@ -1,13 +1,22 @@
 "use client";
 
+
+
+
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import dynamic from "next/dynamic";
+
+
+
 
 const PopupModal = dynamic(
   () => import("react-calendly").then((mod) => mod.PopupModal),
   { ssr: false }
 );
+
+
+
 
 import AibeSection from "../../components/ui/AibeSection";
 import GoogleSection from "../../components/ui/GoogleSection";
@@ -16,8 +25,11 @@ import SocialBoostAnimation from "../../components/ui/SocialBoostAnimation";
 import AiRecommendationAnimation from "../../components/ui/AiRecommendationAnimation";
 import AiAgentsSection from "../../components/ui/AiAgentsSection";
 import Footer from "../../components/ui/Footer";
-
+import RedesSocialesSection from "../../components/ui/redesSociales-seccion";
 const words = ["clientes", "ventas", "reservas", "visibilidad"];
+
+
+
 
 export default function Page() {
   const [index, setIndex] = useState(0);
@@ -28,15 +40,24 @@ export default function Page() {
   const [rootElement, setRootElement] = useState<HTMLElement | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+
+
+
   const scrollToContact = () => {
     document
       .getElementById("contacto")
       ?.scrollIntoView({ behavior: "smooth" });
   };
 
+
+
+
   useEffect(() => {
   const interval = setInterval(() => {
     setFade(false);
+
+
+
 
     setTimeout(() => {
       setIndex((prev) => (prev + 1) % words.length);
@@ -44,41 +65,74 @@ export default function Page() {
     }, 250);
   }, 2200);
 
+
+
+
   return () => clearInterval(interval);
 }, []);
+
+
+
 
 useEffect(() => {
   setRootElement(document.body);
 }, []);
 
+
+
+
    
+
+
+
 
   useEffect(() => {
     const timers = [5000, 7000, 14000];
+
+
+
 
     const timeout = setTimeout(() => {
       setActiveAnimation((prev) => (prev + 1) % 3);
     }, timers[activeAnimation]);
 
+
+
+
     return () => clearTimeout(timeout);
   }, [activeAnimation]);
+
+
+
 
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
     };
 
+
+
+
     handleScroll();
     window.addEventListener("scroll", handleScroll);
 
+
+
+
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+
+
 
   return (
     <>
       <header className={`heroHeader ${scrolled ? "scrolled" : ""}`}>
   <nav className="navSide navLeft desktopNav">
     <a href="#aibe">¿Por qué AIBE?</a>
+
+
+
 
     <button
       type="button"
@@ -89,6 +143,9 @@ useEffect(() => {
     </button>
   </nav>
 
+
+
+
   <Image
     src="/imagenes/logo.png"
     alt="AIBE"
@@ -98,6 +155,9 @@ useEffect(() => {
     className="headerLogo"
   />
 
+
+
+
   <button
     className="mobileMenuButton"
     onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -106,16 +166,38 @@ useEffect(() => {
     ☰
   </button>
 
+
+
+
   <nav className="navSide navRight desktopNav">
-    <a href="#google">Google</a>
-    <a href="#ia">Buscadores con IA</a>
-  </nav>
+  <a href="#google">Google</a>
+
+
+  <div className="servicesDropdown">
+    <span>Servicios</span>
+
+
+    <div className="dropdownMenu">
+      <a href="/es/redes-sociales-tenerife">Redes Sociales Tenerife</a>
+     
+    </div>
+  </div>
+
+
+  <a href="#ia">Buscadores con IA</a>
+</nav>
+
+
+
 
   {mobileMenuOpen && (
     <div className="mobileMenu">
       <a href="#aibe">¿Por qué AIBE?</a>
       <a href="#google">Google</a>
       <a href="#ia">Buscadores con IA</a>
+
+
+
 
       <button
         type="button"
@@ -131,10 +213,16 @@ useEffect(() => {
   )}
 </header>
 
+
+
+
       <main className="hero">
         <section className="heroLeft">
           <h1>
   <span className="mobileTitleLine">Consigue más</span>
+
+
+
 
   <span className="mobileTitleLine">
     <span className={`rotatingWord ${fade ? "show" : "hide"}`}>
@@ -143,8 +231,14 @@ useEffect(() => {
     para tu
   </span>
 
+
+
+
   <span className="mobileTitleLine"> negocio</span>
 </h1>
+
+
+
 
           <div className="heroAnimations">
             {activeAnimation === 0 && <SearchRiseAnimation key="google" />}
@@ -153,10 +247,19 @@ useEffect(() => {
           </div>
         </section>
 
+
+
+
         <aside className="card">
   <h2>Consultoría gratuita para impulsar tu negocio</h2>
 
+
+
+
   <p className="duration">30 minutos</p>
+
+
+
 
   <ul>
     <li>✓ Analizamos tu situación actual</li>
@@ -164,17 +267,26 @@ useEffect(() => {
     <li>✓ Presencial u online</li>
   </ul>
 
+
+
+
   <button
     type="button"
     onClick={() => setIsCalendlyOpen(true)}
   >
-    Reservar Consulta
+    Agendar llamada
   </button>
+
+
+
 
   <p className="microcopy">
     Sin compromiso · Respuesta en menos de 24h
   </p>
 </aside>
+
+
+
 
 <div className="mobileConsultancy">
   <button
@@ -185,6 +297,9 @@ useEffect(() => {
     Reservar Consultoría Gratuita
   </button>
 
+
+
+
   <p className="consultancyInfo">
     30 minutos · Presencial u online · Sin compromiso ·
     Respuesta en menos de 24h
@@ -192,10 +307,17 @@ useEffect(() => {
 </div>
       </main>
 
+
+
+
       <AibeSection />
       <GoogleSection />
+      <RedesSocialesSection />
       <AiAgentsSection />
       <Footer />
+
+
+
 
       {rootElement && (
   <PopupModal
@@ -206,16 +328,25 @@ useEffect(() => {
   />
 )}
 
+
+
+
       <style jsx>{`
         :global(html) {
           scroll-behavior: smooth;
         }
+
+
+
 
         .heroAnimations {
           width: 100%;
           aspect-ratio: 16 / 9;
           position: relative;
         }
+
+
+
 
         .hero {
           min-height: 100vh;
@@ -228,6 +359,9 @@ useEffect(() => {
           font-family: "Montserrat", sans-serif;
         }
 
+
+
+
         .heroLeft h1 {
           font-size: clamp(2.3rem, 5vw, 4.8rem);
           line-height: 1.05;
@@ -237,21 +371,83 @@ useEffect(() => {
           margin-bottom: 34px;
         }
 
+
+
+
         .rotatingWord {
           color: #2e7bff;
           display: inline-block;
           transition: opacity 0.25s ease, transform 0.25s ease;
         }
 
+
+
+
         .rotatingWord.show {
           opacity: 1;
           transform: translateY(0);
         }
 
+
+
+
         .rotatingWord.hide {
           opacity: 0;
           transform: translateY(8px);
         }
+.servicesDropdown {
+  position: relative;
+}
+
+
+.servicesDropdown span {
+  color: #2e7bff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+
+.dropdownMenu {
+  position: absolute;
+  top: 35px;
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 240px;
+
+
+  background: white;
+  border-radius: 16px;
+  padding: 12px;
+
+
+  box-shadow: 0 15px 40px rgba(0,0,0,.08);
+
+
+  opacity: 0;
+  visibility: hidden;
+  transition: .25s ease;
+}
+
+
+.servicesDropdown:hover .dropdownMenu {
+  opacity: 1;
+  visibility: visible;
+}
+
+
+.dropdownMenu a {
+  display: block;
+  padding: 10px 12px;
+  border-radius: 10px;
+  color: #111;
+  text-decoration: none;
+}
+
+
+.dropdownMenu a:hover {
+  background: #f5f7fb;
+}
+
 
         .card {
           background: #ffffff;
@@ -263,6 +459,9 @@ useEffect(() => {
           margin-left: auto;
         }
 
+
+
+
         .card h2 {
           font-size: clamp(1.8rem, 3vw, 2.7rem);
           line-height: 1.1;
@@ -272,11 +471,17 @@ useEffect(() => {
           margin-bottom: 18px;
         }
 
+
+
+
         .duration {
           color: #2e7bff;
           font-weight: 700;
           margin-bottom: 28px;
         }
+
+
+
 
         ul {
           list-style: none;
@@ -286,11 +491,17 @@ useEffect(() => {
           padding: 0;
         }
 
+
+
+
         li {
           color: #444b5a;
           font-weight: 500;
           line-height: 1.5;
         }
+
+
+
 
         button {
           width: 100%;
@@ -306,10 +517,16 @@ useEffect(() => {
           transition: 0.25s ease;
         }
 
+
+
+
         button:hover {
           transform: translateY(-3px);
           background: #1769f5;
         }
+
+
+
 
         .microcopy {
           margin-top: 18px;
@@ -318,6 +535,9 @@ useEffect(() => {
           font-size: 0.9rem;
           font-weight: 500;
         }
+
+
+
 
         .heroHeader {
           position: fixed;
@@ -333,6 +553,9 @@ useEffect(() => {
             box-shadow 0.3s ease, padding 0.3s ease, border 0.3s ease;
         }
 
+
+
+
         .heroHeader.scrolled {
           background: rgba(255, 255, 255, 0.55);
           backdrop-filter: blur(22px);
@@ -343,16 +566,25 @@ useEffect(() => {
           box-shadow: 0 12px 35px rgba(0, 0, 0, 0.08);
         }
 
+
+
+
         .headerLogo {
           width: 190px;
           height: auto;
           display: block;
         }
 
+
+
+
         .navSide {
           display: flex;
           align-items: center;
         }
+
+
+
 
         .navLeft {
           justify-content: flex-end;
@@ -360,11 +592,17 @@ useEffect(() => {
           padding-right: 70px;
         }
 
+
+
+
         .navRight {
           justify-content: flex-start;
           gap: 42px;
           padding-left: 70px;
         }
+
+
+
 
         .navSide a,
         .navButton {
@@ -378,6 +616,9 @@ useEffect(() => {
           transition: all 0.2s ease;
         }
 
+
+
+
         .navButton {
           width: auto;
           border: none;
@@ -390,6 +631,9 @@ useEffect(() => {
           -webkit-appearance: none;
         }
 
+
+
+
         .navSide a:hover,
         .navButton:hover {
           color: #001a5c;
@@ -397,21 +641,39 @@ useEffect(() => {
           background: transparent;
         }
 
+
+
+
         /* NUEVOS ESTILOS */
+
+
+
 
 .mobileMenuButton {
   display: none;
 }
 
+
+
+
 .mobileMenu {
   display: none;
 }
+
+
+
 
 .mobileConsultancy {
   display: none;
 }
 
+
+
+
         @media (max-width: 1000px) {
+
+
+
 
         .consultancyInfo {
   display: none;
@@ -422,10 +684,16 @@ useEffect(() => {
             gap: 18px;
           }
 
+
+
+
           .heroHeader.scrolled {
             border-radius: 28px;
             padding: 16px 22px;
           }
+
+
+
 
           .navSide {
             justify-content: center;
@@ -433,15 +701,24 @@ useEffect(() => {
             gap: 18px 26px;
           }
 
+
+
+
           .navSide a,
           .navButton {
             font-size: 0.9rem;
           }
 
+
+
+
           .headerLogo {
             width: 160px;
           }
         }
+
+
+
 
         @media (max-width: 980px) {
   .hero {
@@ -450,9 +727,15 @@ useEffect(() => {
   gap: 20px;
 }
 
+
+
+
 .heroLeft {
   padding-top: 55px;
 }
+
+
+
 
   .heroLeft h1 {
   text-align: center;
@@ -461,9 +744,15 @@ useEffect(() => {
   margin-bottom: 28px;
 }
 
+
+
+
 .mobileTitleLine {
   display: block;
 }
+
+
+
 
   .heroAnimations {
   width: 100%;
@@ -476,6 +765,9 @@ useEffect(() => {
   z-index: 1;
 }
 
+
+
+
   .heroAnimations > * {
   width: 100%;
   max-width: 360px;
@@ -484,9 +776,15 @@ useEffect(() => {
   margin: 0 auto;
 }
 
+
+
+
   .card {
     display: none;
   }
+
+
+
 
   .mobileConsultancy {
   display: flex;
@@ -494,11 +792,17 @@ useEffect(() => {
   align-items: center;
   width: 100%;
 
+
+
+
   margin-top: -90px;
   position: relative;
   z-index: 20;
 }
-  
+ 
+
+
+
 
   .consultancyButton {
     width: auto;
@@ -515,6 +819,9 @@ useEffect(() => {
     box-shadow: 0 16px 34px rgba(46, 123, 255, 0.35);
   }
 
+
+
+
   .consultancyInfo {
     margin-top: 12px;
     text-align: center;
@@ -524,9 +831,15 @@ useEffect(() => {
     max-width: 340px;
   }
 
+
+
+
   .desktopNav {
     display: none;
   }
+
+
+
 
   .heroHeader {
   top: 8px;
@@ -542,23 +855,38 @@ useEffect(() => {
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
 }
 
+
+
+
 .heroHeader.scrolled {
   border-radius: 16px;
   padding: 8px 16px;
 }
+
+
+
 
 .headerLogo {
   width: 110px;
   display: block;
 }
 
+
+
+
   .mobileMenuButton {
     display: none;
   }
 
+
+
+
   .mobileMenu {
     display: none;
   }
+
+
+
 
   .mobileMenu a,
   .mobileMenu .navButton {
@@ -572,4 +900,5 @@ useEffect(() => {
     </>
   );
 }
+
 

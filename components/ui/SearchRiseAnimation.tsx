@@ -1,6 +1,34 @@
 "use client";
 
+
+import { useEffect, useState } from "react";
+
+
 export default function SearchRiseAnimation() {
+  const [mounted, setMounted] = useState(false);
+
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+
+  if (!mounted) {
+    return (
+      <div
+        style={{
+          width: "100%",
+          aspectRatio: "16 / 9",
+          borderRadius: "28px",
+          background: "#ffffff",
+          border: "1px solid #edf1f7",
+          overflow: "hidden",
+        }}
+      />
+    );
+  }
+
+
   return (
     <div className="animationWrap">
       <div className="searchBar">
@@ -9,17 +37,21 @@ export default function SearchRiseAnimation() {
         <span className="cursor" />
       </div>
 
+
       <div className="results">
-        <div className="result competitor a">
+        <div className="result a">
           <span>Competidor A</span>
         </div>
 
-        <div className="result competitor b">
+
+        <div className="result b">
           <span>Competidor B</span>
         </div>
 
+
         <div className="result company">
           <span>Tu Empresa</span>
+
 
           <div className="growth">
             <span>↑</span>
@@ -27,15 +59,18 @@ export default function SearchRiseAnimation() {
             <span>↑</span>
           </div>
 
+
           <svg viewBox="0 0 160 50" className="growthLine">
             <path d="M8 40 C 42 34, 58 28, 82 20 S 120 8, 152 6" />
           </svg>
         </div>
 
-        <div className="result competitor c">
+
+        <div className="result c">
           <span>Competidor C</span>
         </div>
       </div>
+
 
       <style jsx>{`
         .animationWrap {
@@ -43,6 +78,7 @@ export default function SearchRiseAnimation() {
           aspect-ratio: 16 / 9;
           border-radius: 28px;
           background: #ffffff;
+          color: #111111;
           border: 1px solid #edf1f7;
           overflow: hidden;
           position: relative;
@@ -53,6 +89,7 @@ export default function SearchRiseAnimation() {
           gap: 26px;
         }
 
+
         .searchBar {
           height: 58px;
           border: 1px solid #e7ecf4;
@@ -61,15 +98,18 @@ export default function SearchRiseAnimation() {
           align-items: center;
           gap: 12px;
           padding: 0 24px;
-          color: #111;
+          color: #111111;
+          background: #ffffff;
           font-weight: 600;
           animation: searchAppear 5s ease-in-out infinite;
         }
+
 
         .searchIcon {
           color: #2e7bff;
           font-size: 1.3rem;
         }
+
 
         .typedText {
           width: 0;
@@ -78,6 +118,7 @@ export default function SearchRiseAnimation() {
           animation: typing 5s steps(20) infinite;
         }
 
+
         .cursor {
           width: 2px;
           height: 22px;
@@ -85,10 +126,13 @@ export default function SearchRiseAnimation() {
           animation: blink 0.8s infinite;
         }
 
+
         .results {
           position: relative;
           height: 250px;
+          overflow: hidden;
         }
+
 
         .result {
           position: absolute;
@@ -97,24 +141,26 @@ export default function SearchRiseAnimation() {
           height: 52px;
           border: 1px solid #edf1f7;
           border-radius: 18px;
-          background: white;
+          background: #ffffff;
           display: flex;
           align-items: center;
           padding: 0 22px;
           font-weight: 700;
-          color: #111;
-          transition: opacity 0.3s ease;
+          color: #111111;
         }
+
 
         .a {
           top: 0;
           animation: fadeDownA 5s ease-in-out infinite;
         }
 
+
         .b {
           top: 66px;
           animation: fadeDownB 5s ease-in-out infinite;
         }
+
 
         .company {
           top: 132px;
@@ -123,10 +169,12 @@ export default function SearchRiseAnimation() {
           z-index: 2;
         }
 
+
         .c {
           top: 198px;
           animation: fadeCompetitors 5s ease-in-out infinite;
         }
+
 
         .growth {
           margin-left: auto;
@@ -138,6 +186,7 @@ export default function SearchRiseAnimation() {
           animation: arrows 5s ease-in-out infinite;
         }
 
+
         .growthLine {
           position: absolute;
           right: 22px;
@@ -147,6 +196,7 @@ export default function SearchRiseAnimation() {
           opacity: 0;
           animation: lineShow 5s ease-in-out infinite;
         }
+
 
         .growthLine path {
           fill: none;
@@ -158,6 +208,7 @@ export default function SearchRiseAnimation() {
           animation: drawLine 5s ease-in-out infinite;
         }
 
+
         @keyframes typing {
           0%,
           12% {
@@ -168,6 +219,7 @@ export default function SearchRiseAnimation() {
             width: 172px;
           }
         }
+
 
         @keyframes riseCompany {
           0%,
@@ -182,6 +234,7 @@ export default function SearchRiseAnimation() {
           }
         }
 
+
         @keyframes fadeDownA {
           0%,
           45% {
@@ -194,6 +247,7 @@ export default function SearchRiseAnimation() {
             opacity: 0.42;
           }
         }
+
 
         @keyframes fadeDownB {
           0%,
@@ -208,6 +262,7 @@ export default function SearchRiseAnimation() {
           }
         }
 
+
         @keyframes fadeCompetitors {
           0%,
           45% {
@@ -218,6 +273,7 @@ export default function SearchRiseAnimation() {
             opacity: 0.35;
           }
         }
+
 
         @keyframes arrows {
           0%,
@@ -235,6 +291,7 @@ export default function SearchRiseAnimation() {
           }
         }
 
+
         @keyframes lineShow {
           0%,
           50% {
@@ -249,6 +306,7 @@ export default function SearchRiseAnimation() {
           }
         }
 
+
         @keyframes drawLine {
           0%,
           52% {
@@ -259,6 +317,7 @@ export default function SearchRiseAnimation() {
             stroke-dashoffset: 0;
           }
         }
+
 
         @keyframes searchAppear {
           0% {
@@ -272,72 +331,64 @@ export default function SearchRiseAnimation() {
           }
         }
 
+
         @keyframes blink {
           50% {
             opacity: 0;
           }
         }
 
+
         @media (max-width: 640px) {
-  .animationWrap {
-    aspect-ratio: auto;
-    min-height: 380px;
-    border-radius: 28px;
-    padding: 22px;
-    gap: 22px;
-    justify-content: flex-start;
-    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.12);
-  }
+          .animationWrap {
+            aspect-ratio: auto;
+            min-height: 380px;
+            border-radius: 28px;
+            padding: 22px;
+            gap: 22px;
+            justify-content: flex-start;
+            box-shadow: 0 24px 70px rgba(0, 0, 0, 0.12);
+          }
 
-  .searchBar {
-    height: 56px;
-    padding: 0 18px;
-    border-color: #dfe5ee;
-    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
-  }
 
-  .searchIcon {
-    font-size: 1.2rem;
-  }
+          .searchBar {
+            height: 56px;
+            padding: 0 18px;
+          }
 
-  .typedText {
-    font-size: 0.95rem;
-  }
 
-  .results {
-    height: 270px;
-  }
+          .results {
+            height: 270px;
+          }
 
-  .result {
-    height: 56px;
-    border-radius: 16px;
-    padding: 0 18px;
-    font-size: 0.95rem;
-    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.04);
-  }
 
-  .a {
-    top: 0;
-  }
+          .result {
+            height: 56px;
+            font-size: 0.95rem;
+          }
 
-  .b {
-    top: 70px;
-  }
 
-  .company {
-    top: 140px;
-  }
+          .b {
+            top: 70px;
+          }
 
-  .c {
-    top: 210px;
-  }
 
-  .growthLine {
-    width: 118px;
-    right: 16px;
-    top: -44px;
-  }
-}
+          .company {
+            top: 140px;
+          }
+
+
+          .c {
+            top: 210px;
+          }
+
+
+          .growthLine {
+            width: 118px;
+            right: 16px;
+            top: -44px;
+          }
+        }
       `}</style>
     </div>
   );
