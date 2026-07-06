@@ -270,18 +270,36 @@ useEffect(() => {
 
 
 
-  <button
-    type="button"
-    onClick={() => setIsCalendlyOpen(true)}
+  <div className="contactButtons">
+  <a
+    href="https://wa.me/34699301819"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="whatsappButton"
   >
-    Agendar llamada
-  </button>
+    <Image
+  src="/imagenes/whatsapp.png"
+  alt="WhatsApp"
+  width={26}
+  height={26}
+  className="whatsappIcon"
+/>
+Escribir por WhatsApp
+  </a>
+
+  <a
+    href="tel:+34699301819"
+    className="callButton"
+  >
+    📞 Llamar ahora
+  </a>
+</div>
 
 
 
 
   <p className="microcopy">
-    Sin compromiso · Respuesta en menos de 24h
+    Sin compromiso · Respuesta inmediata
   </p>
 </aside>
 
@@ -289,13 +307,31 @@ useEffect(() => {
 
 
 <div className="mobileConsultancy">
-  <button
-    type="button"
-    onClick={() => setIsCalendlyOpen(true)}
+  <div className="mobileButtons">
+
+  <a
+    href="tel:+34699301819"
     className="consultancyButton"
   >
-    Reservar Consultoría Gratuita
-  </button>
+    📞 Llamar
+  </a>
+
+  <a
+  href="https://wa.me/34699301819"
+  target="_blank"
+  rel="noopener noreferrer"
+  className="mobileWhatsappButton"
+>
+  <Image
+    src="/imagenes/whatsapp.png"
+    alt="WhatsApp"
+    width={24}
+    height={24}
+  />
+  WhatsApp
+</a>
+
+</div>
 
 
 
@@ -328,7 +364,20 @@ useEffect(() => {
   />
 )}
 
-
+<a
+  href="https://wa.me/34699301819"
+  target="_blank"
+  rel="noopener noreferrer"
+  className="floatingWhatsapp"
+  aria-label="WhatsApp"
+>
+  <Image
+  src="/imagenes/whatsapp.png"
+  alt="WhatsApp"
+  width={75}
+  height={75}
+/>
+</a>
 
 
       <style jsx>{`
@@ -347,7 +396,90 @@ useEffect(() => {
 
 
 
+.contactButtons{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+.whatsappButton {
+  gap: 10px;
+}
 
+.whatsappIcon {
+  width: 26px;
+  height: 26px;
+}
+
+@media (max-width: 980px) {
+  .mobileConsultancy .contactButtons {
+    width: 100%;
+    align-items: center;
+  }
+
+  .mobileConsultancy .consultancyButton {
+    width: 100%;
+    max-width: 340px;
+    text-align: center;
+    justify-content: center;
+    text-decoration: none;
+  }
+}
+.whatsappButton,
+.callButton{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  text-decoration:none;
+  padding:18px;
+  border-radius:999px;
+  font-weight:700;
+  color:#fff;
+  transition:.25s;
+}
+
+.whatsappButton{
+  background:#25D366;
+}
+
+.whatsappButton:hover{
+  background:#1ebe5d;
+}
+
+.callButton{
+  background:#2e7bff;
+}
+
+.callButton:hover{
+  background:#1769f5;
+}
+
+.floatingWhatsapp{
+  position:fixed;
+  right:24px;
+  bottom:24px;
+  z-index:9999;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  width:75px;
+  height:75px;
+
+  background:transparent;
+  border:none;
+  border-radius:0;
+  box-shadow:none;
+  padding:0;
+}
+
+.floatingWhatsapp img{
+  display:block;
+}
+
+.floatingWhatsapp:hover{
+  transform:scale(1.08);
+}
         .hero {
           min-height: 100vh;
           padding: 125px 6% 70px;
@@ -390,7 +522,11 @@ useEffect(() => {
 
 
 
-
+@media (max-width: 980px) {
+  .floatingWhatsapp {
+    display: none;
+  }
+}
         .rotatingWord.hide {
           opacity: 0;
           transform: translateY(8px);
@@ -673,7 +809,38 @@ useEffect(() => {
         @media (max-width: 1000px) {
 
 
+.mobileButtons{
+  display:flex;
+  width:100%;
+  gap:12px;
+}
 
+.mobileWhatsappButton{
+  min-width:280px;
+  max-width:340px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+
+  background:#25D366;
+  color:#fff;
+  text-decoration:none;
+
+  font:inherit;
+  font-weight:700;
+
+  padding:18px 28px;
+  border-radius:999px;
+
+  box-shadow:0 16px 34px rgba(37,211,102,.35);
+}
+
+.mobileWhatsappButton img{
+  width:24px;
+  height:24px;
+}
 
         .consultancyInfo {
   display: none;
@@ -728,6 +895,11 @@ useEffect(() => {
 }
 
 
+
+.mobileWhatsappButton img{
+  width:36px;
+  height:36px;
+}
 
 
 .heroLeft {
