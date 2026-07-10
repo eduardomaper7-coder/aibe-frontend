@@ -493,9 +493,18 @@ svg {
 }
 
 #global-topbar.topbar.topbar--solid {
-  background: rgba(0,0,0,1) !important;
-  border-bottom-color: rgba(255,255,255,.08);
-  box-shadow: 0 10px 20px rgba(0,0,0,.25);
+  background: #ffffff !important;
+  border-bottom-color: rgba(0,0,0,.08);
+  box-shadow: 0 10px 20px rgba(0,0,0,.08);
+}
+
+#global-topbar.topbar.topbar--solid .nav-link {
+  color: #111111 !important;
+}
+
+#global-topbar.topbar.topbar--solid .btn {
+  background: #2e7bff !important;
+  color: #ffffff !important;
 }
 
 /* ===== HERO nuevo layout ===== */

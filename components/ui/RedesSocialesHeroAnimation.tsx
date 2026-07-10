@@ -17,7 +17,7 @@ import {
 const slides = [
   {
     icon: MapPin,
-    text: "En cualquier punto de la isla",
+    text: "Por todo Tenerife",
   },
   {
     icon: Sparkles,
@@ -29,16 +29,13 @@ const slides = [
   },
   {
     icon: Camera,
-    text: "Grabamos",
+    text: "Grabamos el contenido",
   },
   {
     icon: Scissors,
-    text: "Editamos",
+    text: "Editamos de forma profesional",
   },
-  {
-    icon: Send,
-    text: "Publicamos",
-  },
+  
   {
     icon: BarChart3,
     text: "Analizamos qué funciona",
@@ -107,14 +104,20 @@ export default function RedesSocialesHeroAnimation() {
         }
 
         .sliderCard {
-          min-height: 230px;
-          padding: 30px;
-          border-radius: 28px;
-          background: rgba(255, 255, 255, 0.9);
-          border: 1px solid rgba(255, 255, 255, 0.65);
-          box-shadow: 0 22px 55px rgba(0, 0, 0, 0.1);
-          backdrop-filter: blur(14px);
-        }
+  height: 270px;
+  padding: 30px;
+
+  display: flex;
+  flex-direction: column;
+
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  box-shadow: 0 22px 55px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(14px);
+
+  overflow: hidden;
+}
 
         .sliderCard.entering {
           animation: enterCard 0.35s ease forwards;
@@ -146,11 +149,13 @@ export default function RedesSocialesHeroAnimation() {
         }
 
         .socials {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 9px;
-          margin-top: 24px;
-        }
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+
+  margin-top: auto;
+  padding-top: 24px;
+}
 
         .socials span {
           display: inline-flex;
@@ -209,11 +214,11 @@ export default function RedesSocialesHeroAnimation() {
           }
         }
 
-        @media (max-width: 640px) {
-          .sliderCard {
-            min-height: 210px;
-            padding: 24px;
-          }
+       @media (max-width: 640px) {
+  .sliderCard {
+    height: 270px;
+    padding: 24px;
+  }
 
           .iconCircle {
             width: 66px;

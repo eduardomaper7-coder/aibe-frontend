@@ -26,6 +26,7 @@ import AiRecommendationAnimation from "../../components/ui/AiRecommendationAnima
 import AiAgentsSection from "../../components/ui/AiAgentsSection";
 import Footer from "../../components/ui/Footer";
 import RedesSocialesSection from "../../components/ui/redesSociales-seccion";
+import ContactSection from "../../components/ui/ContactSection";
 const words = ["clientes", "ventas", "reservas", "visibilidad"];
 
 
@@ -44,10 +45,14 @@ export default function Page() {
 
 
   const scrollToContact = () => {
-    document
-      .getElementById("contacto")
-      ?.scrollIntoView({ behavior: "smooth" });
-  };
+  const isMobile = window.innerWidth <= 980;
+
+  const target = isMobile
+    ? document.getElementById("contact-formulario")
+    : document.getElementById("contacto");
+
+  target?.scrollIntoView({ behavior: "smooth", block: "start" });
+};
 
 
 
@@ -127,7 +132,7 @@ useEffect(() => {
 
   return (
     <>
-      <header className={`heroHeader ${scrolled ? "scrolled" : ""}`}>
+      <header className="heroHeader scrolled">
   <nav className="navSide navLeft desktopNav">
     <a href="#aibe">¿Por qué AIBE?</a>
 
@@ -158,6 +163,22 @@ useEffect(() => {
 
 
 
+  <div className="mobileHeaderActions">
+  <a
+    href="https://wa.me/34699301819"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="mobileWhatsappHeader"
+    aria-label="WhatsApp"
+  >
+    <Image
+      src="/imagenes/whatsapp.png"
+      alt="WhatsApp"
+      width={26}
+      height={26}
+    />
+  </a>
+
   <button
     className="mobileMenuButton"
     onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -165,6 +186,7 @@ useEffect(() => {
   >
     ☰
   </button>
+</div>
 
 
 
@@ -192,9 +214,10 @@ useEffect(() => {
 
   {mobileMenuOpen && (
     <div className="mobileMenu">
-      <a href="#aibe">¿Por qué AIBE?</a>
-      <a href="#google">Google</a>
-      <a href="#ia">Buscadores con IA</a>
+  <a href="#aibe" onClick={() => setMobileMenuOpen(false)}>¿Por qué AIBE?</a>
+  <a href="#google" onClick={() => setMobileMenuOpen(false)}>Google</a>
+  <a href="/es/redes-sociales-tenerife" onClick={() => setMobileMenuOpen(false)}>Redes Sociales Tenerife</a>
+  <a href="#ia" onClick={() => setMobileMenuOpen(false)}>Buscadores con IA</a>
 
 
 
@@ -287,12 +310,13 @@ useEffect(() => {
 Escribir por WhatsApp
   </a>
 
-  <a
-    href="tel:+34699301819"
-    className="callButton"
-  >
-    📞 Llamar ahora
-  </a>
+  <button
+  type="button"
+  onClick={scrollToContact}
+  className="callButton"
+>
+  Solicitar información ahora
+</button>
 </div>
 
 
@@ -307,30 +331,14 @@ Escribir por WhatsApp
 
 
 <div className="mobileConsultancy">
-  <div className="mobileButtons">
-
-  <a
-    href="tel:+34699301819"
+ <div className="mobileButtons">
+  <button
+    type="button"
+    onClick={scrollToContact}
     className="consultancyButton"
   >
-    📞 Llamar
-  </a>
-
-  <a
-  href="https://wa.me/34699301819"
-  target="_blank"
-  rel="noopener noreferrer"
-  className="mobileWhatsappButton"
->
-  <Image
-    src="/imagenes/whatsapp.png"
-    alt="WhatsApp"
-    width={24}
-    height={24}
-  />
-  WhatsApp
-</a>
-
+    Solicitar información
+  </button>
 </div>
 
 
@@ -350,6 +358,7 @@ Escribir por WhatsApp
       <GoogleSection />
       <RedesSocialesSection />
       <AiAgentsSection />
+      <ContactSection />
       <Footer />
 
 
@@ -676,31 +685,33 @@ Escribir por WhatsApp
 
 
         .heroHeader {
-          position: fixed;
-          top: 30px;
-          left: 50%;
-          transform: translateX(-50%);
-          z-index: 1000;
-          width: min(92%, 1200px);
-          display: grid;
-          grid-template-columns: 1fr auto 1fr;
-          align-items: center;
-          transition: background 0.3s ease, backdrop-filter 0.3s ease,
-            box-shadow 0.3s ease, padding 0.3s ease, border 0.3s ease;
-        }
+  position: fixed;
+  top: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  width: min(92%, 1200px);
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
 
+  background: transparent;
+
+  transition: background 0.3s ease, backdrop-filter 0.3s ease,
+    box-shadow 0.3s ease, padding 0.3s ease, border 0.3s ease;
+}
 
 
 
         .heroHeader.scrolled {
-          background: rgba(255, 255, 255, 0.55);
-          backdrop-filter: blur(22px);
-          -webkit-backdrop-filter: blur(22px);
-          border: 1px solid rgba(255, 255, 255, 0.55);
-          border-radius: 999px;
-          padding: 14px 28px;
-          box-shadow: 0 12px 35px rgba(0, 0, 0, 0.08);
-        }
+  background: #ffffff !important;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 999px;
+  padding: 14px 28px;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.08);
+}
 
 
 
@@ -803,21 +814,30 @@ Escribir por WhatsApp
   display: none;
 }
 
+.mobileHeaderActions {
+  display: none;
+}
 
+.mobileWhatsappHeader {
+  display: none;
+}
 
 
         @media (max-width: 1000px) {
 
 
-.mobileButtons{
-  display:flex;
-  width:100%;
-  gap:12px;
+.mobileButtons {
+  display: flex;
+  width: 100%;
+  max-width: calc(100vw - 32px);
+  gap: 10px;
+  box-sizing: border-box;
 }
 
-.mobileWhatsappButton{
-  min-width:280px;
-  max-width:340px;
+.mobileWhatsappButton {
+  width: 50%;
+  min-width: 0;
+  max-width: none;
 
   display:flex;
   align-items:center;
@@ -890,8 +910,13 @@ Escribir por WhatsApp
         @media (max-width: 980px) {
   .hero {
   grid-template-columns: 1fr;
-  padding: 130px 24px 30px;
-  gap: 20px;
+  min-height: auto;
+  width: 100%;
+  max-width: 100vw;
+  padding: 105px 16px 30px;
+  gap: 8px;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 
@@ -911,9 +936,11 @@ Escribir por WhatsApp
 
   .heroLeft h1 {
   text-align: center;
-  font-size: 2.5rem;
+  font-size: clamp(2rem, 10vw, 2.35rem);
   line-height: 1.05;
-  margin-bottom: 28px;
+  margin: 0 auto 22px;
+  max-width: 100%;
+  overflow-wrap: anywhere;
 }
 
 
@@ -928,19 +955,15 @@ Escribir por WhatsApp
 
   .heroAnimations {
   width: 100%;
-  max-width: 360px;
-  height: 360px;
-  min-height: 360px;
+  max-width: min(360px, calc(100vw - 32px));
+  height: 300px;
+  min-height: 300px;
   margin: 0 auto;
-  overflow: hidden;
   position: relative;
-  z-index: 1;
+  overflow: hidden;
 }
 
-
-
-
-  .heroAnimations > * {
+.heroAnimations > * {
   width: 100%;
   max-width: 360px;
   height: 100%;
@@ -963,11 +986,7 @@ Escribir por WhatsApp
   flex-direction: column;
   align-items: center;
   width: 100%;
-
-
-
-
-  margin-top: -90px;
+  margin-top: -45px;
   position: relative;
   z-index: 20;
 }
@@ -977,19 +996,24 @@ Escribir por WhatsApp
 
 
   .consultancyButton {
-    width: auto;
-    min-width: 280px;
-    max-width: 340px;
-    border: none;
-    cursor: pointer;
-    background: #2e7bff;
-    color: white;
-    font: inherit;
-    font-weight: 700;
-    padding: 18px 28px;
-    border-radius: 999px;
-    box-shadow: 0 16px 34px rgba(46, 123, 255, 0.35);
-  }
+  width: 100%;
+  max-width: 340px;
+  margin: 0 auto;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  border: none;
+  cursor: pointer;
+  background: #2e7bff;
+  color: white;
+  font: inherit;
+  font-weight: 700;
+  padding: 18px 28px;
+  border-radius: 999px;
+  box-shadow: 0 16px 34px rgba(46, 123, 255, 0.35);
+}
 
 
 
@@ -1016,23 +1040,24 @@ Escribir por WhatsApp
   .heroHeader {
   top: 8px;
   width: calc(100% - 28px);
-  padding: 8px 16px;
+  padding: 10px 14px;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
+  background: transparent;
   border-radius: 16px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+  box-shadow: none;
 }
 
 
 
 
 .heroHeader.scrolled {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
   border-radius: 16px;
-  padding: 8px 16px;
+  padding: 10px 14px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
 }
 
 
@@ -1043,19 +1068,61 @@ Escribir por WhatsApp
   display: block;
 }
 
+.mobileHeaderActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
 
+.mobileWhatsappHeader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 44px;
+  height: 44px;
+
+  background: #25D366;
+  border-radius: 999px;
+}
+
+.mobileWhatsappHeader img {
+  width: 24px;
+  height: 24px;
+}
 
 
   .mobileMenuButton {
-    display: none;
-  }
+  display: flex;
+  width: 44px;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border-radius: 999px;
+  background: #2e7bff;
+  color: #ffffff;
+  font-size: 1.4rem;
+  box-shadow: none;
+}
 
 
 
 
   .mobileMenu {
-    display: none;
-  }
+  display: flex;
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  right: 0;
+  flex-direction: column;
+  gap: 16px;
+  padding: 22px;
+  background: #ffffff;
+  border-radius: 18px;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.12);
+  z-index: 1001;
+}
 
 
 
