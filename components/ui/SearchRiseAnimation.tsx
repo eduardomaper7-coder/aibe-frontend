@@ -1,6 +1,31 @@
 "use client";
 
+
+import { useEffect, useState } from "react";
+
+
 export default function SearchRiseAnimation() {
+const [mounted, setMounted] = useState(false);
+
+useEffect(() => {
+  setMounted(true);
+}, []);
+
+if (!mounted) {
+  return (
+    <div
+      style={{
+        width: "100%",
+        aspectRatio: "16 / 9",
+        borderRadius: "28px",
+        background: "#ffffff",
+        border: "1px solid #edf1f7",
+        overflow: "hidden",
+      }}
+    />
+  );
+}
+
   return (
     <div className="animationWrap">
       <div className="searchBar">
