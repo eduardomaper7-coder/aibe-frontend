@@ -1,5 +1,6 @@
 "use client";
 
+export default function SearchRiseAnimation() {
   return (
     <div className="animationWrap">
       <div className="searchBar">
