@@ -4,6 +4,7 @@ export default function Loading() {
       style={{
         position: "fixed",
         inset: 0,
+           zIndex: 99999,
         background: "#fff",
       }}
     />
