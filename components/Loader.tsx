@@ -30,8 +30,7 @@ export default function Loader({
           zIndex: 99999,
         }}
       >
-        Cargando...
-      </div>
+              </div>
     );
   }
 
