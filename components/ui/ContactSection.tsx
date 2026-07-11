@@ -27,14 +27,24 @@ const reviews = [
 export default function ContactSection() {
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setLoading(true);
+  const handleSubmit = async (
+  event: React.FormEvent<HTMLFormElement>
+) => {
+  event.preventDefault();
 
-    const formData = new FormData(event.currentTarget);
+  if (loading) return;
 
-    await fetch("/api/contacto", {
+  const form = event.currentTarget;
+  const formData = new FormData(form);
+
+  setLoading(true);
+
+  try {
+    const response = await fetch("/api/contacto", {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({
         nombre: formData.get("nombre"),
         empresa: formData.get("empresa"),
@@ -44,15 +54,30 @@ export default function ContactSection() {
         web: formData.get("web"),
         mensaje: formData.get("mensaje"),
       }),
-      headers: {
-        "Content-Type": "application/json",
-      },
     });
 
-    setLoading(false);
-    event.currentTarget.reset();
+    const data = await response.json().catch(() => null);
+
+    if (!response.ok) {
+      throw new Error(
+        data?.error || "No se ha podido enviar el mensaje."
+      );
+    }
+
+    form.reset();
     alert("Mensaje enviado correctamente.");
-  };
+  } catch (error) {
+    console.error("Error al enviar el formulario:", error);
+
+    alert(
+      error instanceof Error
+        ? error.message
+        : "Ha ocurrido un error al enviar el mensaje."
+    );
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <section className="contactSection" id="contacto">

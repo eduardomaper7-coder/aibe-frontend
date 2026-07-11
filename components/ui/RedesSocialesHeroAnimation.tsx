@@ -21,11 +21,11 @@ const slides = [
   },
   {
     icon: Sparkles,
-    text: "Nosotros nos encargamos de todo",
+    text: "Nos encargamos de todo",
   },
   {
     icon: Lightbulb,
-    text: "Elaboramos ideas y guiones creativos",
+    text: "Guiones creativos",
   },
   {
     icon: Camera,
@@ -33,7 +33,7 @@ const slides = [
   },
   {
     icon: Scissors,
-    text: "Editamos de forma profesional",
+    text: "Edición de calidad",
   },
   
   {

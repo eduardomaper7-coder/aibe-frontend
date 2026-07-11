@@ -165,7 +165,7 @@ useEffect(() => {
 
   <div className="mobileHeaderActions">
   <a
-    href="https://wa.me/34699301819"
+    href="https://wa.me/34686012685"
     target="_blank"
     rel="noopener noreferrer"
     className="mobileWhatsappHeader"
@@ -295,7 +295,7 @@ useEffect(() => {
 
   <div className="contactButtons">
   <a
-    href="https://wa.me/34699301819"
+    href="https://wa.me/34686012685"
     target="_blank"
     rel="noopener noreferrer"
     className="whatsappButton"
@@ -374,7 +374,7 @@ Escribir por WhatsApp
 )}
 
 <a
-  href="https://wa.me/34699301819"
+  href="https://wa.me/34686012685"
   target="_blank"
   rel="noopener noreferrer"
   className="floatingWhatsapp"
