@@ -5,6 +5,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import dynamic from "next/dynamic";
 
 
@@ -35,7 +36,6 @@ const words = ["clientes", "ventas", "reservas", "visibilidad"];
 export default function Page() {
   const [index, setIndex] = useState(0);
   const [fade, setFade] = useState(true);
-  const [scrolled, setScrolled] = useState(false);
   const [activeAnimation, setActiveAnimation] = useState(0);
   const [isCalendlyOpen, setIsCalendlyOpen] = useState(false);
   const [rootElement, setRootElement] = useState<HTMLElement | null>(null);
@@ -45,14 +45,12 @@ export default function Page() {
 
 
   const scrollToContact = () => {
-  const isMobile = window.innerWidth <= 980;
+    const target =
+      document.getElementById("contact-formulario") ??
+      document.getElementById("contacto");
 
-  const target = isMobile
-    ? document.getElementById("contact-formulario")
-    : document.getElementById("contacto");
-
-  target?.scrollIntoView({ behavior: "smooth", block: "start" });
-};
+    target?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
 
 
@@ -110,35 +108,10 @@ useEffect(() => {
 
 
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-    };
-
-
-
-
-    handleScroll();
-    window.addEventListener("scroll", handleScroll);
-
-
-
-
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-
-
-
   return (
     <>
       <header className="heroHeader scrolled">
   <nav className="navSide navLeft desktopNav">
-    <a href="#aibe">¿Por qué AIBE?</a>
-
-
-
-
     <button
       type="button"
       onClick={scrollToContact}
@@ -151,14 +124,16 @@ useEffect(() => {
 
 
 
-  <Image
-    src="/imagenes/logo.png"
-    alt="AIBE"
-    width={170}
-    height={48}
-    priority
-    className="headerLogo"
-  />
+  <Link href="/es" className="logoLink" aria-label="Ir al inicio">
+    <Image
+      src="/imagenes/logo.png"
+      alt="AIBE Technologies"
+      width={170}
+      height={48}
+      priority
+      className="headerLogo"
+    />
+  </Link>
 
 
 
@@ -180,11 +155,14 @@ useEffect(() => {
   </a>
 
   <button
+    type="button"
     className="mobileMenuButton"
-    onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-    aria-label="Abrir menú"
+    onClick={() => setMobileMenuOpen((open) => !open)}
+    aria-label={mobileMenuOpen ? "Cerrar menú" : "Abrir menú"}
+    aria-expanded={mobileMenuOpen}
+    aria-controls="mobile-navigation"
   >
-    ☰
+    {mobileMenuOpen ? "×" : "☰"}
   </button>
 </div>
 
@@ -200,7 +178,7 @@ useEffect(() => {
 
 
     <div className="dropdownMenu">
-      <a href="/es/redes-sociales-tenerife">Redes Sociales Tenerife</a>
+      <Link href="/es/redes-sociales-tenerife">Redes Sociales Tenerife</Link>
      
     </div>
   </div>
@@ -213,10 +191,9 @@ useEffect(() => {
 
 
   {mobileMenuOpen && (
-    <div className="mobileMenu">
-  <a href="#aibe" onClick={() => setMobileMenuOpen(false)}>¿Por qué AIBE?</a>
+    <div className="mobileMenu" id="mobile-navigation">
   <a href="#google" onClick={() => setMobileMenuOpen(false)}>Google</a>
-  <a href="/es/redes-sociales-tenerife" onClick={() => setMobileMenuOpen(false)}>Redes Sociales Tenerife</a>
+  <Link href="/es/redes-sociales-tenerife" onClick={() => setMobileMenuOpen(false)}>Redes Sociales Tenerife</Link>
   <a href="#ia" onClick={() => setMobileMenuOpen(false)}>Buscadores con IA</a>
 
 
@@ -426,8 +403,8 @@ Escribir por WhatsApp
   }
 
   .mobileConsultancy .consultancyButton {
-    width: 100%;
-    max-width: 340px;
+    width: min(100%, 300px);
+    max-width: 300px;
     text-align: center;
     justify-content: center;
     text-decoration: none;
@@ -996,8 +973,8 @@ Escribir por WhatsApp
 
 
   .consultancyButton {
-  width: 100%;
-  max-width: 340px;
+  width: min(100%, 300px);
+  max-width: 300px;
   margin: 0 auto;
 
   display: flex;
@@ -1062,6 +1039,12 @@ Escribir por WhatsApp
 
 
 
+
+.logoLink {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
 
 .headerLogo {
   width: 110px;

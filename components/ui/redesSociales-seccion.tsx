@@ -3,6 +3,9 @@
 import Image from "next/image";
 import SocialMediaAnimation from "./SocialMediaAnimation";
 
+const WHATSAPP_URL =
+  "https://wa.me/34686012685?text=Hola%2C%20quiero%20informaci%C3%B3n%20sobre%20la%20gesti%C3%B3n%20de%20redes%20sociales.";
+
 export default function RedesSocialesSection() {
   const logos = [
     "/imagenes/cliente1.png",
@@ -14,73 +17,78 @@ export default function RedesSocialesSection() {
   ];
 
   return (
-    <>
-      <section id="redes" className="social-section">
-        <div className="social-container">
-          <div className="social-content">
-            <span className="eyebrow">REDES SOCIALES</span>
+    <section id="redes" className="social-section">
+      <div className="social-container">
+        <div className="social-content">
+          <span className="eyebrow">REDES SOCIALES</span>
 
-            <h2>Aumenta la visibilidad de tu marca</h2>
+          <h2>Aumenta la visibilidad de tu marca</h2>
 
-            <div className="social-platforms">
-              <div className="platform-icon">
-                <Image
-                  src="/imagenes/Instagram-Logo.png"
-                  alt="Instagram"
-                  width={42}
-                  height={42}
-                  className="instagram-logo"
-                />
-              </div>
-
-              <div className="platform-icon">
-                <Image
-                  src="/imagenes/logo-tiktok.avif"
-                  alt="TikTok"
-                  width={34}
-                  height={34}
-                />
-              </div>
-
-              <div className="platform-icon">
-                <Image
-                  src="/imagenes/Logo-Facebook.png"
-                  alt="Facebook"
-                  width={34}
-                  height={34}
-                />
-              </div>
+          <div className="social-platforms" aria-label="Redes sociales">
+            <div className="platform-icon">
+              <Image
+                src="/imagenes/Instagram-Logo.png"
+                alt="Instagram"
+                width={42}
+                height={42}
+                className="instagram-logo"
+              />
             </div>
 
-            <button className="cta-button">Agendar llamada</button>
-          </div>
+            <div className="platform-icon">
+              <Image
+                src="/imagenes/logo-tiktok.avif"
+                alt="TikTok"
+                width={34}
+                height={34}
+              />
+            </div>
 
-          <div className="social-card">
-            <h3>Nosotros nos ocupamos de todo:</h3>
-            <SocialMediaAnimation />
-          </div>
-        </div>
-
-        <div className="trusted-section">
-          <p>Confían en nosotros</p>
-
-          <div className="logos-slider">
-            <div className="logos-track">
-              {[...logos, ...logos].map((logo, index) => (
-                <div key={index} className="logo-item">
-                  <Image
-                    src={logo}
-                    alt={`Logo cliente ${(index % logos.length) + 1}`}
-                    width={180}
-                    height={80}
-                    className="client-logo"
-                  />
-                </div>
-              ))}
+            <div className="platform-icon">
+              <Image
+                src="/imagenes/Logo-Facebook.png"
+                alt="Facebook"
+                width={34}
+                height={34}
+              />
             </div>
           </div>
+
+          <a
+            className="cta-button"
+            href={WHATSAPP_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Hablar por WhatsApp
+          </a>
         </div>
-      </section>
+
+        <div className="social-card">
+          <h3>Nosotros nos ocupamos de todo:</h3>
+          <SocialMediaAnimation />
+        </div>
+      </div>
+
+      <div className="trusted-section">
+        <p>Confían en nosotros</p>
+
+        <div className="logos-slider">
+          <div className="logos-track">
+            {[...logos, ...logos].map((logo, index) => (
+              <div key={index} className="logo-item">
+                <Image
+                  src={logo}
+                  alt={`Logo cliente ${(index % logos.length) + 1}`}
+                  width={180}
+                  height={80}
+                  className="client-logo"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
 
       <style>{`
         .social-section {
@@ -88,6 +96,7 @@ export default function RedesSocialesSection() {
           padding: 100px 24px;
           font-family: 'Montserrat', sans-serif;
           overflow: hidden;
+          scroll-margin-top: 110px;
         }
 
         .social-container {
@@ -114,7 +123,7 @@ export default function RedesSocialesSection() {
           line-height: 1;
           font-weight: 800;
           color: #111111;
-          margin-bottom: 24px;
+          margin: 0 0 24px;
           letter-spacing: -2px;
         }
 
@@ -156,19 +165,21 @@ export default function RedesSocialesSection() {
           justify-content: center;
           border: none;
           cursor: pointer;
-          background: #2E7BFF;
+          background: #25D366;
           color: white;
-          padding: 18px 34px;
+          padding: 18px 32px;
           border-radius: 999px;
           font-weight: 700;
           font-size: 1rem;
+          text-decoration: none;
           transition: all .3s ease;
-          box-shadow: 0 15px 40px rgba(46,123,255,.25);
+          box-shadow: 0 15px 40px rgba(37,211,102,.24);
         }
 
         .cta-button:hover {
           transform: translateY(-3px);
-          box-shadow: 0 20px 50px rgba(46,123,255,.35);
+          background: #1ebe5d;
+          box-shadow: 0 20px 50px rgba(37,211,102,.32);
         }
 
         .social-card {
@@ -182,7 +193,7 @@ export default function RedesSocialesSection() {
         .social-card h3 {
           font-size: 1.6rem;
           color: #111111;
-          margin-bottom: 30px;
+          margin: 0 0 30px;
           font-weight: 800;
         }
 
@@ -204,20 +215,8 @@ export default function RedesSocialesSection() {
         .logos-slider {
           overflow: hidden;
           width: 100%;
-          mask-image: linear-gradient(
-            to right,
-            transparent,
-            black 10%,
-            black 90%,
-            transparent
-          );
-          -webkit-mask-image: linear-gradient(
-            to right,
-            transparent,
-            black 10%,
-            black 90%,
-            transparent
-          );
+          mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+          -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
         }
 
         .logos-track {
@@ -246,17 +245,18 @@ export default function RedesSocialesSection() {
         }
 
         @keyframes scroll {
-          from {
-            transform: translateX(0);
-          }
-          to {
-            transform: translateX(-50%);
-          }
+          from { transform: translateX(0); }
+          to { transform: translateX(-50%); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .logos-track { animation: none; }
         }
 
         @media (max-width: 900px) {
           .social-section {
             padding: 80px 20px;
+            scroll-margin-top: 90px;
           }
 
           .social-container {
@@ -265,11 +265,15 @@ export default function RedesSocialesSection() {
           }
 
           .social-content h2 {
-            font-size: 3rem;
+            font-size: clamp(2.5rem, 12vw, 3rem);
+          }
+
+          .cta-button {
+            width: min(100%, 300px);
           }
 
           .social-card {
-            padding: 32px;
+            padding: 30px 24px;
           }
 
           .logo-item {
@@ -283,6 +287,6 @@ export default function RedesSocialesSection() {
           }
         }
       `}</style>
-    </>
+    </section>
   );
 }

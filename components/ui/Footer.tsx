@@ -1,17 +1,25 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
+import { useParams } from "next/navigation";
+
+const WHATSAPP_NUMBER = "34686012685";
 
 export default function Footer() {
+  const params = useParams();
+  const locale = String(params?.locale ?? "es");
+  const legalBase = `/${locale}`;
+
   return (
-    <footer id="contacto" className="footer">
+    <footer className="footer">
       <div className="content">
         <div className="brand">
           <Image
             src="/imagenes/logo.png"
-            alt="AIBE"
+            alt="AIBE Technologies"
             width={220}
-            height={70}
+            height={86}
             className="logo"
           />
 
@@ -20,29 +28,37 @@ export default function Footer() {
           </p>
         </div>
 
-        <div className="contactBlock">
-          <span>Contacto</span>
+        <div className="footerColumns">
+          <div className="contactBlock">
+            <span>Contacto</span>
 
-          <a href="mailto:info@aibetech.es">
-            info@aibetech.es
-          </a>
+            <a href="mailto:info@aibetech.es">info@aibetech.es</a>
 
-          <a href="tel:+34699301819">
-            699 30 18 19
-          </a>
+            <a href="tel:+34686012685">686 01 26 85</a>
 
-          <a
-            href="https://wa.me/34699301819"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            WhatsApp
-          </a>
+            <a
+              href={`https://wa.me/${WHATSAPP_NUMBER}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              WhatsApp
+            </a>
+          </div>
+
+          <div className="contactBlock">
+            <span>Legal</span>
+            <Link href={`${legalBase}/aviso-legal`}>Aviso legal</Link>
+            <Link href={`${legalBase}/politica-privacidad`}>
+              Política de privacidad
+            </Link>
+          </div>
         </div>
       </div>
 
       <div className="bottom">
-        <p>© 2026 AIBE Technologies</p>
+        <p>
+          © 2026 <strong>AIBE Technologies</strong>
+        </p>
 
         <a
           href="https://www.linkedin.com/company/120514369/"
@@ -90,8 +106,10 @@ export default function Footer() {
 
         .logo {
           display: block;
-          margin-bottom: 24px;
+          width: 220px;
           height: auto;
+          margin-bottom: 24px;
+          filter: brightness(0) invert(1);
         }
 
         .brand p {
@@ -99,6 +117,11 @@ export default function Footer() {
           color: #aeb8c7;
           font-size: 1.1rem;
           line-height: 1.7;
+        }
+
+        .footerColumns {
+          display: flex;
+          gap: clamp(48px, 7vw, 100px);
         }
 
         .contactBlock {
@@ -120,7 +143,7 @@ export default function Footer() {
         .contactBlock a {
           color: white;
           text-decoration: none;
-          font-size: 1.15rem;
+          font-size: 1.05rem;
           font-weight: 600;
           transition: 0.25s ease;
         }
@@ -145,6 +168,11 @@ export default function Footer() {
           font-size: 0.95rem;
         }
 
+        .bottom strong {
+          color: #ffffff;
+          font-weight: 700;
+        }
+
         .bottom a {
           color: white;
           text-decoration: none;
@@ -157,9 +185,21 @@ export default function Footer() {
         }
 
         @media (max-width: 900px) {
-          .content {
+          .footer {
+            padding: 70px 24px 30px;
+          }
+
+          .content,
+          .footerColumns {
             flex-direction: column;
-            gap: 50px;
+          }
+
+          .content {
+            gap: 46px;
+          }
+
+          .footerColumns {
+            gap: 38px;
           }
 
           .bottom {

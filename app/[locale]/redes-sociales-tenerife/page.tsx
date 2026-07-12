@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 import RedesSocialesHeroAnimation from "@/components/ui/RedesSocialesHeroAnimation";
 import AibeSection from "@/components/ui/AibeSection";
@@ -19,9 +20,8 @@ export default function RedesSocialesTenerifePage() {
 
   const scrollToContact = () => {
     const target =
-      window.innerWidth <= 980
-        ? document.getElementById("contact-formulario")
-        : document.getElementById("contacto");
+      document.getElementById("contact-formulario") ??
+      document.getElementById("contacto");
 
     target?.scrollIntoView({
       behavior: "smooth",
@@ -47,50 +47,6 @@ export default function RedesSocialesTenerifePage() {
 
       <header className="heroHeader">
         <nav className="navSide navLeft desktopNav">
-          {mobileMenuOpen && (
-  <div className="mobileMenu">
-    <a
-      href="/es/#aibe"
-      onClick={() => setMobileMenuOpen(false)}
-    >
-      ¿Por qué AIBE?
-    </a>
-
-    <a
-      href="/es/#google"
-      onClick={() => setMobileMenuOpen(false)}
-    >
-      Google
-    </a>
-
-    <a
-      href="/es/redes-sociales-tenerife"
-      onClick={() => setMobileMenuOpen(false)}
-    >
-      Redes Sociales Tenerife
-    </a>
-
-    <a
-      href="/es/#ia"
-      onClick={() => setMobileMenuOpen(false)}
-    >
-      Buscadores con IA
-    </a>
-
-    <button
-      type="button"
-      className="mobileMenuContact"
-      onClick={() => {
-        scrollToContact();
-        setMobileMenuOpen(false);
-      }}
-    >
-      Contacto
-    </button>
-  </div>
-)}
-          <a href="/es/#aibe">¿Por qué AIBE?</a>
-
           <button
             type="button"
             onClick={scrollToContact}
@@ -100,7 +56,7 @@ export default function RedesSocialesTenerifePage() {
           </button>
         </nav>
 
-        <a href="/es" className="logoLink">
+        <Link href="/es" className="logoLink">
   <Image
     src="/imagenes/logo.png"
     alt="AIBE"
@@ -109,7 +65,7 @@ export default function RedesSocialesTenerifePage() {
     priority
     className="headerLogo"
   />
-</a>
+</Link>
 
 <div className="mobileHeaderActions">
   <a
@@ -131,27 +87,55 @@ export default function RedesSocialesTenerifePage() {
     type="button"
     className="mobileMenuButton"
     onClick={() => setMobileMenuOpen((open) => !open)}
-    aria-label="Abrir menú"
+    aria-label={mobileMenuOpen ? "Cerrar menú" : "Abrir menú"}
     aria-expanded={mobileMenuOpen}
+    aria-controls="mobile-navigation"
   >
-    ☰
+    {mobileMenuOpen ? "×" : "☰"}
   </button>
 </div>
 
+        {mobileMenuOpen && (
+          <div className="mobileMenu" id="mobile-navigation">
+            <Link href="/es/#google" onClick={() => setMobileMenuOpen(false)}>
+              Google
+            </Link>
+            <Link
+              href="/es/redes-sociales-tenerife"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Redes Sociales Tenerife
+            </Link>
+            <Link href="/es/#ia" onClick={() => setMobileMenuOpen(false)}>
+              Buscadores con IA
+            </Link>
+            <button
+              type="button"
+              className="mobileMenuContact"
+              onClick={() => {
+                setMobileMenuOpen(false);
+                requestAnimationFrame(scrollToContact);
+              }}
+            >
+              Contacto
+            </button>
+          </div>
+        )}
+
         <nav className="navSide navRight desktopNav">
-          <a href="/es/#google">Google</a>
+          <Link href="/es/#google">Google</Link>
 
           <div className="servicesDropdown">
             <span>Servicios</span>
 
             <div className="dropdownMenu">
-              <a href="/es/redes-sociales-tenerife">
+              <Link href="/es/redes-sociales-tenerife">
                 Redes Sociales Tenerife
-              </a>
+              </Link>
             </div>
           </div>
 
-          <a href="/es/#ia">Buscadores con IA</a>
+          <Link href="/es/#ia">Buscadores con IA</Link>
         </nav>
       </header>
 
@@ -660,6 +644,8 @@ export default function RedesSocialesTenerifePage() {
         }
 
         .callButton {
+          width: 88%;
+          align-self: center;
           background: #2e7bff;
           box-shadow: none;
         }
@@ -820,14 +806,17 @@ export default function RedesSocialesTenerifePage() {
   box-shadow: none;
 }
 
-/* El hero empieza después de las dos barras:
-   25px azul + 64px blanca */
+/* El hero empieza después de las dos barras y mantiene la foto visible. */
 .hero {
   min-height: 100vh;
   grid-template-columns: 1fr;
   gap: 12px;
 
-  padding: 200px 16px 44px;
+  padding: 150px 16px 44px;
+}
+
+.heroBackground {
+  background-position: center 28%;
 }
 
 .heroLeft {
@@ -838,7 +827,7 @@ export default function RedesSocialesTenerifePage() {
 .heroContent {
   width: 100%;
   max-width: none;
-  padding: 70px 10px 24px;
+  padding: 42px 10px 24px;
   text-align: center;
 }
 
@@ -871,8 +860,8 @@ h1 {
 /* El botón sigue apareciendo solo en móvil */
 .heroInfoButton {
   display: block;
-  width: 100%;
-  margin-top: -20px;
+  width: min(100%, 300px);
+  margin: -20px auto 0;
 }
 
           .consultancyCard {

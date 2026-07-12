@@ -16,11 +16,11 @@ export default function AibeSection() {
   useEffect(() => {
     setMounted(true);
 
-    const interval = setInterval(() => {
+    const interval = window.setInterval(() => {
       setMobileImage((prev) => (prev + 1) % images.length);
     }, 4000);
 
-    return () => clearInterval(interval);
+    return () => window.clearInterval(interval);
   }, []);
 
   if (!mounted) return null;
@@ -34,27 +34,27 @@ export default function AibeSection() {
         </h2>
       </div>
 
-      <div className="slider">
+      <div className="galleryWrap">
         <div className="mobileSingleImage">
           <div className="imageCard mobileCard">
             <Image
               src={images[mobileImage]}
-              alt="Proyecto AIBE"
-              width={900}
-              height={520}
+              alt="Proyecto de marketing digital de AIBE Technologies"
+              fill
+              sizes="(max-width: 900px) calc(100vw - 40px), 0px"
               priority={mobileImage === 0}
               className="image"
             />
           </div>
         </div>
 
-        <div className="group">
+        <div className="gallery">
           <div className="imageCard wide">
             <Image
               src={images[0]}
-              alt="Proyecto AIBE"
-              width={900}
-              height={520}
+              alt="Proyecto de marketing digital de AIBE Technologies"
+              fill
+              sizes="(max-width: 1400px) 38vw, 520px"
               priority
               className="image"
             />
@@ -63,19 +63,19 @@ export default function AibeSection() {
           <div className="imageCard vertical">
             <Image
               src={images[1]}
-              alt="Proyecto AIBE"
-              width={500}
-              height={520}
-              className="image"
+              alt="Equipo trabajando en una estrategia digital"
+              fill
+              sizes="(max-width: 1400px) 24vw, 330px"
+              className="image portraitImage"
             />
           </div>
 
           <div className="imageCard extraWide">
             <Image
               src={images[2]}
-              alt="Proyecto AIBE"
-              width={900}
-              height={520}
+              alt="Proyecto de visibilidad online de AIBE Technologies"
+              fill
+              sizes="(max-width: 1400px) 34vw, 480px"
               className="image"
             />
           </div>
@@ -84,20 +84,22 @@ export default function AibeSection() {
 
       <style jsx>{`
         .aibeSection {
-          padding: 110px 0 40px;
+          padding: 110px 0 48px;
           background: #ffffff;
           overflow: hidden;
           font-family: "Montserrat", sans-serif;
+          scroll-margin-top: 110px;
         }
 
         .titleWrap {
-          width: 100vw;
-          margin: 0 0 70px;
+          width: min(100%, 1500px);
+          margin: 0 auto 64px;
           padding: 0 4%;
         }
 
         h2 {
           max-width: 1350px;
+          margin: 0;
           color: #111111;
           font-size: clamp(2.8rem, 4.4vw, 5rem);
           line-height: 1.08;
@@ -114,79 +116,75 @@ export default function AibeSection() {
           color: #2e7bff;
         }
 
-        .slider {
-          width: 100%;
-          overflow: hidden;
+        .galleryWrap {
+          width: min(100%, 1500px);
+          margin: 0 auto;
+          padding: 0 4%;
         }
 
         .mobileSingleImage {
           display: none;
         }
 
-        .group {
-          width: 100vw;
-          display: flex;
-          gap: 16px;
-          padding-left: 2%;
-          padding-right: 0;
+        .gallery {
+          width: 100%;
+          display: grid;
+          grid-template-columns: minmax(0, 1.15fr) minmax(220px, 0.72fr) minmax(0, 1.08fr);
+          gap: 18px;
         }
 
         .imageCard {
           position: relative;
-          height: 460px;
+          min-width: 0;
+          height: clamp(330px, 34vw, 470px);
           overflow: hidden;
-          border-radius: 18px;
+          border-radius: 22px;
           background: #f3f7ff;
-          flex-shrink: 0;
           isolation: isolate;
         }
 
-        .imageCard.extraWide {
-          width: 38%;
-        }
-
-        .imageCard.wide {
-          width: 36%;
-        }
-
-        .imageCard.vertical {
-          width: 20%;
-        }
-
         .image {
-          display: block;
-          width: 100%;
-          height: 100%;
           object-fit: cover;
-          max-width: 100%;
+          object-position: center;
+        }
+
+        .portraitImage {
+          object-position: center 35%;
         }
 
         @media (max-width: 900px) {
           .aibeSection {
-            padding: 80px 0 10px;
+            padding: 78px 0 22px;
+            scroll-margin-top: 90px;
           }
 
           .titleWrap {
-            padding: 0 22px;
-            margin-bottom: 40px;
+            padding: 0 20px;
+            margin-bottom: 36px;
           }
 
           h2 {
-            font-size: 2.3rem;
+            font-size: clamp(2.05rem, 9vw, 2.6rem);
+            letter-spacing: -0.045em;
           }
 
-          .group {
+          .galleryWrap {
+            padding: 0 20px;
+          }
+
+          .gallery {
             display: none;
           }
 
           .mobileSingleImage {
             display: block;
-            padding: 0 22px;
           }
 
           .mobileCard {
             width: 100%;
-            height: min(360px, 60vh);
+            height: auto;
+            aspect-ratio: 4 / 3;
+            border-radius: 20px;
           }
         }
       `}</style>

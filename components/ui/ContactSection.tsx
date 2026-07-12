@@ -4,28 +4,14 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
+import { useParams } from "next/navigation";
 
-const reviews = [
-  {
-    name: "Cliente verificado",
-    text: "Muy profesionales. Nos ayudaron a mejorar nuestra presencia online y ahora recibimos más contactos.",
-  },
-  {
-    name: "Cliente verificado",
-    text: "La estrategia fue clara desde el primer día. Se nota el seguimiento y la optimización constante.",
-  },
-  {
-    name: "Cliente verificado",
-    text: "Excelente trato y resultados reales. Ahora tenemos más visibilidad y más oportunidades comerciales.",
-  },
-  {
-    name: "Cliente verificado",
-    text: "Nos ayudaron a ordenar nuestra comunicación y atraer clientes con contenido de calidad.",
-  },
-];
 
 export default function ContactSection() {
   const [loading, setLoading] = useState(false);
+  const params = useParams();
+  const locale = String(params?.locale ?? "es");
 
   const handleSubmit = async (
   event: React.FormEvent<HTMLFormElement>
@@ -96,7 +82,7 @@ export default function ContactSection() {
 
         <div className="reviewsImage">
   <Image
-    src="/imagenes/reseñas-google.png"
+    src="/imagenes/resenas-google.png"
     alt="Opiniones de clientes de Google"
     width={900}
     height={700}
@@ -145,13 +131,17 @@ export default function ContactSection() {
             <input type="checkbox" required />
             <span>
               Acepto el{" "}
-              <a href="/aviso-legal" target="_blank">
+              <Link href={`/${locale}/aviso-legal`} target="_blank" rel="noopener noreferrer">
                 Aviso Legal
-              </a>{" "}
+              </Link>{" "}
               y la{" "}
-              <a href="/politica-privacidad" target="_blank">
+              <Link
+                href={`/${locale}/politica-privacidad`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 Política de Privacidad
-              </a>
+              </Link>
             </span>
           </label>
 
@@ -164,6 +154,7 @@ export default function ContactSection() {
       <style jsx>{`
         .contactSection {
   width: 100%;
+  scroll-margin-top: 110px;
   padding: 110px 6%;
   display: grid;
   grid-template-columns: 1fr 0.95fr;
@@ -238,6 +229,7 @@ export default function ContactSection() {
 }
 
         .contactCard {
+          scroll-margin-top: 110px;
           background: #ffffff;
           border: 1px solid #e8ecf3;
           border-radius: 32px;
