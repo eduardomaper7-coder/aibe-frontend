@@ -39,13 +39,7 @@ export default function RedesSocialesTenerifePage() {
 
   return (
     <>
-      <div className="topBar">
-        Redes Sociales en Tenerife
-        <span>|</span>
-        ¿Empezamos?
-      </div>
-
-      <header className="heroHeader">
+      <header className="heroHeader scrolled">
         <nav className="navSide navLeft desktopNav">
           <button
             type="button"
@@ -54,76 +48,6 @@ export default function RedesSocialesTenerifePage() {
           >
             Contacto
           </button>
-        </nav>
-
-        <Link href="/es" className="logoLink">
-  <Image
-    src="/imagenes/logo.png"
-    alt="AIBE"
-    width={130}
-    height={38}
-    priority
-    className="headerLogo"
-  />
-</Link>
-
-<div className="mobileHeaderActions">
-  <a
-    href="https://wa.me/34686012685"
-    target="_blank"
-    rel="noopener noreferrer"
-    className="mobileWhatsappHeader"
-    aria-label="Abrir WhatsApp"
-  >
-    <Image
-      src="/imagenes/whatsapp.png"
-      alt="WhatsApp"
-      width={24}
-      height={24}
-    />
-  </a>
-
-  <button
-    type="button"
-    className="mobileMenuButton"
-    onClick={() => setMobileMenuOpen((open) => !open)}
-    aria-label={mobileMenuOpen ? "Cerrar menú" : "Abrir menú"}
-    aria-expanded={mobileMenuOpen}
-    aria-controls="mobile-navigation"
-  >
-    {mobileMenuOpen ? "×" : "☰"}
-  </button>
-</div>
-
-        {mobileMenuOpen && (
-          <div className="mobileMenu" id="mobile-navigation">
-            <Link href="/es/#google" onClick={() => setMobileMenuOpen(false)}>
-              Google
-            </Link>
-            <Link
-              href="/es/redes-sociales-tenerife"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Redes Sociales Tenerife
-            </Link>
-            <Link href="/es/#ia" onClick={() => setMobileMenuOpen(false)}>
-              Buscadores con IA
-            </Link>
-            <button
-              type="button"
-              className="mobileMenuContact"
-              onClick={() => {
-                setMobileMenuOpen(false);
-                requestAnimationFrame(scrollToContact);
-              }}
-            >
-              Contacto
-            </button>
-          </div>
-        )}
-
-        <nav className="navSide navRight desktopNav">
-          <Link href="/es/#google">Google</Link>
 
           <div className="servicesDropdown">
             <span>Servicios</span>
@@ -134,9 +58,83 @@ export default function RedesSocialesTenerifePage() {
               </Link>
             </div>
           </div>
+        </nav>
 
+        <Link href="/es" className="logoLink" aria-label="Ir al inicio">
+          <Image
+            src="/imagenes/logo.png"
+            alt="AIBE Technologies"
+            width={170}
+            height={48}
+            priority
+            className="headerLogo"
+          />
+        </Link>
+
+        <div className="mobileHeaderActions">
+          <a
+            href="https://wa.me/34686012685"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mobileWhatsappHeader"
+            aria-label="WhatsApp"
+          >
+            <Image
+              src="/imagenes/whatsapp.png"
+              alt="WhatsApp"
+              width={26}
+              height={26}
+            />
+          </a>
+
+          <button
+            type="button"
+            className="mobileMenuButton"
+            onClick={() => setMobileMenuOpen((open) => !open)}
+            aria-label={mobileMenuOpen ? "Cerrar menú" : "Abrir menú"}
+            aria-expanded={mobileMenuOpen}
+            aria-controls="mobile-navigation"
+          >
+            {mobileMenuOpen ? "×" : "☰"}
+          </button>
+        </div>
+
+        <nav className="navSide navRight desktopNav">
+          <Link href="/es/#google">Google</Link>
           <Link href="/es/#ia">Buscadores con IA</Link>
         </nav>
+
+        {mobileMenuOpen && (
+          <div className="mobileMenu" id="mobile-navigation">
+            <button
+              type="button"
+              onClick={() => {
+                scrollToContact();
+                setMobileMenuOpen(false);
+              }}
+              className="navButton"
+            >
+              Contacto
+            </button>
+
+            <div className="mobileServices">
+              <span>Servicios</span>
+              <Link
+                href="/es/redes-sociales-tenerife"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Redes Sociales Tenerife
+              </Link>
+            </div>
+
+            <Link href="/es/#google" onClick={() => setMobileMenuOpen(false)}>
+              Google
+            </Link>
+            <Link href="/es/#ia" onClick={() => setMobileMenuOpen(false)}>
+              Buscadores con IA
+            </Link>
+          </div>
+        )}
       </header>
 
       <main className="hero">
@@ -227,73 +225,40 @@ export default function RedesSocialesTenerifePage() {
           box-sizing: border-box;
         }
 
-        /*
-         * BARRA SUPERIOR
-         * Ocupa todo el ancho y tiene 54 px de alto.
-         */
-        .topBar {
-          position: fixed;
-          top: 0;
-          left: 0;
-          z-index: 1001;
-
-          width: 100%;
-          height: 36px;
-
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          gap: 10px;
-
-          padding: 0 24px;
-
-          background: #2e7bff;
-          color: #ffffff;
-
-          font-size: 0.82rem;
-          font-weight: 700;
-          letter-spacing: 0.02em;
-        }
-
-        .topBar span {
-          opacity: 0.7;
-        }
-
-        /*
-         * MENÚ PRINCIPAL
-         * También ocupa todo el ancho y tiene 54 px de alto.
-         */
         .heroHeader {
-  position: fixed;
-  top: 36px;
-  left: 0;
-  z-index: 1000;
-
-  width: 100%;
-  height: 66px;
-
+          position: fixed;
+          top: 30px;
+          left: 50%;
+          transform: translateX(-50%);
+          z-index: 1000;
+          width: min(92%, 1200px);
           display: grid;
           grid-template-columns: 1fr auto 1fr;
           align-items: center;
+          background: transparent;
+          transition: background 0.3s ease, backdrop-filter 0.3s ease,
+            box-shadow 0.3s ease, padding 0.3s ease, border 0.3s ease;
+        }
 
-          padding: 0 6vw;
-
-          background: rgba(255, 255, 255, 0.94);
-          backdrop-filter: blur(18px);
-          -webkit-backdrop-filter: blur(18px);
-
-          border-bottom: 1px solid rgba(0, 0, 0, 0.07);
-          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.07);
+        .heroHeader.scrolled {
+          background: #ffffff !important;
+          backdrop-filter: none;
+          -webkit-backdrop-filter: none;
+          border: 1px solid rgba(0, 0, 0, 0.06);
+          border-radius: 999px;
+          padding: 14px 28px;
+          box-shadow: 0 12px 35px rgba(0, 0, 0, 0.08);
         }
 
         .logoLink {
           display: flex;
-          justify-content: center;
           align-items: center;
+          justify-content: center;
+          text-decoration: none;
         }
 
         .headerLogo {
-          width: 125px;
+          width: 190px;
           height: auto;
           display: block;
         }
@@ -305,76 +270,71 @@ export default function RedesSocialesTenerifePage() {
 
         .navLeft {
           justify-content: flex-end;
-          gap: 28px;
-          padding-right: 42px;
+          gap: 42px;
+          padding-right: 70px;
         }
 
         .navRight {
           justify-content: flex-start;
-          gap: 28px;
-          padding-left: 42px;
+          gap: 42px;
+          padding-left: 70px;
         }
 
         .navSide a,
-        .navButton,
-        .servicesDropdown span {
+        .navButton {
           color: #2e7bff;
           text-decoration: none;
-
-          font-family: inherit;
-          font-size: 0.88rem;
+          font-family: "Montserrat", sans-serif;
+          font-size: 1rem;
           font-weight: 700;
+          letter-spacing: -0.01em;
           white-space: nowrap;
-        }
-
-        .navSide a {
-          transition: color 0.2s ease;
-        }
-
-        .navSide a:hover,
-        .servicesDropdown span:hover {
-          color: #001a5c;
+          transition: all 0.2s ease;
         }
 
         .navButton {
           width: auto;
-          padding: 0;
-
+          border: none;
           background: transparent;
-          border: 0;
-          border-radius: 0;
-          box-shadow: none;
-
           cursor: pointer;
+          padding: 0;
+          box-shadow: none;
+          border-radius: 0;
+          appearance: none;
+          -webkit-appearance: none;
         }
 
+        .navSide a:hover,
         .navButton:hover {
           color: #001a5c;
+          transform: translateY(-1px);
           background: transparent;
-          transform: none;
         }
 
         .servicesDropdown {
           position: relative;
         }
 
-        .servicesDropdown > span {
+        .servicesDropdown span {
+          color: #2e7bff;
+          font-family: "Montserrat", sans-serif;
+          font-size: 1rem;
+          font-weight: 700;
+          letter-spacing: -0.01em;
+          white-space: nowrap;
           cursor: pointer;
         }
 
         .dropdownMenu {
           position: absolute;
-          top: 30px;
+          top: 35px;
           left: 50%;
           transform: translateX(-50%);
-
-          min-width: 230px;
-          padding: 10px;
-
+          min-width: 240px;
           background: #ffffff;
-          border-radius: 14px;
-          box-shadow: 0 16px 40px rgba(0, 0, 0, 0.1);
-
+          border-radius: 16px;
+          padding: 12px;
+          box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
           opacity: 0;
           visibility: hidden;
           transition: 0.25s ease;
@@ -387,14 +347,15 @@ export default function RedesSocialesTenerifePage() {
 
         .dropdownMenu a {
           display: block;
-          padding: 10px;
-          color: #111111;
+          padding: 10px 12px;
           border-radius: 10px;
+          color: #111111;
+          text-decoration: none;
         }
 
         .dropdownMenu a:hover {
           color: #111111;
-          background: #f4f7ff;
+          background: #f5f7fb;
         }
 
         /*
@@ -670,143 +631,149 @@ export default function RedesSocialesTenerifePage() {
           line-height: 1.4;
           text-align: center;
         }
+.mobileMenuButton,
+.mobileMenu,
 .mobileHeaderActions,
-.mobileMenu {
-  display: none;
-}
-        /*
-         * MÓVIL
-         */
-        @media (max-width: 980px) {
-          .topBar {
-  height: 25px;
-  padding: 0 10px;
-  font-size: 0.68rem;
-  gap: 7px;
-}
-
-.desktopNav {
-  display: none;
-}
-
-/* Menú blanco móvil */
-.heroHeader {
-  top: 25px;
-  left: 0;
-  transform: none;
-
-  width: 100%;
-  height: 64px;
-  min-height: 64px;
-
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
-  padding: 8px 16px;
-
-  background: #ffffff;
-  border: none;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.07);
-  border-radius: 0;
-
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-}
-
-.logoLink {
-  justify-content: flex-start;
-}
-
-.headerLogo {
-  width: 108px;
-  height: auto;
-}
-
-.mobileHeaderActions {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-}
-
 .mobileWhatsappHeader {
-  width: 42px;
-  height: 42px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  background: #25d366;
-  border-radius: 999px;
-  text-decoration: none;
+  display: none;
 }
 
-.mobileWhatsappHeader img {
-  width: 23px;
-  height: 23px;
-}
+        @media (max-width: 1000px) {
+          .heroHeader {
+            grid-template-columns: 1fr;
+            justify-items: center;
+            gap: 18px;
+          }
 
-.mobileMenuButton {
-  width: 42px;
-  height: 42px;
-  padding: 0;
+          .heroHeader.scrolled {
+            border-radius: 28px;
+            padding: 16px 22px;
+          }
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
+          .navSide {
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 18px 26px;
+          }
 
-  background: #2e7bff;
-  color: #ffffff;
+          .navSide a,
+          .navButton {
+            font-size: 0.9rem;
+          }
 
-  border: none;
-  border-radius: 999px;
-  box-shadow: none;
+          .headerLogo {
+            width: 160px;
+          }
+        }
 
-  font-size: 1.3rem;
-}
+        @media (max-width: 980px) {
+          .desktopNav {
+            display: none;
+          }
 
-.mobileMenu {
-  position: absolute;
-  top: calc(100% + 8px);
-  left: 12px;
-  right: 12px;
+          .heroHeader {
+            top: 8px;
+            width: calc(100% - 28px);
+            padding: 10px 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: transparent;
+            border-radius: 16px;
+            box-shadow: none;
+          }
 
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
+          .heroHeader.scrolled {
+            background: #ffffff;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            border-radius: 16px;
+            padding: 10px 14px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+          }
 
-  padding: 20px;
+          .logoLink {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+          }
 
-  background: #ffffff;
-  border-radius: 18px;
-  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.14);
+          .headerLogo {
+            width: 110px;
+            display: block;
+          }
 
-  z-index: 1002;
-}
+          .mobileHeaderActions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+          }
 
-.mobileMenu a,
-.mobileMenuContact {
-  color: #2e7bff;
-  text-decoration: none;
-  text-align: center;
+          .mobileWhatsappHeader {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            background: #25d366;
+            border-radius: 999px;
+          }
 
-  font-family: inherit;
-  font-size: 0.92rem;
-  font-weight: 700;
-}
+          .mobileWhatsappHeader img {
+            width: 24px;
+            height: 24px;
+          }
 
-.mobileMenuContact {
-  width: 100%;
-  padding: 10px;
+          .mobileMenuButton {
+            display: flex;
+            width: 44px;
+            height: 44px;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            border-radius: 999px;
+            background: #2e7bff;
+            color: #ffffff;
+            font-size: 1.4rem;
+            box-shadow: none;
+          }
 
-  background: transparent;
-  border: 0;
-  box-shadow: none;
-}
+          .mobileMenu {
+            display: flex;
+            position: absolute;
+            top: calc(100% + 10px);
+            left: 0;
+            right: 0;
+            flex-direction: column;
+            gap: 16px;
+            padding: 22px;
+            background: #ffffff;
+            border-radius: 18px;
+            box-shadow: 0 18px 45px rgba(0, 0, 0, 0.12);
+            z-index: 1001;
+          }
 
-/* El hero empieza después de las dos barras y mantiene la foto visible. */
+          .mobileMenu a,
+          .mobileMenu .navButton,
+          .mobileServices > span {
+            color: #2e7bff;
+            text-decoration: none;
+            text-align: center;
+            font-weight: 700;
+          }
+
+          .mobileServices {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            text-align: center;
+          }
+
+          .mobileServices a {
+            font-size: 0.9rem;
+            font-weight: 600;
+          }
+
+/* El hero empieza después del menú y mantiene la foto visible. */
 .hero {
   min-height: 100vh;
   grid-template-columns: 1fr;
