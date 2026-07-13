@@ -12,8 +12,8 @@ export default function AibeSection() {
           <span>Haz visible tu negocio donde tus clientes deciden.</span>
           <span>Google, redes sociales y buscadores con IA.</span>
         </h2>
+        
       </div>
-
       <div className="featureWrap">
         <div className="photoStage">
           <div className="imageCard">
@@ -23,9 +23,16 @@ export default function AibeSection() {
               fill
               sizes="(max-width: 900px) calc(100vw - 40px), 660px"
               priority
-              height="109%"
               className="image"
+              style={{
+                height: "109%",
+                top: "50%",
+                bottom: "auto",
+                transform: "translateY(-50%)",
+                objectFit: "cover",
+              }}
             />
+
             <div className="imageShade" aria-hidden="true" />
           </div>
         </div>
