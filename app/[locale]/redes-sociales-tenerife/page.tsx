@@ -474,15 +474,15 @@ export default function RedesSocialesTenerifePage() {
         }
 
         /*
-         * Tarjeta más arriba y más pequeña.
+         * Tarjeta centrada verticalmente junto al titular principal.
          */
         .consultancyCard {
-          align-self: start;
+          align-self: center;
+          justify-self: center;
 
           width: 100%;
           max-width: 380px;
-          margin-top: -62px;
-          margin-left: auto;
+          margin: 0 auto;
 
           padding: 25px;
 
