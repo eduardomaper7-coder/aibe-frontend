@@ -23,6 +23,7 @@ export default function AibeSection() {
               fill
               sizes="(max-width: 900px) calc(100vw - 40px), 660px"
               priority
+              height="109%"
               className="image"
             />
             <div className="imageShade" aria-hidden="true" />
