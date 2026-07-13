@@ -119,6 +119,14 @@ useEffect(() => {
     >
       Contacto
     </button>
+
+    <div className="servicesDropdown">
+      <span>Servicios</span>
+
+      <div className="dropdownMenu">
+        <Link href="/es/redes-sociales-tenerife">Redes Sociales Tenerife</Link>
+      </div>
+    </div>
   </nav>
 
 
@@ -170,35 +178,15 @@ useEffect(() => {
 
 
   <nav className="navSide navRight desktopNav">
-  <a href="#google">Google</a>
-
-
-  <div className="servicesDropdown">
-    <span>Servicios</span>
-
-
-    <div className="dropdownMenu">
-      <Link href="/es/redes-sociales-tenerife">Redes Sociales Tenerife</Link>
-     
-    </div>
-  </div>
-
-
-  <a href="#ia">Buscadores con IA</a>
-</nav>
+    <a href="#google">Google</a>
+    <a href="#ia">Buscadores con IA</a>
+  </nav>
 
 
 
 
   {mobileMenuOpen && (
     <div className="mobileMenu" id="mobile-navigation">
-  <a href="#google" onClick={() => setMobileMenuOpen(false)}>Google</a>
-  <Link href="/es/redes-sociales-tenerife" onClick={() => setMobileMenuOpen(false)}>Redes Sociales Tenerife</Link>
-  <a href="#ia" onClick={() => setMobileMenuOpen(false)}>Buscadores con IA</a>
-
-
-
-
       <button
         type="button"
         onClick={() => {
@@ -209,6 +197,19 @@ useEffect(() => {
       >
         Contacto
       </button>
+
+      <div className="mobileServices">
+        <span>Servicios</span>
+        <Link
+          href="/es/redes-sociales-tenerife"
+          onClick={() => setMobileMenuOpen(false)}
+        >
+          Redes Sociales Tenerife
+        </Link>
+      </div>
+
+      <a href="#google" onClick={() => setMobileMenuOpen(false)}>Google</a>
+      <a href="#ia" onClick={() => setMobileMenuOpen(false)}>Buscadores con IA</a>
     </div>
   )}
 </header>
@@ -1111,11 +1112,24 @@ Escribir por WhatsApp
 
 
   .mobileMenu a,
-  .mobileMenu .navButton {
+  .mobileMenu .navButton,
+  .mobileServices > span {
     color: #2e7bff;
     text-decoration: none;
     text-align: center;
     font-weight: 700;
+  }
+
+  .mobileServices {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+  }
+
+  .mobileServices a {
+    font-size: 0.9rem;
+    font-weight: 600;
   }
 }
 `}</style>
