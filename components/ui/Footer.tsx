@@ -16,10 +16,10 @@ export default function Footer() {
       <div className="content">
         <div className="brand">
           <Image
-            src="/imagenes/logo.png"
+            src="/imagenes/logo-footer.png"
             alt="AIBE Technologies"
-            width={220}
-            height={86}
+            width={256}
+            height={100}
             className="logo"
           />
 
@@ -109,7 +109,7 @@ export default function Footer() {
           width: 220px;
           height: auto;
           margin-bottom: 24px;
-          filter: brightness(0) invert(1);
+          filter: none;
         }
 
         .brand p {
