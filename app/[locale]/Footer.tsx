@@ -19,6 +19,7 @@ export default function Footer() {
   <Link href="/legal" className="hover:text-white">Aviso legal</Link>
   <Link href="/legal" className="hover:text-white">Política de privacidad</Link>
   <Link href="/legal" className="hover:text-white">Términos del servicio</Link>
+  <Link href="/es/politica-cookies" className="hover:text-white">Política de cookies</Link>
   <Link href="/contact" className="hover:text-white">Contacto</Link>
 
 </nav>

@@ -11,6 +11,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/login",
     "/aviso-legal",
     "/politica-privacidad",
+    "/politica-cookies",
   ]
 
   return locales.flatMap((locale) =>

@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { openCookieSettings } from "@/lib/cookie-consent";
 
 const WHATSAPP_NUMBER = "34686012685";
 
@@ -51,6 +52,12 @@ export default function Footer() {
             <Link href={`${legalBase}/politica-privacidad`}>
               Política de privacidad
             </Link>
+            <Link href={`${legalBase}/politica-cookies`}>
+              Política de cookies
+            </Link>
+            <button type="button" onClick={openCookieSettings}>
+              Configurar cookies
+            </button>
           </div>
         </div>
       </div>
@@ -140,7 +147,8 @@ export default function Footer() {
           margin-bottom: 10px;
         }
 
-        .contactBlock a {
+        .contactBlock a,
+        .contactBlock button {
           color: white;
           text-decoration: none;
           font-size: 1.05rem;
@@ -148,7 +156,18 @@ export default function Footer() {
           transition: 0.25s ease;
         }
 
-        .contactBlock a:hover {
+        .contactBlock button {
+          appearance: none;
+          padding: 0;
+          background: transparent;
+          border: 0;
+          text-align: left;
+          cursor: pointer;
+          font-family: inherit;
+        }
+
+        .contactBlock a:hover,
+        .contactBlock button:hover {
           color: #74a8ff;
         }
 

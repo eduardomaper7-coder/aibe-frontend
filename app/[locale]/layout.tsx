@@ -1,12 +1,11 @@
-// app/[locale]/layout.tsx
 import type { Metadata, Viewport } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
 
-import TopbarGate from "../TopbarGate";
+import CookieConsent from "@/components/CookieConsent";
+import ConsentAwareAnalytics from "@/components/ConsentAwareAnalytics";
 import Providers from "../providers";
 import PwaRegister from "../PwaRegister";
-import { Analytics } from "@vercel/analytics/react";
 
 const SITE_URL = "https://aibetech.es";
 
@@ -53,14 +52,13 @@ export default async function LocaleLayout({
   const messages = await getMessages();
 
   return (
-  <div className="relative">
-    <NextIntlClientProvider locale={locale} messages={messages}>
-      <PwaRegister />
-      <Providers>
-        {children}
-      </Providers>
-      <Analytics />
-    </NextIntlClientProvider>
-  </div>
-);
+    <div className="relative">
+      <NextIntlClientProvider locale={locale} messages={messages}>
+        <PwaRegister />
+        <Providers>{children}</Providers>
+        <CookieConsent locale={locale} />
+        <ConsentAwareAnalytics />
+      </NextIntlClientProvider>
+    </div>
+  );
 }
