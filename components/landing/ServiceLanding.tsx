@@ -1,7 +1,6 @@
 "use client";
 
 import { FormEvent, useState, type CSSProperties } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import {
@@ -39,17 +38,13 @@ import {
   Target,
   Workflow,
   Wrench,
-  X,
-  Menu,
   ArrowRight,
   type LucideIcon,
 } from "lucide-react";
 
 import Footer from "@/components/ui/Footer";
-import {
-  serviceNavigation,
-  type ServiceLandingConfig,
-} from "@/lib/service-landings";
+import SiteNavbar from "@/components/ui/SiteNavbar";
+import { type ServiceLandingConfig } from "@/lib/service-landings";
 
 const WHATSAPP_NUMBER = "34686012685";
 
@@ -95,7 +90,6 @@ type ServiceLandingProps = {
 export default function ServiceLanding({ config }: ServiceLandingProps) {
   const params = useParams();
   const locale = String(params?.locale ?? "es");
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [loading, setLoading] = useState(false);
 
@@ -158,115 +152,7 @@ export default function ServiceLanding({ config }: ServiceLandingProps) {
 
   return (
     <div className="servicePage" style={themeStyle}>
-      <header className="serviceHeader">
-        <nav className="navSide navLeft desktopNav" aria-label="Navegación principal">
-          <button type="button" className="navButton" onClick={scrollToContact}>
-            Contacto
-          </button>
-
-          <div className="servicesDropdown">
-            <button type="button" className="servicesTrigger" aria-haspopup="true">
-              Servicios
-              <ChevronDown size={16} strokeWidth={2.3} aria-hidden="true" />
-            </button>
-            <div className="dropdownMenu">
-              <span className="dropdownEyebrow">Soluciones AIBE</span>
-              <div className="dropdownLinks">
-                {serviceNavigation.map((item) => (
-                  <Link
-                    key={item.slug}
-                    href={`/${locale}/${item.slug}`}
-                    className={item.slug === config.slug ? "active" : undefined}
-                  >
-                    {item.label}
-                  </Link>
-                ))}
-              </div>
-            </div>
-          </div>
-        </nav>
-
-        <Link href={`/${locale}`} className="logoLink" aria-label="Ir al inicio">
-          <Image
-            src="/imagenes/logo.png"
-            alt="AIBE Technologies"
-            width={190}
-            height={54}
-            priority
-            className="headerLogo"
-          />
-        </Link>
-
-        <div className="mobileHeaderActions">
-          <a
-            href={`https://wa.me/${WHATSAPP_NUMBER}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mobileWhatsappHeader"
-            aria-label="Contactar por WhatsApp"
-          >
-            <Image
-              src="/imagenes/whatsapp.png"
-              alt=""
-              width={25}
-              height={25}
-            />
-          </a>
-
-          <button
-            type="button"
-            className="mobileMenuButton"
-            onClick={() => setMobileMenuOpen((open) => !open)}
-            aria-label={mobileMenuOpen ? "Cerrar menú" : "Abrir menú"}
-            aria-expanded={mobileMenuOpen}
-            aria-controls="service-mobile-navigation"
-          >
-            {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
-          </button>
-        </div>
-
-        <nav className="navSide navRight desktopNav" aria-label="Accesos destacados">
-          <Link href={`/${locale}/#google`}>Google</Link>
-          <Link href={`/${locale}/#ia`}>Buscadores con IA</Link>
-        </nav>
-
-        {mobileMenuOpen && (
-          <div className="mobileMenu" id="service-mobile-navigation">
-            <button
-              type="button"
-              className="navButton"
-              onClick={() => {
-                scrollToContact();
-                setMobileMenuOpen(false);
-              }}
-            >
-              Contacto
-            </button>
-
-            <div className="mobileServices">
-              <span>Servicios</span>
-              {serviceNavigation.map((item) => (
-                <Link
-                  key={item.slug}
-                  href={`/${locale}/${item.slug}`}
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </div>
-        <nav className="navSide navRight desktopNav" aria-label="Accesos destacados">
-
-            <Link color="#2e7bff" weight="600"  href={`/${locale}/#google`} onClick={() => setMobileMenuOpen(false)}>
-              Google
-            </Link>
-            <Link color="#2e7bff" weight="600" href={`/${locale}/#ia`} onClick={() => setMobileMenuOpen(false)}>
-              Buscadores con IA
-            </Link>
-        </nav>
-          </div>
-        )}
-      </header>
+      <SiteNavbar activeServiceSlug={config.slug} />
 
       <main>
         <section className="serviceHero">

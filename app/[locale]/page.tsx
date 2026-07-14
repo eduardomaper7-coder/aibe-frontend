@@ -5,9 +5,6 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
-import { serviceNavigation } from "@/lib/service-landings";
-import { ChevronDown } from "lucide-react";
 import dynamic from "next/dynamic";
 
 
@@ -30,6 +27,7 @@ import AiAgentsSection from "../../components/ui/AiAgentsSection";
 import Footer from "../../components/ui/Footer";
 import RedesSocialesSection from "../../components/ui/redesSociales-seccion";
 import ContactSection from "../../components/ui/ContactSection";
+import SiteNavbar from "../../components/ui/SiteNavbar";
 const words = ["clientes", "ventas", "reservas", "visibilidad"];
 
 
@@ -41,7 +39,6 @@ export default function Page() {
   const [activeAnimation, setActiveAnimation] = useState(0);
   const [isCalendlyOpen, setIsCalendlyOpen] = useState(false);
   const [rootElement, setRootElement] = useState<HTMLElement | null>(null);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
 
 
@@ -112,122 +109,7 @@ useEffect(() => {
 
   return (
     <>
-      <header className="heroHeader scrolled">
-  <nav className="navSide navLeft desktopNav">
-    <button
-      type="button"
-      onClick={scrollToContact}
-      className="navButton"
-    >
-      Contacto
-    </button>
-
-    <div className="servicesDropdown">
-      <button type="button" className="servicesTrigger" aria-haspopup="true">
-        Servicios
-        <ChevronDown size={16} strokeWidth={2.3} aria-hidden="true" />
-      </button>
-
-      <div className="dropdownMenu">
-        <span className="dropdownEyebrow">Soluciones AIBE</span>
-        <div className="dropdownLinks">
-          {serviceNavigation.map((item) => (
-            <Link key={item.slug} href={`/es/${item.slug}`}>
-              {item.label}
-            </Link>
-          ))}
-        </div>
-      </div>
-    </div>
-  </nav>
-
-
-
-
-  <Link href="/es" className="logoLink" aria-label="Ir al inicio">
-    <Image
-      src="/imagenes/logo.png"
-      alt="AIBE Technologies"
-      width={170}
-      height={48}
-      priority
-      className="headerLogo"
-    />
-  </Link>
-
-
-
-
-  <div className="mobileHeaderActions">
-  <a
-    href="https://wa.me/34686012685"
-    target="_blank"
-    rel="noopener noreferrer"
-    className="mobileWhatsappHeader"
-    aria-label="WhatsApp"
-  >
-    <Image
-      src="/imagenes/whatsapp.png"
-      alt="WhatsApp"
-      width={26}
-      height={26}
-    />
-  </a>
-
-  <button
-    type="button"
-    className="mobileMenuButton"
-    onClick={() => setMobileMenuOpen((open) => !open)}
-    aria-label={mobileMenuOpen ? "Cerrar menú" : "Abrir menú"}
-    aria-expanded={mobileMenuOpen}
-    aria-controls="mobile-navigation"
-  >
-    {mobileMenuOpen ? "×" : "☰"}
-  </button>
-</div>
-
-
-
-
-  <nav className="navSide navRight desktopNav">
-    <a href="#google">Google</a>
-    <a href="#ia">Buscadores con IA</a>
-  </nav>
-
-
-
-
-  {mobileMenuOpen && (
-    <div className="mobileMenu" id="mobile-navigation">
-      <button
-        type="button"
-        onClick={() => {
-          scrollToContact();
-          setMobileMenuOpen(false);
-        }}
-        className="navButton"
-      >
-        Contacto
-      </button>
-
-      <div className="mobileServices">
-        <span>Servicios</span>
-        {serviceNavigation.map((item) => (
-          <Link
-            key={item.slug}
-            href={`/es/${item.slug}`}
-            onClick={() => setMobileMenuOpen(false)}
-          >
-            {item.label}
-          </Link>
-        ))}
-      </div>
-
-      <a href="#google" onClick={() => setMobileMenuOpen(false)}>Google</a>
-      <a href="#ia" onClick={() => setMobileMenuOpen(false)}>Buscadores con IA</a>
-    </div>
-  )}
-</header>
+      <SiteNavbar />
 
 
 
