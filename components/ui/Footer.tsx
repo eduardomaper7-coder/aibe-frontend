@@ -20,7 +20,7 @@ export default function Footer() {
           <Image
             src="/imagenes/logo-footer-hq.png"
             alt="AIBE Technologies"
-            width={512}
+            width={212}
             height={231}
             className="logo"
           />
