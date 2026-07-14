@@ -1,0 +1,306 @@
+.header {
+  position: fixed;
+  top: 16px;
+  left: 50%;
+  z-index: 1000;
+  width: calc(100% - 48px);
+  max-width: 1360px;
+  min-height: 92px;
+  transform: translateX(-50%);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  padding: 12px 36px;
+  background: rgba(255, 255, 255, 0.97);
+  border: 1px solid #dce8fa;
+  border-radius: 28px;
+  box-shadow: 0 22px 54px rgba(15, 23, 42, 0.1);
+  font-family: "Montserrat", Arial, sans-serif;
+  isolation: isolate;
+}
+
+.logoLink {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.logo {
+  display: block;
+  width: 190px;
+  height: auto;
+}
+
+.navSide {
+  display: flex;
+  align-items: center;
+}
+
+.navLeft {
+  justify-content: flex-end;
+  gap: clamp(26px, 3vw, 44px);
+  padding-right: clamp(38px, 5vw, 74px);
+}
+
+.navRight {
+  justify-content: flex-start;
+  gap: clamp(26px, 3vw, 44px);
+  padding-left: clamp(38px, 5vw, 74px);
+}
+
+.navLink {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 8px 0;
+  border: 0;
+  background: transparent;
+  color: #3478f6;
+  text-decoration: none;
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 750;
+  letter-spacing: -0.015em;
+  line-height: 1.2;
+  white-space: nowrap;
+  cursor: pointer;
+  box-shadow: none;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.navLink:hover,
+.navLink:focus-visible {
+  color: #0b56d4;
+  background: transparent;
+  transform: translateY(-1px);
+  outline: none;
+}
+
+.servicesDropdown {
+  position: relative;
+  padding: 8px 0;
+}
+
+.servicesDropdown::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: -26px;
+  width: 360px;
+  height: 18px;
+}
+
+.chevron {
+  transition: transform 0.2s ease;
+}
+
+.dropdownMenu {
+  position: absolute;
+  top: calc(100% + 9px);
+  left: 50%;
+  z-index: 10;
+  width: min(348px, calc(100vw - 48px));
+  padding: 18px 16px 17px;
+  transform: translate(-50%, 10px);
+  transform-origin: top center;
+  background: #ffffff;
+  border: 1px solid #dce8fa;
+  border-radius: 18px;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.14);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
+}
+
+.dropdownEyebrow {
+  display: block;
+  padding: 0 6px 11px;
+  color: #7e8eac;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.dropdownLinks {
+  display: grid;
+}
+
+.dropdownLinks a {
+  display: block;
+  width: 100%;
+  padding: 6px;
+  border-radius: 8px;
+  color: #171717;
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 520;
+  line-height: 1.28;
+  letter-spacing: -0.012em;
+  transition: color 0.18s ease, background 0.18s ease, transform 0.18s ease;
+}
+
+.dropdownLinks a:hover,
+.dropdownLinks a:focus-visible,
+.dropdownLinks a.active {
+  color: #3478f6;
+  background: #f3f7ff;
+  transform: translateX(3px);
+  outline: none;
+}
+
+.servicesDropdown:hover .dropdownMenu,
+.servicesDropdown:focus-within .dropdownMenu {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translate(-50%, 0);
+}
+
+.servicesDropdown:hover .chevron,
+.servicesDropdown:focus-within .chevron {
+  transform: rotate(180deg);
+}
+
+.mobileActions,
+.mobileMenu {
+  display: none;
+}
+
+@media (max-width: 1160px) {
+  .navLeft {
+    gap: 28px;
+    padding-right: 38px;
+  }
+
+  .navRight {
+    gap: 28px;
+    padding-left: 38px;
+  }
+}
+
+@media (max-width: 1000px) {
+  .header {
+    top: 9px;
+    width: calc(100% - 28px);
+    min-height: 66px;
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 14px;
+    border-radius: 18px;
+  }
+
+  .desktopNav {
+    display: none;
+  }
+
+  .logo {
+    width: 112px;
+  }
+
+  .mobileActions {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+  }
+
+  .whatsappButton,
+  .menuButton {
+    width: 43px;
+    height: 43px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+  }
+
+  .whatsappButton {
+    background: #25d366;
+  }
+
+  .menuButton {
+    appearance: none;
+    border: 0;
+    background: #2e7bff;
+    color: #ffffff;
+    cursor: pointer;
+  }
+
+  .mobileMenu {
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    max-height: calc(100vh - 90px);
+    overflow-y: auto;
+    padding: 20px;
+    border: 1px solid #e5eaf1;
+    border-radius: 18px;
+    background: #ffffff;
+    box-shadow: 0 20px 50px rgba(15, 23, 42, 0.16);
+  }
+
+  .mobileMainLink {
+    appearance: none;
+    border: 0;
+    background: transparent;
+    color: #2e7bff;
+    text-decoration: none;
+    text-align: center;
+    font: inherit;
+    font-weight: 750;
+    cursor: pointer;
+  }
+
+  .mobileServices {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 15px;
+    border-radius: 14px;
+    background: #f6f8fb;
+    text-align: center;
+  }
+
+  .mobileServices span {
+    color: #2e7bff;
+    font-weight: 800;
+  }
+
+  .mobileServices a {
+    padding: 6px;
+    border-radius: 8px;
+    color: #334056;
+    text-decoration: none;
+    font-size: 0.88rem;
+    font-weight: 650;
+  }
+
+  .mobileServices a.mobileActive {
+    color: #2e7bff;
+    background: #ffffff;
+  }
+}
+
+@media (max-width: 420px) {
+  .header {
+    width: calc(100% - 18px);
+    padding: 9px 10px;
+  }
+
+  .logo {
+    width: 104px;
+  }
+
+  .whatsappButton,
+  .menuButton {
+    width: 40px;
+    height: 40px;
+  }
+}
