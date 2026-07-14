@@ -27,10 +27,12 @@ export async function generateMetadata({
 
   return {
     metadataBase: new URL(SITE_URL),
-    title: "AIBE Technologies — Artificial Intelligence for Business Efficiency",
+    title: isEn
+      ? "Digital Marketing Agency | Aibe Technologies"
+      : "Agencia de Marketing Digital | Aibe Technologies",
     description: isEn
-      ? "Analyze your Google reviews with AI and improve your online reputation."
-      : "Analiza tus reseñas de Google con inteligencia artificial y mejora tu reputación online.",
+      ? "Digital marketing, web design, social media and AI automation services for businesses."
+      : "Agencia de marketing digital especializada en redes sociales, diseño web, posicionamiento, campañas y automatización con IA.",
     applicationName: "AIBE",
     alternates: {
       canonical: `/${locale}`,

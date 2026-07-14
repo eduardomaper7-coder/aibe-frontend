@@ -95,6 +95,8 @@ type VisualSet = {
   detailAlt: string;
   proof: string;
   proofAlt: string;
+  result?: string;
+  resultAlt?: string;
   objectPosition?: string;
 };
 
@@ -108,6 +110,8 @@ const visualSets: Record<string, VisualSet> = {
     detailAlt: "Paisaje de Tenerife conectado con la identidad local de la marca",
     proof: "/imagenes/resenas-google.png",
     proofAlt: "Panel visual con métricas y canales digitales",
+    result: "/imagenes/marketing-digital-redes-sociales.webp",
+    resultAlt: "Profesional gestionando redes sociales y canales digitales desde un portátil",
     objectPosition: "center 28%",
   },
   "marketing-digital-tenerife": {
@@ -551,7 +555,12 @@ export default function ServiceLanding({ config }: ServiceLandingProps) {
             transition={{ duration: 0.75 }}
           >
             <div className={styles.resultImage}>
-              <Image src={visuals.proof} alt={visuals.proofAlt} fill sizes="(max-width: 900px) 90vw, 42vw" />
+              <Image
+                src={visuals.result ?? visuals.proof}
+                alt={visuals.resultAlt ?? visuals.proofAlt}
+                fill
+                sizes="(max-width: 900px) 90vw, 42vw"
+              />
             </div>
             <div className={styles.resultCard}>
               <div className={styles.resultCardHeader}>

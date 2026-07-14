@@ -196,7 +196,7 @@ export const serviceLandings: Record<string, ServiceLandingConfig> = {
     contactTitle: "Hagamos que tus redes tengan una función dentro del negocio",
     contactText:
       "Cuéntanos qué estás publicando, qué te gustaría conseguir y qué recursos tienes. Te propondremos una primera dirección de trabajo sin compromiso.",
-    metadataTitle: "Gestión de redes sociales en Tenerife | AIBE Technologies",
+    metadataTitle: "Redes Sociales en Tenerife | Aibe Technologies",
     metadataDescription:
       "Estrategia de redes sociales, creación de contenido, community management y campañas en Meta para negocios en Tenerife.",
   },
@@ -340,7 +340,7 @@ export const serviceLandings: Record<string, ServiceLandingConfig> = {
     contactTitle: "Cuéntanos qué quieres conseguir con tu marketing",
     contactText:
       "Revisaremos tu punto de partida y te propondremos una primera hoja de ruta sin compromiso.",
-    metadataTitle: "Marketing digital en Tenerife | AIBE Technologies",
+    metadataTitle: "Marketing Digital en Tenerife | Aibe Technologies",
     metadataDescription:
       "Estrategia de marketing digital, SEO local, Google Ads, Meta Ads, contenidos y analítica para negocios en Tenerife.",
   },
@@ -484,7 +484,7 @@ export const serviceLandings: Record<string, ServiceLandingConfig> = {
     contactTitle: "Hablemos de cómo debería verse y sentirse tu marca",
     contactText:
       "Cuéntanos qué necesitas renovar, lanzar o ordenar. Te propondremos un alcance claro y realista.",
-    metadataTitle: "Diseño web y branding en Tenerife | AIBE Technologies",
+    metadataTitle: "Diseño Web y Branding en Tenerife | Aibe Technologies",
     metadataDescription:
       "Diseño de identidad, branding, UX/UI, landing pages y sistemas visuales para empresas y negocios en Tenerife.",
   },
@@ -628,7 +628,7 @@ export const serviceLandings: Record<string, ServiceLandingConfig> = {
     contactTitle: "Cuéntanos qué necesitas construir o mejorar",
     contactText:
       "Te ayudaremos a ordenar el alcance, detectar riesgos y elegir una solución proporcionada al proyecto.",
-    metadataTitle: "Desarrollo web en Tenerife | AIBE Technologies",
+    metadataTitle: "Desarrollo Web en Tenerife | Aibe Technologies",
     metadataDescription:
       "Desarrollo de páginas web, ecommerce, aplicaciones, SaaS, APIs e integraciones para empresas en Tenerife.",
   },
@@ -772,7 +772,7 @@ export const serviceLandings: Record<string, ServiceLandingConfig> = {
     contactTitle: "Identifiquemos un proceso donde la IA pueda aportar valor",
     contactText:
       "Cuéntanos qué tarea consume tiempo o genera fricción. Evaluaremos una primera automatización viable y medible.",
-    metadataTitle: "Automatización e inteligencia artificial en Tenerife | AIBE",
+    metadataTitle: "Automatización con IA en Tenerife | Aibe Technologies",
     metadataDescription:
       "Automatización de procesos, asistentes internos, IA documental, chatbots e integraciones para empresas en Tenerife.",
   },
