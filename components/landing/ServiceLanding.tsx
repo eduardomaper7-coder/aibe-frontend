@@ -119,10 +119,10 @@ const visualSets: Record<string, VisualSet> = {
     heroAlt: "Equipo revisando una estrategia de marketing digital",
     portrait: "/imagenes/pexels-olly-926390.jpg",
     portraitAlt: "Profesional trabajando en una campaña digital",
-    detail: "/imagenes/google-ads-bg.png",
-    detailAlt: "Interfaz visual de una campaña de Google Ads",
-    proof: "/imagenes/google-ads-resultados.png",
-    proofAlt: "Resultados y evolución de campañas digitales",
+    detail: "/imagenes/marketing-digital-mosaic-detail.jpg",
+    detailAlt: "Imagen conceptual de marketing digital con indicadores SEO, SEM y analítica",
+    proof: "/imagenes/marketing-digital-mosaic-proof.webp",
+    proofAlt: "Ilustración de un panel de analíticas con múltiples gráficos de rendimiento",
   },
   "diseno-web-branding-tenerife": {
     hero: "/imagenes/pexels-olly-926390.jpg",
@@ -389,7 +389,7 @@ export default function ServiceLanding({ config }: ServiceLandingProps) {
               transition={{ duration: 0.75 }}
             >
               <Image src={visuals.portrait} alt={visuals.portraitAlt} fill sizes="(max-width: 900px) 90vw, 42vw" />
-              <figcaption>Contenido con contexto real</figcaption>
+              {config.slug !== "marketing-digital-tenerife" ? <figcaption>Contenido con contexto real</figcaption> : null}
             </motion.figure>
 
             <motion.figure
