@@ -100,15 +100,15 @@ type VisualSet = {
 
 const visualSets: Record<string, VisualSet> = {
   "redes-sociales-tenerife": {
-    hero: "/imagenes/pexels-kindelmedia-6994314.jpg",
-    heroAlt: "Creadora preparando contenido digital para redes sociales",
+    hero: "/imagenes/clinica-redes-sociales.webp",
+    heroAlt: "Equipo de una clínica mostrando un producto en consulta",
     portrait: "/imagenes/recuadro2.jpg",
     portraitAlt: "Persona utilizando una red social desde el móvil",
     detail: "/imagenes/tenerife-1.jpg",
     detailAlt: "Paisaje de Tenerife conectado con la identidad local de la marca",
     proof: "/imagenes/resenas-google.png",
     proofAlt: "Panel visual con métricas y canales digitales",
-    objectPosition: "center 35%",
+    objectPosition: "center 28%",
   },
   "marketing-digital-tenerife": {
     hero: "/imagenes/pexels-fauxels-3183153.jpg",
@@ -480,7 +480,13 @@ export default function ServiceLanding({ config }: ServiceLandingProps) {
               viewport={revealViewport}
               transition={{ duration: 0.7 }}
             >
-              <Image src={visuals.hero} alt="" fill sizes="(max-width: 900px) 90vw, 38vw" />
+              <Image
+                src={visuals.hero}
+                alt=""
+                fill
+                sizes="(max-width: 900px) 90vw, 38vw"
+                style={visuals.objectPosition ? { objectPosition: visuals.objectPosition } : undefined}
+              />
               <div className={styles.processImageOverlay}>
                 <HeroIcon size={24} />
                 <span>Un proceso que se entiende de principio a fin</span>
