@@ -42,7 +42,6 @@ Se han creado cinco landing pages originales para AIBE, tomando los HTML facilit
 - `/es/diseno-web-branding-tenerife`
 - `/es/desarrollo-web-tenerife`
 - `/es/automatizacion-ia-tenerife`
-- `/es/sistemas-ciberseguridad-tenerife`
 
 Cada landing incluye hero propio, propuesta de valor, servicios, proceso de trabajo, entregables, preguntas frecuentes y formulario de contacto. Comparten la identidad visual y la navbar del index, pero utilizan contenido y composición propios.
 
@@ -54,3 +53,10 @@ También se han añadido todas las páginas al desplegable de Servicios, al men�
 - ESLint de todos los archivos modificados: sin errores.
 - Las cinco landings, el index y la landing de Redes Sociales compilaron en desarrollo y respondieron con HTTP 200.
 - La compilación completa de producción se inició correctamente, pero superó el tiempo máximo disponible durante la fase de optimización.
+
+## Ajuste de navegación y catálogo de servicios
+
+- Rediseñado el desplegable de Servicios con enlaces separados, mejor jerarquía visual y estados hover/activo.
+- Unificado en azul AIBE el color de Contacto, Servicios, Google y Buscadores con IA.
+- Eliminada la landing de Sistemas y ciberseguridad de la configuración, navegación, footer y sitemap.
+- Mejorado el contenedor de la navbar en la página inicial y en las landings de servicios.

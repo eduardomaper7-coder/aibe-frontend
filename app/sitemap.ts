@@ -11,7 +11,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/diseno-web-branding-tenerife",
     "/desarrollo-web-tenerife",
     "/automatizacion-ia-tenerife",
-    "/sistemas-ciberseguridad-tenerife",
     "/contact",
     "/login",
     "/aviso-legal",

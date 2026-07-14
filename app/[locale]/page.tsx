@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { serviceNavigation } from "@/lib/service-landings";
+import { ArrowRight, ChevronDown } from "lucide-react";
 import dynamic from "next/dynamic";
 
 
@@ -122,14 +123,21 @@ useEffect(() => {
     </button>
 
     <div className="servicesDropdown">
-      <span>Servicios</span>
+      <button type="button" className="servicesTrigger" aria-haspopup="true">
+        Servicios
+        <ChevronDown size={16} strokeWidth={2.3} aria-hidden="true" />
+      </button>
 
       <div className="dropdownMenu">
-        {serviceNavigation.map((item) => (
-          <Link key={item.slug} href={`/es/${item.slug}`}>
-            {item.label}
-          </Link>
-        ))}
+        <span className="dropdownEyebrow">Soluciones AIBE</span>
+        <div className="dropdownLinks">
+          {serviceNavigation.map((item) => (
+            <Link key={item.slug} href={`/es/${item.slug}`}>
+              <span>{item.label}</span>
+              <ArrowRight size={16} aria-hidden="true" />
+            </Link>
+          ))}
+        </div>
       </div>
     </div>
   </nav>
@@ -528,57 +536,121 @@ Escribir por WhatsApp
         }
 .servicesDropdown {
   position: relative;
+  padding: 8px 0;
 }
 
+.servicesDropdown::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: -40px;
+  width: 380px;
+  height: 18px;
+}
 
-.servicesDropdown span {
+.servicesTrigger {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 0;
+  border: 0;
+  background: transparent;
   color: #2e7bff;
-  font-weight: 700;
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 750;
+  letter-spacing: -0.015em;
   cursor: pointer;
+  transition: color .2s ease, transform .2s ease;
 }
 
+.servicesTrigger svg {
+  transition: transform .2s ease;
+}
 
 .dropdownMenu {
   position: absolute;
-  top: 35px;
+  top: calc(100% + 10px);
   left: 50%;
-  transform: translateX(-50%);
-  min-width: 285px;
-  max-height: min(70vh, 410px);
-  overflow-y: auto;
-
-
-  background: white;
-  border-radius: 16px;
-  padding: 12px;
-
-
-  box-shadow: 0 15px 40px rgba(0,0,0,.08);
-
-
+  z-index: 10;
+  width: min(348px, calc(100vw - 48px));
+  transform: translate(-50%, 10px) scale(.98);
+  transform-origin: top center;
+  padding: 16px;
+  background: rgba(255,255,255,.99);
+  border: 1px solid rgba(46,123,255,.14);
+  border-radius: 20px;
+  box-shadow: 0 24px 60px rgba(15,23,42,.16);
   opacity: 0;
   visibility: hidden;
-  transition: .25s ease;
+  pointer-events: none;
+  transition: opacity .2s ease, transform .2s ease, visibility .2s ease;
 }
 
+.dropdownEyebrow {
+  display: block;
+  padding: 2px 6px 12px;
+  color: #7a8ba8;
+  font-size: .7rem;
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
 
-.servicesDropdown:hover .dropdownMenu {
+.dropdownLinks {
+  display: grid;
+  gap: 7px;
+}
+
+.servicesDropdown:hover .dropdownMenu,
+.servicesDropdown:focus-within .dropdownMenu {
   opacity: 1;
   visibility: visible;
+  pointer-events: auto;
+  transform: translate(-50%, 0) scale(1);
 }
 
+.servicesDropdown:hover .servicesTrigger svg,
+.servicesDropdown:focus-within .servicesTrigger svg {
+  transform: rotate(180deg);
+}
 
 .dropdownMenu a {
-  display: block;
-  padding: 10px 12px;
-  border-radius: 10px;
-  color: #111;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  padding: 12px 13px;
+  border: 1px solid transparent;
+  border-radius: 13px;
+  background: #f7faff;
+  color: #2e7bff;
   text-decoration: none;
+  font-size: .92rem;
+  font-weight: 720;
+  line-height: 1.25;
+  white-space: normal;
+  transition: background .2s ease, border-color .2s ease, color .2s ease, transform .2s ease;
 }
 
+.dropdownMenu a svg {
+  flex: 0 0 auto;
+  opacity: .55;
+  transition: transform .2s ease, opacity .2s ease;
+}
 
 .dropdownMenu a:hover {
-  background: #f5f7fb;
+  background: #edf4ff;
+  border-color: rgba(46,123,255,.18);
+  color: #0b56d4;
+  transform: translateX(2px);
+}
+
+.dropdownMenu a:hover svg {
+  opacity: 1;
+  transform: translateX(2px);
 }
 
 
@@ -674,11 +746,11 @@ Escribir por WhatsApp
 
         .heroHeader {
   position: fixed;
-  top: 30px;
+  top: 24px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 1000;
-  width: min(92%, 1200px);
+  width: min(calc(100% - 48px), 1240px);
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
@@ -695,10 +767,10 @@ Escribir por WhatsApp
   background: #ffffff !important;
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  border-radius: 999px;
-  padding: 14px 28px;
-  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(46, 123, 255, 0.12);
+  border-radius: 28px;
+  padding: 12px 24px;
+  box-shadow: 0 18px 50px rgba(15, 23, 42, 0.11);
 }
 
 
@@ -739,8 +811,9 @@ Escribir por WhatsApp
 
 
 
-        .navSide a,
-        .navButton {
+        .navSide > a,
+        .navButton,
+        .servicesTrigger {
           color: #2e7bff;
           text-decoration: none;
           font-family: "Montserrat", sans-serif;
@@ -769,8 +842,9 @@ Escribir por WhatsApp
 
 
 
-        .navSide a:hover,
-        .navButton:hover {
+        .navSide > a:hover,
+        .navButton:hover,
+        .servicesTrigger:hover {
           color: #001a5c;
           transform: translateY(-1px);
           background: transparent;
