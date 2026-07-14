@@ -69,3 +69,14 @@ También se han añadido todas las páginas al desplegable de Servicios, al men�
 - Desplegable de Servicios simplificado con el encabezado “Soluciones AIBE” y una lista limpia, sin tarjetas ni iconos laterales.
 - Mismo diseño aplicado al inicio y a todas las landing pages de servicios.
 - Se mantiene el menú móvil responsive existente.
+
+## Landings visuales y animadas
+
+- Se ha renovado el componente compartido de las landing pages de servicios.
+- Se han añadido composiciones fotográficas específicas para cada servicio.
+- Se han incorporado animaciones de entrada al hacer scroll con Framer Motion.
+- Se han añadido tarjetas flotantes, indicadores dinámicos, una banda de contenidos en movimiento y microinteracciones en tarjetas.
+- El proceso, entregables y resultados incluyen ahora recursos visuales y capturas de apoyo.
+- Las animaciones respetan `prefers-reduced-motion` para mejorar la accesibilidad.
+- Se mantiene la navbar compartida y unificada en todas las páginas.
+- Rutas comprobadas con respuesta HTTP 200: Redes Sociales, Marketing Digital, Diseño y Branding, Desarrollo Web y Automatización con IA.

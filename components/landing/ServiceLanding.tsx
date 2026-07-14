@@ -1,9 +1,12 @@
 "use client";
 
 import { FormEvent, useState, type CSSProperties } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { motion, useReducedMotion } from "framer-motion";
 import {
+  ArrowRight,
   BadgeEuro,
   Blocks,
   BrainCircuit,
@@ -38,13 +41,13 @@ import {
   Target,
   Workflow,
   Wrench,
-  ArrowRight,
   type LucideIcon,
 } from "lucide-react";
 
 import Footer from "@/components/ui/Footer";
 import SiteNavbar from "@/components/ui/SiteNavbar";
 import { type ServiceLandingConfig } from "@/lib/service-landings";
+import styles from "./ServiceLanding.module.css";
 
 const WHATSAPP_NUMBER = "34686012685";
 
@@ -83,17 +86,90 @@ const iconMap: Record<string, LucideIcon> = {
   Wrench,
 };
 
+type VisualSet = {
+  hero: string;
+  heroAlt: string;
+  portrait: string;
+  portraitAlt: string;
+  detail: string;
+  detailAlt: string;
+  proof: string;
+  proofAlt: string;
+  objectPosition?: string;
+};
+
+const visualSets: Record<string, VisualSet> = {
+  "redes-sociales-tenerife": {
+    hero: "/imagenes/pexels-kindelmedia-6994314.jpg",
+    heroAlt: "Creadora preparando contenido digital para redes sociales",
+    portrait: "/imagenes/recuadro2.jpg",
+    portraitAlt: "Persona utilizando una red social desde el móvil",
+    detail: "/imagenes/tenerife-1.jpg",
+    detailAlt: "Paisaje de Tenerife conectado con la identidad local de la marca",
+    proof: "/imagenes/resenas-google.png",
+    proofAlt: "Panel visual con métricas y canales digitales",
+    objectPosition: "center 35%",
+  },
+  "marketing-digital-tenerife": {
+    hero: "/imagenes/pexels-fauxels-3183153.jpg",
+    heroAlt: "Equipo revisando una estrategia de marketing digital",
+    portrait: "/imagenes/pexels-olly-926390.jpg",
+    portraitAlt: "Profesional trabajando en una campaña digital",
+    detail: "/imagenes/google-ads-bg.png",
+    detailAlt: "Interfaz visual de una campaña de Google Ads",
+    proof: "/imagenes/google-ads-resultados.png",
+    proofAlt: "Resultados y evolución de campañas digitales",
+  },
+  "diseno-web-branding-tenerife": {
+    hero: "/imagenes/pexels-olly-926390.jpg",
+    heroAlt: "Profesional desarrollando una propuesta visual para una marca",
+    portrait: "/imagenes/imagen-hero-3.jpg",
+    portraitAlt: "Identidad gráfica aplicada a un negocio real",
+    detail: "/imagenes/imagen-hero-1.png",
+    detailAlt: "Fachada de negocio con una identidad visual reconocible",
+    proof: "/imagenes/pexels-fauxels-3183153.jpg",
+    proofAlt: "Equipo colaborando en el diseño de una experiencia digital",
+  },
+  "desarrollo-web-tenerife": {
+    hero: "/imagenes/pexels-serpstat-177219-572056.jpg",
+    heroAlt: "Espacio de trabajo con una web y datos de rendimiento",
+    portrait: "/imagenes/pexels-fauxels-3183153.jpg",
+    portraitAlt: "Equipo coordinando el desarrollo de una solución web",
+    detail: "/imagenes/trafico-web-clinica.png",
+    detailAlt: "Proyecto web orientado a aumentar el tráfico y las conversiones",
+    proof: "/imagenes/hero-resenas.png",
+    proofAlt: "Panel digital de gestión y seguimiento de resultados",
+  },
+  "automatizacion-ia-tenerife": {
+    hero: "/imagenes/pexels-cottonbro-6153354.jpg",
+    heroAlt: "Colaboración entre una persona y un sistema de inteligencia artificial",
+    portrait: "/imagenes/hero-imagen.png",
+    portraitAlt: "Automatización ejecutándose desde un dispositivo móvil",
+    detail: "/imagenes/resenas-google.png",
+    detailAlt: "Ecosistema de herramientas digitales conectadas mediante automatización",
+    proof: "/imagenes/pexels-fauxels-3183153.jpg",
+    proofAlt: "Equipo analizando procesos que pueden automatizarse",
+  },
+};
+
 type ServiceLandingProps = {
   config: ServiceLandingConfig;
 };
+
+const viewport = { once: true, amount: 0.22 };
 
 export default function ServiceLanding({ config }: ServiceLandingProps) {
   const params = useParams();
   const locale = String(params?.locale ?? "es");
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [loading, setLoading] = useState(false);
+  const reduceMotion = useReducedMotion();
 
   const HeroIcon = iconMap[config.heroIcon] ?? Sparkles;
+  const visuals = visualSets[config.slug] ?? visualSets["marketing-digital-tenerife"];
+
+  const revealInitial = reduceMotion ? false : { opacity: 0, y: 34 };
+  const revealViewport = reduceMotion ? undefined : viewport;
 
   const scrollToContact = () => {
     document
@@ -150,24 +226,35 @@ export default function ServiceLanding({ config }: ServiceLandingProps) {
     "--accent-ink": config.accentInk,
   } as CSSProperties;
 
+  const tickerItems = [
+    ...config.heroKeywords,
+    ...config.capabilities.slice(0, 4).map((item) => item.title),
+  ];
+
   return (
-    <div className="servicePage" style={themeStyle}>
+    <div className={styles.page} style={themeStyle}>
       <SiteNavbar activeServiceSlug={config.slug} />
 
-      <main>
-        <section className="serviceHero">
-          <div className="heroGlow heroGlowOne" />
-          <div className="heroGlow heroGlowTwo" />
+      <main className={styles.main}>
+        <section className={styles.hero}>
+          <div className={styles.heroGrid} />
+          <div className={`${styles.orb} ${styles.orbOne}`} />
+          <div className={`${styles.orb} ${styles.orbTwo}`} />
 
-          <div className="heroCopy">
-            <span className="eyebrow">{config.eyebrow}</span>
+          <motion.div
+            className={styles.heroCopy}
+            initial={reduceMotion ? false : { opacity: 0, x: -36 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <span className={styles.eyebrow}>{config.eyebrow}</span>
             <h1>
               {config.title} <strong>{config.highlightedTitle}</strong>
             </h1>
             <p>{config.description}</p>
 
-            <div className="heroActions">
-              <button type="button" className="primaryButton" onClick={scrollToContact}>
+            <div className={styles.heroActions}>
+              <button type="button" className={styles.primaryButton} onClick={scrollToContact}>
                 Solicitar una valoración
                 <ArrowRight size={18} aria-hidden="true" />
               </button>
@@ -175,170 +262,329 @@ export default function ServiceLanding({ config }: ServiceLandingProps) {
                 href={`https://wa.me/${WHATSAPP_NUMBER}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="secondaryButton"
+                className={styles.secondaryButton}
               >
                 Hablar por WhatsApp
               </a>
             </div>
 
-            <div className="heroNote">
-              <span className="noteDot" />
+            <div className={styles.heroNote}>
+              <span className={styles.noteDot} />
               Primera conversación sin compromiso · Respuesta en menos de 24h
             </div>
-          </div>
+          </motion.div>
 
-          <div className="heroVisual" aria-hidden="true">
-            <div className="visualTopline">
-              <span className="visualBrand">
-                <HeroIcon size={20} />
-                AIBE / {config.navLabel}
-              </span>
-              <span className="statusPill">En evolución</span>
-            </div>
-
-            <div className="visualCore">
-              <div className="coreIcon">
-                <HeroIcon size={38} strokeWidth={1.8} />
-              </div>
-              <div>
-                <span className="visualOverline">Objetivo compartido</span>
+          <motion.div
+            className={styles.heroMedia}
+            initial={reduceMotion ? false : { opacity: 0, scale: 0.92, rotate: 2 }}
+            animate={{ opacity: 1, scale: 1, rotate: 0 }}
+            transition={{ duration: 0.85, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <div className={styles.heroPhoto}>
+              <Image
+                src={visuals.hero}
+                alt={visuals.heroAlt}
+                fill
+                priority
+                sizes="(max-width: 1000px) 90vw, 46vw"
+                style={{ objectPosition: visuals.objectPosition }}
+              />
+              <div className={styles.photoVeil} />
+              <div className={styles.photoCaption}>
+                <span>AIBE / {config.navLabel}</span>
                 <strong>{config.highlightedTitle}</strong>
               </div>
             </div>
 
-            <div className="signalGrid">
-              {config.heroSignals.map((signal) => (
-                <div className="signalCard" key={signal.label}>
+            <div className={styles.floatingStatus}>
+              <span className={styles.liveDot} />
+              Estrategia en movimiento
+            </div>
+
+            <div className={styles.floatingIcon} aria-hidden="true">
+              <HeroIcon size={31} strokeWidth={1.8} />
+            </div>
+
+            <div className={styles.heroDashboard}>
+              {config.heroSignals.map((signal, index) => (
+                <div className={styles.dashboardItem} key={signal.label}>
                   <span>{signal.label}</span>
                   <strong>{signal.value}</strong>
-                  <i />
+                  <i style={{ width: `${72 + index * 9}%` }} />
                 </div>
               ))}
             </div>
+          </motion.div>
+        </section>
 
-            <div className="keywordRail">
+        <div className={styles.marquee} aria-label="Áreas del servicio">
+          <div className={styles.marqueeTrack}>
+            {[...tickerItems, ...tickerItems].map((item, index) => (
+              <span key={`${item}-${index}`}>
+                <Sparkles size={15} aria-hidden="true" />
+                {item}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        <motion.section
+          className={styles.outcomes}
+          initial={revealInitial}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={revealViewport}
+          transition={{ duration: 0.65 }}
+        >
+          <div className={styles.outcomeIntro}>
+            <span className={styles.sectionEyebrow}>Enfoque AIBE</span>
+            <h2>{config.outcomeTitle}</h2>
+          </div>
+          <div className={styles.outcomeGrid}>
+            {config.outcomes.map((outcome, index) => (
+              <motion.article
+                key={outcome.label}
+                initial={reduceMotion ? false : { opacity: 0, y: 26 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={revealViewport}
+                transition={{ duration: 0.5, delay: index * 0.08 }}
+                whileHover={reduceMotion ? undefined : { y: -8 }}
+              >
+                <strong>{outcome.value}</strong>
+                <p>{outcome.label}</p>
+              </motion.article>
+            ))}
+          </div>
+        </motion.section>
+
+        <section className={styles.visualStory}>
+          <motion.div
+            className={styles.storyCopy}
+            initial={revealInitial}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={revealViewport}
+            transition={{ duration: 0.65 }}
+          >
+            <span className={styles.sectionEyebrow}>Una experiencia más visual</span>
+            <h2>Ideas que se pueden ver, tocar y entender.</h2>
+            <p>
+              Combinamos estrategia con materiales visuales, prototipos y datos para que cada decisión sea más clara y el resultado conecte mejor con las personas.
+            </p>
+            <div className={styles.storyTags}>
               {config.heroKeywords.map((keyword) => (
                 <span key={keyword}>{keyword}</span>
               ))}
             </div>
+          </motion.div>
+
+          <div className={styles.mosaic}>
+            <motion.figure
+              className={styles.mosaicMain}
+              initial={reduceMotion ? false : { opacity: 0, x: 45, rotate: 2 }}
+              whileInView={{ opacity: 1, x: 0, rotate: 0 }}
+              viewport={revealViewport}
+              transition={{ duration: 0.75 }}
+            >
+              <Image src={visuals.portrait} alt={visuals.portraitAlt} fill sizes="(max-width: 900px) 90vw, 42vw" />
+              <figcaption>Contenido con contexto real</figcaption>
+            </motion.figure>
+
+            <motion.figure
+              className={styles.mosaicDetail}
+              initial={reduceMotion ? false : { opacity: 0, y: 45 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={revealViewport}
+              transition={{ duration: 0.65, delay: 0.12 }}
+            >
+              <Image src={visuals.detail} alt={visuals.detailAlt} fill sizes="(max-width: 900px) 43vw, 20vw" />
+            </motion.figure>
+
+            <motion.figure
+              className={styles.mosaicProof}
+              initial={reduceMotion ? false : { opacity: 0, y: -35 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={revealViewport}
+              transition={{ duration: 0.65, delay: 0.2 }}
+            >
+              <Image src={visuals.proof} alt={visuals.proofAlt} fill sizes="(max-width: 900px) 43vw, 20vw" />
+              <span className={styles.proofBadge}>
+                <ChartNoAxesCombined size={16} /> Resultados visibles
+              </span>
+            </motion.figure>
           </div>
         </section>
 
-        <section className="outcomeSection">
-          <div className="outcomeIntro">
-            <span>Enfoque AIBE</span>
-            <h2>{config.outcomeTitle}</h2>
-          </div>
-          <div className="outcomeGrid">
-            {config.outcomes.map((outcome) => (
-              <article key={outcome.label}>
-                <strong>{outcome.value}</strong>
-                <p>{outcome.label}</p>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        <section className="capabilitiesSection">
-          <div className="sectionHeading">
-            <span className="sectionEyebrow">{config.capabilitiesEyebrow}</span>
+        <section className={styles.capabilities}>
+          <motion.div
+            className={styles.sectionHeading}
+            initial={revealInitial}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={revealViewport}
+            transition={{ duration: 0.65 }}
+          >
+            <span className={styles.sectionEyebrow}>{config.capabilitiesEyebrow}</span>
             <h2>{config.capabilitiesTitle}</h2>
             <p>{config.capabilitiesIntro}</p>
-          </div>
+          </motion.div>
 
-          <div className="capabilityGrid">
+          <div className={styles.capabilityGrid}>
             {config.capabilities.map((capability, index) => {
               const CapabilityIcon = iconMap[capability.icon] ?? Sparkles;
               return (
-                <article className="capabilityCard" key={capability.title}>
-                  <div className="cardTopline">
-                    <span className="capabilityIcon">
-                      <CapabilityIcon size={24} strokeWidth={1.8} />
+                <motion.article
+                  className={styles.capabilityCard}
+                  key={capability.title}
+                  initial={reduceMotion ? false : { opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={revealViewport}
+                  transition={{ duration: 0.5, delay: (index % 3) * 0.08 }}
+                  whileHover={reduceMotion ? undefined : { y: -10, rotate: index % 2 ? 0.5 : -0.5 }}
+                >
+                  <div className={styles.cardGlow} />
+                  <div className={styles.cardTopline}>
+                    <span className={styles.capabilityIcon}>
+                      <CapabilityIcon size={25} strokeWidth={1.8} />
                     </span>
-                    <span className="cardIndex">0{index + 1}</span>
+                    <span className={styles.cardIndex}>0{index + 1}</span>
                   </div>
                   <h3>{capability.title}</h3>
                   <p>{capability.description}</p>
-                </article>
+                  <span className={styles.cardArrow} aria-hidden="true">
+                    <ArrowRight size={18} />
+                  </span>
+                </motion.article>
               );
             })}
           </div>
         </section>
 
-        <section className="processSection">
-          <div className="processHeader">
+        <section className={styles.process}>
+          <motion.div
+            className={styles.processHeader}
+            initial={revealInitial}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={revealViewport}
+            transition={{ duration: 0.65 }}
+          >
             <div>
-              <span className="sectionEyebrow">{config.processEyebrow}</span>
+              <span className={styles.sectionEyebrow}>{config.processEyebrow}</span>
               <h2>{config.processTitle}</h2>
             </div>
             <p>{config.processIntro}</p>
-          </div>
+          </motion.div>
 
-          <div className="processList">
-            {config.process.map((step) => (
-              <article className="processStep" key={step.number}>
-                <span className="processNumber">{step.number}</span>
-                <div className="processLine" />
-                <div>
-                  <h3>{step.title}</h3>
-                  <p>{step.description}</p>
-                </div>
-              </article>
-            ))}
+          <div className={styles.processLayout}>
+            <motion.div
+              className={styles.processImage}
+              initial={reduceMotion ? false : { opacity: 0, scale: 0.94 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={revealViewport}
+              transition={{ duration: 0.7 }}
+            >
+              <Image src={visuals.hero} alt="" fill sizes="(max-width: 900px) 90vw, 38vw" />
+              <div className={styles.processImageOverlay}>
+                <HeroIcon size={24} />
+                <span>Un proceso que se entiende de principio a fin</span>
+              </div>
+            </motion.div>
+
+            <div className={styles.processList}>
+              {config.process.map((step, index) => (
+                <motion.article
+                  className={styles.processStep}
+                  key={step.number}
+                  initial={reduceMotion ? false : { opacity: 0, x: 35 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={revealViewport}
+                  transition={{ duration: 0.5, delay: index * 0.09 }}
+                >
+                  <span className={styles.processNumber}>{step.number}</span>
+                  <div>
+                    <h3>{step.title}</h3>
+                    <p>{step.description}</p>
+                  </div>
+                </motion.article>
+              ))}
+            </div>
           </div>
         </section>
 
-        <section className="deliverablesSection">
-          <div className="deliverablesCopy">
-            <span className="sectionEyebrow light">{config.deliverablesEyebrow}</span>
+        <section className={styles.deliverables}>
+          <div className={styles.deliverablesGlow} />
+          <motion.div
+            className={styles.deliverablesCopy}
+            initial={revealInitial}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={revealViewport}
+            transition={{ duration: 0.65 }}
+          >
+            <span className={`${styles.sectionEyebrow} ${styles.lightEyebrow}`}>{config.deliverablesEyebrow}</span>
             <h2>{config.deliverablesTitle}</h2>
             <p>{config.deliverablesDescription}</p>
 
             <ul>
-              {config.deliverables.map((item) => (
-                <li key={item}>
-                  <span>
-                    <Check size={17} strokeWidth={2.5} />
-                  </span>
+              {config.deliverables.map((item, index) => (
+                <motion.li
+                  key={item}
+                  initial={reduceMotion ? false : { opacity: 0, x: -22 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={revealViewport}
+                  transition={{ duration: 0.4, delay: index * 0.07 }}
+                >
+                  <span><Check size={17} strokeWidth={2.5} /></span>
                   {item}
-                </li>
+                </motion.li>
               ))}
             </ul>
-          </div>
+          </motion.div>
 
-          <div className="deliverablesVisual">
-            <div className="sideCard">
-              <div className="sideCardHeader">
-                <span className="sideCardIcon">
-                  <HeroIcon size={25} />
-                </span>
-                <span>AIBE SYSTEM</span>
+          <motion.div
+            className={styles.resultStage}
+            initial={reduceMotion ? false : { opacity: 0, scale: 0.92, rotate: 2 }}
+            whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
+            viewport={revealViewport}
+            transition={{ duration: 0.75 }}
+          >
+            <div className={styles.resultImage}>
+              <Image src={visuals.proof} alt={visuals.proofAlt} fill sizes="(max-width: 900px) 90vw, 42vw" />
+            </div>
+            <div className={styles.resultCard}>
+              <div className={styles.resultCardHeader}>
+                <span><HeroIcon size={23} /></span>
+                AIBE SYSTEM
               </div>
               <h3>{config.sideCardTitle}</h3>
               <p>{config.sideCardText}</p>
-              <div className="sideCardItems">
-                {config.sideCardItems.map((item, index) => (
-                  <div key={item}>
-                    <span>{String(index + 1).padStart(2, "0")}</span>
-                    <strong>{item}</strong>
-                  </div>
-                ))}
+              <div className={styles.resultPills}>
+                {config.sideCardItems.map((item) => <span key={item}>{item}</span>)}
               </div>
             </div>
-          </div>
+          </motion.div>
         </section>
 
-        <section className="faqSection">
-          <div className="faqHeading">
-            <span className="sectionEyebrow">{config.faqEyebrow}</span>
+        <section className={styles.faq}>
+          <motion.div
+            className={styles.faqHeading}
+            initial={revealInitial}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={revealViewport}
+            transition={{ duration: 0.65 }}
+          >
+            <span className={styles.sectionEyebrow}>{config.faqEyebrow}</span>
             <h2>{config.faqTitle}</h2>
-          </div>
+          </motion.div>
 
-          <div className="faqList">
+          <div className={styles.faqList}>
             {config.faqs.map((faq, index) => {
               const isOpen = openFaq === index;
               return (
-                <article className={`faqItem ${isOpen ? "open" : ""}`} key={faq.question}>
+                <motion.article
+                  className={`${styles.faqItem} ${isOpen ? styles.faqOpen : ""}`}
+                  key={faq.question}
+                  initial={reduceMotion ? false : { opacity: 0, y: 18 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={revealViewport}
+                  transition={{ duration: 0.4, delay: index * 0.05 }}
+                >
                   <button
                     type="button"
                     onClick={() => setOpenFaq(isOpen ? null : index)}
@@ -347,22 +593,28 @@ export default function ServiceLanding({ config }: ServiceLandingProps) {
                     <span>{faq.question}</span>
                     <ChevronDown size={22} />
                   </button>
-                  <div className="faqAnswer">
+                  <div className={styles.faqAnswer}>
                     <p>{faq.answer}</p>
                   </div>
-                </article>
+                </motion.article>
               );
             })}
           </div>
         </section>
 
-        <section className="contactSection" id="contacto">
-          <div className="contactCopy">
-            <span className="sectionEyebrow">Primer paso</span>
+        <section className={styles.contact} id="contacto">
+          <motion.div
+            className={styles.contactCopy}
+            initial={revealInitial}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={revealViewport}
+            transition={{ duration: 0.65 }}
+          >
+            <span className={styles.sectionEyebrow}>Primer paso</span>
             <h2>{config.contactTitle}</h2>
             <p>{config.contactText}</p>
 
-            <div className="contactRoutes">
+            <div className={styles.contactRoutes}>
               <a href="mailto:info@aibetech.es">
                 <span>Email</span>
                 <strong>info@aibetech.es</strong>
@@ -371,23 +623,25 @@ export default function ServiceLanding({ config }: ServiceLandingProps) {
                 <span>Teléfono</span>
                 <strong>686 01 26 85</strong>
               </a>
-              <a
-                href={`https://wa.me/${WHATSAPP_NUMBER}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
+              <a href={`https://wa.me/${WHATSAPP_NUMBER}`} target="_blank" rel="noopener noreferrer">
                 <span>WhatsApp</span>
                 <strong>Escribir ahora ↗</strong>
               </a>
             </div>
-          </div>
+          </motion.div>
 
-          <div className="contactCard">
-            <span className="formLabel">Solicitud de información</span>
+          <motion.div
+            className={styles.contactCard}
+            initial={reduceMotion ? false : { opacity: 0, y: 35, scale: 0.97 }}
+            whileInView={{ opacity: 1, y: 0, scale: 1 }}
+            viewport={revealViewport}
+            transition={{ duration: 0.7 }}
+          >
+            <span className={styles.formLabel}>Solicitud de información</span>
             <h3>Cuéntanos brevemente tu situación</h3>
 
             <form onSubmit={handleSubmit}>
-              <div className="formRow">
+              <div className={styles.formRow}>
                 <label>
                   Nombre
                   <input name="nombre" type="text" autoComplete="name" required />
@@ -398,7 +652,7 @@ export default function ServiceLanding({ config }: ServiceLandingProps) {
                 </label>
               </div>
 
-              <div className="formRow">
+              <div className={styles.formRow}>
                 <label>
                   Email
                   <input name="email" type="email" autoComplete="email" required />
@@ -419,1454 +673,24 @@ export default function ServiceLanding({ config }: ServiceLandingProps) {
                 <textarea name="mensaje" rows={5} required />
               </label>
 
-              <label className="legalCheck">
+              <label className={styles.legalCheck}>
                 <input type="checkbox" required />
                 <span>
                   Acepto el <Link href={`/${locale}/aviso-legal`}>Aviso Legal</Link> y la{" "}
-                  <Link href={`/${locale}/politica-privacidad`}>
-                    Política de Privacidad
-                  </Link>
-                  .
+                  <Link href={`/${locale}/politica-privacidad`}>Política de Privacidad</Link>.
                 </span>
               </label>
 
-              <button type="submit" className="submitButton" disabled={loading}>
+              <button type="submit" className={styles.submitButton} disabled={loading}>
                 {loading ? "Enviando..." : "Solicitar valoración"}
                 {!loading && <ArrowRight size={18} />}
               </button>
             </form>
-          </div>
+          </motion.div>
         </section>
       </main>
 
       <Footer />
-
-      <style jsx>{`
-        .servicePage {
-          min-height: 100vh;
-          background: #ffffff;
-          color: #111827;
-          font-family: "Montserrat", Arial, sans-serif;
-        }
-
-        .serviceHeader {
-          position: fixed;
-          top: 16px;
-          left: 50%;
-          z-index: 1000;
-          width: calc(100% - 48px);
-          max-width: 1360px;
-          min-height: 92px;
-          transform: translateX(-50%);
-          display: grid;
-          grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-          align-items: center;
-          padding: 12px 36px;
-          background: #ffffff;
-          border: 1px solid #dce8fa;
-          border-radius: 28px;
-          box-shadow: 0 22px 54px rgba(15, 23, 42, 0.1);
-        }
-
-        .logoLink {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          text-decoration: none;
-        }
-
-        .headerLogo {
-          display: block;
-          width: 190px;
-          height: auto;
-        }
-
-        .navSide {
-          display: flex;
-          align-items: center;
-        }
-
-        .navLeft {
-          justify-content: flex-end;
-          gap: clamp(26px, 3vw, 44px);
-          padding-right: clamp(38px, 5vw, 74px);
-        }
-
-        .navRight {
-          justify-content: flex-start;
-          gap: clamp(26px, 3vw, 44px);
-          padding-left: clamp(38px, 5vw, 74px);
-        }
-
-        .navSide > a,
-        .navButton,
-        .servicesTrigger {
-          appearance: none;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          gap: 7px;
-          padding: 8px 0;
-          border: 0;
-          background: transparent;
-          color: #3478f6;
-          text-decoration: none;
-          font: inherit;
-          font-size: 1rem;
-          font-weight: 750;
-          letter-spacing: -0.015em;
-          line-height: 1.2;
-          white-space: nowrap;
-          cursor: pointer;
-          transition: color 0.2s ease, transform 0.2s ease;
-        }
-
-        .navSide > a:hover,
-        .navButton:hover,
-        .servicesTrigger:hover {
-          color: #0b56d4;
-          transform: translateY(-1px);
-        }
-
-        .servicesDropdown {
-          position: relative;
-          padding: 8px 0;
-        }
-
-        .servicesDropdown::after {
-          content: "";
-          position: absolute;
-          top: 100%;
-          left: -26px;
-          width: 360px;
-          height: 18px;
-        }
-
-        .servicesTrigger svg {
-          transition: transform 0.2s ease;
-        }
-
-        .dropdownMenu {
-          position: absolute;
-          top: calc(100% + 9px);
-          left: 50%;
-          z-index: 10;
-          width: min(348px, calc(100vw - 48px));
-          padding: 18px 16px 17px;
-          transform: translate(-50%, 10px);
-          transform-origin: top center;
-          background: #ffffff;
-          border: 1px solid #dce8fa;
-          border-radius: 18px;
-          box-shadow: 0 24px 60px rgba(15, 23, 42, 0.14);
-          opacity: 0;
-          visibility: hidden;
-          pointer-events: none;
-          transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
-        }
-
-        .dropdownEyebrow {
-          display: block;
-          padding: 0 6px 11px;
-          color: #7e8eac;
-          font-size: 0.72rem;
-          font-weight: 800;
-          letter-spacing: 0.12em;
-          text-transform: uppercase;
-        }
-
-        .dropdownLinks {
-          display: grid;
-          gap: 0;
-        }
-
-        .servicesDropdown:hover .dropdownMenu,
-        .servicesDropdown:focus-within .dropdownMenu {
-          opacity: 1;
-          visibility: visible;
-          pointer-events: auto;
-          transform: translate(-50%, 0);
-        }
-
-        .servicesDropdown:hover .servicesTrigger svg,
-        .servicesDropdown:focus-within .servicesTrigger svg {
-          transform: rotate(180deg);
-        }
-
-        .dropdownMenu a {
-          display: block;
-          width: 100%;
-          padding: 5px 0;
-          color: #171717;
-          text-decoration: none;
-          font-size: 1rem;
-          font-weight: 520;
-          line-height: 1.28;
-          letter-spacing: -0.012em;
-          transition: color 0.18s ease, transform 0.18s ease;
-        }
-
-        .dropdownMenu a:hover,
-        .dropdownMenu a.active {
-          color: #3478f6;
-          transform: translateX(3px);
-        }
-
-        .mobileHeaderActions,
-        .mobileMenu {
-          display: none;
-        }
-
-        main {
-          overflow: hidden;
-        }
-
-        .serviceHero {
-          position: relative;
-          min-height: 820px;
-          padding: 190px max(6vw, 24px) 105px;
-          display: grid;
-          grid-template-columns: minmax(0, 1.03fr) minmax(420px, 0.97fr);
-          align-items: center;
-          gap: clamp(60px, 8vw, 120px);
-          background:
-            linear-gradient(135deg, rgba(var(--accent-rgb), 0.05), transparent 42%),
-            #f8fafc;
-          isolation: isolate;
-        }
-
-        .serviceHero::before {
-          content: "";
-          position: absolute;
-          inset: 0;
-          z-index: -3;
-          background-image: radial-gradient(rgba(15, 23, 42, 0.09) 0.8px, transparent 0.8px);
-          background-size: 28px 28px;
-          mask-image: linear-gradient(to right, black, transparent 74%);
-          opacity: 0.45;
-        }
-
-        .heroGlow {
-          position: absolute;
-          z-index: -2;
-          border-radius: 50%;
-          filter: blur(10px);
-          pointer-events: none;
-        }
-
-        .heroGlowOne {
-          width: 430px;
-          height: 430px;
-          right: 6%;
-          top: 18%;
-          background: rgba(var(--accent-rgb), 0.16);
-        }
-
-        .heroGlowTwo {
-          width: 280px;
-          height: 280px;
-          left: -90px;
-          bottom: -80px;
-          background: rgba(46, 123, 255, 0.1);
-        }
-
-        .heroCopy {
-          position: relative;
-          z-index: 2;
-          max-width: 760px;
-        }
-
-        .eyebrow,
-        .sectionEyebrow {
-          display: inline-flex;
-          align-items: center;
-          width: fit-content;
-          padding: 8px 13px;
-          border: 1px solid rgba(var(--accent-rgb), 0.24);
-          border-radius: 999px;
-          background: rgba(255, 255, 255, 0.75);
-          color: var(--accent-ink);
-          font-size: 0.78rem;
-          font-weight: 800;
-          letter-spacing: 0.08em;
-          text-transform: uppercase;
-        }
-
-        .heroCopy h1 {
-          margin: 26px 0 26px;
-          color: #0b1220;
-          font-size: clamp(3.6rem, 6.3vw, 6.9rem);
-          line-height: 0.94;
-          letter-spacing: -0.066em;
-          font-weight: 780;
-        }
-
-        .heroCopy h1 strong {
-          display: inline;
-          color: var(--accent);
-          font-weight: 820;
-        }
-
-        .heroCopy > p {
-          max-width: 700px;
-          margin: 0;
-          color: #526075;
-          font-size: clamp(1.08rem, 1.5vw, 1.28rem);
-          line-height: 1.68;
-          font-weight: 520;
-        }
-
-        .heroActions {
-          display: flex;
-          align-items: center;
-          gap: 14px;
-          margin-top: 36px;
-        }
-
-        .primaryButton,
-        .secondaryButton,
-        .submitButton {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          gap: 9px;
-          min-height: 54px;
-          padding: 0 25px;
-          border-radius: 999px;
-          font: inherit;
-          font-weight: 750;
-          text-decoration: none;
-          cursor: pointer;
-          transition: transform 0.22s ease, box-shadow 0.22s ease, background 0.22s ease;
-        }
-
-        .primaryButton,
-        .submitButton {
-          border: 1px solid var(--accent);
-          background: var(--accent);
-          color: #ffffff;
-          box-shadow: 0 16px 34px rgba(var(--accent-rgb), 0.28);
-        }
-
-        .secondaryButton {
-          border: 1px solid #d8e0eb;
-          background: rgba(255, 255, 255, 0.86);
-          color: #182033;
-        }
-
-        .primaryButton:hover,
-        .secondaryButton:hover,
-        .submitButton:hover:not(:disabled) {
-          transform: translateY(-3px);
-        }
-
-        .primaryButton:hover,
-        .submitButton:hover:not(:disabled) {
-          box-shadow: 0 20px 42px rgba(var(--accent-rgb), 0.34);
-        }
-
-        .heroNote {
-          display: flex;
-          align-items: center;
-          gap: 9px;
-          margin-top: 20px;
-          color: #69758a;
-          font-size: 0.87rem;
-          font-weight: 600;
-        }
-
-        .noteDot {
-          width: 8px;
-          height: 8px;
-          border-radius: 50%;
-          background: #32c36c;
-          box-shadow: 0 0 0 5px rgba(50, 195, 108, 0.12);
-        }
-
-        .heroVisual {
-          position: relative;
-          z-index: 2;
-          width: min(100%, 570px);
-          justify-self: center;
-          padding: 22px;
-          border: 1px solid rgba(255, 255, 255, 0.9);
-          border-radius: 34px;
-          background: rgba(255, 255, 255, 0.76);
-          box-shadow: 0 34px 90px rgba(15, 23, 42, 0.16);
-          backdrop-filter: blur(22px);
-          transform: rotate(1.5deg);
-        }
-
-        .heroVisual::after {
-          content: "";
-          position: absolute;
-          inset: 16px -18px -18px 18px;
-          z-index: -1;
-          border-radius: 34px;
-          border: 1px solid rgba(var(--accent-rgb), 0.24);
-          background: rgba(var(--accent-rgb), 0.07);
-        }
-
-        .visualTopline,
-        .sideCardHeader {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 16px;
-        }
-
-        .visualBrand {
-          display: flex;
-          align-items: center;
-          gap: 9px;
-          color: #223047;
-          font-size: 0.82rem;
-          font-weight: 800;
-          letter-spacing: 0.04em;
-          text-transform: uppercase;
-        }
-
-        .visualBrand :global(svg),
-        .coreIcon :global(svg),
-        .capabilityIcon :global(svg),
-        .sideCardIcon :global(svg) {
-          color: var(--accent);
-        }
-
-        .statusPill {
-          padding: 7px 10px;
-          border-radius: 999px;
-          background: #eefbf3;
-          color: #23834a;
-          font-size: 0.72rem;
-          font-weight: 800;
-          text-transform: uppercase;
-          letter-spacing: 0.06em;
-        }
-
-        .visualCore {
-          display: flex;
-          align-items: center;
-          gap: 18px;
-          min-height: 160px;
-          margin-top: 18px;
-          padding: 26px;
-          border-radius: 24px;
-          background: #0b1220;
-          color: #ffffff;
-          overflow: hidden;
-          position: relative;
-        }
-
-        .visualCore::after {
-          content: "";
-          position: absolute;
-          width: 190px;
-          height: 190px;
-          right: -70px;
-          bottom: -100px;
-          border-radius: 50%;
-          background: var(--accent);
-          filter: blur(6px);
-          opacity: 0.45;
-        }
-
-        .coreIcon {
-          flex: 0 0 auto;
-          width: 76px;
-          height: 76px;
-          display: grid;
-          place-items: center;
-          border-radius: 22px;
-          background: rgba(255, 255, 255, 0.1);
-          border: 1px solid rgba(255, 255, 255, 0.12);
-        }
-
-        .visualOverline {
-          display: block;
-          margin-bottom: 7px;
-          color: #9cabbe;
-          font-size: 0.72rem;
-          font-weight: 800;
-          letter-spacing: 0.1em;
-          text-transform: uppercase;
-        }
-
-        .visualCore strong {
-          position: relative;
-          z-index: 1;
-          display: block;
-          max-width: 300px;
-          font-size: clamp(1.5rem, 2.2vw, 2.15rem);
-          line-height: 1.05;
-          letter-spacing: -0.04em;
-        }
-
-        .signalGrid {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 10px;
-          margin-top: 12px;
-        }
-
-        .signalCard {
-          position: relative;
-          min-height: 116px;
-          padding: 16px;
-          border: 1px solid #e5eaf1;
-          border-radius: 18px;
-          background: rgba(255, 255, 255, 0.78);
-          overflow: hidden;
-        }
-
-        .signalCard span {
-          display: block;
-          color: #7b8799;
-          font-size: 0.72rem;
-          font-weight: 750;
-          text-transform: uppercase;
-          letter-spacing: 0.06em;
-        }
-
-        .signalCard strong {
-          display: block;
-          margin-top: 13px;
-          color: #182033;
-          font-size: 0.95rem;
-          line-height: 1.18;
-        }
-
-        .signalCard i {
-          position: absolute;
-          left: 16px;
-          right: 16px;
-          bottom: 13px;
-          height: 4px;
-          border-radius: 99px;
-          background: linear-gradient(to right, var(--accent) 68%, #e6eaf0 68%);
-        }
-
-        .keywordRail {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 8px;
-          padding-top: 14px;
-        }
-
-        .keywordRail span {
-          padding: 8px 11px;
-          border-radius: 999px;
-          background: var(--accent-soft);
-          color: var(--accent-ink);
-          font-size: 0.76rem;
-          font-weight: 750;
-        }
-
-        .outcomeSection {
-          padding: 90px max(6vw, 24px);
-          display: grid;
-          grid-template-columns: minmax(300px, 0.85fr) 1.15fr;
-          align-items: end;
-          gap: clamp(60px, 8vw, 120px);
-          border-top: 1px solid #e8edf3;
-          border-bottom: 1px solid #e8edf3;
-          background: #ffffff;
-        }
-
-        .outcomeIntro > span {
-          color: var(--accent);
-          font-size: 0.78rem;
-          font-weight: 850;
-          text-transform: uppercase;
-          letter-spacing: 0.1em;
-        }
-
-        .outcomeIntro h2 {
-          margin: 14px 0 0;
-          max-width: 610px;
-          color: #111827;
-          font-size: clamp(2rem, 3.6vw, 3.5rem);
-          line-height: 1.04;
-          letter-spacing: -0.045em;
-        }
-
-        .outcomeGrid {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 16px;
-        }
-
-        .outcomeGrid article {
-          min-height: 170px;
-          padding: 22px;
-          border-radius: 22px;
-          background: #f6f8fb;
-          border: 1px solid #ebeff5;
-        }
-
-        .outcomeGrid strong {
-          display: block;
-          color: var(--accent);
-          font-size: clamp(2rem, 3vw, 3.2rem);
-          line-height: 1;
-          letter-spacing: -0.05em;
-        }
-
-        .outcomeGrid p {
-          margin: 34px 0 0;
-          color: #4f5c70;
-          font-size: 0.95rem;
-          line-height: 1.45;
-          font-weight: 650;
-        }
-
-        .capabilitiesSection,
-        .faqSection {
-          padding: 120px max(6vw, 24px);
-          background: #ffffff;
-        }
-
-        .sectionHeading {
-          max-width: 840px;
-          margin-bottom: 56px;
-        }
-
-        .sectionHeading h2,
-        .processHeader h2,
-        .faqHeading h2,
-        .contactCopy h2 {
-          margin: 20px 0 18px;
-          color: #0e1728;
-          font-size: clamp(2.6rem, 5vw, 5.2rem);
-          line-height: 0.98;
-          letter-spacing: -0.058em;
-        }
-
-        .sectionHeading p,
-        .processHeader > p,
-        .contactCopy > p {
-          max-width: 700px;
-          margin: 0;
-          color: #5b687b;
-          font-size: 1.08rem;
-          line-height: 1.7;
-        }
-
-        .capabilityGrid {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 18px;
-        }
-
-        .capabilityCard {
-          min-height: 300px;
-          padding: 26px;
-          border: 1px solid #e6ebf2;
-          border-radius: 26px;
-          background: #fbfcfe;
-          transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
-        }
-
-        .capabilityCard:hover {
-          transform: translateY(-7px);
-          border-color: rgba(var(--accent-rgb), 0.32);
-          box-shadow: 0 24px 55px rgba(15, 23, 42, 0.09);
-        }
-
-        .cardTopline {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-        }
-
-        .capabilityIcon,
-        .sideCardIcon {
-          width: 52px;
-          height: 52px;
-          display: grid;
-          place-items: center;
-          border-radius: 16px;
-          background: var(--accent-soft);
-        }
-
-        .cardIndex {
-          color: #a0a9b8;
-          font-size: 0.75rem;
-          font-weight: 800;
-          letter-spacing: 0.08em;
-        }
-
-        .capabilityCard h3 {
-          margin: 45px 0 13px;
-          color: #121b2b;
-          font-size: 1.35rem;
-          line-height: 1.12;
-          letter-spacing: -0.025em;
-        }
-
-        .capabilityCard p {
-          margin: 0;
-          color: #657185;
-          font-size: 0.98rem;
-          line-height: 1.62;
-        }
-
-        .processSection {
-          padding: 120px max(6vw, 24px);
-          background: var(--accent-soft);
-        }
-
-        .processHeader {
-          display: grid;
-          grid-template-columns: 1fr minmax(320px, 0.68fr);
-          align-items: end;
-          gap: 80px;
-          margin-bottom: 64px;
-        }
-
-        .processList {
-          display: grid;
-          grid-template-columns: repeat(4, 1fr);
-          gap: 0;
-        }
-
-        .processStep {
-          position: relative;
-          padding: 0 26px 0 0;
-        }
-
-        .processStep:not(:last-child) {
-          border-right: 1px solid rgba(var(--accent-rgb), 0.2);
-          margin-right: 26px;
-        }
-
-        .processNumber {
-          color: var(--accent);
-          font-size: 0.78rem;
-          font-weight: 850;
-          letter-spacing: 0.1em;
-        }
-
-        .processLine {
-          width: 44px;
-          height: 4px;
-          margin: 20px 0 34px;
-          border-radius: 99px;
-          background: var(--accent);
-        }
-
-        .processStep h3 {
-          margin: 0 0 14px;
-          color: #121b2b;
-          font-size: 1.3rem;
-          letter-spacing: -0.025em;
-        }
-
-        .processStep p {
-          margin: 0;
-          color: #58667a;
-          font-size: 0.95rem;
-          line-height: 1.62;
-        }
-
-        .deliverablesSection {
-          position: relative;
-          padding: 120px max(6vw, 24px);
-          display: grid;
-          grid-template-columns: minmax(0, 1fr) minmax(400px, 0.82fr);
-          align-items: center;
-          gap: clamp(60px, 9vw, 140px);
-          background: #07111f;
-          color: #ffffff;
-          overflow: hidden;
-        }
-
-        .deliverablesSection::before {
-          content: "";
-          position: absolute;
-          width: 600px;
-          height: 600px;
-          right: -180px;
-          top: -230px;
-          border-radius: 50%;
-          background: rgba(var(--accent-rgb), 0.18);
-          filter: blur(20px);
-        }
-
-        .sectionEyebrow.light {
-          border-color: rgba(255, 255, 255, 0.15);
-          background: rgba(255, 255, 255, 0.07);
-          color: #ffffff;
-        }
-
-        .deliverablesCopy {
-          position: relative;
-          z-index: 2;
-        }
-
-        .deliverablesCopy h2 {
-          margin: 21px 0 20px;
-          max-width: 760px;
-          font-size: clamp(2.8rem, 5vw, 5.3rem);
-          line-height: 0.98;
-          letter-spacing: -0.058em;
-        }
-
-        .deliverablesCopy > p {
-          max-width: 680px;
-          margin: 0;
-          color: #aab5c5;
-          font-size: 1.08rem;
-          line-height: 1.7;
-        }
-
-        .deliverablesCopy ul {
-          display: grid;
-          gap: 14px;
-          margin: 38px 0 0;
-          padding: 0;
-          list-style: none;
-        }
-
-        .deliverablesCopy li {
-          display: flex;
-          align-items: center;
-          gap: 13px;
-          color: #e8edf4;
-          font-weight: 600;
-        }
-
-        .deliverablesCopy li > span {
-          flex: 0 0 auto;
-          width: 30px;
-          height: 30px;
-          display: grid;
-          place-items: center;
-          border-radius: 50%;
-          background: rgba(var(--accent-rgb), 0.18);
-          color: var(--accent);
-        }
-
-        .deliverablesVisual {
-          position: relative;
-          z-index: 2;
-        }
-
-        .sideCard {
-          padding: 30px;
-          border: 1px solid rgba(255, 255, 255, 0.13);
-          border-radius: 30px;
-          background: rgba(255, 255, 255, 0.07);
-          box-shadow: 0 30px 80px rgba(0, 0, 0, 0.28);
-          backdrop-filter: blur(18px);
-        }
-
-        .sideCardHeader > span:last-child {
-          color: #8290a6;
-          font-size: 0.72rem;
-          font-weight: 850;
-          letter-spacing: 0.12em;
-        }
-
-        .sideCard h3 {
-          margin: 48px 0 16px;
-          max-width: 500px;
-          font-size: clamp(2rem, 3.4vw, 3.55rem);
-          line-height: 1;
-          letter-spacing: -0.05em;
-        }
-
-        .sideCard > p {
-          margin: 0;
-          color: #aeb9c8;
-          line-height: 1.65;
-        }
-
-        .sideCardItems {
-          display: grid;
-          gap: 10px;
-          margin-top: 34px;
-        }
-
-        .sideCardItems div {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 18px;
-          padding: 17px 18px;
-          border-radius: 16px;
-          background: rgba(255, 255, 255, 0.07);
-        }
-
-        .sideCardItems span {
-          color: var(--accent);
-          font-size: 0.75rem;
-          font-weight: 850;
-        }
-
-        .sideCardItems strong {
-          font-size: 0.98rem;
-          letter-spacing: -0.01em;
-        }
-
-        .faqSection {
-          display: grid;
-          grid-template-columns: minmax(260px, 0.7fr) 1.3fr;
-          align-items: start;
-          gap: clamp(60px, 9vw, 150px);
-        }
-
-        .faqHeading {
-          position: sticky;
-          top: 150px;
-        }
-
-        .faqList {
-          border-top: 1px solid #dfe5ed;
-        }
-
-        .faqItem {
-          border-bottom: 1px solid #dfe5ed;
-        }
-
-        .faqItem > button {
-          width: 100%;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 24px;
-          padding: 27px 0;
-          border: 0;
-          background: transparent;
-          color: #172033;
-          text-align: left;
-          font: inherit;
-          font-size: 1.12rem;
-          font-weight: 750;
-          cursor: pointer;
-        }
-
-        .faqItem > button :global(svg) {
-          flex: 0 0 auto;
-          color: var(--accent);
-          transition: transform 0.25s ease;
-        }
-
-        .faqItem.open > button :global(svg) {
-          transform: rotate(180deg);
-        }
-
-        .faqAnswer {
-          display: grid;
-          grid-template-rows: 0fr;
-          transition: grid-template-rows 0.28s ease;
-        }
-
-        .faqAnswer > p {
-          overflow: hidden;
-          margin: 0;
-          color: #647085;
-          font-size: 0.99rem;
-          line-height: 1.68;
-        }
-
-        .faqItem.open .faqAnswer {
-          grid-template-rows: 1fr;
-        }
-
-        .faqItem.open .faqAnswer > p {
-          padding: 0 46px 27px 0;
-        }
-
-        .contactSection {
-          scroll-margin-top: 120px;
-          padding: 120px max(6vw, 24px);
-          display: grid;
-          grid-template-columns: minmax(0, 0.86fr) minmax(470px, 1.14fr);
-          align-items: start;
-          gap: clamp(60px, 9vw, 140px);
-          background:
-            radial-gradient(circle at 12% 22%, rgba(var(--accent-rgb), 0.12), transparent 36%),
-            #f5f7fb;
-        }
-
-        .contactCopy {
-          position: sticky;
-          top: 145px;
-        }
-
-        .contactRoutes {
-          display: grid;
-          gap: 10px;
-          margin-top: 38px;
-        }
-
-        .contactRoutes a {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 20px;
-          padding: 18px 20px;
-          border: 1px solid #e0e6ee;
-          border-radius: 17px;
-          background: rgba(255, 255, 255, 0.75);
-          color: #172033;
-          text-decoration: none;
-          transition: border-color 0.2s ease, transform 0.2s ease;
-        }
-
-        .contactRoutes a:hover {
-          transform: translateX(4px);
-          border-color: rgba(var(--accent-rgb), 0.4);
-        }
-
-        .contactRoutes span {
-          color: #778397;
-          font-size: 0.78rem;
-          font-weight: 750;
-          text-transform: uppercase;
-          letter-spacing: 0.06em;
-        }
-
-        .contactRoutes strong {
-          font-size: 0.95rem;
-        }
-
-        .contactCard {
-          padding: 38px;
-          border: 1px solid #e2e8f0;
-          border-radius: 30px;
-          background: #ffffff;
-          box-shadow: 0 28px 70px rgba(15, 23, 42, 0.1);
-        }
-
-        .formLabel {
-          color: var(--accent);
-          font-size: 0.76rem;
-          font-weight: 850;
-          text-transform: uppercase;
-          letter-spacing: 0.09em;
-        }
-
-        .contactCard h3 {
-          margin: 12px 0 28px;
-          color: #111827;
-          font-size: clamp(1.9rem, 3vw, 2.8rem);
-          line-height: 1.04;
-          letter-spacing: -0.045em;
-        }
-
-        form {
-          display: grid;
-          gap: 16px;
-        }
-
-        .formRow {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 14px;
-        }
-
-        form label:not(.legalCheck) {
-          display: grid;
-          gap: 8px;
-          color: #485468;
-          font-size: 0.84rem;
-          font-weight: 750;
-        }
-
-        form small {
-          color: #8b96a7;
-          font-size: 0.75rem;
-          font-weight: 600;
-        }
-
-        form input,
-        form textarea {
-          width: 100%;
-          border: 1px solid #dfe5ed;
-          border-radius: 13px;
-          background: #f8fafc;
-          color: #101827;
-          font: inherit;
-          font-size: 0.96rem;
-          outline: none;
-          transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
-        }
-
-        form input {
-          height: 50px;
-          padding: 0 15px;
-        }
-
-        form textarea {
-          min-height: 130px;
-          resize: vertical;
-          padding: 14px 15px;
-        }
-
-        form input:focus,
-        form textarea:focus {
-          border-color: var(--accent);
-          background: #ffffff;
-          box-shadow: 0 0 0 4px rgba(var(--accent-rgb), 0.1);
-        }
-
-        .legalCheck {
-          display: flex;
-          align-items: flex-start;
-          gap: 10px;
-          color: #687488;
-          font-size: 0.79rem;
-          line-height: 1.45;
-          font-weight: 550;
-        }
-
-        .legalCheck input {
-          flex: 0 0 auto;
-          width: 17px;
-          height: 17px;
-          margin-top: 1px;
-          accent-color: var(--accent);
-        }
-
-        .legalCheck a {
-          color: var(--accent-ink);
-          font-weight: 750;
-        }
-
-        .submitButton {
-          width: 100%;
-          min-height: 57px;
-          margin-top: 3px;
-        }
-
-        .submitButton:disabled {
-          cursor: wait;
-          opacity: 0.65;
-        }
-
-        @media (max-width: 1160px) {
-          .navLeft {
-            gap: 28px;
-            padding-right: 38px;
-          }
-
-          .navRight {
-            gap: 28px;
-            padding-left: 38px;
-          }
-
-          .serviceHero {
-            grid-template-columns: minmax(0, 1fr) minmax(380px, 0.8fr);
-            gap: 55px;
-          }
-
-          .heroCopy h1 {
-            font-size: clamp(3.4rem, 6vw, 5.6rem);
-          }
-        }
-
-        @media (max-width: 1000px) {
-          .desktopNav {
-            display: none;
-          }
-
-          .serviceHeader {
-            top: 9px;
-            width: calc(100% - 28px);
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 14px;
-            border-radius: 18px;
-          }
-
-          .headerLogo {
-            width: 112px;
-          }
-
-          .mobileHeaderActions {
-            display: flex;
-            align-items: center;
-            gap: 9px;
-          }
-
-          .mobileWhatsappHeader,
-          .mobileMenuButton {
-            width: 43px;
-            height: 43px;
-            display: grid;
-            place-items: center;
-            border-radius: 50%;
-          }
-
-          .mobileWhatsappHeader {
-            background: #25d366;
-          }
-
-          .mobileMenuButton {
-            appearance: none;
-            border: 0;
-            background: #2e7bff;
-            color: #ffffff;
-            cursor: pointer;
-          }
-
-          .mobileMenu {
-            position: absolute;
-            top: calc(100% + 10px);
-            left: 0;
-            right: 0;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            max-height: calc(100vh - 90px);
-            overflow-y: auto;
-            padding: 20px;
-            border: 1px solid #e5eaf1;
-            border-radius: 18px;
-            background: #ffffff;
-            box-shadow: 0 20px 50px rgba(15, 23, 42, 0.16);
-          }
-
-          .mobileMenu > a,
-          .mobileMenu > .navButton,
-          .mobileServices > span {
-            color: #2e7bff;
-            text-decoration: none;
-            text-align: center;
-            font: inherit;
-            font-weight: 750;
-          }
-
-          .mobileServices {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            padding: 15px;
-            border-radius: 14px;
-            background: #f6f8fb;
-            text-align: center;
-          }
-
-          .mobileServices a {
-            color: #334056;
-            text-decoration: none;
-            font-size: 0.88rem;
-            font-weight: 650;
-            padding: 5px;
-          }
-
-          .serviceHero {
-            min-height: auto;
-            padding-top: 145px;
-            grid-template-columns: 1fr;
-          }
-
-          .heroCopy {
-            max-width: 850px;
-          }
-
-          .heroVisual {
-            width: min(100%, 680px);
-          }
-
-          .outcomeSection,
-          .faqSection,
-          .contactSection {
-            grid-template-columns: 1fr;
-          }
-
-          .outcomeSection {
-            align-items: start;
-            gap: 42px;
-          }
-
-          .capabilityGrid {
-            grid-template-columns: repeat(2, 1fr);
-          }
-
-          .processHeader {
-            grid-template-columns: 1fr;
-            gap: 24px;
-          }
-
-          .processList {
-            grid-template-columns: repeat(2, 1fr);
-            gap: 44px 28px;
-          }
-
-          .processStep:not(:last-child) {
-            border-right: 0;
-            margin-right: 0;
-          }
-
-          .deliverablesSection {
-            grid-template-columns: 1fr;
-          }
-
-          .deliverablesVisual {
-            width: min(100%, 680px);
-          }
-
-          .faqHeading,
-          .contactCopy {
-            position: static;
-          }
-
-          .faqSection {
-            gap: 42px;
-          }
-
-          .contactSection {
-            gap: 52px;
-          }
-        }
-
-        @media (max-width: 680px) {
-          .serviceHero {
-            padding: 126px 20px 74px;
-            gap: 46px;
-          }
-
-          .heroCopy h1 {
-            margin-top: 20px;
-            font-size: clamp(2.85rem, 14vw, 4.2rem);
-            line-height: 0.96;
-          }
-
-          .heroCopy > p {
-            font-size: 1rem;
-          }
-
-          .heroActions {
-            flex-direction: column;
-            align-items: stretch;
-          }
-
-          .primaryButton,
-          .secondaryButton {
-            width: 100%;
-          }
-
-          .heroNote {
-            align-items: flex-start;
-            line-height: 1.45;
-          }
-
-          .heroVisual {
-            padding: 14px;
-            border-radius: 24px;
-            transform: none;
-          }
-
-          .heroVisual::after {
-            display: none;
-          }
-
-          .visualTopline {
-            align-items: flex-start;
-          }
-
-          .visualBrand {
-            max-width: 190px;
-            line-height: 1.35;
-          }
-
-          .visualCore {
-            min-height: 140px;
-            padding: 20px;
-          }
-
-          .coreIcon {
-            width: 60px;
-            height: 60px;
-            border-radius: 17px;
-          }
-
-          .signalGrid {
-            grid-template-columns: 1fr;
-          }
-
-          .signalCard {
-            min-height: 95px;
-          }
-
-          .outcomeSection,
-          .capabilitiesSection,
-          .processSection,
-          .deliverablesSection,
-          .faqSection,
-          .contactSection {
-            padding: 82px 20px;
-          }
-
-          .outcomeGrid,
-          .capabilityGrid,
-          .processList {
-            grid-template-columns: 1fr;
-          }
-
-          .outcomeGrid article {
-            min-height: 145px;
-          }
-
-          .capabilityCard {
-            min-height: auto;
-          }
-
-          .capabilityCard h3 {
-            margin-top: 34px;
-          }
-
-          .processList {
-            gap: 36px;
-          }
-
-          .processStep {
-            padding-right: 0;
-          }
-
-          .deliverablesCopy h2,
-          .sectionHeading h2,
-          .processHeader h2,
-          .faqHeading h2,
-          .contactCopy h2 {
-            font-size: clamp(2.45rem, 12vw, 3.7rem);
-          }
-
-          .sideCard {
-            padding: 23px;
-          }
-
-          .sideCard h3 {
-            margin-top: 38px;
-          }
-
-          .faqItem > button {
-            font-size: 1rem;
-          }
-
-          .faqItem.open .faqAnswer > p {
-            padding-right: 0;
-          }
-
-          .contactCard {
-            padding: 24px;
-            border-radius: 23px;
-          }
-
-          .formRow {
-            grid-template-columns: 1fr;
-          }
-
-          .contactRoutes a {
-            align-items: flex-start;
-            flex-direction: column;
-            gap: 6px;
-          }
-        }
-      `}</style>
     </div>
   );
 }
