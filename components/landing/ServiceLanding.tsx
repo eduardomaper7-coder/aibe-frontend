@@ -255,6 +255,7 @@ export default function ServiceLanding({ config }: ServiceLandingProps) {
                 </Link>
               ))}
             </div>
+        <nav className="navSide navRight desktopNav" aria-label="Accesos destacados">
 
             <Link color="#2e7bff" weight="600"  href={`/${locale}/#google`} onClick={() => setMobileMenuOpen(false)}>
               Google
@@ -262,6 +263,7 @@ export default function ServiceLanding({ config }: ServiceLandingProps) {
             <Link color="#2e7bff" weight="600" href={`/${locale}/#ia`} onClick={() => setMobileMenuOpen(false)}>
               Buscadores con IA
             </Link>
+        </nav>
           </div>
         )}
       </header>
