@@ -259,7 +259,7 @@ export default function ServiceLanding({ config }: ServiceLandingProps) {
             <Link color="#2e7bff" weight="600"  href={`/${locale}/#google`} onClick={() => setMobileMenuOpen(false)}>
               Google
             </Link>
-            <Linkk color="#2e7bff" weight="600" href={`/${locale}/#ia`} onClick={() => setMobileMenuOpen(false)}>
+            <Link color="#2e7bff" weight="600" href={`/${locale}/#ia`} onClick={() => setMobileMenuOpen(false)}>
               Buscadores con IA
             </Link>
           </div>
