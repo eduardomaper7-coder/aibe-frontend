@@ -56,6 +56,151 @@ export type ServiceLandingConfig = {
 };
 
 export const serviceLandings: Record<string, ServiceLandingConfig> = {
+  "redes-sociales-tenerife": {
+    slug: "redes-sociales-tenerife",
+    navLabel: "Redes sociales",
+    eyebrow: "Estrategia, contenido y comunidad",
+    title: "Redes sociales que convierten cada publicación en",
+    highlightedTitle: "una oportunidad de negocio",
+    description:
+      "Diseñamos una presencia social reconocible, constante y conectada con tus objetivos para que tu marca gane relevancia, conversación y clientes sin publicar por publicar.",
+    heroIcon: "MessageSquareMore",
+    accent: "#ff4f8b",
+    accentRgb: "255, 79, 139",
+    accentSoft: "#fff0f5",
+    accentInk: "#8f1648",
+    heroKeywords: ["Estrategia", "Contenido", "Comunidad", "Campañas"],
+    heroSignals: [
+      { label: "Contenido", value: "Con intención" },
+      { label: "Comunidad", value: "Activa" },
+      { label: "Resultados", value: "Medibles" },
+    ],
+    outcomeTitle:
+      "Tu marca no necesita estar en todas partes. Necesita aparecer con sentido donde está tu cliente.",
+    outcomes: [
+      { value: "1 voz", label: "Una identidad reconocible en cada publicación" },
+      { value: "360º", label: "Contenido conectado con campañas y ventas" },
+      { value: "Mes a mes", label: "Aprendizaje y optimización continuos" },
+    ],
+    capabilitiesEyebrow: "Qué activamos",
+    capabilitiesTitle: "Un sistema de contenidos que trabaja para tu negocio",
+    capabilitiesIntro:
+      "Combinamos estrategia, creatividad, producción y análisis para construir una presencia social sostenible y útil para la marca, el equipo comercial y la comunidad.",
+    capabilities: [
+      {
+        icon: "Target",
+        title: "Estrategia de contenidos",
+        description:
+          "Definimos públicos, territorios de comunicación, objetivos y formatos para dejar de improvisar cada semana.",
+      },
+      {
+        icon: "GalleryHorizontalEnd",
+        title: "Diseño y producción",
+        description:
+          "Creamos piezas visuales, carruseles, vídeos cortos y recursos adaptados a la personalidad de tu marca.",
+      },
+      {
+        icon: "MessageSquareMore",
+        title: "Gestión de comunidad",
+        description:
+          "Organizamos publicaciones, conversación y respuesta para mantener una relación cercana y profesional.",
+      },
+      {
+        icon: "Megaphone",
+        title: "Campañas en Meta",
+        description:
+          "Impulsamos contenidos y campañas de captación con segmentación, creatividades y objetivos bien definidos.",
+      },
+      {
+        icon: "Sparkles",
+        title: "Guiones y formatos",
+        description:
+          "Convertimos ideas, servicios y conocimiento del negocio en contenidos fáciles de entender, recordar y compartir.",
+      },
+      {
+        icon: "ChartNoAxesCombined",
+        title: "Analítica y mejora",
+        description:
+          "Revisamos alcance, interacción, tráfico y oportunidades para decidir qué repetir, ajustar o descartar.",
+      },
+    ],
+    processEyebrow: "Cómo trabajamos",
+    processTitle: "De publicar por obligación a comunicar con una dirección clara",
+    processIntro:
+      "Creamos un ritmo de trabajo realista para que estrategia, producción, aprobación y análisis funcionen sin bloquear a tu equipo.",
+    process: [
+      {
+        number: "01",
+        title: "Diagnóstico social",
+        description:
+          "Revisamos perfiles, contenidos, competencia, públicos, recursos internos y relación con el proceso comercial.",
+      },
+      {
+        number: "02",
+        title: "Sistema editorial",
+        description:
+          "Definimos pilares, tono, formatos, frecuencia y criterios visuales para construir una presencia coherente.",
+      },
+      {
+        number: "03",
+        title: "Producción y publicación",
+        description:
+          "Preparamos contenidos por ciclos, coordinamos validaciones y publicamos cada pieza con un objetivo concreto.",
+      },
+      {
+        number: "04",
+        title: "Lectura y evolución",
+        description:
+          "Analizamos señales de audiencia y negocio para mejorar mensajes, formatos, campañas y próximos contenidos.",
+      },
+    ],
+    deliverablesEyebrow: "Qué recibes",
+    deliverablesTitle: "Contenido organizado, reconocible y listo para crecer",
+    deliverablesDescription:
+      "Dejamos una base práctica para mantener la consistencia, agilizar la producción y entender qué papel cumple cada publicación dentro de la estrategia.",
+    deliverables: [
+      "Estrategia social y pilares de contenido",
+      "Calendario editorial por ciclos",
+      "Guiones, copys y piezas creativas",
+      "Plantillas y criterios visuales",
+      "Informe de resultados y próximos experimentos",
+    ],
+    sideCardTitle: "Una marca que participa, aporta y permanece en la memoria.",
+    sideCardText:
+      "La constancia funciona cuando cada contenido tiene una idea clara, una identidad reconocible y un siguiente paso para la audiencia.",
+    sideCardItems: ["Relevancia", "Comunidad", "Conversión"],
+    faqEyebrow: "Preguntas frecuentes",
+    faqTitle: "Antes de empezar a publicar",
+    faqs: [
+      {
+        question: "¿En qué redes debería estar mi negocio?",
+        answer:
+          "Lo decidimos según tu público, oferta, capacidad de producción y objetivo. Es mejor trabajar bien uno o dos canales que mantener muchos perfiles sin dirección.",
+      },
+      {
+        question: "¿Necesito grabar vídeos constantemente?",
+        answer:
+          "No necesariamente. Diseñamos una mezcla de formatos viable y podemos organizar sesiones de producción para aprovechar el tiempo y generar material para varias semanas.",
+      },
+      {
+        question: "¿Incluye la gestión de mensajes y comentarios?",
+        answer:
+          "Puede incluirla. Acordamos qué tipo de respuestas gestiona AIBE, cuáles necesita validar tu equipo y cómo trasladar las oportunidades comerciales.",
+      },
+      {
+        question: "¿Podéis trabajar con nuestro material y equipo interno?",
+        answer:
+          "Sí. Podemos asumir la producción completa o crear el sistema, los guiones y la dirección creativa para colaborar con las personas que ya generan contenido en tu negocio.",
+      },
+    ],
+    contactTitle: "Hagamos que tus redes tengan una función dentro del negocio",
+    contactText:
+      "Cuéntanos qué estás publicando, qué te gustaría conseguir y qué recursos tienes. Te propondremos una primera dirección de trabajo sin compromiso.",
+    metadataTitle: "Gestión de redes sociales en Tenerife | AIBE Technologies",
+    metadataDescription:
+      "Estrategia de redes sociales, creación de contenido, community management y campañas en Meta para negocios en Tenerife.",
+  },
+
   "marketing-digital-tenerife": {
     slug: "marketing-digital-tenerife",
     navLabel: "Marketing digital",
@@ -777,13 +922,9 @@ export const serviceLandings: Record<string, ServiceLandingConfig> = {
   },
 };
 
-export const serviceNavigation = [
-  {
-    slug: "redes-sociales-tenerife",
-    label: "Redes sociales",
-  },
-  ...Object.values(serviceLandings).map(({ slug, navLabel }) => ({
+export const serviceNavigation = Object.values(serviceLandings).map(
+  ({ slug, navLabel }) => ({
     slug,
     label: navLabel,
-  })),
-];
+  })
+);
