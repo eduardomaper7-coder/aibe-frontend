@@ -256,10 +256,10 @@ export default function ServiceLanding({ config }: ServiceLandingProps) {
               ))}
             </div>
 
-            <Link className="servicesTrigger"  href={`/${locale}/#google`} onClick={() => setMobileMenuOpen(false)}>
+            <Link color="#2e7bff" weight="600"  href={`/${locale}/#google`} onClick={() => setMobileMenuOpen(false)}>
               Google
             </Link>
-            <Link className="servicesTrigger" href={`/${locale}/#ia`} onClick={() => setMobileMenuOpen(false)}>
+            <Linkk color="#2e7bff" weight="600" href={`/${locale}/#ia`} onClick={() => setMobileMenuOpen(false)}>
               Buscadores con IA
             </Link>
           </div>
