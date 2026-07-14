@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { serviceNavigation } from "@/lib/service-landings";
 
 import RedesSocialesHeroAnimation from "@/components/ui/RedesSocialesHeroAnimation";
 import AibeSection from "@/components/ui/AibeSection";
@@ -53,9 +54,11 @@ export default function RedesSocialesTenerifePage() {
             <span>Servicios</span>
 
             <div className="dropdownMenu">
-              <Link href="/es/redes-sociales-tenerife">
-                Redes Sociales Tenerife
-              </Link>
+              {serviceNavigation.map((item) => (
+                <Link key={item.slug} href={`/es/${item.slug}`}>
+                  {item.label}
+                </Link>
+              ))}
             </div>
           </div>
         </nav>
@@ -119,12 +122,15 @@ export default function RedesSocialesTenerifePage() {
 
             <div className="mobileServices">
               <span>Servicios</span>
-              <Link
-                href="/es/redes-sociales-tenerife"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Redes Sociales Tenerife
-              </Link>
+              {serviceNavigation.map((item) => (
+                <Link
+                  key={item.slug}
+                  href={`/es/${item.slug}`}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  {item.label}
+                </Link>
+              ))}
             </div>
 
             <Link href="/es/#google" onClick={() => setMobileMenuOpen(false)}>
@@ -330,7 +336,9 @@ export default function RedesSocialesTenerifePage() {
           top: 35px;
           left: 50%;
           transform: translateX(-50%);
-          min-width: 240px;
+          min-width: 285px;
+  max-height: min(70vh, 410px);
+  overflow-y: auto;
           background: #ffffff;
           border-radius: 16px;
           padding: 12px;

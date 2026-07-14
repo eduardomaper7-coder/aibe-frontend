@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { openCookieSettings } from "@/lib/cookie-consent";
+import { serviceNavigation } from "@/lib/service-landings";
 
 const WHATSAPP_NUMBER = "34686012685";
 
@@ -25,7 +26,7 @@ export default function Footer() {
           />
 
           <p>
-            Impulsamos negocios mediante Google, redes sociales y buscadores con IA.
+            Unimos estrategia, diseño y tecnología para ayudar a los negocios a crecer con una base digital más sólida.
           </p>
         </div>
 
@@ -44,6 +45,15 @@ export default function Footer() {
             >
               WhatsApp
             </a>
+          </div>
+
+          <div className="contactBlock">
+            <span>Servicios</span>
+            {serviceNavigation.map((item) => (
+              <Link key={item.slug} href={`${legalBase}/${item.slug}`}>
+                {item.label}
+              </Link>
+            ))}
           </div>
 
           <div className="contactBlock">
@@ -108,6 +118,7 @@ export default function Footer() {
         }
 
         .brand {
+          flex: 0 1 440px;
           max-width: 520px;
         }
 
@@ -127,8 +138,10 @@ export default function Footer() {
         }
 
         .footerColumns {
-          display: flex;
-          gap: clamp(48px, 7vw, 100px);
+          flex: 1;
+          display: grid;
+          grid-template-columns: repeat(3, minmax(145px, 1fr));
+          gap: clamp(28px, 4vw, 56px);
         }
 
         .contactBlock {
@@ -218,6 +231,7 @@ export default function Footer() {
           }
 
           .footerColumns {
+            grid-template-columns: 1fr;
             gap: 38px;
           }
 

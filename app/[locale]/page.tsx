@@ -6,6 +6,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { serviceNavigation } from "@/lib/service-landings";
 import dynamic from "next/dynamic";
 
 
@@ -124,7 +125,11 @@ useEffect(() => {
       <span>Servicios</span>
 
       <div className="dropdownMenu">
-        <Link href="/es/redes-sociales-tenerife">Redes Sociales Tenerife</Link>
+        {serviceNavigation.map((item) => (
+          <Link key={item.slug} href={`/es/${item.slug}`}>
+            {item.label}
+          </Link>
+        ))}
       </div>
     </div>
   </nav>
@@ -200,12 +205,15 @@ useEffect(() => {
 
       <div className="mobileServices">
         <span>Servicios</span>
-        <Link
-          href="/es/redes-sociales-tenerife"
-          onClick={() => setMobileMenuOpen(false)}
-        >
-          Redes Sociales Tenerife
-        </Link>
+        {serviceNavigation.map((item) => (
+          <Link
+            key={item.slug}
+            href={`/es/${item.slug}`}
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            {item.label}
+          </Link>
+        ))}
       </div>
 
       <a href="#google" onClick={() => setMobileMenuOpen(false)}>Google</a>
@@ -535,7 +543,9 @@ Escribir por WhatsApp
   top: 35px;
   left: 50%;
   transform: translateX(-50%);
-  min-width: 240px;
+  min-width: 285px;
+  max-height: min(70vh, 410px);
+  overflow-y: auto;
 
 
   background: white;
@@ -1106,6 +1116,8 @@ Escribir por WhatsApp
   border-radius: 18px;
   box-shadow: 0 18px 45px rgba(0, 0, 0, 0.12);
   z-index: 1001;
+  max-height: calc(100vh - 90px);
+  overflow-y: auto;
 }
 
 

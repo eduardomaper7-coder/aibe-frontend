@@ -7,6 +7,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const routes = [
     "/",
     "/redes-sociales-tenerife",
+    "/marketing-digital-tenerife",
+    "/diseno-web-branding-tenerife",
+    "/desarrollo-web-tenerife",
+    "/automatizacion-ia-tenerife",
+    "/sistemas-ciberseguridad-tenerife",
     "/contact",
     "/login",
     "/aviso-legal",

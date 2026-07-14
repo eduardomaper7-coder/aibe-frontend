@@ -33,3 +33,24 @@
 - Las cuatro páginas principales probadas respondieron con HTTP 200.
 
 > Los textos legales son un borrador y conviene que un profesional jurídico los revise antes de considerarlos definitivos.
+
+## Nuevas landing pages de servicios
+
+Se han creado cinco landing pages originales para AIBE, tomando los HTML facilitados únicamente como referencia temática:
+
+- `/es/marketing-digital-tenerife`
+- `/es/diseno-web-branding-tenerife`
+- `/es/desarrollo-web-tenerife`
+- `/es/automatizacion-ia-tenerife`
+- `/es/sistemas-ciberseguridad-tenerife`
+
+Cada landing incluye hero propio, propuesta de valor, servicios, proceso de trabajo, entregables, preguntas frecuentes y formulario de contacto. Comparten la identidad visual y la navbar del index, pero utilizan contenido y composición propios.
+
+También se han añadido todas las páginas al desplegable de Servicios, al menú móvil, al footer y al sitemap.
+
+## Validación de las nuevas landings
+
+- TypeScript: `npx tsc --noEmit --incremental false` sin errores.
+- ESLint de todos los archivos modificados: sin errores.
+- Las cinco landings, el index y la landing de Redes Sociales compilaron en desarrollo y respondieron con HTTP 200.
+- La compilación completa de producción se inició correctamente, pero superó el tiempo máximo disponible durante la fase de optimización.
