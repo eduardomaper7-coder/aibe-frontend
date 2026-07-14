@@ -178,8 +178,7 @@ export default function ServiceLanding({ config }: ServiceLandingProps) {
                     href={`/${locale}/${item.slug}`}
                     className={item.slug === config.slug ? "active" : undefined}
                   >
-                    <span>{item.label}</span>
-                    <ArrowRight size={16} aria-hidden="true" />
+                    {item.label}
                   </Link>
                 ))}
               </div>
@@ -564,21 +563,21 @@ export default function ServiceLanding({ config }: ServiceLandingProps) {
 
         .serviceHeader {
           position: fixed;
-          top: 24px;
+          top: 16px;
           left: 50%;
           z-index: 1000;
-          width: min(calc(100% - 48px), 1240px);
+          width: calc(100% - 48px);
+          max-width: 1360px;
+          min-height: 92px;
           transform: translateX(-50%);
           display: grid;
           grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
           align-items: center;
-          padding: 12px 24px;
-          background: rgba(255, 255, 255, 0.97);
-          border: 1px solid rgba(46, 123, 255, 0.12);
+          padding: 12px 36px;
+          background: #ffffff;
+          border: 1px solid #dce8fa;
           border-radius: 28px;
-          box-shadow: 0 18px 50px rgba(15, 23, 42, 0.11);
-          backdrop-filter: blur(18px);
-          -webkit-backdrop-filter: blur(18px);
+          box-shadow: 0 22px 54px rgba(15, 23, 42, 0.1);
         }
 
         .logoLink {
@@ -589,6 +588,7 @@ export default function ServiceLanding({ config }: ServiceLandingProps) {
         }
 
         .headerLogo {
+          display: block;
           width: 190px;
           height: auto;
         }
@@ -600,14 +600,14 @@ export default function ServiceLanding({ config }: ServiceLandingProps) {
 
         .navLeft {
           justify-content: flex-end;
-          gap: clamp(24px, 3vw, 42px);
-          padding-right: clamp(32px, 5vw, 68px);
+          gap: clamp(26px, 3vw, 44px);
+          padding-right: clamp(38px, 5vw, 74px);
         }
 
         .navRight {
           justify-content: flex-start;
-          gap: clamp(24px, 3vw, 42px);
-          padding-left: clamp(32px, 5vw, 68px);
+          gap: clamp(26px, 3vw, 44px);
+          padding-left: clamp(38px, 5vw, 74px);
         }
 
         .navSide > a,
@@ -617,11 +617,11 @@ export default function ServiceLanding({ config }: ServiceLandingProps) {
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          gap: 6px;
+          gap: 7px;
           padding: 8px 0;
           border: 0;
           background: transparent;
-          color: #2e7bff;
+          color: #3478f6;
           text-decoration: none;
           font: inherit;
           font-size: 1rem;
@@ -636,12 +636,8 @@ export default function ServiceLanding({ config }: ServiceLandingProps) {
         .navSide > a:hover,
         .navButton:hover,
         .servicesTrigger:hover {
-          color: #001a5c;
+          color: #0b56d4;
           transform: translateY(-1px);
-        }
-
-        .servicesTrigger svg {
-          transition: transform 0.2s ease;
         }
 
         .servicesDropdown {
@@ -653,24 +649,28 @@ export default function ServiceLanding({ config }: ServiceLandingProps) {
           content: "";
           position: absolute;
           top: 100%;
-          left: -40px;
-          width: 380px;
+          left: -26px;
+          width: 360px;
           height: 18px;
+        }
+
+        .servicesTrigger svg {
+          transition: transform 0.2s ease;
         }
 
         .dropdownMenu {
           position: absolute;
-          top: calc(100% + 10px);
+          top: calc(100% + 9px);
           left: 50%;
           z-index: 10;
           width: min(348px, calc(100vw - 48px));
-          transform: translate(-50%, 10px) scale(0.98);
+          padding: 18px 16px 17px;
+          transform: translate(-50%, 10px);
           transform-origin: top center;
-          padding: 16px;
-          background: rgba(255, 255, 255, 0.99);
-          border: 1px solid rgba(46, 123, 255, 0.14);
-          border-radius: 20px;
-          box-shadow: 0 24px 60px rgba(15, 23, 42, 0.16);
+          background: #ffffff;
+          border: 1px solid #dce8fa;
+          border-radius: 18px;
+          box-shadow: 0 24px 60px rgba(15, 23, 42, 0.14);
           opacity: 0;
           visibility: hidden;
           pointer-events: none;
@@ -679,9 +679,9 @@ export default function ServiceLanding({ config }: ServiceLandingProps) {
 
         .dropdownEyebrow {
           display: block;
-          padding: 2px 6px 12px;
-          color: #7a8ba8;
-          font-size: 0.7rem;
+          padding: 0 6px 11px;
+          color: #7e8eac;
+          font-size: 0.72rem;
           font-weight: 800;
           letter-spacing: 0.12em;
           text-transform: uppercase;
@@ -689,7 +689,7 @@ export default function ServiceLanding({ config }: ServiceLandingProps) {
 
         .dropdownLinks {
           display: grid;
-          gap: 7px;
+          gap: 0;
         }
 
         .servicesDropdown:hover .dropdownMenu,
@@ -697,7 +697,7 @@ export default function ServiceLanding({ config }: ServiceLandingProps) {
           opacity: 1;
           visibility: visible;
           pointer-events: auto;
-          transform: translate(-50%, 0) scale(1);
+          transform: translate(-50%, 0);
         }
 
         .servicesDropdown:hover .servicesTrigger svg,
@@ -706,42 +706,22 @@ export default function ServiceLanding({ config }: ServiceLandingProps) {
         }
 
         .dropdownMenu a {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 16px;
+          display: block;
           width: 100%;
-          padding: 12px 13px;
-          border: 1px solid transparent;
-          border-radius: 13px;
-          background: #f7faff;
-          color: #2e7bff;
+          padding: 5px 0;
+          color: #171717;
           text-decoration: none;
-          font-size: 0.92rem;
-          font-weight: 720;
-          line-height: 1.25;
-          white-space: normal;
-          transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
-        }
-
-        .dropdownMenu a svg {
-          flex: 0 0 auto;
-          opacity: 0.55;
-          transition: transform 0.2s ease, opacity 0.2s ease;
+          font-size: 1rem;
+          font-weight: 520;
+          line-height: 1.28;
+          letter-spacing: -0.012em;
+          transition: color 0.18s ease, transform 0.18s ease;
         }
 
         .dropdownMenu a:hover,
         .dropdownMenu a.active {
-          background: #edf4ff;
-          border-color: rgba(46, 123, 255, 0.18);
-          color: #0b56d4;
-          transform: translateX(2px);
-        }
-
-        .dropdownMenu a:hover svg,
-        .dropdownMenu a.active svg {
-          opacity: 1;
-          transform: translateX(2px);
+          color: #3478f6;
+          transform: translateX(3px);
         }
 
         .mobileHeaderActions,

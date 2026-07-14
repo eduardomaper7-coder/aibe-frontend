@@ -60,3 +60,12 @@ También se han añadido todas las páginas al desplegable de Servicios, al men�
 - Unificado en azul AIBE el color de Contacto, Servicios, Google y Buscadores con IA.
 - Eliminada la landing de Sistemas y ciberseguridad de la configuración, navegación, footer y sitemap.
 - Mejorado el contenedor de la navbar en la página inicial y en las landings de servicios.
+
+## Navbar ajustada al diseño de referencia
+
+- Barra blanca de ancho completo con margen exterior, borde azul muy suave, esquinas redondeadas y sombra ligera.
+- Logo Aibe centrado entre los dos grupos de navegación.
+- Enlaces principales uniformados en azul Aibe.
+- Desplegable de Servicios simplificado con el encabezado “Soluciones AIBE” y una lista limpia, sin tarjetas ni iconos laterales.
+- Mismo diseño aplicado al inicio y a todas las landing pages de servicios.
+- Se mantiene el menú móvil responsive existente.
