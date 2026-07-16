@@ -80,3 +80,10 @@ También se han añadido todas las páginas al desplegable de Servicios, al men�
 - Las animaciones respetan `prefers-reduced-motion` para mejorar la accesibilidad.
 - Se mantiene la navbar compartida y unificada en todas las páginas.
 - Rutas comprobadas con respuesta HTTP 200: Redes Sociales, Marketing Digital, Diseño y Branding, Desarrollo Web y Automatización con IA.
+## Corrección de CTA en móvil
+
+- “Solicitar una valoración” ahora enlaza de forma nativa al formulario de las landings de servicios.
+- “Solicitar información” y “Solicitar información ahora” ahora enlazan de forma nativa al formulario de la página principal.
+- Añadido un destino de ancla específico y margen de desplazamiento para evitar que la cabecera tape el formulario.
+- Mejorado el soporte táctil de los CTA en dispositivos móviles.
+

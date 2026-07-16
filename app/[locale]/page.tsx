@@ -43,16 +43,6 @@ export default function Page() {
 
 
 
-  const scrollToContact = () => {
-    const target =
-      document.getElementById("contact-formulario") ??
-      document.getElementById("contacto");
-
-    target?.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
-
-
-
 
   useEffect(() => {
   const interval = setInterval(() => {
@@ -185,13 +175,12 @@ useEffect(() => {
 Escribir por WhatsApp
   </a>
 
-  <button
-  type="button"
-  onClick={scrollToContact}
-  className="callButton"
->
-  Solicitar información ahora
-</button>
+  <a
+    href="#contact-formulario"
+    className="callButton"
+  >
+    Solicitar información ahora
+  </a>
 </div>
 
 
@@ -207,13 +196,12 @@ Escribir por WhatsApp
 
 <div className="mobileConsultancy">
  <div className="mobileButtons">
-  <button
-    type="button"
-    onClick={scrollToContact}
+  <a
+    href="#contact-formulario"
     className="consultancyButton"
   >
     Solicitar información
-  </button>
+  </a>
 </div>
 
 
@@ -331,6 +319,9 @@ Escribir por WhatsApp
 
 .callButton{
   background:#2e7bff;
+  cursor:pointer;
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
 }
 
 .callButton:hover{
@@ -898,6 +889,12 @@ Escribir por WhatsApp
   padding: 18px 28px;
   border-radius: 999px;
   box-shadow: 0 16px 34px rgba(46, 123, 255, 0.35);
+  text-decoration: none;
+  position: relative;
+  z-index: 30;
+  pointer-events: auto;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 

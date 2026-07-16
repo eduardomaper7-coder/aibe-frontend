@@ -130,6 +130,8 @@
   font-weight: 760;
   text-decoration: none;
   cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
   transition: transform 0.22s ease, box-shadow 0.22s ease, background 0.22s ease;
 }
 
@@ -1075,6 +1077,7 @@
 }
 
 .contactCard {
+  scroll-margin-top: 120px;
   padding: clamp(27px, 4vw, 47px);
   border: 1px solid #e1e7ef;
   border-radius: 30px;

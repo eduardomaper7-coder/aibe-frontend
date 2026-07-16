@@ -175,12 +175,6 @@ export default function ServiceLanding({ config }: ServiceLandingProps) {
   const revealInitial = reduceMotion ? false : { opacity: 0, y: 34 };
   const revealViewport = reduceMotion ? undefined : viewport;
 
-  const scrollToContact = () => {
-    document
-      .getElementById("contacto")
-      ?.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
-
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (loading) return;
@@ -258,10 +252,13 @@ export default function ServiceLanding({ config }: ServiceLandingProps) {
             <p>{config.description}</p>
 
             <div className={styles.heroActions}>
-              <button type="button" className={styles.primaryButton} onClick={scrollToContact}>
+              <a
+                href="#contact-formulario"
+                className={styles.primaryButton}
+              >
                 Solicitar una valoración
                 <ArrowRight size={18} aria-hidden="true" />
-              </button>
+              </a>
               <a
                 href={`https://wa.me/${WHATSAPP_NUMBER}`}
                 target="_blank"
@@ -647,6 +644,7 @@ export default function ServiceLanding({ config }: ServiceLandingProps) {
 
           <motion.div
             className={styles.contactCard}
+            id="contact-formulario"
             initial={reduceMotion ? false : { opacity: 0, y: 35, scale: 0.97 }}
             whileInView={{ opacity: 1, y: 0, scale: 1 }}
             viewport={revealViewport}
