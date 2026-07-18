@@ -143,7 +143,7 @@ const content = {
     privacy: "Política de privacidad",
     legal: "Aviso legal",
     note:
-      "Este contenido constituye un borrador legal adaptado a la configuración técnica revisada del proyecto. Debe validarse por un profesional jurídico antes de su publicación definitiva y actualizarse cuando se incorporen nuevas herramientas o cookies.",
+      "",
   },
   en: {
     metadataTitle: "Cookie Policy | AIBE Technologies",

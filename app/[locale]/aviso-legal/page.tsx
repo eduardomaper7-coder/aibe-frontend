@@ -96,9 +96,7 @@ export default function LegalNoticePage() {
           </section>
         ))}
 
-        <p className="note">
-          Este texto es un borrador informativo y debe revisarse con asesoramiento jurídico antes de considerarse definitivo.
-        </p>
+        
       </article>
 
       <style>{`
