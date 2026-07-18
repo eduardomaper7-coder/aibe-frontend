@@ -1537,13 +1537,13 @@ export default function SeoAlicanteClient() {
           }
 
           .hero h1 {
-            width: 100%;
-            max-width: 580px;
-            margin: 0 auto 20px;
-            text-align: center;
-            font-size: clamp(1.8rem, 7.5vw, 2.45rem);
-            line-height: 1.04;
-          }
+  width: 100%;
+  max-width: 580px;
+  margin: 0 auto 20px;
+  text-align: center;
+  font-size: clamp(2rem, 8vw, 2.7rem);
+  line-height: 1.03;
+}
 
           .titleLine {
             white-space: normal;
@@ -1559,18 +1559,16 @@ export default function SeoAlicanteClient() {
           }
 
           .heroDescription {
-            max-width: 560px;
-            margin: 0 auto;
-            text-align: center;
-            font-size: 0.97rem;
-          }
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 0 14px;
+  text-align: center;
+  font-size: 0.97rem;
+}
 
           .heroBenefits {
-            justify-content: center;
-            max-width: 560px;
-            margin-right: auto;
-            margin-left: auto;
-          }
+  display: none;
+}
 
           .mobileHeroButtons {
             display: flex;
@@ -1724,9 +1722,8 @@ export default function SeoAlicanteClient() {
           }
 
           .heroBenefits {
-            display: grid;
-            justify-content: center;
-          }
+  display: none;
+}
         }
 
         @media (prefers-reduced-motion: reduce) {
