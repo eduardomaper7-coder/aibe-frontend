@@ -2458,12 +2458,13 @@ export default function DisenoWebAlicantePage() {
           }
 
           .hero {
-            padding-top: 245px;
+            padding-top: 165px;
           }
 
           .heroCopy {
             position: relative;
             z-index: 1;
+            margin-top: 60px;
           }
 
           .hero > .heroCopy > .eyebrow {
@@ -2738,6 +2739,16 @@ export default function DisenoWebAlicantePage() {
           .ctaBox > a {
             width: 100%;
             white-space: normal;
+          }
+        }
+
+        @media (max-width: 680px) and (max-height: 650px) {
+          .hero {
+            padding-top: 150px;
+          }
+
+          .heroCopy {
+            margin-top: 75px;
           }
         }
 
