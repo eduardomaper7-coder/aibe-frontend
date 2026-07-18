@@ -12,8 +12,8 @@ export default function AibeSection() {
           <span>Haz visible tu negocio donde tus clientes deciden.</span>
           <span>Google, redes sociales y buscadores con IA.</span>
         </h2>
-        
       </div>
+
       <div className="featureWrap">
         <div className="photoStage">
           <div className="imageCard">
@@ -24,13 +24,6 @@ export default function AibeSection() {
               sizes="(max-width: 900px) calc(100vw - 40px), 660px"
               priority
               className="image"
-              style={{
-                height: "109%",
-                top: "50%",
-                bottom: "auto",
-                transform: "translateY(-50%)",
-                objectFit: "cover",
-              }}
             />
 
             <div className="imageShade" aria-hidden="true" />
@@ -42,8 +35,16 @@ export default function AibeSection() {
         .aibeSection {
           padding: 110px 0 70px;
           background:
-            radial-gradient(circle at 16% 78%, rgba(46, 123, 255, 0.08), transparent 28%),
-            radial-gradient(circle at 88% 35%, rgba(112, 88, 255, 0.07), transparent 26%),
+            radial-gradient(
+              circle at 16% 78%,
+              rgba(46, 123, 255, 0.08),
+              transparent 28%
+            ),
+            radial-gradient(
+              circle at 88% 35%,
+              rgba(112, 88, 255, 0.07),
+              transparent 26%
+            ),
             #ffffff;
           overflow: hidden;
           font-family: "Montserrat", sans-serif;
@@ -76,10 +77,8 @@ export default function AibeSection() {
         }
 
         .featureWrap {
-          width: min(100%, 1500px);
-          margin: 0 auto;
-          padding: 0 4%;
-        }
+  display: none;
+}
 
         .photoStage {
           position: relative;
@@ -96,7 +95,12 @@ export default function AibeSection() {
           inset: 8% 14%;
           z-index: -2;
           border-radius: 52px;
-          background: linear-gradient(135deg, #edf4ff 0%, #f6f2ff 55%, #eef8ff 100%);
+          background: linear-gradient(
+            135deg,
+            #edf4ff 0%,
+            #f6f2ff 55%,
+            #eef8ff 100%
+          );
           transform: rotate(-2.5deg);
         }
 
@@ -107,7 +111,11 @@ export default function AibeSection() {
           height: min(74vw, 780px);
           z-index: -1;
           border-radius: 999px;
-          background: radial-gradient(circle, rgba(46, 123, 255, 0.2), rgba(46, 123, 255, 0) 68%);
+          background: radial-gradient(
+            circle,
+            rgba(46, 123, 255, 0.2),
+            rgba(46, 123, 255, 0) 68%
+          );
           filter: blur(18px);
         }
 
@@ -125,9 +133,10 @@ export default function AibeSection() {
           transform: translateZ(0);
         }
 
-        .image {
+        .imageCard :global(.image) {
           object-fit: cover;
           object-position: center 42%;
+          transform: scale(1.09);
           transition: transform 700ms cubic-bezier(0.2, 0.75, 0.2, 1);
         }
 
@@ -135,11 +144,15 @@ export default function AibeSection() {
           position: absolute;
           inset: 0;
           pointer-events: none;
-          background: linear-gradient(180deg, rgba(9, 27, 63, 0) 70%, rgba(9, 27, 63, 0.08) 100%);
+          background: linear-gradient(
+            180deg,
+            rgba(9, 27, 63, 0) 70%,
+            rgba(9, 27, 63, 0.08) 100%
+          );
         }
 
         .imageCard:hover :global(.image) {
-          transform: scale(1.025);
+          transform: scale(1.12);
         }
 
         @media (max-width: 900px) {
@@ -159,8 +172,11 @@ export default function AibeSection() {
           }
 
           .featureWrap {
-            padding: 0 20px;
-          }
+  display: block;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 20px;
+}
 
           .photoStage {
             min-height: 0;
@@ -181,15 +197,24 @@ export default function AibeSection() {
               0 24px 58px rgba(23, 54, 112, 0.17),
               0 8px 20px rgba(23, 54, 112, 0.09);
           }
+
+          .imageCard :global(.image) {
+            transform: scale(1.06);
+            object-position: center 42%;
+          }
+
+          .imageCard:hover :global(.image) {
+            transform: scale(1.06);
+          }
         }
 
         @media (prefers-reduced-motion: reduce) {
-          .image {
+          .imageCard :global(.image) {
             transition: none;
           }
 
           .imageCard:hover :global(.image) {
-            transform: none;
+            transform: scale(1.09);
           }
         }
       `}</style>

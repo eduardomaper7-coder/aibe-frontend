@@ -103,21 +103,11 @@ export default function ContactSection() {
 
           <input name="telefono" placeholder="Teléfono" required />
 
-          <select name="situacion" required defaultValue="">
-            <option value="" disabled>
-              ¿En qué situación está tu negocio?
-            </option>
-            <option value="Ya tengo redes sociales">
-              Ya tengo redes sociales
-            </option>
-            <option value="No tengo redes sociales">
-              No tengo redes sociales
-            </option>
-          </select>
+         
 
           <input
             name="web"
-            placeholder="Nombre de tu página web (opcional)"
+            placeholder="Nombre de tu página web (si existe)"
           />
 
           <textarea
