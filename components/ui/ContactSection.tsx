@@ -3,12 +3,14 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 
 export default function ContactSection() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+
   const params = useParams();
+  const router = useRouter();
   const locale = String(params?.locale ?? "es");
 
   const handleSubmit = async (
@@ -50,6 +52,8 @@ export default function ContactSection() {
 
       form.reset();
       setSuccess(true);
+
+      router.push(`/${locale}/gracias`);
     } catch (error) {
       console.error("Error al enviar el formulario:", error);
       setSuccess(false);
@@ -142,7 +146,7 @@ export default function ContactSection() {
 
           {success && (
             <p className="successMessage" role="status" aria-live="polite">
-              Mensaje enviado correctamente.
+              Mensaje enviado correctamente. Redirigiendo...
             </p>
           )}
         </form>
