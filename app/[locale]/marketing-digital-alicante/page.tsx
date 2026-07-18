@@ -104,10 +104,7 @@ useEffect(() => {
 
   return (
     <>
-      <SiteNavbar
-  variant="alicante"
-  activeAlicanteSlug="marketing-digital-alicante"
-/>
+      <SiteNavbar activeAlicanteSlug="marketing-digital-alicante" />
 
 
 

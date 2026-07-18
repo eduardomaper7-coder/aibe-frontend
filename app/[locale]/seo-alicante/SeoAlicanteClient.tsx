@@ -155,11 +155,7 @@ export default function SeoAlicanteClient() {
 
   return (
     <>
-      <SiteNavbar
-        variant="alicante"
-        activeAlicanteSlug="seo-alicante"
-      />
-
+      <SiteNavbar activeAlicanteSlug="seo-alicante" />
       <main>
         <section className="hero">
           <div className="heroLeft">

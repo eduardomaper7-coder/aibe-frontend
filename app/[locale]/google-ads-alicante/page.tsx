@@ -129,10 +129,7 @@ export default function GoogleAdsAlicantePage() {
 
   return (
     <>
-      <SiteNavbar
-        variant="alicante"
-        activeAlicanteSlug="google-ads-alicante"
-      />
+      <SiteNavbar activeAlicanteSlug="google-ads-alicante" />
 
       <main>
         <section className="hero">

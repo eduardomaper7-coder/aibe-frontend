@@ -129,9 +129,8 @@ export default function DisenoWebAlicantePage() {
   return (
     <>
       <SiteNavbar
-        variant="alicante"
-        activeAlicanteSlug="diseno-web-alicante"
-      />
+  activeAlicanteSlug="diseno-web-alicante"
+/>
 
       <main>
         <section className="hero">
