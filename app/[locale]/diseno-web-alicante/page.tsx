@@ -139,15 +139,13 @@ export default function DisenoWebAlicantePage() {
 
             <h1>
               <span className="heroTitleLine">Diseño web</span>
-              <span className="heroTitleLine heroLocationLine">
+              <span className="heroTitleLine">
                 en{" "}
                 <span className={`${caveat.className} accentWord`}>
                   Alicante
                 </span>
               </span>
-              <span className="heroTitleLine heroOutcomeLine">
-                para convertir visitas en clientes
-              </span>
+              <span className="heroTitleLine">para captar clientes</span>
             </h1>
 
             <p className="heroDescription">
@@ -362,11 +360,38 @@ export default function DisenoWebAlicantePage() {
 
               <div className="comparison">
                 <div className="comparisonCard muted">
-                  <span className="comparisonLabel">Antes</span>
-                  <div className="skeletonTitle" />
-                  <div className="skeletonText" />
-                  <div className="skeletonText small" />
-                  <div className="skeletonButton mutedButton" />
+                  <div className="comparisonBrowser">
+                    <div className="comparisonBrowserBar">
+                      <div>
+                        <span />
+                        <span />
+                        <span />
+                      </div>
+                    </div>
+
+                    <div className="comparisonScreen beforeScreen">
+                      <span className="comparisonLabel">Antes</span>
+
+                      <div className="beforeNavigation">
+                        <span />
+                        <span />
+                        <span />
+                      </div>
+
+                      <div className="comparisonContent">
+                        <div className="skeletonTitle" />
+                        <div className="skeletonText" />
+                        <div className="skeletonText small" />
+                        <div className="skeletonButton mutedButton" />
+                      </div>
+
+                      <div className="beforeBlocks">
+                        <span />
+                        <span />
+                        <span />
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
                 <div className="comparisonArrow">
@@ -374,11 +399,42 @@ export default function DisenoWebAlicantePage() {
                 </div>
 
                 <div className="comparisonCard improved">
-                  <span className="comparisonLabel">Después</span>
-                  <div className="skeletonTitle" />
-                  <div className="skeletonText" />
-                  <div className="skeletonText small" />
-                  <div className="skeletonButton" />
+                  <div className="comparisonBrowser">
+                    <div className="comparisonBrowserBar">
+                      <div>
+                        <span />
+                        <span />
+                        <span />
+                      </div>
+                    </div>
+
+                    <div className="comparisonScreen afterScreen">
+                      <span className="comparisonLabel">Después</span>
+
+                      <div className="afterNavigation">
+                        <div className="afterLogo" />
+                        <div className="afterMenu">
+                          <span />
+                          <span />
+                          <i />
+                        </div>
+                      </div>
+
+                      <div className="comparisonContent">
+                        <span className="afterEyebrow" />
+                        <div className="skeletonTitle" />
+                        <div className="skeletonText" />
+                        <div className="skeletonText small" />
+                        <div className="skeletonButton" />
+                      </div>
+
+                      <div className="afterBlocks">
+                        <span />
+                        <span />
+                        <span />
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -781,7 +837,7 @@ export default function DisenoWebAlicantePage() {
           right: 4%;
           width: 340px;
           height: 340px;
-          background: rgba(46, 123, 255, 0.13);
+          background: rgba(46, 123, 255, 0.22);
         }
 
         .visualGlowTwo {
@@ -789,7 +845,7 @@ export default function DisenoWebAlicantePage() {
           bottom: 35px;
           width: 220px;
           height: 220px;
-          background: rgba(112, 168, 255, 0.13);
+          background: rgba(112, 168, 255, 0.22);
         }
 
         .desktopMockup {
@@ -871,7 +927,8 @@ export default function DisenoWebAlicantePage() {
         .desktopScreen {
           padding: 25px 27px 28px;
           background:
-            radial-gradient(circle at 82% 25%, rgba(46, 123, 255, 0.08), transparent 24%),
+            radial-gradient(circle at 82% 25%, rgba(46, 123, 255, 0.16), transparent 28%),
+            radial-gradient(circle at 20% 85%, rgba(112, 168, 255, 0.11), transparent 26%),
             #ffffff;
         }
 
@@ -1013,8 +1070,8 @@ export default function DisenoWebAlicantePage() {
           overflow: hidden;
           border-radius: 25px;
           background:
-            linear-gradient(150deg, rgba(255, 255, 255, 0.95), rgba(233, 242, 255, 0.85)),
-            #edf4ff;
+            linear-gradient(150deg, rgba(255, 255, 255, 0.96), rgba(217, 233, 255, 0.92)),
+            linear-gradient(135deg, #eef5ff, #dfeaff);
           box-shadow: inset 0 0 0 1px rgba(198, 217, 245, 0.75);
         }
 
@@ -1028,8 +1085,8 @@ export default function DisenoWebAlicantePage() {
           right: -25px;
           width: 150px;
           height: 150px;
-          background: linear-gradient(145deg, #8bb7ff, #2e7bff);
-          opacity: 0.9;
+          background: linear-gradient(145deg, #8bb7ff, #2e7bff 62%, #175fe4);
+          opacity: 1;
         }
 
         .orbTwo {
@@ -1037,8 +1094,8 @@ export default function DisenoWebAlicantePage() {
           left: -20px;
           width: 125px;
           height: 125px;
-          background: #bcd4ff;
-          opacity: 0.75;
+          background: linear-gradient(145deg, #c8dbff, #8db7ff);
+          opacity: 0.95;
         }
 
         .artWindow {
@@ -1052,7 +1109,7 @@ export default function DisenoWebAlicantePage() {
           padding: 18px;
           border: 1px solid rgba(255, 255, 255, 0.85);
           border-radius: 22px;
-          background: rgba(255, 255, 255, 0.78);
+          background: rgba(255, 255, 255, 0.88);
           color: #2e7bff;
           box-shadow: 0 22px 45px rgba(27, 65, 126, 0.16);
           backdrop-filter: blur(12px);
@@ -1258,7 +1315,7 @@ export default function DisenoWebAlicantePage() {
           height: 38px;
           place-items: center;
           border-radius: 13px;
-          background: #edf4ff;
+          background: linear-gradient(145deg, #edf4ff, #dbe9ff);
           color: #2e7bff;
         }
 
@@ -1430,34 +1487,182 @@ export default function DisenoWebAlicantePage() {
         }
 
         .comparisonCard {
-          min-height: 300px;
-          padding: 24px;
-          border-radius: 23px;
+          min-width: 0;
+          padding: 10px;
+          border-radius: 24px;
         }
 
         .comparisonCard.muted {
-          border: 1px solid #e5e8ed;
-          background: #f5f6f8;
+          border: 1px solid #d7dce4;
+          background:
+            linear-gradient(145deg, #f6f1ef, #edf0f4);
         }
 
         .comparisonCard.improved {
-          border: 1px solid #cddfff;
+          border: 1px solid #aecaFF;
           background:
             radial-gradient(
-              circle at 80% 15%,
-              rgba(46, 123, 255, 0.16),
-              transparent 30%
+              circle at 85% 12%,
+              rgba(46, 123, 255, 0.26),
+              transparent 34%
             ),
-            #f7faff;
+            linear-gradient(145deg, #f8fbff, #eaf2ff);
+          box-shadow: 0 20px 48px rgba(46, 123, 255, 0.2);
+        }
+
+        .comparisonBrowser {
+          overflow: hidden;
+          min-height: 300px;
+          border: 1px solid #dfe6ef;
+          border-radius: 18px;
+          background: #ffffff;
+        }
+
+        .comparisonBrowserBar {
+          display: flex;
+          min-height: 32px;
+          align-items: center;
+          padding: 0 12px;
+          border-bottom: 1px solid #e8edf4;
+          background: #f8fafc;
+        }
+
+        .comparisonBrowserBar > div {
+          display: flex;
+          gap: 5px;
+        }
+
+        .comparisonBrowserBar span {
+          width: 6px;
+          height: 6px;
+          border-radius: 999px;
+          background: #c8ced7;
+        }
+
+        .comparisonBrowserBar span:first-child {
+          background: #ff9292;
+        }
+
+        .comparisonBrowserBar span:nth-child(2) {
+          background: #ffd16d;
+        }
+
+        .comparisonBrowserBar span:last-child {
+          background: #76dba2;
+        }
+
+        .comparisonScreen {
+          position: relative;
+          min-height: 268px;
+          padding: 18px;
+        }
+
+        .beforeScreen {
+          background:
+            linear-gradient(145deg, #f3eeee, #eceff3);
+        }
+
+        .afterScreen {
+          background:
+            radial-gradient(
+              circle at 90% 20%,
+              rgba(46, 123, 255, 0.22),
+              transparent 34%
+            ),
+            radial-gradient(
+              circle at 15% 85%,
+              rgba(112, 168, 255, 0.16),
+              transparent 28%
+            ),
+            linear-gradient(145deg, #ffffff, #f3f7ff);
         }
 
         .comparisonLabel {
-          display: inline-block;
-          margin-bottom: 42px;
-          color: #667080;
-          font-size: 0.78rem;
+          display: inline-flex;
+          padding: 6px 10px;
+          border-radius: 999px;
+          color: #697281;
+          font-size: 0.66rem;
           font-weight: 800;
+          letter-spacing: 0.08em;
           text-transform: uppercase;
+        }
+
+        .improved .comparisonLabel {
+          background: #eaf2ff;
+          color: #2e7bff;
+        }
+
+        .beforeNavigation {
+          display: flex;
+          gap: 8px;
+          margin-top: 20px;
+        }
+
+        .beforeNavigation span {
+          height: 7px;
+          border-radius: 999px;
+          background: linear-gradient(90deg, #c9a9a9, #c6cbd2);
+        }
+
+        .beforeNavigation span:first-child {
+          width: 42%;
+        }
+
+        .beforeNavigation span:nth-child(2) {
+          width: 20%;
+        }
+
+        .beforeNavigation span:last-child {
+          width: 25%;
+        }
+
+        .afterNavigation {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-top: 18px;
+        }
+
+        .afterLogo {
+          width: 27px;
+          height: 27px;
+          border-radius: 9px;
+          background: linear-gradient(145deg, #79adff, #2e7bff);
+          box-shadow: 0 8px 17px rgba(46, 123, 255, 0.25);
+        }
+
+        .afterMenu {
+          display: flex;
+          align-items: center;
+          gap: 7px;
+        }
+
+        .afterMenu span {
+          width: 25px;
+          height: 5px;
+          border-radius: 999px;
+          background: #d8e0eb;
+        }
+
+        .afterMenu i {
+          width: 43px;
+          height: 19px;
+          border-radius: 999px;
+          background: #2e7bff;
+        }
+
+        .comparisonContent {
+          margin-top: 34px;
+        }
+
+        .afterEyebrow {
+          display: block;
+          width: 66px;
+          height: 5px;
+          margin-bottom: 11px;
+          border-radius: 999px;
+          background: #8db7ff;
         }
 
         .skeletonTitle,
@@ -1468,39 +1673,82 @@ export default function DisenoWebAlicantePage() {
 
         .skeletonTitle {
           width: 86%;
-          height: 25px;
-          background: #1d2430;
+          height: 20px;
+          background: #182131;
         }
 
         .muted .skeletonTitle {
-          background: #aeb4be;
+          width: 95%;
+          background: #aeb4bd;
         }
 
         .skeletonText {
-          width: 95%;
-          height: 9px;
-          margin-top: 22px;
-          background: #ccd4df;
+          width: 94%;
+          height: 7px;
+          margin-top: 17px;
+          background: #d5dde8;
+        }
+
+        .muted .skeletonText {
+          background: #c7cbd1;
         }
 
         .skeletonText.small {
-          width: 67%;
-          margin-top: 10px;
+          width: 66%;
+          margin-top: 9px;
         }
 
         .skeletonButton {
-          width: 125px;
-          height: 40px;
-          margin-top: 35px;
+          width: 105px;
+          height: 34px;
+          margin-top: 25px;
           background: #2e7bff;
+          box-shadow: 0 9px 20px rgba(46, 123, 255, 0.24);
         }
 
         .mutedButton {
-          background: #c2c7cf;
+          width: 88px;
+          border-radius: 5px;
+          background: #bfc4cb;
+          box-shadow: none;
+        }
+
+        .beforeBlocks,
+        .afterBlocks {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 7px;
+          margin-top: 25px;
+        }
+
+        .beforeBlocks span,
+        .afterBlocks span {
+          min-height: 37px;
+          border-radius: 8px;
+        }
+
+        .beforeBlocks span {
+          border: 1px solid #d6d9de;
+          background: #e4e6e9;
+        }
+
+        .afterBlocks span {
+          border: 1px solid #cfe0f8;
+          border-radius: 11px;
+          background:
+            linear-gradient(145deg, #f8fbff, #e8f1ff);
+          box-shadow: 0 8px 18px rgba(46, 123, 255, 0.08);
         }
 
         .comparisonArrow {
+          display: grid;
+          width: 42px;
+          height: 42px;
+          place-items: center;
+          border-radius: 999px;
+          background: linear-gradient(145deg, #edf4ff, #dbe9ff);
           color: #2e7bff;
+          box-shadow: 0 10px 24px rgba(46, 123, 255, 0.15);
         }
 
         .showcaseCopy > p:not(.eyebrow),
@@ -1571,7 +1819,7 @@ export default function DisenoWebAlicantePage() {
           margin-bottom: 42px;
           place-items: center;
           border-radius: 16px;
-          background: #edf4ff;
+          background: linear-gradient(145deg, #edf4ff, #dbe9ff);
           color: #2e7bff;
         }
 
@@ -1844,7 +2092,7 @@ export default function DisenoWebAlicantePage() {
             min-height: auto;
             grid-template-columns: 1fr;
             gap: 45px;
-            padding: 145px 16px 65px;
+            padding: 160px 16px 65px;
           }
 
           .heroCopy {
@@ -1959,32 +2207,48 @@ export default function DisenoWebAlicantePage() {
           }
 
           .hero {
-            padding-top: 135px;
+            padding-top: 165px;
+          }
+
+          .hero > .heroCopy > .eyebrow {
+            display: none;
           }
 
           .hero h1 {
+            width: 100%;
             max-width: 390px;
-            font-size: clamp(2.05rem, 10.5vw, 2.8rem);
+            margin: 0 auto;
+            font-size: clamp(2rem, 9vw, 2.65rem);
+            line-height: 1.02;
+            letter-spacing: -0.05em;
           }
 
-          .heroLocationLine {
-            white-space: normal;
+          .heroTitleLine {
+            display: block;
+            white-space: nowrap;
+            font-size: 1em;
+            line-height: inherit;
           }
 
           .accentWord {
-            display: block;
-            width: fit-content;
-            margin: 0.08em auto 0;
-            font-size: 1.58em;
-            line-height: 0.7;
+            display: inline-block;
+            margin: 0 0 0 0.04em;
+            font-size: 1em;
+            line-height: inherit;
+            vertical-align: baseline;
+            transform: rotate(-1deg);
           }
 
-          .heroOutcomeLine {
-            max-width: 340px;
-            margin-top: 0.42em;
-            font-size: 0.62em;
-            line-height: 1.16;
-            letter-spacing: -0.035em;
+          .heroPoints {
+            display: none !important;
+          }
+
+          .heroVisual {
+            width: calc(100% - 32px);
+            max-width: 650px;
+            min-height: 450px;
+            margin: 0 auto;
+            padding: 22px 0 76px;
           }
 
           .heroDescription {
@@ -2005,16 +2269,6 @@ export default function DisenoWebAlicantePage() {
           .primaryButton,
           .secondaryButton {
             width: 100%;
-          }
-
-          .heroPoints {
-            display: grid;
-            justify-content: center;
-          }
-
-          .heroVisual {
-            min-height: 450px;
-            padding: 22px 0 76px;
           }
 
           .desktopMockup {
