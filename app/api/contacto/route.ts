@@ -20,18 +20,10 @@ export async function POST(request: Request) {
     const empresa = String(body.empresa ?? "").trim();
     const email = String(body.email ?? "").trim();
     const telefono = String(body.telefono ?? "").trim();
-    const situacion = String(body.situacion ?? "").trim();
     const web = String(body.web ?? "").trim();
     const mensaje = String(body.mensaje ?? "").trim();
 
-    if (
-      !nombre ||
-      !empresa ||
-      !email ||
-      !telefono ||
-      !situacion ||
-      !mensaje
-    ) {
+    if (!nombre || !empresa || !email || !telefono || !mensaje) {
       return NextResponse.json(
         { error: "Faltan campos obligatorios." },
         { status: 400 }
@@ -69,7 +61,6 @@ export async function POST(request: Request) {
           <p><strong>Empresa:</strong> ${escapeHtml(empresa)}</p>
           <p><strong>Email:</strong> ${escapeHtml(email)}</p>
           <p><strong>Teléfono:</strong> ${escapeHtml(telefono)}</p>
-          <p><strong>Situación:</strong> ${escapeHtml(situacion)}</p>
           <p><strong>Página web:</strong> ${
             web ? escapeHtml(web) : "No indicada"
           }</p>
@@ -87,7 +78,6 @@ Nombre: ${nombre}
 Empresa: ${empresa}
 Email: ${email}
 Teléfono: ${telefono}
-Situación: ${situacion}
 Página web: ${web || "No indicada"}
 
 Mensaje:

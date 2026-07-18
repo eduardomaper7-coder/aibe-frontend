@@ -1,5 +1,3 @@
-// components/ui/ContactSection.tsx
-
 "use client";
 
 import { useState } from "react";
@@ -7,63 +5,64 @@ import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 
-
 export default function ContactSection() {
   const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
   const params = useParams();
   const locale = String(params?.locale ?? "es");
 
   const handleSubmit = async (
-  event: React.FormEvent<HTMLFormElement>
-) => {
-  event.preventDefault();
+    event: React.FormEvent<HTMLFormElement>
+  ) => {
+    event.preventDefault();
 
-  if (loading) return;
+    if (loading) return;
 
-  const form = event.currentTarget;
-  const formData = new FormData(form);
+    const form = event.currentTarget;
+    const formData = new FormData(form);
 
-  setLoading(true);
+    setLoading(true);
+    setSuccess(false);
 
-  try {
-    const response = await fetch("/api/contacto", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        nombre: formData.get("nombre"),
-        empresa: formData.get("empresa"),
-        email: formData.get("email"),
-        telefono: formData.get("telefono"),
-        situacion: formData.get("situacion"),
-        web: formData.get("web"),
-        mensaje: formData.get("mensaje"),
-      }),
-    });
+    try {
+      const response = await fetch("/api/contacto", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          nombre: String(formData.get("nombre") ?? "").trim(),
+          empresa: String(formData.get("empresa") ?? "").trim(),
+          email: String(formData.get("email") ?? "").trim(),
+          telefono: String(formData.get("telefono") ?? "").trim(),
+          web: String(formData.get("web") ?? "").trim(),
+          mensaje: String(formData.get("mensaje") ?? "").trim(),
+        }),
+      });
 
-    const data = await response.json().catch(() => null);
+      const data = await response.json().catch(() => null);
 
-    if (!response.ok) {
-      throw new Error(
-        data?.error || "No se ha podido enviar el mensaje."
+      if (!response.ok) {
+        throw new Error(
+          data?.error || "No se ha podido enviar el mensaje."
+        );
+      }
+
+      form.reset();
+      setSuccess(true);
+    } catch (error) {
+      console.error("Error al enviar el formulario:", error);
+      setSuccess(false);
+
+      alert(
+        error instanceof Error
+          ? error.message
+          : "Ha ocurrido un error al enviar el mensaje."
       );
+    } finally {
+      setLoading(false);
     }
-
-    form.reset();
-    alert("Mensaje enviado correctamente.");
-  } catch (error) {
-    console.error("Error al enviar el formulario:", error);
-
-    alert(
-      error instanceof Error
-        ? error.message
-        : "Ha ocurrido un error al enviar el mensaje."
-    );
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   return (
     <section className="contactSection" id="contacto">
@@ -81,14 +80,14 @@ export default function ContactSection() {
         </ul>
 
         <div className="reviewsImage">
-  <Image
-    src="/imagenes/resenas-google.png"
-    alt="Opiniones de clientes de Google"
-    width={900}
-    height={700}
-    className="googleReviews"
-  />
-</div>
+          <Image
+            src="/imagenes/resenas-google.png"
+            alt="Opiniones de clientes de Google"
+            width={900}
+            height={700}
+            className="googleReviews"
+          />
+        </div>
       </div>
 
       <div className="contactCard" id="contact-formulario">
@@ -102,8 +101,6 @@ export default function ContactSection() {
           <input name="email" type="email" placeholder="Email" required />
 
           <input name="telefono" placeholder="Teléfono" required />
-
-         
 
           <input
             name="web"
@@ -121,7 +118,11 @@ export default function ContactSection() {
             <input type="checkbox" required />
             <span>
               Acepto el{" "}
-              <Link href={`/${locale}/aviso-legal`} target="_blank" rel="noopener noreferrer">
+              <Link
+                href={`/${locale}/aviso-legal`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 Aviso Legal
               </Link>{" "}
               y la{" "}
@@ -138,21 +139,27 @@ export default function ContactSection() {
           <button type="submit" disabled={loading}>
             {loading ? "Enviando..." : "Enviar mensaje"}
           </button>
+
+          {success && (
+            <p className="successMessage" role="status" aria-live="polite">
+              Mensaje enviado correctamente.
+            </p>
+          )}
         </form>
       </div>
 
       <style jsx>{`
         .contactSection {
-  width: 100%;
-  scroll-margin-top: 110px;
-  padding: 110px 6%;
-  display: grid;
-  grid-template-columns: 1fr 0.95fr;
-  gap: 70px;
-  align-items: start;
-  background: #ffffff;
-  font-family: "Montserrat", sans-serif;
-}
+          width: 100%;
+          scroll-margin-top: 110px;
+          padding: 110px 6%;
+          display: grid;
+          grid-template-columns: 1fr 0.95fr;
+          gap: 70px;
+          align-items: start;
+          background: #ffffff;
+          font-family: "Montserrat", sans-serif;
+        }
 
         .contactLeft {
           min-width: 0;
@@ -203,20 +210,20 @@ export default function ContactSection() {
         }
 
         .reviewsImage {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  margin-top: -10px;
-}
+          display: flex;
+          justify-content: center;
+          align-items: flex-start;
+          margin-top: -10px;
+        }
 
-.googleReviews {
-  width: 78%;
-  max-width: 520px;
-  height: auto;
-  border-radius: 24px;
-  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.1);
-  object-fit: contain;
-}
+        .googleReviews {
+          width: 78%;
+          max-width: 520px;
+          height: auto;
+          border-radius: 24px;
+          box-shadow: 0 18px 50px rgba(0, 0, 0, 0.1);
+          object-fit: contain;
+        }
 
         .contactCard {
           scroll-margin-top: 110px;
@@ -242,7 +249,6 @@ export default function ContactSection() {
         }
 
         input,
-        select,
         textarea {
           width: 100%;
           border: 1px solid #dfe5ef;
@@ -263,7 +269,6 @@ export default function ContactSection() {
         }
 
         input:focus,
-        select:focus,
         textarea:focus {
           border-color: #2e7bff;
           background: #ffffff;
@@ -323,47 +328,41 @@ export default function ContactSection() {
           transform: none;
         }
 
-        @keyframes scrollReviews {
-          from {
-            transform: translateX(0);
-          }
-
-          to {
-            transform: translateX(-50%);
-          }
+        .successMessage {
+          margin: 2px 0 0;
+          text-align: center;
+          color: #16a34a;
+          font-size: 0.95rem;
+          font-weight: 800;
         }
 
         @media (max-width: 980px) {
-  .contactSection {
-    grid-template-columns: 1fr;
-    padding: 80px 16px;
-    gap: 44px;
-  }
+          .contactSection {
+            grid-template-columns: 1fr;
+            padding: 80px 16px;
+            gap: 44px;
+          }
 
-  .contactLeft h2,
-  .contactCard h2 {
-    text-align: center;
-  }
+          .contactLeft h2,
+          .contactCard h2 {
+            text-align: center;
+          }
 
-  .eyebrow {
-    width: 100%;
-    justify-content: center;
-  }
+          .eyebrow {
+            width: 100%;
+            justify-content: center;
+          }
 
-  .contactCard {
-    padding: 28px 20px;
-    border-radius: 26px;
-    scroll-margin-top: 95px;
-  }
+          .contactCard {
+            padding: 28px 20px;
+            border-radius: 26px;
+            scroll-margin-top: 95px;
+          }
 
-  .contactLeft li {
-    font-size: 0.96rem;
-  }
-
-  .reviewCard {
-    width: 250px;
-  }
-}
+          .contactLeft li {
+            font-size: 0.96rem;
+          }
+        }
       `}</style>
     </section>
   );
