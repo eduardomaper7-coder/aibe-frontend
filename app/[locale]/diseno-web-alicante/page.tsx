@@ -437,6 +437,48 @@ export default function DisenoWebAlicantePage() {
                   </div>
                 </div>
               </div>
+
+              <div className="mobileShowcaseArt" aria-hidden="true">
+                <div className="mobileArtGlow mobileArtGlowOne" />
+                <div className="mobileArtGlow mobileArtGlowTwo" />
+
+                <div className="mobileArtPhone">
+                  <div className="mobileArtSpeaker" />
+
+                  <div className="mobileArtScreen">
+                    <div className="mobileArtHeader">
+                      <span className="mobileArtLogo">A</span>
+
+                      <div className="mobileArtMenu">
+                        <span />
+                        <span />
+                      </div>
+                    </div>
+
+                    <div className="mobileArtHero">
+                      <span className="mobileArtEyebrow" />
+                      <span className="mobileArtTitle" />
+                      <span className="mobileArtTitle short" />
+                      <span className="mobileArtText" />
+                      <span className="mobileArtText small" />
+                      <span className="mobileArtButton" />
+                    </div>
+
+                    <div className="mobileArtCards">
+                      <span />
+                      <span />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mobileArtBadge">
+                  <Sparkles size={17} />
+                  <span>
+                    <strong>Diseño renovado</strong>
+                    Más claro y atractivo
+                  </span>
+                </div>
+              </div>
             </div>
 
             <div className="showcaseCopy">
@@ -1751,6 +1793,215 @@ export default function DisenoWebAlicantePage() {
           box-shadow: 0 10px 24px rgba(46, 123, 255, 0.15);
         }
 
+        .mobileShowcaseArt {
+          display: none;
+          position: relative;
+          min-height: 360px;
+          align-items: center;
+          justify-content: center;
+          overflow: hidden;
+          border: 1px solid #d9e6f8;
+          border-radius: 24px;
+          background:
+            radial-gradient(
+              circle at 80% 18%,
+              rgba(46, 123, 255, 0.2),
+              transparent 28%
+            ),
+            linear-gradient(145deg, #f9fbff, #eaf2ff);
+          box-shadow: 0 20px 48px rgba(36, 78, 145, 0.12);
+          isolation: isolate;
+        }
+
+        .mobileArtGlow {
+          position: absolute;
+          z-index: -1;
+          border-radius: 999px;
+          filter: blur(1px);
+        }
+
+        .mobileArtGlowOne {
+          top: 25px;
+          right: 22px;
+          width: 150px;
+          height: 150px;
+          background: rgba(46, 123, 255, 0.2);
+        }
+
+        .mobileArtGlowTwo {
+          bottom: 28px;
+          left: 18px;
+          width: 110px;
+          height: 110px;
+          background: rgba(125, 177, 255, 0.2);
+        }
+
+        .mobileArtPhone {
+          position: relative;
+          z-index: 2;
+          width: 152px;
+          padding: 7px;
+          border: 1px solid #ccd8e8;
+          border-radius: 30px;
+          background: #111827;
+          box-shadow: 0 24px 46px rgba(17, 24, 39, 0.22);
+          transform: rotate(-3deg);
+        }
+
+        .mobileArtSpeaker {
+          width: 38px;
+          height: 4px;
+          margin: 2px auto 7px;
+          border-radius: 999px;
+          background: #354052;
+        }
+
+        .mobileArtScreen {
+          overflow: hidden;
+          min-height: 286px;
+          padding: 13px;
+          border-radius: 22px;
+          background:
+            radial-gradient(
+              circle at 88% 20%,
+              rgba(46, 123, 255, 0.17),
+              transparent 32%
+            ),
+            #ffffff;
+        }
+
+        .mobileArtHeader {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+
+        .mobileArtLogo {
+          display: grid;
+          width: 25px;
+          height: 25px;
+          place-items: center;
+          border-radius: 8px;
+          background: linear-gradient(145deg, #75a9ff, #1769f5);
+          color: #ffffff;
+          font-size: 0.66rem;
+          font-weight: 850;
+          box-shadow: 0 7px 14px rgba(46, 123, 255, 0.22);
+        }
+
+        .mobileArtMenu {
+          display: grid;
+          gap: 4px;
+        }
+
+        .mobileArtMenu span {
+          display: block;
+          width: 20px;
+          height: 3px;
+          border-radius: 999px;
+          background: #8f9bad;
+        }
+
+        .mobileArtHero {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          padding: 27px 0 20px;
+        }
+
+        .mobileArtEyebrow,
+        .mobileArtTitle,
+        .mobileArtText,
+        .mobileArtButton {
+          display: block;
+          border-radius: 999px;
+        }
+
+        .mobileArtEyebrow {
+          width: 54px;
+          height: 5px;
+          margin-bottom: 10px;
+          background: #8db7ff;
+        }
+
+        .mobileArtTitle {
+          width: 92%;
+          height: 12px;
+          margin-top: 6px;
+          background: #172033;
+        }
+
+        .mobileArtTitle.short {
+          width: 67%;
+        }
+
+        .mobileArtText {
+          width: 90%;
+          height: 5px;
+          margin-top: 13px;
+          background: #d6deea;
+        }
+
+        .mobileArtText.small {
+          width: 72%;
+          margin-top: 7px;
+        }
+
+        .mobileArtButton {
+          width: 76px;
+          height: 25px;
+          margin-top: 17px;
+          background: linear-gradient(90deg, #2e7bff, #6aa3ff);
+          box-shadow: 0 8px 17px rgba(46, 123, 255, 0.24);
+        }
+
+        .mobileArtCards {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 7px;
+        }
+
+        .mobileArtCards span {
+          min-height: 48px;
+          border: 1px solid #dce7f5;
+          border-radius: 11px;
+          background: linear-gradient(145deg, #f8fbff, #ebf3ff);
+        }
+
+        .mobileArtBadge {
+          position: absolute;
+          right: 22px;
+          bottom: 34px;
+          z-index: 3;
+          display: flex;
+          align-items: center;
+          gap: 9px;
+          padding: 10px 12px;
+          border: 1px solid #d7e4f7;
+          border-radius: 16px;
+          background: rgba(255, 255, 255, 0.94);
+          color: #2e7bff;
+          box-shadow: 0 14px 32px rgba(36, 78, 145, 0.16);
+          backdrop-filter: blur(10px);
+        }
+
+        .mobileArtBadge span,
+        .mobileArtBadge strong {
+          display: block;
+        }
+
+        .mobileArtBadge span {
+          color: #6b7585;
+          font-size: 0.66rem;
+          line-height: 1.35;
+        }
+
+        .mobileArtBadge strong {
+          margin-bottom: 2px;
+          color: #1d2736;
+          font-size: 0.74rem;
+        }
+
         .showcaseCopy > p:not(.eyebrow),
         .featuresCopy > p:not(.eyebrow) {
           margin-top: 25px;
@@ -2207,7 +2458,12 @@ export default function DisenoWebAlicantePage() {
           }
 
           .hero {
-            padding-top: 165px;
+            padding-top: 245px;
+          }
+
+          .heroCopy {
+            position: relative;
+            z-index: 1;
           }
 
           .hero > .heroCopy > .eyebrow {
@@ -2438,12 +2694,25 @@ export default function DisenoWebAlicantePage() {
           }
 
           .comparison {
-            grid-template-columns: 1fr;
+            display: none;
           }
 
-          .comparisonArrow {
-            justify-self: center;
-            transform: rotate(90deg);
+          .mobileShowcaseArt {
+            display: flex;
+            min-height: 330px;
+          }
+
+          .mobileArtPhone {
+            width: 138px;
+          }
+
+          .mobileArtScreen {
+            min-height: 258px;
+          }
+
+          .mobileArtBadge {
+            right: 12px;
+            bottom: 24px;
           }
 
           .servicesGrid,
