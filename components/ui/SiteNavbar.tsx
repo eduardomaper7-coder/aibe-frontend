@@ -28,6 +28,10 @@ const alicanteNavigation = [
     slug: "google-ads-alicante",
     label: "Google Ads en Alicante",
   },
+  {
+    slug: "gestion-redes-sociales-alicante",
+    label: "Gestión de redes sociales en Alicante",
+  },
 ] as const;
 
 type SiteNavbarProps = {
