@@ -166,6 +166,32 @@
   transform: rotate(180deg);
 }
 
+.crmButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 20px;
+  border: 0;
+  border-radius: 999px;
+  background: #2e7bff;
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 0.92rem;
+  font-weight: 750;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  box-shadow: 0 10px 24px rgba(46, 123, 255, 0.28);
+  transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.crmButton:hover,
+.crmButton:focus-visible {
+  background: #0b56d4;
+  transform: translateY(-1px);
+  box-shadow: 0 14px 30px rgba(46, 123, 255, 0.34);
+  outline: none;
+}
+
 .mobileActions,
 .mobileMenu {
   display: none;
@@ -256,6 +282,19 @@
     font: inherit;
     font-weight: 750;
     cursor: pointer;
+  }
+
+  .mobileCrmLink {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 13px;
+    border-radius: 12px;
+    background: #2e7bff;
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 750;
   }
 
   .mobileServices {

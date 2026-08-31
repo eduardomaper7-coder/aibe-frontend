@@ -3,13 +3,14 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronDown, Menu, X } from "lucide-react";
+import { ChevronDown, LogIn, Menu, X } from "lucide-react";
 import { useParams, usePathname } from "next/navigation";
 
 import { serviceNavigation } from "@/lib/service-landings";
 import styles from "./SiteNavbar.module.css";
 
 const WHATSAPP_NUMBER = "34686012685";
+const CRM_URL = "https://crm.aibetech.es";
 
 const alicanteNavigation = [
   {
@@ -207,6 +208,11 @@ export default function SiteNavbar({
         >
           Buscadores con IA
         </Link>
+
+        <a href={CRM_URL} className={styles.crmButton}>
+          <LogIn size={16} strokeWidth={2.4} aria-hidden="true" />
+          Acceso CRM
+        </a>
       </nav>
 
       {/* ACCIONES MÓVILES */}
@@ -326,6 +332,15 @@ export default function SiteNavbar({
           >
             Buscadores con IA
           </Link>
+
+          <a
+            href={CRM_URL}
+            className={styles.mobileCrmLink}
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            <LogIn size={17} strokeWidth={2.4} aria-hidden="true" />
+            Acceso CRM
+          </a>
         </nav>
       )}
     </header>
