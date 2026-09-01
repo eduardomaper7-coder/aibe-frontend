@@ -11,7 +11,7 @@ const sections = [
     title: "1. Titular del sitio web",
     paragraphs: [
       "El presente sitio web, disponible en aibetech.es, es gestionado bajo el nombre comercial AIBE Technologies por Eduardo Martínez Perdomo, profesional establecido en España.",
-      "Correo electrónico de contacto: info@aibetech.es. Teléfono de contacto: +34 686 01 26 85.",
+      "Correo electrónico de contacto: info@aibetech.es. Teléfono de contacto: +34 699 301 819.",
     ],
   },
   {

@@ -9,7 +9,7 @@ import { useParams, usePathname } from "next/navigation";
 import { serviceNavigation } from "@/lib/service-landings";
 import styles from "./SiteNavbar.module.css";
 
-const WHATSAPP_NUMBER = "34686012685";
+const WHATSAPP_NUMBER = "34699301819";
 const CRM_URL = "https://crm.aibetech.es";
 
 const alicanteNavigation = [

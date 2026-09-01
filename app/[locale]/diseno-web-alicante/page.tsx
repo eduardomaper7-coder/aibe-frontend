@@ -160,7 +160,7 @@ export default function DisenoWebAlicantePage() {
               </a>
 
               <a
-                href="https://wa.me/34686012685"
+                href="https://wa.me/34699301819"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="secondaryButton"
@@ -693,7 +693,7 @@ export default function DisenoWebAlicantePage() {
       <Footer />
 
       <a
-        href="https://wa.me/34686012685"
+        href="https://wa.me/34699301819"
         target="_blank"
         rel="noopener noreferrer"
         className="floatingWhatsapp"

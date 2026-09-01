@@ -4,7 +4,7 @@ import Image from "next/image";
 import SocialMediaAnimation from "./SocialMediaAnimation";
 
 const WHATSAPP_URL =
-  "https://wa.me/34686012685?text=Hola%2C%20quiero%20informaci%C3%B3n%20sobre%20la%20gesti%C3%B3n%20de%20redes%20sociales.";
+  "https://wa.me/34699301819?text=Hola%2C%20quiero%20informaci%C3%B3n%20sobre%20la%20gesti%C3%B3n%20de%20redes%20sociales.";
 
 export default function RedesSocialesSection() {
   const logos = [

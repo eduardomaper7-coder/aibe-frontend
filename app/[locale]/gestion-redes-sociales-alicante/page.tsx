@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Caveat } from "next/font/google";
 import {
@@ -26,6 +26,29 @@ import ContactSection from "@/components/ui/ContactSection";
 import Footer from "@/components/ui/Footer";
 
 const caveat = Caveat({ subsets: ["latin"], weight: ["600", "700"] });
+
+const mobileHeroMessages = [
+  {
+    icon: Lightbulb,
+    title: "Pensamos ideas originales",
+    text: "Conceptos y guiones creados para tu marca.",
+  },
+  {
+    icon: Camera,
+    title: "Grabamos tu contenido",
+    text: "Vídeos y fotografías reales de tu negocio.",
+  },
+  {
+    icon: Clapperboard,
+    title: "Editamos cada pieza",
+    text: "Ritmo, subtítulos, sonido y acabado profesional.",
+  },
+  {
+    icon: Send,
+    title: "Publicamos y gestionamos",
+    text: "Calendario, comunidad y mejora continua.",
+  },
+];
 
 type SocialLogoProps = {
   network: "instagram" | "facebook" | "tiktok" | "youtube";
@@ -190,6 +213,25 @@ const faqItems = [
 
 export default function GestionRedesSocialesAlicantePage() {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
+  const [mobileMessageIndex, setMobileMessageIndex] = useState(0);
+  const [mobileMessageVisible, setMobileMessageVisible] = useState(true);
+
+  useEffect(() => {
+    const interval = window.setInterval(() => {
+      setMobileMessageVisible(false);
+
+      window.setTimeout(() => {
+        setMobileMessageIndex(
+          (current) => (current + 1) % mobileHeroMessages.length
+        );
+        setMobileMessageVisible(true);
+      }, 260);
+    }, 2700);
+
+    return () => window.clearInterval(interval);
+  }, []);
+
+  const MobileMessageIcon = mobileHeroMessages[mobileMessageIndex].icon;
 
   return (
     <>
@@ -206,18 +248,45 @@ export default function GestionRedesSocialesAlicantePage() {
                 de principio a fin
               </span>
             </h1>
-            <p className="heroDescription">
+            <p className="heroDescription desktopHeroDescription">
               Creamos las ideas, grabamos el contenido, editamos cada pieza,
               publicamos y gestionamos tus perfiles para que tu negocio tenga
               una presencia constante, profesional y diferente.
             </p>
+
+            <div
+              className={`mobileHeroAnimation ${
+                mobileMessageVisible ? "messageVisible" : "messageHidden"
+              }`}
+              aria-live="polite"
+            >
+              <div className="mobileAnimationIcon">
+                <MobileMessageIcon size={24} aria-hidden="true" />
+              </div>
+
+              <div className="mobileAnimationCopy">
+                <strong>{mobileHeroMessages[mobileMessageIndex].title}</strong>
+                <span>{mobileHeroMessages[mobileMessageIndex].text}</span>
+              </div>
+
+              <div className="mobileAnimationProgress" aria-hidden="true">
+                {mobileHeroMessages.map((item, index) => (
+                  <i
+                    key={item.title}
+                    className={
+                      index === mobileMessageIndex ? "activeProgress" : ""
+                    }
+                  />
+                ))}
+              </div>
+            </div>
 
             <div className="heroActions">
               <a href="#contact-formulario" className="primaryButton">
                 Solicitar presupuesto <ArrowRight size={18} />
               </a>
               <a
-                href="https://wa.me/34686012685"
+                href="https://wa.me/34699301819"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="secondaryButton"
@@ -598,7 +667,7 @@ export default function GestionRedesSocialesAlicantePage() {
       <Footer />
 
       <a
-        href="https://wa.me/34686012685"
+        href="https://wa.me/34699301819"
         target="_blank"
         rel="noopener noreferrer"
         className="floatingWhatsapp"
@@ -676,6 +745,9 @@ export default function GestionRedesSocialesAlicantePage() {
           color: #596172;
           font-size: clamp(1rem, 1.2vw, 1.17rem);
           line-height: 1.75;
+        }
+        .mobileHeroAnimation {
+          display: none;
         }
         .heroActions {
           display: flex;
@@ -1623,11 +1695,114 @@ export default function GestionRedesSocialesAlicantePage() {
           }
         }
         @media (max-width: 680px) {
-          .sectionContainer {
-            width: min(100% - 32px, 1280px);
+  .sectionContainer {
+    width: min(100% - 32px, 1280px);
+  }
+
+  .hero {
+  padding-top: 280px;
+}
+
+  .heroCopy {
+    position: relative;
+    z-index: 1;
+  }
+
+  .heroCopy > .eyebrow {
+    margin-top: 0;
+    margin-bottom: 26px;
+  }
+
+  .desktopHeroDescription {
+    display: none;
+  }
+          .mobileHeroAnimation {
+            position: relative;
+            display: grid;
+            grid-template-columns: auto 1fr;
+            width: min(100%, 360px);
+            min-height: 112px;
+            align-items: center;
+            gap: 14px;
+            margin: 34px auto 0;
+            padding: 18px 18px 25px;
+            overflow: hidden;
+            border: 1px solid rgba(124, 58, 237, 0.16);
+            border-radius: 22px;
+            background:
+              radial-gradient(
+                circle at 92% 10%,
+                rgba(219, 39, 119, 0.13),
+                transparent 34%
+              ),
+              linear-gradient(145deg, #ffffff, #faf7ff);
+            box-shadow: 0 18px 45px rgba(67, 38, 109, 0.1);
+            text-align: left;
+            transition:
+              opacity 0.26s ease,
+              transform 0.26s ease;
           }
-          .hero {
-            padding-top: 150px;
+          .mobileHeroAnimation.messageVisible {
+            opacity: 1;
+            transform: translateY(0);
+          }
+          .mobileHeroAnimation.messageHidden {
+            opacity: 0;
+            transform: translateY(8px);
+          }
+          .mobileAnimationIcon {
+            display: grid;
+            width: 50px;
+            height: 50px;
+            place-items: center;
+            border-radius: 16px;
+            background: linear-gradient(145deg, #f0e8ff, #fce7f3);
+            color: #7c3aed;
+            box-shadow: inset 0 0 0 1px rgba(124, 58, 237, 0.08);
+          }
+          .mobileAnimationCopy {
+            min-width: 0;
+          }
+          .mobileAnimationCopy strong,
+          .mobileAnimationCopy span {
+            display: block;
+          }
+          .mobileAnimationCopy strong {
+            color: #17131d;
+            font-size: 0.98rem;
+            line-height: 1.25;
+          }
+          .mobileAnimationCopy span {
+            margin-top: 5px;
+            color: #656071;
+            font-size: 0.82rem;
+            line-height: 1.45;
+          }
+          .mobileAnimationProgress {
+            position: absolute;
+            right: 18px;
+            bottom: 12px;
+            left: 18px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+          }
+          .mobileAnimationProgress i {
+            overflow: hidden;
+            height: 4px;
+            border-radius: 999px;
+            background: #e8e2ee;
+          }
+          .mobileAnimationProgress i::after {
+            content: "";
+            display: block;
+            width: 0;
+            height: 100%;
+            border-radius: inherit;
+            background: linear-gradient(90deg, #7c3aed, #db2777);
+          }
+          .mobileAnimationProgress i.activeProgress::after {
+            animation: mobileMessageProgress 2.7s linear forwards;
           }
           .hero h1 {
             font-size: clamp(2.35rem, 12vw, 3.2rem);
@@ -1890,6 +2065,26 @@ export default function GestionRedesSocialesAlicantePage() {
           }
           .faqList article > p {
             padding: 0 19px 20px;
+          }
+        }
+
+        @keyframes mobileMessageProgress {
+          from {
+            width: 0;
+          }
+          to {
+            width: 100%;
+          }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .mobileHeroAnimation {
+            transition: none;
+          }
+
+          .mobileAnimationProgress i.activeProgress::after {
+            animation: none;
+            width: 100%;
           }
         }
       `}</style>

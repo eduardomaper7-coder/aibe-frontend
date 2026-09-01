@@ -6,7 +6,7 @@ import { useParams } from "next/navigation";
 import { openCookieSettings } from "@/lib/cookie-consent";
 import { serviceNavigation } from "@/lib/service-landings";
 
-const WHATSAPP_NUMBER = "34686012685";
+const WHATSAPP_NUMBER = "34699301819";
 
 export default function Footer() {
   const params = useParams();
@@ -36,7 +36,7 @@ export default function Footer() {
 
             <a href="mailto:info@aibetech.es">info@aibetech.es</a>
 
-            <a href="tel:+34686012685">686 01 26 85</a>
+            <a href="tel:+34699301819">699 301 819</a>
 
             <a
               href={`https://wa.me/${WHATSAPP_NUMBER}`}

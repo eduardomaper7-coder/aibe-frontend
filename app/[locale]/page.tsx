@@ -28,6 +28,7 @@ import Footer from "../../components/ui/Footer";
 import RedesSocialesSection from "../../components/ui/redesSociales-seccion";
 import ContactSection from "../../components/ui/ContactSection";
 import SiteNavbar from "../../components/ui/SiteNavbar";
+import TopInfoBar from "../../components/ui/TopInfoBar";
 const words = ["clientes", "ventas", "reservas", "visibilidad"];
 
 
@@ -99,6 +100,7 @@ useEffect(() => {
 
   return (
     <>
+      <TopInfoBar />
       <SiteNavbar />
 
 
@@ -160,7 +162,7 @@ useEffect(() => {
 
   <div className="contactButtons">
   <a
-    href="https://wa.me/34686012685"
+    href="https://wa.me/34699301819"
     target="_blank"
     rel="noopener noreferrer"
     className="whatsappButton"
@@ -237,7 +239,7 @@ Escribir por WhatsApp
 )}
 
 <a
-  href="https://wa.me/34686012685"
+  href="https://wa.me/34699301819"
   target="_blank"
   rel="noopener noreferrer"
   className="floatingWhatsapp"

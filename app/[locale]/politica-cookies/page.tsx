@@ -17,7 +17,7 @@ const content = {
         title: "1. Responsable",
         paragraphs: [
           "El responsable del sitio web es Eduardo Martínez Perdomo, que opera bajo el nombre comercial AIBE Technologies, con domicilio profesional en España.",
-          "Puedes realizar consultas sobre privacidad y cookies escribiendo a info@aibetech.es o llamando al +34 686 01 26 85.",
+          "Puedes realizar consultas sobre privacidad y cookies escribiendo a info@aibetech.es o llamando al +34 699 301 819.",
         ],
       },
       {
@@ -160,7 +160,7 @@ const content = {
         title: "1. Controller",
         paragraphs: [
           "The website is operated by Eduardo Martínez Perdomo under the trade name AIBE Technologies, professionally established in Spain.",
-          "For privacy and cookie enquiries, contact info@aibetech.es or +34 686 01 26 85.",
+          "For privacy and cookie enquiries, contact info@aibetech.es or +34 699 301 819.",
         ],
       },
       {

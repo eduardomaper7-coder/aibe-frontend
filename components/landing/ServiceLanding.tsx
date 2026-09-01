@@ -49,7 +49,7 @@ import SiteNavbar from "@/components/ui/SiteNavbar";
 import { type ServiceLandingConfig } from "@/lib/service-landings";
 import styles from "./ServiceLanding.module.css";
 
-const WHATSAPP_NUMBER = "34686012685";
+const WHATSAPP_NUMBER = "34699301819";
 
 const iconMap: Record<string, LucideIcon> = {
   BadgeEuro,
@@ -631,9 +631,9 @@ export default function ServiceLanding({ config }: ServiceLandingProps) {
                 <span>Email</span>
                 <strong>info@aibetech.es</strong>
               </a>
-              <a href="tel:+34686012685">
+              <a href="tel:+34699301819">
                 <span>Teléfono</span>
-                <strong>686 01 26 85</strong>
+                <strong>699 301 819</strong>
               </a>
               <a href={`https://wa.me/${WHATSAPP_NUMBER}`} target="_blank" rel="noopener noreferrer">
                 <span>WhatsApp</span>

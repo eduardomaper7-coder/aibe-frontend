@@ -223,7 +223,7 @@ export default function SeoAlicanteClient() {
               </a>
 
               <a
-                href="https://wa.me/34686012685"
+                href="https://wa.me/34699301819"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="secondaryButton"
@@ -263,7 +263,7 @@ export default function SeoAlicanteClient() {
 
             <div className="contactButtons">
               <a
-                href="https://wa.me/34686012685"
+                href="https://wa.me/34699301819"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="whatsappButton"
@@ -675,7 +675,7 @@ export default function SeoAlicanteClient() {
       <Footer />
 
       <a
-        href="https://wa.me/34686012685"
+        href="https://wa.me/34699301819"
         target="_blank"
         rel="noopener noreferrer"
         className="floatingWhatsapp"

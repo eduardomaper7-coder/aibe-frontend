@@ -11,7 +11,7 @@ const sections = [
     title: "1. Responsable del tratamiento",
     paragraphs: [
       "Responsable: Eduardo Martínez Perdomo, bajo el nombre comercial AIBE Technologies, España.",
-      "Contacto para asuntos de privacidad: info@aibetech.es. Teléfono: +34 686 01 26 85.",
+      "Contacto para asuntos de privacidad: info@aibetech.es. Teléfono: +34 699 301 819.",
     ],
   },
   {

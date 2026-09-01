@@ -5,7 +5,7 @@ export default function GoogleAdsResultados() {
     "Hola Eduardo, me gustaría comenzar a impulsar mi clínica a través de Google Ads"
   );
 
-  const WHATSAPP_URL = `https://wa.me/34622213834?text=${message}`;
+  const WHATSAPP_URL = `https://wa.me/34699301819?text=${message}`;
 
   return (
     <section className="relative w-full overflow-hidden rounded-3xl bg-gradient-to-br from-[#1f3f77] via-[#0d335c] to-[#061426] p-8 text-white shadow-xl md:p-12">
