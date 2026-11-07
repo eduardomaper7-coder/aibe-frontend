@@ -28,7 +28,6 @@ import Footer from "../../components/ui/Footer";
 import RedesSocialesSection from "../../components/ui/redesSociales-seccion";
 import ContactSection from "../../components/ui/ContactSection";
 import SiteNavbar from "../../components/ui/SiteNavbar";
-import TopInfoBar from "../../components/ui/TopInfoBar";
 const words = ["clientes", "ventas", "reservas", "visibilidad"];
 
 
@@ -100,7 +99,6 @@ useEffect(() => {
 
   return (
     <>
-      <TopInfoBar />
       <SiteNavbar />
 
 

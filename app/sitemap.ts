@@ -6,11 +6,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"
   const routes = [
     "/",
-    "/redes-sociales-tenerife",
-    "/marketing-digital-tenerife",
-    "/diseno-web-branding-tenerife",
-    "/desarrollo-web-tenerife",
-    "/automatizacion-ia-tenerife",
+    "/marketing-digital-madrid",
+    "/agencia-marketing-madrid",
+    "/seo-madrid",
+    "/diseno-web-madrid",
+    "/google-ads-madrid",
+    "/gestion-redes-sociales-madrid",
     "/contact",
     "/login",
     "/aviso-legal",

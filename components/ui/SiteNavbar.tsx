@@ -3,46 +3,20 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronDown, LogIn, Menu, X } from "lucide-react";
+import { ChevronDown, Menu, X } from "lucide-react";
 import { useParams, usePathname } from "next/navigation";
 
-import { serviceNavigation } from "@/lib/service-landings";
+import { marketingNavigation } from "@/lib/marketing-navigation";
 import styles from "./SiteNavbar.module.css";
 
 const WHATSAPP_NUMBER = "34699301819";
-const CRM_URL = "https://crm.aibetech.es";
-
-const alicanteNavigation = [
-  {
-    slug: "marketing-digital-alicante",
-    label: "Marketing digital en Alicante",
-  },
-  {
-    slug: "seo-alicante",
-    label: "SEO en Alicante",
-  },
-  {
-    slug: "diseno-web-alicante",
-    label: "Diseño web en Alicante",
-  },
-  {
-    slug: "google-ads-alicante",
-    label: "Google Ads en Alicante",
-  },
-  {
-    slug: "gestion-redes-sociales-alicante",
-    label: "Gestión de redes sociales en Alicante",
-  },
-] as const;
 
 type SiteNavbarProps = {
-  activeServiceSlug?: string;
-  activeAlicanteSlug?: string;
+  activeMarketingSlug?: string;
 };
 
 export default function SiteNavbar({
-  activeServiceSlug,
-  activeAlicanteSlug,
+  activeMarketingSlug,
 }: SiteNavbarProps) {
   const params = useParams();
   const pathname = usePathname();
@@ -100,14 +74,14 @@ export default function SiteNavbar({
           Contacto
         </button>
 
-        {/* SERVICIOS EN TENERIFE */}
+        {/* MARKETING DIGITAL */}
         <div className={styles.servicesDropdown}>
           <button
             type="button"
             className={styles.navLink}
             aria-haspopup="true"
           >
-            Tenerife
+            Marketing digital
 
             <ChevronDown
               className={styles.chevron}
@@ -119,16 +93,16 @@ export default function SiteNavbar({
 
           <div className={styles.dropdownMenu}>
             <span className={styles.dropdownEyebrow}>
-              Servicios en Tenerife
+              Servicios en Madrid
             </span>
 
             <div className={styles.dropdownLinks}>
-              {serviceNavigation.map((item) => (
+              {marketingNavigation.map((item) => (
                 <Link
                   key={item.slug}
                   href={localizedHref(item.slug)}
                   className={
-                    item.slug === activeServiceSlug
+                    item.slug === activeMarketingSlug
                       ? styles.active
                       : undefined
                   }
@@ -160,48 +134,8 @@ export default function SiteNavbar({
       {/* NAVEGACIÓN DERECHA - ESCRITORIO */}
       <nav
         className={`${styles.navSide} ${styles.navRight} ${styles.desktopNav}`}
-        aria-label="Servicios en Alicante y soluciones destacadas"
+        aria-label="Soluciones destacadas"
       >
-        {/* SERVICIOS EN ALICANTE */}
-        <div className={styles.servicesDropdown}>
-          <button
-            type="button"
-            className={styles.navLink}
-            aria-haspopup="true"
-          >
-            Alicante
-
-            <ChevronDown
-              className={styles.chevron}
-              size={16}
-              strokeWidth={2.3}
-              aria-hidden="true"
-            />
-          </button>
-
-          <div className={styles.dropdownMenu}>
-            <span className={styles.dropdownEyebrow}>
-              Servicios en Alicante
-            </span>
-
-            <div className={styles.dropdownLinks}>
-              {alicanteNavigation.map((item) => (
-                <Link
-                  key={item.slug}
-                  href={localizedHref(item.slug)}
-                  className={
-                    item.slug === activeAlicanteSlug
-                      ? styles.active
-                      : undefined
-                  }
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </div>
-          </div>
-        </div>
-
         <Link
           className={styles.navLink}
           href={sectionHref("ia")}
@@ -209,10 +143,6 @@ export default function SiteNavbar({
           Buscadores con IA
         </Link>
 
-        <a href={CRM_URL} className={styles.crmButton}>
-          <LogIn size={16} strokeWidth={2.4} aria-hidden="true" />
-          Acceso CRM
-        </a>
       </nav>
 
       {/* ACCIONES MÓVILES */}
@@ -277,36 +207,16 @@ export default function SiteNavbar({
             Contacto
           </button>
 
-          {/* SERVICIOS EN TENERIFE - MÓVIL */}
+          {/* MARKETING DIGITAL - MÓVIL */}
           <div className={styles.mobileServices}>
-            <span>Servicios en Tenerife</span>
+            <span>Marketing digital</span>
 
-            {serviceNavigation.map((item) => (
+            {marketingNavigation.map((item) => (
               <Link
                 key={item.slug}
                 href={localizedHref(item.slug)}
                 className={
-                  item.slug === activeServiceSlug
-                    ? styles.mobileActive
-                    : undefined
-                }
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                {item.label}
-              </Link>
-            ))}
-          </div>
-
-          {/* SERVICIOS EN ALICANTE - MÓVIL */}
-          <div className={styles.mobileServices}>
-            <span>Servicios en Alicante</span>
-
-            {alicanteNavigation.map((item) => (
-              <Link
-                key={item.slug}
-                href={localizedHref(item.slug)}
-                className={
-                  item.slug === activeAlicanteSlug
+                  item.slug === activeMarketingSlug
                     ? styles.mobileActive
                     : undefined
                 }
@@ -332,15 +242,6 @@ export default function SiteNavbar({
           >
             Buscadores con IA
           </Link>
-
-          <a
-            href={CRM_URL}
-            className={styles.mobileCrmLink}
-            onClick={() => setMobileMenuOpen(false)}
-          >
-            <LogIn size={17} strokeWidth={2.4} aria-hidden="true" />
-            Acceso CRM
-          </a>
         </nav>
       )}
     </header>

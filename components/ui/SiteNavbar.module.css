@@ -1,6 +1,6 @@
 .header {
   position: fixed;
-  top: 16px;
+  top: 14px;
   left: 50%;
   z-index: 1000;
   width: calc(100% - 48px);

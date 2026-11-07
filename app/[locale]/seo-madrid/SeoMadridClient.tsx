@@ -55,7 +55,7 @@ const seoServices = [
   },
   {
     icon: MapPin,
-    title: "SEO local en Alicante",
+    title: "SEO local en Madrid",
     description:
       "Optimizamos tu presencia para búsquedas locales y reforzamos tu visibilidad en Google Maps y Google Business Profile.",
   },
@@ -107,9 +107,9 @@ const faqItems = [
       "Depende de la situación inicial de la web, la competencia y la autoridad del dominio. Normalmente las primeras mejoras pueden observarse durante los primeros meses, pero una estrategia SEO sólida requiere trabajo continuo.",
   },
   {
-    question: "¿Trabajáis el SEO local en Alicante?",
+    question: "¿Trabajáis el SEO local en Madrid?",
     answer:
-      "Sí. Optimizamos páginas locales, Google Business Profile, señales geográficas, contenidos y otros elementos que ayudan a aparecer en búsquedas relacionadas con Alicante.",
+      "Sí. Optimizamos páginas locales, Google Business Profile, señales geográficas, contenidos y otros elementos que ayudan a aparecer en búsquedas relacionadas con Madrid.",
   },
   {
     question: "¿Podéis posicionar una web que ya está creada?",
@@ -128,7 +128,7 @@ const faqItems = [
   },
 ];
 
-export default function SeoAlicanteClient() {
+export default function SeoMadridClient() {
   const [wordIndex, setWordIndex] = useState(0);
   const [wordVisible, setWordVisible] = useState(true);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
@@ -155,12 +155,12 @@ export default function SeoAlicanteClient() {
 
   return (
     <>
-      <SiteNavbar activeAlicanteSlug="seo-alicante" />
+      <SiteNavbar activeMarketingSlug="seo-madrid" />
       <main>
         <section className="hero">
           <div className="heroLeft">
             <p className="heroEyebrow">
-              Agencia SEO en Alicante
+              Agencia SEO en Madrid
             </p>
 
             <h1>
@@ -171,9 +171,9 @@ export default function SeoAlicanteClient() {
               <span className="titleLine">
                 en{" "}
                 <span
-                  className={`${caveat.className} alicanteWord`}
+                  className={`${caveat.className} madridWord`}
                 >
-                  Alicante
+                  Madrid
                 </span>{" "}
                 para conseguir
               </span>
@@ -204,7 +204,7 @@ export default function SeoAlicanteClient() {
 
               <span>
                 <Check size={17} aria-hidden="true" />
-                SEO local en Alicante
+                SEO local en Madrid
               </span>
 
               <span>
@@ -295,7 +295,7 @@ export default function SeoAlicanteClient() {
           <div className="sectionContainer introGrid">
             <div>
               <p className="sectionEyebrow">
-                Posicionamiento web en Alicante
+                Posicionamiento web en Madrid
               </p>
 
               <h2>
@@ -421,7 +421,7 @@ export default function SeoAlicanteClient() {
           <div className="sectionContainer localSeoGrid">
             <div className="localSeoCopy">
               <p className="sectionEyebrow">
-                SEO local en Alicante
+                SEO local en Madrid
               </p>
 
               <h2>
@@ -465,7 +465,7 @@ export default function SeoAlicanteClient() {
             <div className="mapCard">
               <div className="mapSearch">
                 <Search size={19} aria-hidden="true" />
-                <span>Tu servicio en Alicante</span>
+                <span>Tu servicio en Madrid</span>
               </div>
 
               <div className="mapSurface">
@@ -485,7 +485,7 @@ export default function SeoAlicanteClient() {
 
                 <div>
                   <strong>Tu empresa</strong>
-                  <span>Alicante · Posición destacada</span>
+                  <span>Madrid · Posición destacada</span>
                 </div>
 
                 <strong className="rating">4,9 ★</strong>
@@ -627,7 +627,7 @@ export default function SeoAlicanteClient() {
               </p>
 
               <h2>
-                Dudas habituales sobre SEO en Alicante
+                Dudas habituales sobre SEO en Madrid
               </h2>
 
               <p>
@@ -749,7 +749,7 @@ export default function SeoAlicanteClient() {
           white-space: nowrap;
         }
 
-        .alicanteWord {
+        .madridWord {
           display: inline-block;
           margin-right: 0.06em;
           color: #2e7bff;
@@ -1549,7 +1549,7 @@ export default function SeoAlicanteClient() {
             white-space: normal;
           }
 
-          .alicanteWord {
+          .madridWord {
             font-size: 1.16em;
             line-height: 0.9;
           }

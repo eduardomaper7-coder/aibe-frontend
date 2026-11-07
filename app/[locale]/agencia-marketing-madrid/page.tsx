@@ -104,7 +104,7 @@ useEffect(() => {
 
   return (
     <>
-      <SiteNavbar activeAlicanteSlug="marketing-digital-alicante" />
+      <SiteNavbar activeMarketingSlug="agencia-marketing-madrid" />
 
 
 
@@ -117,8 +117,8 @@ useEffect(() => {
   </span>
 
   <span className="titleLine">
-    <span className={`${caveat.className} alicanteWord`}>
-      Alicante
+    <span className={`${caveat.className} madridWord`}>
+      Madrid
     </span>{" "}
     para conseguir
   </span>
@@ -388,7 +388,7 @@ Escribir por WhatsApp
   white-space: nowrap;
 }
 
-.alicanteWord {
+.madridWord {
   display: inline-block;
   margin-right: 0.08em;
 

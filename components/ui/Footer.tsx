@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { openCookieSettings } from "@/lib/cookie-consent";
-import { serviceNavigation } from "@/lib/service-landings";
+import { marketingNavigation } from "@/lib/marketing-navigation";
 
 const WHATSAPP_NUMBER = "34699301819";
 
@@ -48,8 +48,8 @@ export default function Footer() {
           </div>
 
           <div className="contactBlock">
-            <span>Servicios</span>
-            {serviceNavigation.map((item) => (
+            <span>Marketing digital</span>
+            {marketingNavigation.map((item) => (
               <Link key={item.slug} href={`${legalBase}/${item.slug}`}>
                 {item.label}
               </Link>

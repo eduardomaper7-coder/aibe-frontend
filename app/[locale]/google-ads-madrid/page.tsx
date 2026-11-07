@@ -108,9 +108,9 @@ const faqItems = [
       "Las campañas pueden comenzar a generar tráfico desde su activación. La calidad y el coste de los contactos mejoran a medida que recopilamos datos y optimizamos.",
   },
   {
-    question: "¿Trabajáis campañas locales en Alicante?",
+    question: "¿Trabajáis campañas locales en Madrid?",
     answer:
-      "Sí. Podemos orientar las campañas a Alicante, municipios concretos o radios alrededor de tus zonas de servicio.",
+      "Sí. Podemos orientar las campañas a Madrid, municipios concretos o radios alrededor de tus zonas de servicio.",
   },
   {
     question: "¿Incluye la creación de anuncios?",
@@ -124,17 +124,17 @@ const faqItems = [
   },
 ];
 
-export default function GoogleAdsAlicantePage() {
+export default function GoogleAdsMadridPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
   return (
     <>
-      <SiteNavbar activeAlicanteSlug="google-ads-alicante" />
+      <SiteNavbar activeMarketingSlug="google-ads-madrid" />
 
       <main>
         <section className="hero">
           <div className="heroLeft">
-            <p className="heroEyebrow">Agencia Google Ads en Alicante</p>
+            <p className="heroEyebrow">Agencia Google Ads en Madrid</p>
 
             <h1>
               <span className="titleLine mainTitleLine">
@@ -143,8 +143,8 @@ export default function GoogleAdsAlicantePage() {
 
               <span className="titleLine locationLine">
                 en{" "}
-                <span className={`${caveat.className} alicanteWord`}>
-                  Alicante
+                <span className={`${caveat.className} madridWord`}>
+                  Madrid
                 </span>{" "}
                 para conseguir clientes
               </span>
@@ -491,7 +491,7 @@ export default function GoogleAdsAlicantePage() {
               <p className="sectionEyebrow">Google Ads local</p>
 
               <h2>
-                Capta clientes en Alicante y en tus zonas de servicio
+                Capta clientes en Madrid y en tus zonas de servicio
               </h2>
 
               <p>
@@ -687,7 +687,7 @@ export default function GoogleAdsAlicantePage() {
               <p className="sectionEyebrow">Preguntas frecuentes</p>
 
               <h2>
-                Dudas habituales sobre Google Ads en Alicante
+                Dudas habituales sobre Google Ads en Madrid
               </h2>
 
               <p>
@@ -823,7 +823,7 @@ export default function GoogleAdsAlicantePage() {
           white-space: nowrap;
         }
 
-        .alicanteWord {
+        .madridWord {
           display: inline-block;
           margin: 0 0.03em;
           color: #2e7bff;
@@ -1910,7 +1910,7 @@ export default function GoogleAdsAlicantePage() {
             line-height: 1.08;
           }
 
-          .alicanteWord {
+          .madridWord {
             font-size: 1.46em;
           }
 
@@ -2044,7 +2044,7 @@ export default function GoogleAdsAlicantePage() {
             letter-spacing: -0.04em;
           }
 
-          .alicanteWord {
+          .madridWord {
             display: inline-block;
             width: auto;
             margin: 0 0.03em;

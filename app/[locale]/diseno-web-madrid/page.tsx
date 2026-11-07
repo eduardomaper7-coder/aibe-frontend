@@ -123,26 +123,26 @@ const faqItems = [
   },
 ];
 
-export default function DisenoWebAlicantePage() {
+export default function DisenoWebMadridPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
   return (
     <>
       <SiteNavbar
-  activeAlicanteSlug="diseno-web-alicante"
+  activeMarketingSlug="diseno-web-madrid"
 />
 
       <main>
         <section className="hero">
           <div className="heroCopy">
-            <p className="eyebrow">Diseño web en Alicante</p>
+            <p className="eyebrow">Diseño web en Madrid</p>
 
             <h1>
               <span className="heroTitleLine">Diseño web</span>
               <span className="heroTitleLine">
                 en{" "}
                 <span className={`${caveat.className} accentWord`}>
-                  Alicante
+                  Madrid
                 </span>
               </span>
               <span className="heroTitleLine">para captar clientes</span>
@@ -655,7 +655,7 @@ export default function DisenoWebAlicantePage() {
           <div className="sectionContainer faqGrid">
             <div className="faqHeading">
               <p className="eyebrow">Preguntas frecuentes</p>
-              <h2>Dudas habituales sobre diseño web en Alicante</h2>
+              <h2>Dudas habituales sobre diseño web en Madrid</h2>
               <p>
                 Estas son algunas preguntas frecuentes antes de comenzar
                 un proyecto de diseño y desarrollo web.

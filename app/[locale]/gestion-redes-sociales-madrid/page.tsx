@@ -190,9 +190,9 @@ const faqItems = [
       "Sí. Podemos asumir la estrategia, las ideas, los guiones, la grabación, la edición, los textos, la publicación y la gestión diaria de las redes sociales.",
   },
   {
-    question: "¿Trabajáis con negocios de Alicante?",
+    question: "¿Trabajáis con negocios de Madrid?",
     answer:
-      "Sí. Trabajamos con empresas y profesionales de Alicante y alrededores, lo que nos permite organizar sesiones de grabación presenciales con facilidad.",
+      "Sí. Trabajamos con empresas y profesionales de Madrid y alrededores, lo que nos permite organizar sesiones de grabación presenciales con facilidad.",
   },
   {
     question: "¿En qué redes sociales trabajáis?",
@@ -211,7 +211,7 @@ const faqItems = [
   },
 ];
 
-export default function GestionRedesSocialesAlicantePage() {
+export default function GestionRedesSocialesMadridPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [mobileMessageIndex, setMobileMessageIndex] = useState(0);
   const [mobileMessageVisible, setMobileMessageVisible] = useState(true);
@@ -235,12 +235,12 @@ export default function GestionRedesSocialesAlicantePage() {
 
   return (
     <>
-      <SiteNavbar activeAlicanteSlug="gestion-redes-sociales-alicante" />
+      <SiteNavbar activeMarketingSlug="gestion-redes-sociales-madrid" />
 
       <main>
         <section className="hero">
           <div className="heroCopy">
-            <p className="eyebrow">Gestión de redes sociales en Alicante</p>
+            <p className="eyebrow">Gestión de redes sociales en Madrid</p>
             <h1>
               <span>Nos encargamos</span>
               <span>de tus redes</span>
@@ -368,7 +368,7 @@ export default function GestionRedesSocialesAlicantePage() {
                   <div className="profileAvatar">TM</div>
                   <div>
                     <strong>tu_marca</strong>
-                    <small>Alicante</small>
+                    <small>Madrid</small>
                   </div>
                   <Send size={14} />
                 </div>
@@ -635,7 +635,7 @@ export default function GestionRedesSocialesAlicantePage() {
           <div className="sectionContainer faqGrid">
             <div className="faqHeading">
               <p className="eyebrow">Preguntas frecuentes</p>
-              <h2>Dudas sobre la gestión de redes sociales en Alicante</h2>
+              <h2>Dudas sobre la gestión de redes sociales en Madrid</h2>
               <p>Resolvemos las preguntas más habituales antes de comenzar.</p>
             </div>
             <div className="faqList">
