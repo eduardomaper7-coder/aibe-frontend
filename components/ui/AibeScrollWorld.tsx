@@ -19,7 +19,7 @@ declare global {
 }
 
 const W = "/world";
-const ENGINE_VERSION = "2026-11-17e";
+const ENGINE_VERSION = "2026-11-17f";
 const IDS = ["personas", "reto", "agentes", "marketing", "resultado", "aibe"] as const;
 
 const COPY: Record<Locale, { label: string; eyebrow: string; title: string; body: string; tags: string[] }[]> = {
@@ -127,7 +127,8 @@ export default function AibeScrollWorld({ locale }: { locale: string }) {
     const world = ref.current;
     const after = document.querySelector(".aibe-after");
     if (!world || !after) return;
-    const onScroll = () => world.classList.toggle("is-after", after.getBoundingClientRect().top < 90);
+    // Only once the engine has built the flight; before that the content below would sit at the top.
+    const onScroll = () => world.classList.toggle("is-after", world.classList.contains("sw-root") && after.getBoundingClientRect().top < 90);
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
     return () => window.removeEventListener("scroll", onScroll);
@@ -197,6 +198,11 @@ export default function AibeScrollWorld({ locale }: { locale: string }) {
         #world .sw-nav,#world .sw-route,#world .sw-scrollbar{transition:opacity .3s ease;}
         #world.is-after .sw-nav,#world.is-after .sw-route,#world.is-after .sw-scrollbar{opacity:0;pointer-events:none;}
         #world.is-after .sw-topbar{background:rgba(255,255,255,.92);backdrop-filter:blur(10px);box-shadow:0 1px 0 rgba(0,30,75,.08);}
+        /* Before the engine mounts: show scene 1's poster full-screen and keep the sections below
+           hidden, so the first paint (and a slow connection) never shows an empty gap or the wrong section. */
+        #world:not(.sw-root){height:100vh;height:100lvh;background:#EEF4FB url(${W}/personas.webp) center 42%/cover no-repeat;}
+        #world:not(.sw-root) ~ .aibe-after{display:none;}
+        @media (max-width:860px){ #world:not(.sw-root){background-image:url(${W}/personas-m.webp);background-position:center 44%;} }
         .aibe-after{position:relative;z-index:45;background:#fff;color:#001E4B;font-family:var(--font-outfit),system-ui,sans-serif;}
         .asv{position:relative;overflow:hidden;padding:clamp(88px,11vw,150px) clamp(18px,5vw,64px);
           background:linear-gradient(180deg,#EEF4FB 0%,#fff 38%);}
@@ -236,6 +242,9 @@ export default function AibeScrollWorld({ locale }: { locale: string }) {
       `}</style>
       {/* bump ENGINE_VERSION whenever public/world/scrub-engine.js changes, so browsers drop the cached copy */}
       <Script src={`${W}/scrub-engine.js?v=${ENGINE_VERSION}`} strategy="afterInteractive" onReady={mount} />
+      {/* Scene 1 poster is the landing view: fetch it with the page, not after the engine script */}
+      <link rel="preload" as="image" href={`${W}/personas.webp`} media="(min-width: 861px)" />
+      <link rel="preload" as="image" href={`${W}/personas-m.webp`} media="(max-width: 860px)" />
       <div id="world" ref={ref} />
 
       <div className="aibe-after">

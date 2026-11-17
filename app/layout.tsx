@@ -1,5 +1,4 @@
 import "./globals.css";
-import Loader from "@/components/Loader";
 import Script from "next/script";
 
 export default function RootLayout({
@@ -10,9 +9,7 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body>
-        <Loader>
-          {children}
-        </Loader>
+        {children}
 
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=AW-18263984994"
