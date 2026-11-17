@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { openCookieSettings } from "@/lib/cookie-consent";
-import { marketingNavigation } from "@/lib/marketing-navigation";
 
 const WHATSAPP_NUMBER = "34699301819";
 
@@ -51,23 +50,13 @@ export default function Footer() {
           </div>
 
           <div className="contactBlock">
-            <span>Marketing digital</span>
-            {marketingNavigation.map((item) => (
-              <Link key={item.slug} href={`${legalBase}/${item.slug}`}>
-                {item.label}
-              </Link>
-            ))}
+            <span>Servicios</span>
+            <Link href={`${legalBase}/agentes-ia`}>Agentes IA</Link>
+            <Link href={`${legalBase}/marketing-digital`}>Marketing digital</Link>
           </div>
 
           <div className="contactBlock">
-            <span>Legal</span>
-            <Link href={`${legalBase}/aviso-legal`}>Aviso legal</Link>
-            <Link href={`${legalBase}/politica-privacidad`}>
-              Política de privacidad
-            </Link>
-            <Link href={`${legalBase}/politica-cookies`}>
-              Política de cookies
-            </Link>
+            <span>Privacidad</span>
             <button type="button" onClick={openCookieSettings}>
               Configurar cookies
             </button>
@@ -238,7 +227,12 @@ export default function Footer() {
           }
 
           .content {
-            gap: 46px;
+            gap: 40px;
+          }
+
+          .brand {
+            flex: none;
+            max-width: none;
           }
 
           .footerColumns {

@@ -52,7 +52,7 @@ const AFTER: Record<Locale, {
     services: [
       { key: "ia", title: "Agentes IA", body: "Asistentes inteligentes que trabajan por ti, todos los días, a cualquier hora.",
         points: ["Atienden consultas 24/7 en WhatsApp, web y teléfono", "Gestionan citas y solicitudes sin intervención", "Hacen el seguimiento de cada cliente"],
-        cta: "Descubrir agentes IA", href: (l) => `/${l}/marketing-digital#ia` },
+        cta: "Descubrir agentes IA", href: (l) => `/${l}/agentes-ia` },
       { key: "mk", title: "Marketing digital", body: "Que las personas adecuadas te encuentren, confíen en ti y te contacten.",
         points: ["Posicionamiento en Google y campañas de Google Ads", "Gestión de redes sociales", "Webs pensadas para convertir visitas en clientes"],
         cta: "Descubrir marketing digital", href: (l) => `/${l}/marketing-digital` },
@@ -65,7 +65,7 @@ const AFTER: Record<Locale, {
     services: [
       { key: "ia", title: "AI agents", body: "Smart assistants that work for you every day, at any hour.",
         points: ["Answer enquiries 24/7 on WhatsApp, web and phone", "Handle bookings and requests on their own", "Follow up with every customer"],
-        cta: "Discover AI agents", href: (l) => `/${l}/marketing-digital#ia` },
+        cta: "Discover AI agents", href: (l) => `/${l}/agentes-ia` },
       { key: "mk", title: "Digital marketing", body: "Help the right people find you, trust you and get in touch.",
         points: ["Google rankings and Google Ads campaigns", "Social media management", "Websites built to turn visits into customers"],
         cta: "Discover digital marketing", href: (l) => `/${l}/marketing-digital` },
@@ -155,7 +155,7 @@ export default function AibeScrollWorld({ locale }: { locale: string }) {
         html,body{height:auto!important;overflow-x:clip!important;scroll-behavior:auto!important;}
         body{background:#EEF4FB;}
         #world .sw-brand__mark{display:none!important;}
-        #world .sw-brand__name{font-size:0!important;width:120px;height:40px;background:url(${W}/aibe-logo.webp?v=2) left center/contain no-repeat;}
+        #world .sw-brand__name{font-size:0!important;width:120px;height:40px;background:url(${W}/aibe-logo-v2.webp) left center/contain no-repeat;}
         #world .sw-brand{background:#fff;padding:6px 14px;border-radius:14px;box-shadow:0 4px 14px rgba(0,30,75,.08);}
         #world .sw-topcta{background:#0077FF!important;}
         #world .sw-btn--primary{background:#0077FF!important;box-shadow:0 10px 30px rgba(0,119,255,.35);}

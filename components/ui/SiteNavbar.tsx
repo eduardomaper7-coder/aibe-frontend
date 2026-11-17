@@ -71,6 +71,10 @@ export default function SiteNavbar({
         >
           Contacto
         </button>
+
+        <Link className={styles.navLink} href={`/${locale}/agentes-ia`}>
+          Agentes IA
+        </Link>
       </nav>
 
       {/* LOGO CENTRAL */}
@@ -80,10 +84,10 @@ export default function SiteNavbar({
         aria-label="Ir al inicio"
       >
         <Image
-          src="/imagenes/logo.png"
-          alt="AIBE Technologies"
-          width={190}
-          height={54}
+          src="/world/aibe-logo-v2.webp"
+          alt="aibe"
+          width={900}
+          height={236}
           priority
           className={styles.logo}
         />
@@ -164,6 +168,14 @@ export default function SiteNavbar({
           >
             Contacto
           </button>
+
+          <Link
+            className={styles.mobileMainLink}
+            href={`/${locale}/agentes-ia`}
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            Agentes IA
+          </Link>
 
           <Link
             className={styles.mobileMainLink}

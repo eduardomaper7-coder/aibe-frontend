@@ -6,18 +6,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"
   const routes = [
     "/",
+    "/agentes-ia",
     "/marketing-digital",
-    "/marketing-digital-madrid",
-    "/agencia-marketing-madrid",
-    "/seo-madrid",
-    "/diseno-web-madrid",
-    "/google-ads-madrid",
-    "/gestion-redes-sociales-madrid",
-    "/contact",
-    "/login",
-    "/aviso-legal",
-    "/politica-privacidad",
-    "/politica-cookies",
   ]
 
   return locales.flatMap((locale) =>
