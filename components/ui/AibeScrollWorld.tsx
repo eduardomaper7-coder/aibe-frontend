@@ -2,6 +2,8 @@
 
 import { useEffect, useRef } from "react";
 import Script from "next/script";
+import ContactSection from "./ContactSection";
+import Footer from "./Footer";
 
 type Locale = "es" | "en";
 
@@ -12,6 +14,7 @@ declare global {
 }
 
 const W = "/world";
+const ENGINE_VERSION = "2026-11-17c";
 const IDS = ["personas", "reto", "agentes", "marketing", "resultado", "aibe"] as const;
 
 const COPY: Record<Locale, { label: string; eyebrow: string; title: string; body: string; tags: string[] }[]> = {
@@ -33,6 +36,42 @@ const COPY: Record<Locale, { label: string; eyebrow: string; title: string; body
   ],
 };
 
+const AFTER: Record<Locale, {
+  servicesEyebrow: string; servicesTitle: string;
+  services: { title: string; body: string; cta: string; href: (l: string) => string }[];
+  clientsEyebrow: string; clientsTitle: string;
+}> = {
+  es: {
+    servicesEyebrow: "Qué hacemos",
+    servicesTitle: "Dos formas de ayudarte a crecer.",
+    services: [
+      { title: "Agentes IA", body: "Asistentes que atienden consultas 24/7, gestionan citas y solicitudes y hacen el seguimiento por ti, en WhatsApp, web o teléfono.", cta: "Ver agentes IA", href: (l) => `/${l}/marketing-digital#ia` },
+      { title: "Marketing digital", body: "Google, redes sociales y web para que las personas adecuadas te encuentren, confíen en ti y te contacten.", cta: "Ver marketing digital", href: (l) => `/${l}/marketing-digital` },
+    ],
+    clientsEyebrow: "Confían en nosotros",
+    clientsTitle: "Negocios que ya trabajan con aibe.",
+  },
+  en: {
+    servicesEyebrow: "What we do",
+    servicesTitle: "Two ways to help you grow.",
+    services: [
+      { title: "AI agents", body: "Assistants that answer enquiries 24/7, manage bookings and requests and follow up for you, on WhatsApp, web or phone.", cta: "See AI agents", href: (l) => `/${l}/marketing-digital#ia` },
+      { title: "Digital marketing", body: "Google, social media and web so the right people find you, trust you and get in touch.", cta: "See digital marketing", href: (l) => `/${l}/marketing-digital` },
+    ],
+    clientsEyebrow: "They trust us",
+    clientsTitle: "Businesses already working with aibe.",
+  },
+};
+
+const CLIENT_LOGOS = [
+  { src: "/imagenes/cliente1.png", alt: "Laser Point" },
+  { src: "/imagenes/cliente2.webp", alt: "Nadora" },
+  { src: "/imagenes/cliente3.png", alt: "Clínica D+" },
+  { src: "/imagenes/cliente4.png", alt: "Clínica Dental Bances Sanz" },
+  { src: "/imagenes/cliente5.png", alt: "Grupo Maitias" },
+  { src: "/imagenes/cliente6.png", alt: "Siete Notas" },
+];
+
 const UI: Record<Locale, { hint: string; top: string; primary: string; secondary: string }> = {
   es: { hint: "desliza para entrar", top: "Hablemos", primary: "Hablemos de tu negocio →", secondary: "Ver Marketing digital" },
   en: { hint: "scroll to fly in", top: "Let's talk", primary: "Let's talk about your business →", secondary: "See digital marketing" },
@@ -50,7 +89,7 @@ export default function AibeScrollWorld({ locale }: { locale: string }) {
     const copy = COPY[loc];
     const destroy = window.mountScrollWorld(el, {
       brand: { name: "aibe", href: `/${loc}` },
-      cta: { label: UI[loc].top, href: `${mk}#contacto` },
+      cta: { label: UI[loc].top, href: "#contacto" },
       hint: UI[loc].hint,
       diveScroll: 1.3,
       connScroll: 0.9,
@@ -68,7 +107,7 @@ export default function AibeScrollWorld({ locale }: { locale: string }) {
               scroll: 1.8,
               linger: 0.5,
               cta: {
-                primary: { label: UI[loc].primary, href: `${mk}#contacto` },
+                primary: { label: UI[loc].primary, href: "#contacto" },
                 secondary: { label: UI[loc].secondary, href: mk },
               },
             }
@@ -81,6 +120,17 @@ export default function AibeScrollWorld({ locale }: { locale: string }) {
     });
     (el as HTMLDivElement & { _destroy?: () => void })._destroy = destroy || undefined;
   };
+
+  // When the content after the flight reaches the top, switch the engine chrome to a plain header.
+  useEffect(() => {
+    const world = ref.current;
+    const after = document.querySelector(".aibe-after");
+    if (!world || !after) return;
+    const onScroll = () => world.classList.toggle("is-after", after.getBoundingClientRect().top < 90);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   useEffect(() => {
     const el = ref.current as (HTMLDivElement & { _destroy?: () => void }) | null;
@@ -115,9 +165,11 @@ export default function AibeScrollWorld({ locale }: { locale: string }) {
         #world .sw-copylayer .sw-copy:last-child .sw-copy__tags li{color:#fff;background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.35);}
         #world .sw-copylayer .sw-copy:last-child .sw-btn--ghost{color:#fff;border-color:rgba(255,255,255,.45);}
         /* On the dark final scene the light copy scrim would wash the image: swap it for a soft navy one */
-        #world .sw-copylayer::before{transition:opacity .5s ease;}
+        /* scrims must sit UNDER the copy (a positioned ::after paints over earlier children) */
+        #world .sw-copylayer::before{transition:opacity .5s ease;z-index:0;}
+        #world .sw-copy{z-index:1;}
         #world .sw-copylayer::after{content:"";position:absolute;inset:0;opacity:0;transition:opacity .5s ease;pointer-events:none;
-          background:linear-gradient(270deg,rgba(0,30,75,.55) 0%,rgba(0,30,75,.25) 40%,transparent 65%);}
+          z-index:0;background:linear-gradient(270deg,rgba(0,30,75,.55) 0%,rgba(0,30,75,.25) 40%,transparent 65%);}
         #world[data-active="5"] .sw-copylayer::before{opacity:0;}
         #world[data-active="5"] .sw-copylayer::after{opacity:1;}
         @media (min-width:861px){
@@ -126,16 +178,82 @@ export default function AibeScrollWorld({ locale }: { locale: string }) {
           #world .sw-copy__title{font-size:clamp(1.6rem,min(4vw,6.4vh),3.3rem);}
           #world .sw-copy__body{font-size:clamp(.9rem,min(1.2vw,2.3vh),1.1rem);}
           #world .sw-copy__eyebrow{margin-top:min(18px,1.8vh);}
-          #world .sw-copylayer .sw-copy:last-child{left:auto;right:clamp(24px,7vw,120px);}
+          /* the translate property stacks on top of the engine's inline transform, so this lift always applies */
+          #world .sw-copylayer .sw-copy:last-child{left:auto;right:clamp(24px,7vw,120px);translate:0 -9vh;}
         }
         @media (max-width:860px){
           /* the scroll hint sits where the mobile copy block is: hide it on phones */
           #world .sw-hint{display:none;}
           #world .sw-copylayer::after{background:linear-gradient(0deg,rgba(0,30,75,.7) 0%,rgba(0,30,75,.3) 45%,transparent 70%);}
         }
+        /* Content after the flight: opaque, above the engine's fixed layers (stage 10, copy 20,
+           route 40) but under its topbar (50), so the logo + Hablemos stay reachable. */
+        #world .sw-topbar{transition:background .3s ease,box-shadow .3s ease;}
+        #world .sw-nav,#world .sw-route,#world .sw-scrollbar{transition:opacity .3s ease;}
+        #world.is-after .sw-nav,#world.is-after .sw-route,#world.is-after .sw-scrollbar{opacity:0;pointer-events:none;}
+        #world.is-after .sw-topbar{background:rgba(255,255,255,.92);backdrop-filter:blur(10px);box-shadow:0 1px 0 rgba(0,30,75,.08);}
+        .aibe-after{position:relative;z-index:45;background:#fff;color:#001E4B;}
+        .aibe-after__band{padding:clamp(64px,10vw,120px) clamp(18px,5vw,64px);}
+        .aibe-after__band--tint{background:#EEF4FB;}
+        .aibe-after__inner{max-width:1180px;margin:0 auto;}
+        .aibe-after__eyebrow{display:block;font-weight:700;font-size:.8rem;letter-spacing:.16em;text-transform:uppercase;color:#0077FF;}
+        .aibe-after__title{font-weight:700;font-size:clamp(1.8rem,3.6vw,2.8rem);line-height:1.08;margin:12px 0 0;color:#001E4B;}
+        .aibe-services{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;margin-top:40px;}
+        .aibe-service{display:flex;flex-direction:column;gap:14px;padding:clamp(24px,3vw,40px);border-radius:24px;background:#EEF4FB;
+          border:1px solid rgba(0,119,255,.12);text-decoration:none;color:inherit;transition:transform .25s ease,box-shadow .25s ease;}
+        .aibe-service:hover{transform:translateY(-4px);box-shadow:0 18px 40px rgba(0,30,75,.12);}
+        .aibe-service h3{font-size:clamp(1.4rem,2.2vw,1.8rem);font-weight:700;margin:0;color:#001E4B;}
+        .aibe-service p{margin:0;font-size:1.02rem;line-height:1.55;color:#3A4F72;}
+        .aibe-service span{margin-top:auto;font-weight:600;color:#0077FF;}
+        .aibe-logos{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:16px;margin-top:40px;}
+        .aibe-logo{display:flex;align-items:center;justify-content:center;height:110px;padding:12px;border-radius:18px;background:#fff;
+          border:1px solid rgba(0,30,75,.08);overflow:hidden;}
+        .aibe-logo img{max-width:100%;max-height:100%;object-fit:contain;border-radius:8px;}
+        @media (max-width:860px){
+          .aibe-services{grid-template-columns:1fr;}
+          .aibe-logos{grid-template-columns:repeat(3,minmax(0,1fr));}
+          .aibe-logo{height:90px;}
+        }
       `}</style>
-      <Script src={`${W}/scrub-engine.js`} strategy="afterInteractive" onReady={mount} />
+      {/* bump ENGINE_VERSION whenever public/world/scrub-engine.js changes, so browsers drop the cached copy */}
+      <Script src={`${W}/scrub-engine.js?v=${ENGINE_VERSION}`} strategy="afterInteractive" onReady={mount} />
       <div id="world" ref={ref} />
+
+      <div className="aibe-after">
+        <section className="aibe-after__band">
+          <div className="aibe-after__inner">
+            <span className="aibe-after__eyebrow">{AFTER[loc].servicesEyebrow}</span>
+            <h2 className="aibe-after__title">{AFTER[loc].servicesTitle}</h2>
+            <div className="aibe-services">
+              {AFTER[loc].services.map((sv) => (
+                <a key={sv.title} className="aibe-service" href={sv.href(loc)}>
+                  <h3>{sv.title}</h3>
+                  <p>{sv.body}</p>
+                  <span>{sv.cta} →</span>
+                </a>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="aibe-after__band aibe-after__band--tint">
+          <div className="aibe-after__inner">
+            <span className="aibe-after__eyebrow">{AFTER[loc].clientsEyebrow}</span>
+            <h2 className="aibe-after__title">{AFTER[loc].clientsTitle}</h2>
+            <div className="aibe-logos">
+              {CLIENT_LOGOS.map((c) => (
+                <div key={c.src} className="aibe-logo">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={c.src} alt={c.alt} loading="lazy" />
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <ContactSection />
+        <Footer />
+      </div>
     </>
   );
 }
