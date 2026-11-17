@@ -3,10 +3,9 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronDown, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { useParams, usePathname } from "next/navigation";
 
-import { marketingNavigation } from "@/lib/marketing-navigation";
 import styles from "./SiteNavbar.module.css";
 
 const WHATSAPP_NUMBER = "34699301819";
@@ -29,8 +28,6 @@ export default function SiteNavbar({
     setMobileMenuOpen(false);
   }, [pathname]);
 
-  const localizedHref = (slug: string) => `/${locale}/${slug}`;
-
   const scrollToContact = () => {
     const target =
       document.getElementById("contact-formulario") ??
@@ -46,17 +43,18 @@ export default function SiteNavbar({
       return;
     }
 
-    window.location.assign(`/${locale}/#contacto`);
+    window.location.assign(`/${locale}/marketing-digital#contacto`);
   };
 
   const sectionHref = (section: "google" | "ia") => {
-    const isHome =
-      pathname === `/${locale}` ||
-      pathname === `/${locale}/`;
+    const marketingPath = `/${locale}/marketing-digital`;
+    const isMarketing =
+      pathname === marketingPath ||
+      pathname === `${marketingPath}/`;
 
-    return isHome
+    return isMarketing
       ? `#${section}`
-      : `/${locale}/#${section}`;
+      : `${marketingPath}#${section}`;
   };
 
   return (
@@ -73,46 +71,6 @@ export default function SiteNavbar({
         >
           Contacto
         </button>
-
-        {/* MARKETING DIGITAL */}
-        <div className={styles.servicesDropdown}>
-          <button
-            type="button"
-            className={styles.navLink}
-            aria-haspopup="true"
-          >
-            Marketing digital
-
-            <ChevronDown
-              className={styles.chevron}
-              size={16}
-              strokeWidth={2.3}
-              aria-hidden="true"
-            />
-          </button>
-
-          <div className={styles.dropdownMenu}>
-            <span className={styles.dropdownEyebrow}>
-              Servicios en Madrid
-            </span>
-
-            <div className={styles.dropdownLinks}>
-              {marketingNavigation.map((item) => (
-                <Link
-                  key={item.slug}
-                  href={localizedHref(item.slug)}
-                  className={
-                    item.slug === activeMarketingSlug
-                      ? styles.active
-                      : undefined
-                  }
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </div>
-          </div>
-        </div>
       </nav>
 
       {/* LOGO CENTRAL */}
@@ -206,26 +164,6 @@ export default function SiteNavbar({
           >
             Contacto
           </button>
-
-          {/* MARKETING DIGITAL - MÓVIL */}
-          <div className={styles.mobileServices}>
-            <span>Marketing digital</span>
-
-            {marketingNavigation.map((item) => (
-              <Link
-                key={item.slug}
-                href={localizedHref(item.slug)}
-                className={
-                  item.slug === activeMarketingSlug
-                    ? styles.mobileActive
-                    : undefined
-                }
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                {item.label}
-              </Link>
-            ))}
-          </div>
 
           <Link
             className={styles.mobileMainLink}
