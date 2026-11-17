@@ -263,7 +263,8 @@ function mountScrollWorld(container, config) {
       c.style.opacity = cop;
       // AIBE: keep the desktop vertical centring (CSS translateY(-50%)) — the inline transform used to drop it
       const centre = window.innerWidth > 860 ? '-50% + ' : '';
-      c.style.transform = reduce ? (centre ? 'translateY(-50%)' : 'none') : `translateY(calc(${centre}${((0.5 - pr) * 4).toFixed(3)}vh))`;
+      // AIBE: on phones the copy stays perfectly still and only fades (no drift)
+      c.style.transform = centre ? (reduce ? 'translateY(-50%)' : `translateY(calc(${centre}${((0.5 - pr) * 4).toFixed(3)}vh))`) : 'none';
       c.style.pointerEvents = cop > 0.5 ? 'auto' : 'none';
     }
 

@@ -19,7 +19,7 @@ declare global {
 }
 
 const W = "/world";
-const ENGINE_VERSION = "2026-11-17f";
+const ENGINE_VERSION = "2026-11-17g";
 const IDS = ["personas", "reto", "agentes", "marketing", "resultado", "aibe"] as const;
 
 const COPY: Record<Locale, { label: string; eyebrow: string; title: string; body: string; tags: string[] }[]> = {
@@ -192,6 +192,9 @@ export default function AibeScrollWorld({ locale }: { locale: string }) {
           /* Same for the copy scrims: anchor them from the top in lvh, so they always reach the bottom
              of the stage — otherwise a strip of unscrimmed image shows while the URL bar hides. */
           #world .sw-copylayer::before,#world .sw-copylayer::after{top:40vh;top:40lvh;bottom:auto;height:60vh;height:60lvh;}
+          /* Copy too: measure from the large viewport, so it doesn't drop when the URL bar hides */
+          #world .sw-copylayer{top:0;bottom:auto;height:100vh;height:100lvh;}
+          #world .sw-copy{bottom:calc(clamp(56px,12vh,110px) + env(safe-area-inset-bottom));bottom:calc(clamp(56px,12lvh,110px) + env(safe-area-inset-bottom));}
           /* the scroll hint sits where the mobile copy block is: hide it on phones */
           #world .sw-hint{display:none;}
           #world .sw-copylayer::after{background:linear-gradient(0deg,rgba(0,30,75,.7) 0%,rgba(0,30,75,.3) 45%,transparent 70%);}
