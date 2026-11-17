@@ -26,17 +26,17 @@ const COPY: Record<Locale, { label: string; eyebrow: string; title: string; body
   es: [
     { label: "Personas", eyebrow: "Las personas", title: "Detrás de cada empresa hay personas.", body: "Equipos, clientes y proyectos que quieren crecer, mejorar y alcanzar nuevos retos.", tags: [] },
     { label: "El reto", eyebrow: "El reto", title: "Gestionar todo a la vez no siempre es fácil.", body: "Clientes, solicitudes, tareas, coordinación del equipo… El día a día puede hacer que pierdas tiempo en lo que realmente importa.", tags: [] },
-    { label: "Agentes IA", eyebrow: "Agentes IA", title: "La tecnología que te ayuda de verdad.", body: "Automatizamos tareas, atendemos consultas y gestionamos solicitudes para que tu equipo gane tiempo y eficiencia.", tags: ["Atiende consultas 24/7", "Gestiona citas y solicitudes", "Organiza y hace seguimiento"] },
+    { label: "Agentes IA", eyebrow: "Agentes IA", title: "La tecnología que te ayuda de verdad.", body: "Automatizamos tareas, atendemos consultas y gestionamos solicitudes para que tu equipo gane tiempo y eficiencia.", tags: [] },
     { label: "Marketing", eyebrow: "Marketing digital", title: "Conecta tu empresa con más clientes.", body: "Hacemos que las personas adecuadas te descubran, confíen en tu propuesta y se conviertan en oportunidades reales.", tags: [] },
-    { label: "Resultado", eyebrow: "El resultado", title: "Un negocio más eficiente, con más oportunidades.", body: "Menos tareas repetitivas, clientes mejor atendidos y un equipo con más tiempo para lo que aporta más valor.", tags: ["Equipo más enfocado", "Clientes mejor atendidos", "Procesos más ágiles", "Más oportunidades de crecimiento"] },
+    { label: "Resultado", eyebrow: "El resultado", title: "Un negocio más eficiente, con más oportunidades.", body: "Menos tareas repetitivas, clientes mejor atendidos y un equipo con más tiempo para lo que aporta más valor.", tags: [] },
     { label: "aibe", eyebrow: "aibe", title: "Tecnología con sentido humano.", body: "", tags: ["Cercanía", "Confianza", "Transparencia"] },
   ],
   en: [
     { label: "People", eyebrow: "The people", title: "Behind every company there are people.", body: "Teams, customers and projects that want to grow, improve and take on new challenges.", tags: [] },
     { label: "The challenge", eyebrow: "The challenge", title: "Handling everything at once isn't always easy.", body: "Customers, requests, tasks, team coordination… Day-to-day work can make you lose time on what really matters.", tags: [] },
-    { label: "AI agents", eyebrow: "AI agents", title: "Technology that truly helps you.", body: "We automate tasks, answer enquiries and handle requests so your team gains time and efficiency.", tags: ["Answers enquiries 24/7", "Manages bookings and requests", "Organises and follows up"] },
+    { label: "AI agents", eyebrow: "AI agents", title: "Technology that truly helps you.", body: "We automate tasks, answer enquiries and handle requests so your team gains time and efficiency.", tags: [] },
     { label: "Marketing", eyebrow: "Digital marketing", title: "Connect your company with more customers.", body: "We help the right people discover you, trust your offer and become real opportunities.", tags: [] },
-    { label: "Results", eyebrow: "The result", title: "A more efficient business, with more opportunities.", body: "Fewer repetitive tasks, better-served customers and a team with more time for what adds most value.", tags: ["More focused team", "Better-served customers", "Faster processes", "More growth opportunities"] },
+    { label: "Results", eyebrow: "The result", title: "A more efficient business, with more opportunities.", body: "Fewer repetitive tasks, better-served customers and a team with more time for what adds most value.", tags: [] },
     { label: "aibe", eyebrow: "aibe", title: "Technology with a human touch.", body: "", tags: ["Closeness", "Trust", "Transparency"] },
   ],
 };
@@ -88,12 +88,13 @@ export default function AibeScrollWorld({ locale }: { locale: string }) {
     el.dataset.mounted = "1";
     const mk = `/${loc}/marketing-digital`;
     const copy = COPY[loc];
+    const phone = window.matchMedia("(max-width: 860px), (hover: none) and (pointer: coarse)").matches;
     const destroy = window.mountScrollWorld(el, {
       brand: { name: "aibe", href: `/${loc}` },
       cta: { label: UI[loc].top, href: "#contacto" },
       hint: UI[loc].hint,
-      diveScroll: 1.3,
-      connScroll: 0.9,
+      diveScroll: phone ? 1.1 : 1.3,
+      connScroll: phone ? 0.75 : 0.9,
       sections: IDS.map((id, i) => ({
         id,
         ...copy[i],
@@ -102,7 +103,7 @@ export default function AibeScrollWorld({ locale }: { locale: string }) {
         clip: `${W}/vid/${id}.mp4`,
         clipMobile: `${W}/vid/${id}-m.mp4`,
         accent: id === "aibe" ? "#19D3FF" : "#0077FF",
-        ...(i === 0 ? { scroll: 1.6, linger: 0.4 } : {}),
+        ...(i === 0 ? (phone ? { scroll: 0.9, linger: 0.15 } : { scroll: 1.6, linger: 0.4 }) : {}),
         ...(i === IDS.length - 1
           ? {
               scroll: 1.8,
@@ -154,8 +155,8 @@ export default function AibeScrollWorld({ locale }: { locale: string }) {
         html,body{height:auto!important;overflow-x:clip!important;scroll-behavior:auto!important;}
         body{background:#EEF4FB;}
         #world .sw-brand__mark{display:none!important;}
-        #world .sw-brand__name{font-size:0!important;width:120px;height:40px;background:url(${W}/aibe-logo.webp) left center/contain no-repeat;}
-        #world .sw-brand{background:rgba(255,255,255,.85);padding:6px 14px;border-radius:14px;backdrop-filter:blur(8px);}
+        #world .sw-brand__name{font-size:0!important;width:120px;height:40px;background:url(${W}/aibe-logo.webp?v=2) left center/contain no-repeat;}
+        #world .sw-brand{background:#fff;padding:6px 14px;border-radius:14px;box-shadow:0 4px 14px rgba(0,30,75,.08);}
         #world .sw-topcta{background:#0077FF!important;}
         #world .sw-btn--primary{background:#0077FF!important;box-shadow:0 10px 30px rgba(0,119,255,.35);}
         /* Final scene sits on deep blue: light ink, real logo (dark-bg variant), placed on the open right side */
