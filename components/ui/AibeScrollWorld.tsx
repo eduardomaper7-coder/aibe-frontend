@@ -188,6 +188,9 @@ export default function AibeScrollWorld({ locale }: { locale: string }) {
              cover-fit video would rescale ("grows slightly"). Pin the stage to the LARGE viewport
              height so its size never changes while the bar slides in/out. */
           #world .sw-stage,#world .sw-sky{top:0;bottom:auto;height:100vh;height:100lvh;}
+          /* Same for the copy scrims: anchor them from the top in lvh, so they always reach the bottom
+             of the stage — otherwise a strip of unscrimmed image shows while the URL bar hides. */
+          #world .sw-copylayer::before,#world .sw-copylayer::after{top:40vh;top:40lvh;bottom:auto;height:60vh;height:60lvh;}
           /* the scroll hint sits where the mobile copy block is: hide it on phones */
           #world .sw-hint{display:none;}
           #world .sw-copylayer::after{background:linear-gradient(0deg,rgba(0,30,75,.7) 0%,rgba(0,30,75,.3) 45%,transparent 70%);}
