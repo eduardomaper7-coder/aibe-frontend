@@ -18,12 +18,15 @@ export default function Footer() {
       <div className="content">
         <div className="brand">
           <Image
-            src="/imagenes/logo-footer-hq.png"
-            alt="AIBE Technologies"
-            width={212}
-            height={231}
+            src="/world/aibe-logo-dark.webp"
+            alt="aibe"
+            width={900}
+            height={236}
             className="logo"
+            style={{ width: 200, height: "auto", display: "block", marginBottom: 18 }}
           />
+
+          <p className="slogan">Tecnología con sentido humano.</p>
 
           <p>
             Unimos estrategia, diseño y tecnología para ayudar a los negocios a crecer con una base digital más sólida.
@@ -88,7 +91,7 @@ export default function Footer() {
 
       <style jsx>{`
         .footer {
-          background: #07111f;
+          background: #001E4B;
           padding: 90px 6% 36px;
           color: white;
           font-family: "Montserrat", sans-serif;
@@ -124,10 +127,18 @@ export default function Footer() {
 
         .logo {
           display: block;
-          width: 250px;
+          width: 200px;
           height: auto;
-          margin-bottom: 24px;
+          margin-bottom: 18px;
           filter: none;
+        }
+
+        .brand .slogan {
+          margin: 0 0 14px;
+          color: #ffffff;
+          font-size: 1.25rem;
+          font-weight: 700;
+          line-height: 1.3;
         }
 
         .brand p {

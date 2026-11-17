@@ -2,8 +2,13 @@
 
 import { useEffect, useRef } from "react";
 import Script from "next/script";
-import ContactSection from "./ContactSection";
+import { Outfit } from "next/font/google";
+import { ArrowRight, Bot, Check, TrendingUp } from "lucide-react";
+import AibeHomeContact from "./AibeHomeContact";
 import Footer from "./Footer";
+
+// Rounded geometric sans that matches the aibe wordmark
+const outfit = Outfit({ subsets: ["latin"], weight: ["400", "500", "600", "700"], variable: "--font-outfit", display: "swap" });
 
 type Locale = "es" | "en";
 
@@ -37,40 +42,36 @@ const COPY: Record<Locale, { label: string; eyebrow: string; title: string; body
 };
 
 const AFTER: Record<Locale, {
-  servicesEyebrow: string; servicesTitle: string;
-  services: { title: string; body: string; cta: string; href: (l: string) => string }[];
-  clientsEyebrow: string; clientsTitle: string;
+  eyebrow: string; title: string; lead: string;
+  services: { key: "ia" | "mk"; title: string; body: string; points: string[]; cta: string; href: (l: string) => string }[];
 }> = {
   es: {
-    servicesEyebrow: "Qué hacemos",
-    servicesTitle: "Dos formas de ayudarte a crecer.",
+    eyebrow: "Qué hacemos",
+    title: "Dos formas de ayudarte a crecer.",
+    lead: "Combinamos inteligencia artificial y marketing digital para que tu equipo gane tiempo y tu negocio, clientes.",
     services: [
-      { title: "Agentes IA", body: "Asistentes que atienden consultas 24/7, gestionan citas y solicitudes y hacen el seguimiento por ti, en WhatsApp, web o teléfono.", cta: "Ver agentes IA", href: (l) => `/${l}/marketing-digital#ia` },
-      { title: "Marketing digital", body: "Google, redes sociales y web para que las personas adecuadas te encuentren, confíen en ti y te contacten.", cta: "Ver marketing digital", href: (l) => `/${l}/marketing-digital` },
+      { key: "ia", title: "Agentes IA", body: "Asistentes inteligentes que trabajan por ti, todos los días, a cualquier hora.",
+        points: ["Atienden consultas 24/7 en WhatsApp, web y teléfono", "Gestionan citas y solicitudes sin intervención", "Hacen el seguimiento de cada cliente"],
+        cta: "Descubrir agentes IA", href: (l) => `/${l}/marketing-digital#ia` },
+      { key: "mk", title: "Marketing digital", body: "Que las personas adecuadas te encuentren, confíen en ti y te contacten.",
+        points: ["Posicionamiento en Google y campañas de Google Ads", "Gestión de redes sociales", "Webs pensadas para convertir visitas en clientes"],
+        cta: "Descubrir marketing digital", href: (l) => `/${l}/marketing-digital` },
     ],
-    clientsEyebrow: "Confían en nosotros",
-    clientsTitle: "Negocios que ya trabajan con aibe.",
   },
   en: {
-    servicesEyebrow: "What we do",
-    servicesTitle: "Two ways to help you grow.",
+    eyebrow: "What we do",
+    title: "Two ways to help you grow.",
+    lead: "We combine artificial intelligence and digital marketing so your team saves time and your business wins customers.",
     services: [
-      { title: "AI agents", body: "Assistants that answer enquiries 24/7, manage bookings and requests and follow up for you, on WhatsApp, web or phone.", cta: "See AI agents", href: (l) => `/${l}/marketing-digital#ia` },
-      { title: "Digital marketing", body: "Google, social media and web so the right people find you, trust you and get in touch.", cta: "See digital marketing", href: (l) => `/${l}/marketing-digital` },
+      { key: "ia", title: "AI agents", body: "Smart assistants that work for you every day, at any hour.",
+        points: ["Answer enquiries 24/7 on WhatsApp, web and phone", "Handle bookings and requests on their own", "Follow up with every customer"],
+        cta: "Discover AI agents", href: (l) => `/${l}/marketing-digital#ia` },
+      { key: "mk", title: "Digital marketing", body: "Help the right people find you, trust you and get in touch.",
+        points: ["Google rankings and Google Ads campaigns", "Social media management", "Websites built to turn visits into customers"],
+        cta: "Discover digital marketing", href: (l) => `/${l}/marketing-digital` },
     ],
-    clientsEyebrow: "They trust us",
-    clientsTitle: "Businesses already working with aibe.",
   },
 };
-
-const CLIENT_LOGOS = [
-  { src: "/imagenes/cliente1.png", alt: "Laser Point" },
-  { src: "/imagenes/cliente2.webp", alt: "Nadora" },
-  { src: "/imagenes/cliente3.png", alt: "Clínica D+" },
-  { src: "/imagenes/cliente4.png", alt: "Clínica Dental Bances Sanz" },
-  { src: "/imagenes/cliente5.png", alt: "Grupo Maitias" },
-  { src: "/imagenes/cliente6.png", alt: "Siete Notas" },
-];
 
 const UI: Record<Locale, { hint: string; top: string; primary: string; secondary: string }> = {
   es: { hint: "desliza para entrar", top: "Hablemos", primary: "Hablemos de tu negocio →", secondary: "Ver Marketing digital" },
@@ -143,10 +144,10 @@ export default function AibeScrollWorld({ locale }: { locale: string }) {
   }, [loc]);
 
   return (
-    <>
+    <div className={outfit.variable}>
       <style>{`
         #world.sw-root{--sw-bg:#EEF4FB;--sw-ink:#001E4B;--sw-ink-soft:#3A4F72;--sw-accent:#0077FF;
-          --sw-font-display:var(--font-display, "Poppins", ui-rounded, "Segoe UI", system-ui, sans-serif);}
+          --sw-font-display:var(--font-outfit), ui-rounded, "Segoe UI", system-ui, sans-serif;--sw-font-body:var(--font-outfit), system-ui, sans-serif;}
         /* globals.css sets height:100% + overflow-x:hidden on html/body, which turns body into
            the scroll container; the scrub engine needs the window to scroll. Home only. */
         html,body{height:auto!important;overflow-x:clip!important;scroll-behavior:auto!important;}
@@ -192,27 +193,41 @@ export default function AibeScrollWorld({ locale }: { locale: string }) {
         #world .sw-nav,#world .sw-route,#world .sw-scrollbar{transition:opacity .3s ease;}
         #world.is-after .sw-nav,#world.is-after .sw-route,#world.is-after .sw-scrollbar{opacity:0;pointer-events:none;}
         #world.is-after .sw-topbar{background:rgba(255,255,255,.92);backdrop-filter:blur(10px);box-shadow:0 1px 0 rgba(0,30,75,.08);}
-        .aibe-after{position:relative;z-index:45;background:#fff;color:#001E4B;}
-        .aibe-after__band{padding:clamp(64px,10vw,120px) clamp(18px,5vw,64px);}
-        .aibe-after__band--tint{background:#EEF4FB;}
-        .aibe-after__inner{max-width:1180px;margin:0 auto;}
-        .aibe-after__eyebrow{display:block;font-weight:700;font-size:.8rem;letter-spacing:.16em;text-transform:uppercase;color:#0077FF;}
-        .aibe-after__title{font-weight:700;font-size:clamp(1.8rem,3.6vw,2.8rem);line-height:1.08;margin:12px 0 0;color:#001E4B;}
-        .aibe-services{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;margin-top:40px;}
-        .aibe-service{display:flex;flex-direction:column;gap:14px;padding:clamp(24px,3vw,40px);border-radius:24px;background:#EEF4FB;
-          border:1px solid rgba(0,119,255,.12);text-decoration:none;color:inherit;transition:transform .25s ease,box-shadow .25s ease;}
-        .aibe-service:hover{transform:translateY(-4px);box-shadow:0 18px 40px rgba(0,30,75,.12);}
-        .aibe-service h3{font-size:clamp(1.4rem,2.2vw,1.8rem);font-weight:700;margin:0;color:#001E4B;}
-        .aibe-service p{margin:0;font-size:1.02rem;line-height:1.55;color:#3A4F72;}
-        .aibe-service span{margin-top:auto;font-weight:600;color:#0077FF;}
-        .aibe-logos{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:16px;margin-top:40px;}
-        .aibe-logo{display:flex;align-items:center;justify-content:center;height:110px;padding:12px;border-radius:18px;background:#fff;
-          border:1px solid rgba(0,30,75,.08);overflow:hidden;}
-        .aibe-logo img{max-width:100%;max-height:100%;object-fit:contain;border-radius:8px;}
+        .aibe-after{position:relative;z-index:45;background:#fff;color:#001E4B;font-family:var(--font-outfit),system-ui,sans-serif;}
+        .asv{position:relative;overflow:hidden;padding:clamp(88px,11vw,150px) clamp(18px,5vw,64px);
+          background:linear-gradient(180deg,#EEF4FB 0%,#fff 38%);}
+        .asv::before{content:"";position:absolute;width:900px;height:900px;left:50%;top:-520px;transform:translateX(-50%);border-radius:50%;
+          background:radial-gradient(circle,rgba(0,119,255,.10),transparent 62%);pointer-events:none;}
+        .asv__inner{position:relative;max-width:1180px;margin:0 auto;}
+        .asv__head{text-align:center;max-width:720px;margin:0 auto;}
+        .asv__eyebrow{display:inline-block;font-weight:600;font-size:.8rem;letter-spacing:.18em;text-transform:uppercase;color:#0077FF;}
+        .asv__title{font-weight:700;font-size:clamp(2.1rem,4.4vw,3.5rem);line-height:1.05;letter-spacing:-.02em;margin:14px 0 0;color:#001E4B;}
+        .asv__lead{margin:18px auto 0;max-width:600px;font-size:1.1rem;line-height:1.6;color:#3A4F72;}
+        .asv__grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(18px,2.4vw,28px);margin-top:clamp(44px,6vw,72px);}
+        .asv__card{position:relative;display:flex;flex-direction:column;padding:clamp(28px,3.4vw,44px);border-radius:28px;text-decoration:none;color:inherit;
+          background:#fff;border:1px solid #E1EAF5;box-shadow:0 1px 2px rgba(0,30,75,.04),0 18px 40px -24px rgba(0,30,75,.18);
+          transition:transform .3s cubic-bezier(.2,.7,.2,1),box-shadow .3s,border-color .3s;isolation:isolate;overflow:hidden;}
+        .asv__card::after{content:"";position:absolute;right:-20%;bottom:-60%;width:340px;height:340px;border-radius:50%;z-index:-1;
+          background:radial-gradient(circle,rgba(25,211,255,.16),transparent 65%);opacity:.6;transition:opacity .3s;}
+        .asv__card:hover{transform:translateY(-6px);border-color:rgba(0,119,255,.35);box-shadow:0 30px 60px -28px rgba(0,63,160,.35);}
+        .asv__card:hover::after{opacity:1;}
+        .asv__card--dark{background:#001E4B;border-color:#001E4B;color:#fff;}
+        .asv__card--dark::after{background:radial-gradient(circle,rgba(0,119,255,.55),transparent 65%);opacity:.8;}
+        .asv__icon{display:grid;place-items:center;width:56px;height:56px;border-radius:18px;color:#fff;
+          background:linear-gradient(135deg,#0077FF 0%,#19D3FF 100%);box-shadow:0 12px 26px -10px rgba(0,119,255,.7);}
+        .asv__card h3{margin:26px 0 0;font-size:clamp(1.6rem,2.4vw,2rem);font-weight:700;letter-spacing:-.01em;}
+        .asv__body{margin:10px 0 0;font-size:1.05rem;line-height:1.55;color:#3A4F72;}
+        .asv__card--dark .asv__body{color:rgba(255,255,255,.75);}
+        .asv__points{list-style:none;padding:0;margin:26px 0 0;display:grid;gap:12px;}
+        .asv__points li{display:flex;align-items:flex-start;gap:12px;font-size:1rem;line-height:1.45;}
+        .asv__points li svg{flex:none;margin-top:2px;color:#0077FF;}
+        .asv__card--dark .asv__points li svg{color:#19D3FF;}
+        .asv__cta{display:inline-flex;align-items:center;gap:8px;margin-top:auto;padding-top:34px;font-weight:600;color:#0077FF;}
+        .asv__card--dark .asv__cta{color:#19D3FF;}
+        .asv__cta svg{transition:transform .25s;}
+        .asv__card:hover .asv__cta svg{transform:translateX(4px);}
         @media (max-width:860px){
-          .aibe-services{grid-template-columns:1fr;}
-          .aibe-logos{grid-template-columns:repeat(3,minmax(0,1fr));}
-          .aibe-logo{height:90px;}
+          .asv__grid{grid-template-columns:1fr;}
         }
       `}</style>
       {/* bump ENGINE_VERSION whenever public/world/scrub-engine.js changes, so browsers drop the cached copy */}
@@ -220,40 +235,34 @@ export default function AibeScrollWorld({ locale }: { locale: string }) {
       <div id="world" ref={ref} />
 
       <div className="aibe-after">
-        <section className="aibe-after__band">
-          <div className="aibe-after__inner">
-            <span className="aibe-after__eyebrow">{AFTER[loc].servicesEyebrow}</span>
-            <h2 className="aibe-after__title">{AFTER[loc].servicesTitle}</h2>
-            <div className="aibe-services">
+        <section className="asv">
+          <div className="asv__inner">
+            <header className="asv__head">
+              <span className="asv__eyebrow">{AFTER[loc].eyebrow}</span>
+              <h2 className="asv__title">{AFTER[loc].title}</h2>
+              <p className="asv__lead">{AFTER[loc].lead}</p>
+            </header>
+            <div className="asv__grid">
               {AFTER[loc].services.map((sv) => (
-                <a key={sv.title} className="aibe-service" href={sv.href(loc)}>
+                <a key={sv.key} className={`asv__card${sv.key === "ia" ? " asv__card--dark" : ""}`} href={sv.href(loc)}>
+                  <span className="asv__icon">{sv.key === "ia" ? <Bot size={26} /> : <TrendingUp size={26} />}</span>
                   <h3>{sv.title}</h3>
-                  <p>{sv.body}</p>
-                  <span>{sv.cta} →</span>
+                  <p className="asv__body">{sv.body}</p>
+                  <ul className="asv__points">
+                    {sv.points.map((pt) => (
+                      <li key={pt}><Check size={18} strokeWidth={2.6} />{pt}</li>
+                    ))}
+                  </ul>
+                  <span className="asv__cta">{sv.cta}<ArrowRight size={18} /></span>
                 </a>
               ))}
             </div>
           </div>
         </section>
 
-        <section className="aibe-after__band aibe-after__band--tint">
-          <div className="aibe-after__inner">
-            <span className="aibe-after__eyebrow">{AFTER[loc].clientsEyebrow}</span>
-            <h2 className="aibe-after__title">{AFTER[loc].clientsTitle}</h2>
-            <div className="aibe-logos">
-              {CLIENT_LOGOS.map((c) => (
-                <div key={c.src} className="aibe-logo">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={c.src} alt={c.alt} loading="lazy" />
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <ContactSection />
+        <AibeHomeContact locale={loc} />
         <Footer />
       </div>
-    </>
+    </div>
   );
 }
