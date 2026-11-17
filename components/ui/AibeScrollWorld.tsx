@@ -183,6 +183,10 @@ export default function AibeScrollWorld({ locale }: { locale: string }) {
           #world .sw-copylayer .sw-copy:last-child{left:auto;right:clamp(24px,7vw,120px);translate:0 -9vh;}
         }
         @media (max-width:860px){
+          /* Mobile URL bar: when it hides on the first scroll the visual viewport grows and a
+             cover-fit video would rescale ("grows slightly"). Pin the stage to the LARGE viewport
+             height so its size never changes while the bar slides in/out. */
+          #world .sw-stage,#world .sw-sky{top:0;bottom:auto;height:100vh;height:100lvh;}
           /* the scroll hint sits where the mobile copy block is: hide it on phones */
           #world .sw-hint{display:none;}
           #world .sw-copylayer::after{background:linear-gradient(0deg,rgba(0,30,75,.7) 0%,rgba(0,30,75,.3) 45%,transparent 70%);}
