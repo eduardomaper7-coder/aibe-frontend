@@ -244,10 +244,9 @@ function mountScrollWorld(container, config) {
       const op = smooth(1 - outside / fade);
       s.el.style.opacity = op; s.visible = op > 0.001;
       s.el.style.zIndex = (i === ci) ? '120' : String(100 + Math.round(op * 10));
-      if (!s.hasClip || !s.ready) {
-        const sc = reduce ? 1 : 1.03 + local * 0.14;
-        s.img.style.transform = `translateX(${stageX - 2}vw) scale(${sc.toFixed(3)})`;
-      }
+      // AIBE: posters are the clips' exact first frames, so keep them framed exactly like the
+      // video (no Ken-Burns zoom/shift) — otherwise the hand-off to the video visibly jumps.
+      if (!s.hasClip || !s.ready) s.img.style.transform = 'none';
     }
 
     for (let i = 0; i < N; i++) {
@@ -308,7 +307,9 @@ function mountScrollWorld(container, config) {
   let userReady = false;
   function primeVideo(v) {
     if (!isMobile() || !v) return;
-    try { const p = v.play(); if (p && p.then) p.then(() => { try { v.pause(); } catch (e) {} }).catch(() => {}); }
+    // AIBE: remember the frame and restore it after the pause, so priming never nudges the camera
+    const t0 = v.currentTime;
+    try { v.muted = true; const p = v.play(); if (p && p.then) p.then(() => { try { v.pause(); v.currentTime = t0; } catch (e) {} }).catch(() => {}); }
     catch (e) {}
   }
   function onFirstGesture() {

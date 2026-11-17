@@ -19,7 +19,7 @@ declare global {
 }
 
 const W = "/world";
-const ENGINE_VERSION = "2026-11-17c";
+const ENGINE_VERSION = "2026-11-17e";
 const IDS = ["personas", "reto", "agentes", "marketing", "resultado", "aibe"] as const;
 
 const COPY: Record<Locale, { label: string; eyebrow: string; title: string; body: string; tags: string[] }[]> = {
