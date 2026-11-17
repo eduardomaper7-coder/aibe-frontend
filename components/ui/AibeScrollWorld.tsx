@@ -107,7 +107,7 @@ export default function AibeScrollWorld({ locale }: { locale: string }) {
         #world .sw-topcta{background:#0077FF!important;}
         #world .sw-btn--primary{background:#0077FF!important;box-shadow:0 10px 30px rgba(0,119,255,.35);}
         /* Final scene sits on deep blue: light ink, real logo (dark-bg variant), placed on the open right side */
-        #world .sw-copylayer .sw-copy:last-child .sw-copy__eyebrow{font-size:0;height:clamp(56px,7vw,92px);
+        #world .sw-copylayer .sw-copy:last-child .sw-copy__eyebrow{font-size:0;height:clamp(44px,min(7vw,10vh),92px);
           background:url(${W}/aibe-logo-dark.webp) left center/contain no-repeat;margin-bottom:6px;}
         #world .sw-copylayer .sw-copy:last-child .sw-copy__title{color:#fff;text-shadow:0 2px 24px rgba(0,30,75,.6);}
         #world .sw-copylayer .sw-copy:last-child .sw-copy__body,
@@ -121,9 +121,16 @@ export default function AibeScrollWorld({ locale }: { locale: string }) {
         #world[data-active="5"] .sw-copylayer::before{opacity:0;}
         #world[data-active="5"] .sw-copylayer::after{opacity:1;}
         @media (min-width:861px){
+          /* Size copy by height too, so long titles + tags fit short laptop/browser windows */
+          #world .sw-copy{width:min(44vw,600px);}
+          #world .sw-copy__title{font-size:clamp(1.6rem,min(4vw,6.4vh),3.3rem);}
+          #world .sw-copy__body{font-size:clamp(.9rem,min(1.2vw,2.3vh),1.1rem);}
+          #world .sw-copy__eyebrow{margin-top:min(18px,1.8vh);}
           #world .sw-copylayer .sw-copy:last-child{left:auto;right:clamp(24px,7vw,120px);}
         }
         @media (max-width:860px){
+          /* the scroll hint sits where the mobile copy block is: hide it on phones */
+          #world .sw-hint{display:none;}
           #world .sw-copylayer::after{background:linear-gradient(0deg,rgba(0,30,75,.7) 0%,rgba(0,30,75,.3) 45%,transparent 70%);}
         }
       `}</style>

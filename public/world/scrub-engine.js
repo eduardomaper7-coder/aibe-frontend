@@ -260,7 +260,9 @@ function mountScrollWorld(container, config) {
       else cop = (before || after) ? 0 : smooth(1 - Math.abs(pr - 0.5) / 0.5);
       const c = copies[i];
       c.style.opacity = cop;
-      c.style.transform = reduce ? 'none' : `translateY(${(0.5 - pr) * 4}vh)`;
+      // AIBE: keep the desktop vertical centring (CSS translateY(-50%)) — the inline transform used to drop it
+      const centre = window.innerWidth > 860 ? '-50% + ' : '';
+      c.style.transform = reduce ? (centre ? 'translateY(-50%)' : 'none') : `translateY(calc(${centre}${((0.5 - pr) * 4).toFixed(3)}vh))`;
       c.style.pointerEvents = cop > 0.5 ? 'auto' : 'none';
     }
 
