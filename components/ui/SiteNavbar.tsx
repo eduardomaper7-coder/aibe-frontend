@@ -86,9 +86,10 @@ export default function SiteNavbar({
         <Image
           src="/world/aibe-logo-v2.webp"
           alt="aibe"
-          width={900}
-          height={236}
+          width={480}
+          height={126}
           priority
+          unoptimized
           className={styles.logo}
         />
       </Link>

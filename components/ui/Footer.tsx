@@ -17,10 +17,11 @@ export default function Footer() {
       <div className="content">
         <div className="brand">
           <Image
-            src="/world/aibe-logo-dark.webp"
+            src="/world/aibe-logo-dark-v2.webp"
             alt="aibe"
-            width={900}
-            height={236}
+            width={480}
+            height={126}
+            unoptimized
             className="logo"
             style={{ width: 200, height: "auto", display: "block", marginBottom: 18 }}
           />

@@ -1,8 +1,7 @@
 import { Outfit } from "next/font/google";
 import {
-  ArrowRight, BellRing, Briefcase, CalendarCheck, Check, ChevronDown, Home, LineChart,
-  MessageCircle, MessagesSquare, PhoneCall, Plug, ShieldCheck, Sparkles, Stethoscope,
-  UserCheck, Users, UtensilsCrossed,
+  ArrowRight, BarChart3, BookOpen, CalendarCheck, Check, ChevronDown, FileText, Headset,
+  LineChart, PhoneCall, Plug, RefreshCw, Settings2, ShieldCheck, Sparkles, Target, Users, Workflow,
 } from "lucide-react";
 import SiteNavbar from "../ui/SiteNavbar";
 import AibeHomeContact from "../ui/AibeHomeContact";
@@ -14,123 +13,137 @@ type Locale = "es" | "en";
 
 const C = {
   es: {
-    eyebrow: "Agentes IA",
-    h1a: "Tu negocio, atendido 24/7.",
-    h1b: "Sin perder el trato humano.",
-    lead: "Creamos asistentes con inteligencia artificial que responden a tus clientes, gestionan citas y hacen el seguimiento por WhatsApp, teléfono y tu web, mientras tu equipo se centra en lo que de verdad importa.",
-    ctaPrimary: "Hablemos de tu negocio", ctaSecondary: "Cómo funciona",
-    chips: ["Disponible 24/7", "Responde en segundos", "Conectado a tu agenda"],
+    eyebrow: "Agentes IA a medida",
+    h1a: "Inteligencia artificial",
+    h1b: "diseñada para tu empresa.",
+    lead: "Creamos agentes de IA personalizados que atienden a tus clientes, automatizan tareas y conectan tus herramientas. Cada solución se diseña a partir de cómo trabaja tu empresa, para que tu equipo dedique su tiempo a lo que aporta más valor.",
+    ctaPrimary: "Hablemos de tu empresa", ctaSecondary: "Ver soluciones",
+    chips: ["100% personalizados", "Integrados con tus herramientas", "Disponibles 24/7"],
     chat: {
-      name: "Clínica dental", status: "Asistente aibe · en línea",
+      name: "Tu empresa", status: "Asistente aibe · en línea",
       m: [
-        { me: false, t: "Hola, ¿tenéis cita para una limpieza dental esta semana?", h: "23:47" },
-        { me: true, t: "¡Hola! Sí 😊 Tengo hueco el jueves a las 10:30 o el viernes a las 17:00. ¿Cuál te viene mejor?", h: "23:47" },
-        { me: false, t: "El viernes, perfecto.", h: "23:48" },
-        { me: true, t: "Hecho ✅ Te he reservado el viernes a las 17:00. Te enviaré un recordatorio el día antes.", h: "23:48" },
+        { me: false, t: "Hola, quería información sobre vuestros servicios y saber si podemos hablar esta semana.", h: "23:47" },
+        { me: true, t: "¡Hola! Claro 😊 Te resumo lo principal y te propongo una llamada. ¿Te viene bien el jueves a las 10:30 o el viernes a las 12:00?", h: "23:47" },
+        { me: false, t: "El jueves, perfecto.", h: "23:48" },
+        { me: true, t: "Hecho ✅ Llamada confirmada el jueves a las 10:30. Te he enviado la invitación por email.", h: "23:48" },
       ],
-      badge: "Cita añadida a la agenda",
+      badge: "Reunión añadida al calendario",
     },
-    capEyebrow: "Qué hace", capTitle: "Un equipo que no descansa, en todos tus canales.",
-    caps: [
-      { i: "wa", t: "WhatsApp", d: "Responde al instante las consultas de tus clientes, a cualquier hora y con el tono de tu marca." },
-      { i: "phone", t: "Llamadas", d: "Atiende el teléfono con voz natural, resuelve dudas y toma nota cuando no puedes contestar." },
-      { i: "web", t: "Chat en tu web", d: "Convierte las visitas de tu página en conversaciones, solicitudes y citas." },
-      { i: "cal", t: "Citas y reservas", d: "Consulta tu disponibilidad, reserva, cambia y cancela citas sin que tengas que intervenir." },
-      { i: "lead", t: "Cualificación de clientes", d: "Hace las preguntas clave y te pasa cada oportunidad ordenada y lista para cerrar." },
-      { i: "bell", t: "Seguimiento y recordatorios", d: "Envía recordatorios y retoma conversaciones para que ningún cliente se quede sin respuesta." },
+    solEyebrow: "Soluciones",
+    solTitle: "Mucho más que un chatbot.",
+    solLead: "Estas son algunas de las soluciones que desarrollamos. Las combinamos y adaptamos según las necesidades de cada empresa.",
+    sols: [
+      { i: "support", t: "Atención al cliente", d: "Responde consultas al instante por WhatsApp, web o email, con el tono de tu marca y a cualquier hora." },
+      { i: "voice", t: "Agentes de voz", d: "Atienden y realizan llamadas con voz natural: resuelven dudas, toman datos y derivan cuando hace falta." },
+      { i: "cal", t: "Citas y agenda", d: "Consultan disponibilidad y reservan, cambian o cancelan citas directamente en tu calendario." },
+      { i: "sales", t: "Captación y ventas", d: "Cualifican a cada contacto, hacen el seguimiento y entregan a tu equipo oportunidades listas para cerrar." },
+      { i: "flow", t: "Automatización de procesos", d: "Se encargan de tareas repetitivas entre tus herramientas: altas, avisos, actualizaciones y flujos de trabajo." },
+      { i: "docs", t: "Documentos y datos", d: "Leen facturas, pedidos, contratos o correos, extraen la información clave y la llevan donde la necesitas." },
+      { i: "kb", t: "Asistente interno", d: "Un experto en tu empresa para tu equipo: responde dudas sobre procedimientos, productos y documentación." },
+      { i: "bi", t: "Informes y análisis", d: "Resumen la actividad, detectan patrones y te avisan de lo importante para decidir con datos." },
     ],
-    howEyebrow: "Cómo funciona", howTitle: "De la idea a tu agente funcionando, en cuatro pasos.",
+    customEyebrow: "Hecho a medida",
+    customTitle: "Ninguna empresa es igual. Tu agente tampoco.",
+    customLead: "No vendemos una herramienta genérica: diseñamos cada agente a partir de tus procesos, tus datos y tus objetivos, y lo integramos con las herramientas que ya usas.",
+    custom: [
+      { i: "settings", t: "Se adapta a tu forma de trabajar", d: "Sigue tus procesos, tus normas y tu tono. Tú decides qué hace, qué no y cuándo pasa el testigo a una persona." },
+      { i: "plug", t: "Se integra con tus herramientas", d: "CRM, ERP, agenda, email, WhatsApp, hojas de cálculo o software propio: trabaja donde ya trabaja tu equipo." },
+      { i: "refresh", t: "Evoluciona con tu negocio", d: "Lo revisamos y mejoramos de forma continua para que crezca contigo y responda a nuevas necesidades." },
+    ],
+    tools: ["CRM", "ERP", "WhatsApp", "Email", "Calendario", "Web", "Teléfono", "Hojas de cálculo", "Software propio"],
+    howEyebrow: "Cómo trabajamos", howTitle: "De la idea a tu agente funcionando, en cuatro pasos.",
     steps: [
-      { t: "Conocemos tu negocio", d: "Analizamos tus procesos, tus canales y las preguntas que más se repiten." },
-      { t: "Entrenamos a tu agente", d: "Con tu información, tus servicios, tus precios y tu forma de hablar con los clientes." },
-      { t: "Lo conectamos", d: "A WhatsApp, tu teléfono, tu web, tu agenda y las herramientas que ya usas." },
-      { t: "Lo mejoramos contigo", d: "Revisamos conversaciones y resultados para que cada semana funcione mejor." },
-    ],
-    secEyebrow: "Para tu sector", secTitle: "Pensado para negocios que viven de atender bien.",
-    sectors: [
-      { i: "clinic", t: "Clínicas y salud", d: "Citas, recordatorios y dudas frecuentes de pacientes, a cualquier hora." },
-      { i: "food", t: "Restauración", d: "Reservas de mesa, horarios, cartas y pedidos sin saturar el teléfono." },
-      { i: "home", t: "Inmobiliarias", d: "Respuesta inmediata a cada interesado y visitas agendadas automáticamente." },
-      { i: "pro", t: "Servicios profesionales", d: "Primeras consultas, presupuestos y seguimiento de cada cliente potencial." },
+      { t: "Analizamos tu empresa", d: "Conocemos tus procesos, tus herramientas y dónde se pierde más tiempo." },
+      { t: "Diseñamos la solución", d: "Definimos contigo qué hará cada agente, con qué datos y cómo se medirá su impacto." },
+      { t: "Desarrollamos e integramos", d: "Lo construimos a medida y lo conectamos con tus canales y sistemas." },
+      { t: "Medimos y mejoramos", d: "Revisamos resultados y lo ajustamos para que cada mes aporte más." },
     ],
     whyEyebrow: "Por qué aibe", whyTitle: "Tecnología con sentido humano.",
-    whyLead: "La inteligencia artificial está para ayudar a tu equipo, no para sustituir el trato cercano que te diferencia.",
+    whyLead: "La inteligencia artificial está para potenciar a tu equipo, no para sustituir el trato cercano que te diferencia.",
     why: [
-      { i: "users", t: "Tu equipo, siempre al mando", d: "El agente deriva a una persona cuando la conversación lo necesita, con todo el contexto." },
-      { i: "spark", t: "Hecho a medida", d: "Nada de respuestas genéricas: habla de tus servicios, con tu tono y tus normas." },
+      { i: "users", t: "Tu equipo, siempre al mando", d: "Los agentes derivan a una persona cuando la situación lo requiere, con todo el contexto." },
+      { i: "spark", t: "Diseño a medida", d: "Nada de respuestas genéricas: cada agente conoce tu empresa y actúa según tus criterios." },
       { i: "shield", t: "Datos protegidos", d: "Diseñamos cada integración pensando en la privacidad y el cumplimiento del RGPD." },
-      { i: "chart", t: "Resultados medibles", d: "Ves qué preguntan tus clientes, cuántas citas se gestionan y dónde mejorar." },
+      { i: "chart", t: "Resultados medibles", d: "Sabrás qué hace cada agente, cuánto tiempo ahorra y dónde seguir mejorando." },
     ],
     faqTitle: "Preguntas frecuentes",
     faq: [
-      { q: "¿Mis clientes notarán que hablan con una IA?", a: "El agente conversa de forma natural y con el tono de tu negocio. Aun así, recomendamos ser transparentes: puede presentarse como asistente virtual y pasar la conversación a tu equipo cuando haga falta." },
-      { q: "¿Qué pasa si no sabe responder algo?", a: "Lo definimos contigo: puede tomar los datos del cliente, avisar a tu equipo o transferir la conversación a una persona, para que nadie se quede sin respuesta." },
-      { q: "¿Con qué herramientas se integra?", a: "WhatsApp, teléfono y el chat de tu web, además de agendas y otras herramientas habituales. Revisamos las que usas en la primera reunión." },
-      { q: "¿Cuánto se tarda en ponerlo en marcha?", a: "Depende de los canales y de las integraciones que necesites. En la primera conversación te damos un plan y un calendario concretos para tu caso." },
+      { q: "¿Qué tipo de tareas puede hacer un agente de IA?", a: "Desde atender a clientes por WhatsApp, web o teléfono hasta gestionar citas, cualificar contactos, procesar documentos o automatizar tareas internas. En la primera reunión identificamos dónde puede aportar más en tu empresa." },
+      { q: "¿Se adapta a las herramientas que ya usamos?", a: "Sí. Cada agente se integra con los sistemas de tu empresa (CRM, ERP, agenda, email, hojas de cálculo o software propio) para que no tengas que cambiar tu forma de trabajar." },
+      { q: "¿Necesitamos conocimientos técnicos?", a: "No. Nos encargamos del análisis, el desarrollo, la integración y el mantenimiento. Tu equipo solo tiene que contarnos cómo trabaja y validar el resultado." },
+      { q: "¿Qué pasa si el agente no sabe resolver algo?", a: "Lo definimos contigo: puede recoger la información, avisar a la persona adecuada o transferirle la conversación, para que nada se quede sin respuesta." },
+      { q: "¿Cuánto se tarda en ponerlo en marcha?", a: "Depende del alcance y de las integraciones necesarias. Tras analizar tu caso te damos un plan y un calendario concretos." },
     ],
   },
   en: {
-    eyebrow: "AI agents",
-    h1a: "Your business, attended 24/7.",
-    h1b: "Without losing the human touch.",
-    lead: "We build AI assistants that answer your customers, manage bookings and follow up on WhatsApp, phone and your website, while your team focuses on what really matters.",
-    ctaPrimary: "Let's talk about your business", ctaSecondary: "How it works",
-    chips: ["Available 24/7", "Replies in seconds", "Connected to your calendar"],
+    eyebrow: "Tailor-made AI agents",
+    h1a: "Artificial intelligence",
+    h1b: "designed for your company.",
+    lead: "We build custom AI agents that serve your customers, automate tasks and connect your tools. Every solution is designed around how your company works, so your team can focus on what adds the most value.",
+    ctaPrimary: "Let's talk about your company", ctaSecondary: "See solutions",
+    chips: ["100% custom", "Integrated with your tools", "Available 24/7"],
     chat: {
-      name: "Dental clinic", status: "aibe assistant · online",
+      name: "Your company", status: "aibe assistant · online",
       m: [
-        { me: false, t: "Hi, do you have an appointment for a dental cleaning this week?", h: "23:47" },
-        { me: true, t: "Hi! Yes 😊 I have Thursday at 10:30 or Friday at 17:00. Which suits you best?", h: "23:47" },
-        { me: false, t: "Friday, perfect.", h: "23:48" },
-        { me: true, t: "Done ✅ You're booked for Friday at 17:00. I'll send you a reminder the day before.", h: "23:48" },
+        { me: false, t: "Hi, I'd like to know more about your services and whether we could talk this week.", h: "23:47" },
+        { me: true, t: "Hi! Of course 😊 Here's a quick overview, and I can set up a call. Does Thursday at 10:30 or Friday at 12:00 work for you?", h: "23:47" },
+        { me: false, t: "Thursday, perfect.", h: "23:48" },
+        { me: true, t: "Done ✅ Call confirmed for Thursday at 10:30. I've sent you the invite by email.", h: "23:48" },
       ],
-      badge: "Appointment added to calendar",
+      badge: "Meeting added to calendar",
     },
-    capEyebrow: "What it does", capTitle: "A team that never rests, on every channel.",
-    caps: [
-      { i: "wa", t: "WhatsApp", d: "Answers your customers instantly, at any hour, in your brand's voice." },
-      { i: "phone", t: "Phone calls", d: "Picks up with a natural voice, solves questions and takes notes when you can't answer." },
-      { i: "web", t: "Website chat", d: "Turns your website visits into conversations, requests and bookings." },
-      { i: "cal", t: "Bookings", d: "Checks availability, books, moves and cancels appointments without you stepping in." },
-      { i: "lead", t: "Lead qualification", d: "Asks the key questions and hands you every opportunity, organised and ready to close." },
-      { i: "bell", t: "Follow-ups and reminders", d: "Sends reminders and picks conversations back up so no customer goes unanswered." },
+    solEyebrow: "Solutions",
+    solTitle: "Much more than a chatbot.",
+    solLead: "These are some of the solutions we build. We combine and adapt them to each company's needs.",
+    sols: [
+      { i: "support", t: "Customer service", d: "Answers enquiries instantly on WhatsApp, web or email, in your brand's voice, at any hour." },
+      { i: "voice", t: "Voice agents", d: "Take and make calls with a natural voice: answer questions, collect details and hand over when needed." },
+      { i: "cal", t: "Bookings and calendar", d: "Check availability and book, move or cancel appointments right in your calendar." },
+      { i: "sales", t: "Lead generation and sales", d: "Qualify every contact, follow up and hand your team opportunities ready to close." },
+      { i: "flow", t: "Process automation", d: "Handle repetitive work across your tools: sign-ups, alerts, updates and workflows." },
+      { i: "docs", t: "Documents and data", d: "Read invoices, orders, contracts or emails, extract the key data and send it where it's needed." },
+      { i: "kb", t: "Internal assistant", d: "An expert on your company for your team: answers questions on procedures, products and documentation." },
+      { i: "bi", t: "Reports and analysis", d: "Summarise activity, spot patterns and flag what matters so you decide with data." },
     ],
-    howEyebrow: "How it works", howTitle: "From idea to a working agent, in four steps.",
+    customEyebrow: "Tailor-made",
+    customTitle: "No two companies are alike. Neither are their agents.",
+    customLead: "We don't sell a generic tool: we design every agent around your processes, your data and your goals, and integrate it with the tools you already use.",
+    custom: [
+      { i: "settings", t: "Fits the way you work", d: "It follows your processes, rules and tone. You decide what it does, what it doesn't, and when it hands over to a person." },
+      { i: "plug", t: "Integrates with your tools", d: "CRM, ERP, calendar, email, WhatsApp, spreadsheets or in-house software: it works where your team already works." },
+      { i: "refresh", t: "Evolves with your business", d: "We keep reviewing and improving it so it grows with you and meets new needs." },
+    ],
+    tools: ["CRM", "ERP", "WhatsApp", "Email", "Calendar", "Website", "Phone", "Spreadsheets", "In-house software"],
+    howEyebrow: "How we work", howTitle: "From idea to a working agent, in four steps.",
     steps: [
-      { t: "We learn your business", d: "We review your processes, your channels and your most frequent questions." },
-      { t: "We train your agent", d: "With your information, services, prices and the way you talk to customers." },
-      { t: "We connect it", d: "To WhatsApp, your phone, your website, your calendar and the tools you already use." },
-      { t: "We improve it with you", d: "We review conversations and results so it works better every week." },
-    ],
-    secEyebrow: "For your sector", secTitle: "Built for businesses that live by great service.",
-    sectors: [
-      { i: "clinic", t: "Clinics and health", d: "Appointments, reminders and frequent patient questions, at any hour." },
-      { i: "food", t: "Restaurants", d: "Table bookings, opening hours, menus and orders without a jammed phone line." },
-      { i: "home", t: "Real estate", d: "Instant replies to every lead and viewings booked automatically." },
-      { i: "pro", t: "Professional services", d: "First enquiries, quotes and follow-up on every potential client." },
+      { t: "We analyse your company", d: "We learn your processes, your tools and where the most time is lost." },
+      { t: "We design the solution", d: "We define with you what each agent will do, with which data and how its impact is measured." },
+      { t: "We build and integrate", d: "We build it to measure and connect it to your channels and systems." },
+      { t: "We measure and improve", d: "We review results and fine-tune it so it delivers more every month." },
     ],
     whyEyebrow: "Why aibe", whyTitle: "Technology with a human touch.",
-    whyLead: "Artificial intelligence is here to help your team, not to replace the personal service that sets you apart.",
+    whyLead: "Artificial intelligence is here to empower your team, not to replace the personal service that sets you apart.",
     why: [
-      { i: "users", t: "Your team stays in charge", d: "The agent hands over to a person whenever the conversation needs it, with full context." },
-      { i: "spark", t: "Tailor-made", d: "No generic replies: it talks about your services, in your tone, by your rules." },
+      { i: "users", t: "Your team stays in charge", d: "Agents hand over to a person whenever the situation calls for it, with full context." },
+      { i: "spark", t: "Custom design", d: "No generic replies: every agent knows your company and acts on your criteria." },
       { i: "shield", t: "Protected data", d: "Every integration is designed with privacy and GDPR compliance in mind." },
-      { i: "chart", t: "Measurable results", d: "See what customers ask, how many bookings are handled and where to improve." },
+      { i: "chart", t: "Measurable results", d: "Know what each agent does, how much time it saves and where to keep improving." },
     ],
     faqTitle: "Frequently asked questions",
     faq: [
-      { q: "Will my customers notice they're talking to an AI?", a: "The agent converses naturally and in your business's tone. We still recommend transparency: it can introduce itself as a virtual assistant and hand over to your team when needed." },
-      { q: "What if it doesn't know an answer?", a: "We define that with you: it can take the customer's details, alert your team or transfer the conversation to a person, so nobody is left without a reply." },
-      { q: "Which tools does it integrate with?", a: "WhatsApp, phone and your website chat, plus calendars and other common tools. We review the ones you use in our first meeting." },
-      { q: "How long does it take to launch?", a: "It depends on the channels and integrations you need. In our first conversation we give you a concrete plan and timeline for your case." },
+      { q: "What kind of tasks can an AI agent handle?", a: "From serving customers on WhatsApp, web or phone to managing bookings, qualifying leads, processing documents or automating internal tasks. In our first meeting we identify where it can add the most value in your company." },
+      { q: "Does it work with the tools we already use?", a: "Yes. Each agent integrates with your company's systems (CRM, ERP, calendar, email, spreadsheets or in-house software) so you don't have to change the way you work." },
+      { q: "Do we need technical knowledge?", a: "No. We handle the analysis, development, integration and maintenance. Your team just tells us how it works and validates the result." },
+      { q: "What if the agent can't solve something?", a: "We define that with you: it can gather the information, alert the right person or transfer the conversation, so nothing goes unanswered." },
+      { q: "How long does it take to launch?", a: "It depends on the scope and the integrations required. After reviewing your case we give you a concrete plan and timeline." },
     ],
   },
 } as const;
 
 const ICONS: Record<string, React.ReactNode> = {
-  wa: <MessageCircle size={24} />, phone: <PhoneCall size={24} />, web: <MessagesSquare size={24} />,
-  cal: <CalendarCheck size={24} />, lead: <UserCheck size={24} />, bell: <BellRing size={24} />,
-  clinic: <Stethoscope size={24} />, food: <UtensilsCrossed size={24} />, home: <Home size={24} />, pro: <Briefcase size={24} />,
+  support: <Headset size={24} />, voice: <PhoneCall size={24} />, cal: <CalendarCheck size={24} />, sales: <Target size={24} />,
+  flow: <Workflow size={24} />, docs: <FileText size={24} />, kb: <BookOpen size={24} />, bi: <BarChart3 size={24} />,
+  settings: <Settings2 size={24} />, plug: <Plug size={24} />, refresh: <RefreshCw size={24} />,
   users: <Users size={22} />, spark: <Sparkles size={22} />, shield: <ShieldCheck size={22} />, chart: <LineChart size={22} />,
 };
 
@@ -153,7 +166,7 @@ export default function AgentesIA({ locale }: { locale: string }) {
             <p className="agp-hero__lead">{t.lead}</p>
             <div className="agp-hero__ctas">
               <a href="#contacto" className="agp-btn agp-btn--primary">{t.ctaPrimary}<ArrowRight size={18} /></a>
-              <a href="#como-funciona" className="agp-btn agp-btn--ghost">{t.ctaSecondary}</a>
+              <a href="#soluciones" className="agp-btn agp-btn--ghost">{t.ctaSecondary}</a>
             </div>
             <ul className="agp-chips">
               {t.chips.map((c) => <li key={c}><Check size={15} strokeWidth={3} />{c}</li>)}
@@ -177,15 +190,16 @@ export default function AgentesIA({ locale }: { locale: string }) {
         </div>
       </section>
 
-      {/* CAPABILITIES */}
-      <section className="agp-sec">
+      {/* SOLUTIONS */}
+      <section className="agp-sec" id="soluciones">
         <div className="agp-wrap">
           <header className="agp-head">
-            <span className="agp-eyebrow">{t.capEyebrow}</span>
-            <h2 className="agp-h2">{t.capTitle}</h2>
+            <span className="agp-eyebrow">{t.solEyebrow}</span>
+            <h2 className="agp-h2">{t.solTitle}</h2>
+            <p className="agp-lead">{t.solLead}</p>
           </header>
-          <div className="agp-caps">
-            {t.caps.map((c) => (
+          <div className="agp-caps agp-caps--4">
+            {t.sols.map((c) => (
               <article key={c.t} className="agp-cap">
                 <span className="agp-icon">{ICONS[c.i]}</span>
                 <h3>{c.t}</h3>
@@ -196,8 +210,30 @@ export default function AgentesIA({ locale }: { locale: string }) {
         </div>
       </section>
 
-      {/* HOW IT WORKS */}
-      <section className="agp-sec agp-sec--tint" id="como-funciona">
+      {/* TAILOR-MADE */}
+      <section className="agp-sec agp-sec--tint">
+        <div className="agp-wrap agp-custom">
+          <div className="agp-custom__intro">
+            <span className="agp-eyebrow">{t.customEyebrow}</span>
+            <h2 className="agp-h2">{t.customTitle}</h2>
+            <p className="agp-lead">{t.customLead}</p>
+            <ul className="agp-tools" aria-label={loc === "es" ? "Herramientas con las que se integra" : "Tools it integrates with"}>
+              {t.tools.map((tool) => <li key={tool}>{tool}</li>)}
+            </ul>
+          </div>
+          <div className="agp-custom__list">
+            {t.custom.map((c) => (
+              <article key={c.t} className="agp-custom__item">
+                <span className="agp-icon">{ICONS[c.i]}</span>
+                <div><h3>{c.t}</h3><p>{c.d}</p></div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* HOW WE WORK */}
+      <section className="agp-sec" id="como-funciona">
         <div className="agp-wrap">
           <header className="agp-head">
             <span className="agp-eyebrow">{t.howEyebrow}</span>
@@ -212,25 +248,6 @@ export default function AgentesIA({ locale }: { locale: string }) {
               </li>
             ))}
           </ol>
-        </div>
-      </section>
-
-      {/* SECTORS */}
-      <section className="agp-sec">
-        <div className="agp-wrap">
-          <header className="agp-head">
-            <span className="agp-eyebrow">{t.secEyebrow}</span>
-            <h2 className="agp-h2">{t.secTitle}</h2>
-          </header>
-          <div className="agp-sectors">
-            {t.sectors.map((s) => (
-              <article key={s.t} className="agp-sector">
-                <span className="agp-icon agp-icon--soft">{ICONS[s.i]}</span>
-                <h3>{s.t}</h3>
-                <p>{s.d}</p>
-              </article>
-            ))}
-          </div>
         </div>
       </section>
 
@@ -333,8 +350,8 @@ export default function AgentesIA({ locale }: { locale: string }) {
         .agp-cap{padding:30px;border-radius:24px;background:#fff;border:1px solid #E1EAF5;
           box-shadow:0 1px 2px rgba(0,30,75,.04),0 18px 40px -26px rgba(0,30,75,.2);transition:transform .3s,box-shadow .3s,border-color .3s;}
         .agp-cap:hover{transform:translateY(-5px);border-color:rgba(0,119,255,.3);box-shadow:0 28px 56px -28px rgba(0,63,160,.35);}
-        .agp-cap h3,.agp-sector h3{margin:22px 0 0;font-size:1.3rem;font-weight:700;}
-        .agp-cap p,.agp-sector p{margin:8px 0 0;font-size:1rem;line-height:1.55;color:#3A4F72;}
+        .agp-cap h3{margin:22px 0 0;font-size:1.3rem;font-weight:700;}
+        .agp-cap p{margin:8px 0 0;font-size:1rem;line-height:1.55;color:#3A4F72;}
 
         .agp-steps{list-style:none;padding:0;margin:clamp(40px,5vw,60px) 0 0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px;counter-reset:s;}
         .agp-step{position:relative;padding:30px 26px;border-radius:24px;background:#fff;border:1px solid #E1EAF5;}
@@ -343,8 +360,6 @@ export default function AgentesIA({ locale }: { locale: string }) {
         .agp-step h3{margin:18px 0 0;font-size:1.2rem;font-weight:700;}
         .agp-step p{margin:8px 0 0;line-height:1.55;color:#3A4F72;}
 
-        .agp-sectors{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px;margin-top:clamp(40px,5vw,60px);}
-        .agp-sector{padding:28px 26px;border-radius:24px;background:#F7FAFE;border:1px solid #E1EAF5;}
 
         .agp-why{position:relative;overflow:hidden;background:#001E4B;color:#fff;padding:clamp(80px,10vw,130px) 0;}
         .agp-glow--c{width:700px;height:700px;left:-220px;top:-300px;background:radial-gradient(circle,rgba(0,119,255,.45),transparent 65%);}
@@ -367,15 +382,30 @@ export default function AgentesIA({ locale }: { locale: string }) {
 
         @media (max-width:1020px){
           .agp-caps{grid-template-columns:repeat(2,minmax(0,1fr));}
-          .agp-steps,.agp-sectors{grid-template-columns:repeat(2,minmax(0,1fr));}
+          .agp-steps{grid-template-columns:repeat(2,minmax(0,1fr));}
         }
         @media (max-width:860px){
           .agp-hero__grid,.agp-why__grid{grid-template-columns:1fr;}
           .agp-chat{justify-self:center;}
         }
         @media (max-width:600px){
-          .agp-caps,.agp-steps,.agp-sectors,.agp-why__list{grid-template-columns:1fr;}
+          .agp-caps,.agp-steps,.agp-why__list{grid-template-columns:1fr;}
         }
+        .agp-lead{margin:16px 0 0;max-width:640px;font-size:1.1rem;line-height:1.6;color:#3A4F72;}
+        .agp-caps--4{grid-template-columns:repeat(4,minmax(0,1fr));}
+        .agp-caps--4 .agp-cap{padding:28px 26px;}
+        .agp-caps--4 .agp-cap h3{font-size:1.2rem;}
+        .agp-custom{display:grid;grid-template-columns:1fr 1fr;gap:clamp(40px,6vw,80px);align-items:center;}
+        .agp-tools{list-style:none;padding:0;margin:30px 0 0;display:flex;flex-wrap:wrap;gap:10px;}
+        .agp-tools li{padding:9px 16px;border-radius:999px;background:#fff;border:1px solid #D7E4F5;font-size:.92rem;font-weight:500;color:#001E4B;}
+        .agp-custom__list{display:grid;gap:16px;}
+        .agp-custom__item{display:flex;gap:20px;align-items:flex-start;padding:26px;border-radius:22px;background:#fff;border:1px solid #E1EAF5;
+          box-shadow:0 18px 40px -28px rgba(0,30,75,.25);}
+        .agp-custom__item h3{margin:2px 0 0;font-size:1.2rem;font-weight:700;}
+        .agp-custom__item p{margin:6px 0 0;line-height:1.55;color:#3A4F72;}
+        @media (max-width:1020px){ .agp-caps--4{grid-template-columns:repeat(2,minmax(0,1fr));} }
+        @media (max-width:860px){ .agp-custom{grid-template-columns:1fr;} }
+        @media (max-width:600px){ .agp-caps--4{grid-template-columns:1fr;} }
       `}</style>
     </div>
   );

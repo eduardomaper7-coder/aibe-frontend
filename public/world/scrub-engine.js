@@ -74,6 +74,8 @@ function mountScrollWorld(container, config) {
   const SECTIONS = config.sections || [];
   const CONNECTORS = config.connectors || [];
   const CONNECTORS_M = config.connectorsMobile || [];
+  const CONNECTORS_L = config.connectorsLite || [];        // AIBE: small first-pass clips
+  const CONNECTORS_LM = config.connectorsLiteMobile || [];
   const DIVE_W = config.diveScroll || 1.3;
   const CONN_W = config.connScroll || 0.9;
   const CROSSFADE = (config.crossfade != null) ? config.crossfade : 0.12;  // seam dissolve width (vh)
@@ -89,7 +91,7 @@ function mountScrollWorld(container, config) {
   // ---- build the interleaved segment chain: dive0, conn0, dive1, … diveN-1 ----
   const SEGMENTS = [];
   SECTIONS.forEach((s, i) => {
-    const dive = { kind: 'dive', si: i, clip: s.clip, clipM: s.clipMobile, still: s.still, stillM: s.stillMobile,
+    const dive = { kind: 'dive', si: i, clip: s.clip, clipM: s.clipMobile, lite: s.clipLite, liteM: s.clipLiteMobile, still: s.still, stillM: s.stillMobile,
                    accent: s.accent, w: s.scroll || DIVE_W, linger: s.linger || 0 };
     SEGMENTS.push(dive);
     s._seg = dive;
@@ -97,7 +99,7 @@ function mountScrollWorld(container, config) {
     // crossfade directly (no fly-over). Lets a page complete even when a
     // connector can't be generated (e.g. a content-filter false-positive).
     if (i < N - 1 && CONNECTORS[i]) {
-      SEGMENTS.push({ kind: 'conn', si: i, clip: CONNECTORS[i], clipM: CONNECTORS_M[i],
+      SEGMENTS.push({ kind: 'conn', si: i, clip: CONNECTORS[i], clipM: CONNECTORS_M[i], lite: CONNECTORS_L[i], liteM: CONNECTORS_LM[i],
                       still: SECTIONS[i + 1].still, stillM: SECTIONS[i + 1].stillMobile,
                       accent: SECTIONS[i + 1].accent, w: CONN_W });
     }
@@ -183,6 +185,7 @@ function mountScrollWorld(container, config) {
   // mid-scene pause. f(0)=0, f(1)=1 always, so seam frames are untouched.
   const lingerEase = (x, L) => { L = clamp(L); const c = x - 0.5; return (1 - L) * x + L * (4 * c * c * c + 0.5); };
   let vh = window.innerHeight, stageX = 0, totalW = 0, activeIndex = -1, ticking = false;
+  let curSeg = 0; // AIBE: segment currently on screen (drives the background preloader)
   let laidOutW = window.innerWidth;   // width the current layout was computed at (see onResize)
 
   function layout() {
@@ -201,32 +204,67 @@ function mountScrollWorld(container, config) {
     window.scrollTo({ top: seg.start + (seg.end - seg.start) * 0.5, behavior: reduce ? 'auto' : 'smooth' });
   }
 
+  // AIBE: two-tier loading. Each segment first gets a small "lite" clip (ready in a moment, so
+  // even a fast scroller sees motion instead of jumping stills), then the full-quality clip,
+  // which is swapped in on the exact same frame once it has painted.
+  function allLite() { return SEGMENTS.every(x => x.tier || x.liteFailed || !x.clip); }
+  function nextTier(s) {
+    if (s.tier === 'hq') return null;
+    if (!s.tier && !s.liteFailed && (s.lite || s.liteM)) return 'lite';
+    return 'hq';
+  }
+  function makeVideo(blob) {
+    const v = document.createElement('video');
+    v.className = 'sw-scene__video';
+    v.muted = true; v.playsInline = true; v.preload = 'auto';
+    v.setAttribute('muted', ''); v.setAttribute('playsinline', '');
+    v.src = URL.createObjectURL(blob);
+    v.addEventListener('loadeddata', () => { try { v.pause(); } catch (e) {} if (userReady) primeVideo(v); });
+    return v;
+  }
   function loadClip(s) {
-    // Under prefers-reduced-motion we never load the clips at all — the stills stay up
-    // and simply cross-dissolve as you scroll. No scrubbed video motion, no decode cost.
+    // Under prefers-reduced-motion we never load the clips at all — the stills stay up.
     if (reduce || s.loading || !s.clip) return;
+    const tier = nextTier(s);
+    if (!tier) return;
+    const mob = isMobile();
+    const url = tier === 'lite' ? ((mob && s.liteM) ? s.liteM : s.lite)
+                                : ((mob && s.clipM) ? s.clipM : s.clip);
+    if (!url) { if (tier === 'lite') { s.liteFailed = true; loadClip(s); } return; }
     s.loading = true;
-    // Serve the lighter mobile encode on phones when one was provided.
-    const url = (isMobile() && s.clipM) ? s.clipM : s.clip;
     fetch(url).then(r => r.ok ? r.blob() : Promise.reject(new Error('404')))
       .then(blob => {
-        const v = document.createElement('video');
-        v.className = 'sw-scene__video';
-        v.muted = true; v.playsInline = true; v.preload = 'auto';
-        v.setAttribute('muted', ''); v.setAttribute('playsinline', '');
-        v.src = URL.createObjectURL(blob);
-        v.addEventListener('loadedmetadata', () => { s.ready = true; read(); });
-        // Reveal the video (hide the still poster) only once a real frame has
-        // painted — on iOS a seeked-but-never-played muted video stays blank, so
-        // hiding the still on metadata alone would flash an empty scene.
-        v.addEventListener('seeked', () => { s.el.classList.add('has-clip'); }, { once: true });
-        v.addEventListener('loadeddata', () => { try { v.pause(); } catch (e) {} if (userReady) primeVideo(v); });
-        s.el.appendChild(v); s.video = v; s.hasClip = true;
+        if (!alive) return;
+        const v = makeVideo(blob);
+        const old = s.video;
+        if (!old) {
+          v.addEventListener('loadedmetadata', () => { s.ready = true; read(); });
+          // Hide the still poster only once a real frame has painted (iOS paints nothing
+          // for a seeked-but-never-played muted video).
+          v.addEventListener('seeked', () => { s.el.classList.add('has-clip'); }, { once: true });
+          s.el.appendChild(v); s.video = v; s.hasClip = true;
+        } else {
+          // Upgrade: keep showing the lite clip until the HQ one shows the same frame.
+          v.style.opacity = '0';
+          s.el.appendChild(v);
+          v.addEventListener('loadedmetadata', () => { try { v.currentTime = old.currentTime; } catch (e) {} }, { once: true });
+          v.addEventListener('seeked', () => {
+            v.style.opacity = '';
+            s.video = v;
+            try { old.pause(); } catch (e) {}
+            if (old.src && old.src.startsWith('blob:')) URL.revokeObjectURL(old.src);
+            old.remove();
+          }, { once: true });
+        }
+        s.tier = tier;
+        s.loading = false;
       }).catch(() => {
         s.loading = false;
-        // AIBE: a missing mobile encode falls back to the desktop clip instead of retrying forever
-        if (url === s.clipM && s.clipM !== s.clip) { s.clipM = null; loadClip(s); }
-        else { s.clip = null; } // desktop clip missing too: keep the still, stop retrying
+        if (tier === 'lite') { s.liteFailed = true; return; }
+        // A missing mobile encode falls back to the desktop clip instead of retrying forever
+        if (url === s.clipM && s.clipM !== s.clip) { s.clipM = null; return; }
+        if (!s.video) s.clip = null; // nothing at all: keep the still, stop retrying
+        else s.tier = 'hq';          // keep the lite clip rather than retrying
       });
   }
 
@@ -235,10 +273,12 @@ function mountScrollWorld(container, config) {
     const fade = CROSSFADE * vh;
     let ci = 0;
     for (let i = 0; i < NSEG; i++) if (y >= SEGMENTS[i].start) ci = i;
+    curSeg = ci;
 
     for (let i = 0; i < NSEG; i++) {
       const s = SEGMENTS[i];
-      if (y > s.start - 1.6 * vh && y < s.end + 1.6 * vh) loadClip(s);
+      // AIBE: nearby segments load right away, but only their lite clip until every lite clip is in
+      if (y > s.start - 1.6 * vh && y < s.end + 1.6 * vh && (!s.tier || allLite())) loadClip(s);
       const local = clamp((y - s.start) / (s.end - s.start), 0, 1);
       s.target = s.linger ? lingerEase(local, s.linger) : local;
       let outside = 0;
@@ -340,6 +380,33 @@ function mountScrollWorld(container, config) {
   on('load', layout);
   layout();
   requestAnimationFrame(raf);
+
+  // AIBE: background preloader. Instead of waiting for the visitor to get near a scene, fetch
+  // every clip from the moment the page opens: the scene on screen first, then the ones ahead
+  // (in order), then any behind. Up to 2 downloads at a time so the next clip always has
+  // bandwidth, and a fast scroller finds the clips already in memory.
+  function preloadTick() {
+    if (!alive || reduce) return;
+    let inFlight = 0;
+    for (const s of SEGMENTS) if (s.loading) inFlight++;
+    const max = allLite() ? 2 : 4;   // lite clips are small: fetch more of them at once
+    if (inFlight >= max) return;
+    const order = [];
+    for (let i = curSeg; i < NSEG; i++) order.push(i);
+    for (let i = curSeg - 1; i >= 0; i--) order.push(i);
+    // Phase 1: every segment gets its lite clip. Phase 2: upgrade them all to full quality.
+    const wantLite = order.some(i => !SEGMENTS[i].tier && SEGMENTS[i].clip && !SEGMENTS[i].loading);
+    for (const i of order) {
+      const s = SEGMENTS[i];
+      if (s.loading || !s.clip) continue;
+      const next = nextTier(s);
+      if (!next || (wantLite && next !== 'lite' && s.tier)) continue;
+      loadClip(s);
+      if (++inFlight >= max) break;
+    }
+  }
+  const preloadTimer = setInterval(preloadTick, 250);
+  ac.signal.addEventListener('abort', () => clearInterval(preloadTimer));
 
   return function destroy() {
     alive = false; ac.abort();

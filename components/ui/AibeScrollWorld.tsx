@@ -19,7 +19,9 @@ declare global {
 }
 
 const W = "/world";
-const ENGINE_VERSION = "2026-11-17g";
+const ENGINE_VERSION = "2026-11-17j";
+// bump when the clips in public/world/vid are re-encoded, so browsers fetch the new files
+const CLIP_VERSION = "2";
 const IDS = ["personas", "reto", "agentes", "marketing", "resultado", "aibe"] as const;
 
 const COPY: Record<Locale, { label: string; eyebrow: string; title: string; body: string; tags: string[] }[]> = {
@@ -100,8 +102,10 @@ export default function AibeScrollWorld({ locale }: { locale: string }) {
         ...copy[i],
         still: `${W}/${id}.webp`,
         stillMobile: `${W}/${id}-m.webp`,
-        clip: `${W}/vid/${id}.mp4`,
-        clipMobile: `${W}/vid/${id}-m.mp4`,
+        clip: `${W}/vid/${id}.mp4?v=${CLIP_VERSION}`,
+        clipMobile: `${W}/vid/${id}-m.mp4?v=${CLIP_VERSION}`,
+        clipLite: `${W}/vid/${id}-lite.mp4?v=${CLIP_VERSION}`,
+        clipLiteMobile: `${W}/vid/${id}-m-lite.mp4?v=${CLIP_VERSION}`,
         accent: id === "aibe" ? "#19D3FF" : "#0077FF",
         ...(i === 0 ? (phone ? { scroll: 0.9, linger: 0.15 } : { scroll: 1.6, linger: 0.4 }) : {}),
         ...(i === IDS.length - 1
@@ -117,8 +121,11 @@ export default function AibeScrollWorld({ locale }: { locale: string }) {
       })),
       // Forward-only transitions between scenes. Each one starts on the previous
       // scene clip's real last frame and ends on the next one's first frame.
-      connectors: [1, 2, 3, 4, 5].map((n) => `${W}/vid/conn${n}.mp4`),
-      connectorsMobile: [1, 2, 3, 4, 5].map((n) => `${W}/vid/conn${n}-m.mp4`),
+      connectors: [1, 2, 3, 4, 5].map((n) => `${W}/vid/conn${n}.mp4?v=${CLIP_VERSION}`),
+      connectorsMobile: [1, 2, 3, 4, 5].map((n) => `${W}/vid/conn${n}-m.mp4?v=${CLIP_VERSION}`),
+      // small first-pass clips, loaded before the full-quality ones (see engine loadClip)
+      connectorsLite: [1, 2, 3, 4, 5].map((n) => `${W}/vid/conn${n}-lite.mp4?v=${CLIP_VERSION}`),
+      connectorsLiteMobile: [1, 2, 3, 4, 5].map((n) => `${W}/vid/conn${n}-m-lite.mp4?v=${CLIP_VERSION}`),
     });
     (el as HTMLDivElement & { _destroy?: () => void })._destroy = destroy || undefined;
   };
