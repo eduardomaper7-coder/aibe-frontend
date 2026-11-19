@@ -105,6 +105,29 @@ function mountScrollWorld(container, config) {
     }
   });
   const NSEG = SEGMENTS.length;
+  SEGMENTS.forEach((seg, i) => { seg.idx = i; });
+  // AIBE: the first HQ_FIRST segments load straight in full quality (no lite pass) and the page
+  // is told when they're ready, so a loading screen can wait for exactly that.
+  const HQ_FIRST = Math.min(config.hqFirst || 0, NSEG);
+  let readyFired = false;
+  function fireReady() {
+    if (readyFired) return;
+    readyFired = true;
+    container.dispatchEvent(new CustomEvent('sw:ready'));
+  }
+  function emitProgress() {
+    if (readyFired) return;
+    if (!HQ_FIRST) { fireReady(); return; }
+    let p = 0, done = true;
+    for (let i = 0; i < HQ_FIRST; i++) {
+      const seg = SEGMENTS[i];
+      const ok = (seg.tier === 'hq' && seg.ready) || !seg.clip;
+      if (!ok) done = false;
+      p += ok ? 1 : (seg.dl || 0) * 0.95;
+    }
+    container.dispatchEvent(new CustomEvent('sw:progress', { detail: p / HQ_FIRST }));
+    if (done) fireReady();
+  }
 
   // ---- DOM ----
   const sky = el('div', 'sw-sky');
@@ -210,6 +233,7 @@ function mountScrollWorld(container, config) {
   function allLite() { return SEGMENTS.every(x => x.tier || x.liteFailed || !x.clip); }
   function nextTier(s) {
     if (s.tier === 'hq') return null;
+    if (s.idx < HQ_FIRST || s.forceHQ) return 'hq';
     if (!s.tier && !s.liteFailed && (s.lite || s.liteM)) return 'lite';
     return 'hq';
   }
@@ -232,13 +256,25 @@ function mountScrollWorld(container, config) {
                                 : ((mob && s.clipM) ? s.clipM : s.clip);
     if (!url) { if (tier === 'lite') { s.liteFailed = true; loadClip(s); } return; }
     s.loading = true;
-    fetch(url).then(r => r.ok ? r.blob() : Promise.reject(new Error('404')))
+    fetch(url).then(r => {
+        if (!r.ok) throw new Error('404');
+        const total = +r.headers.get('content-length') || 0;
+        if (!r.body || !total || !r.body.getReader) return r.blob();
+        const reader = r.body.getReader(); const chunks = []; let got = 0;
+        const pump = () => reader.read().then(({ done, value }) => {
+          if (done) return new Blob(chunks, { type: 'video/mp4' });
+          chunks.push(value); got += value.length; s.dl = got / total;
+          if (s.idx < HQ_FIRST) emitProgress();
+          return pump();
+        });
+        return pump();
+      })
       .then(blob => {
         if (!alive) return;
         const v = makeVideo(blob);
         const old = s.video;
         if (!old) {
-          v.addEventListener('loadedmetadata', () => { s.ready = true; read(); });
+          v.addEventListener('loadedmetadata', () => { s.ready = true; read(); emitProgress(); });
           // Hide the still poster only once a real frame has painted (iOS paints nothing
           // for a seeked-but-never-played muted video).
           v.addEventListener('seeked', () => { s.el.classList.add('has-clip'); }, { once: true });
@@ -260,6 +296,7 @@ function mountScrollWorld(container, config) {
         s.loading = false;
       }).catch(() => {
         s.loading = false;
+        if (s.idx < HQ_FIRST) setTimeout(emitProgress, 0);
         if (tier === 'lite') { s.liteFailed = true; return; }
         // A missing mobile encode falls back to the desktop clip instead of retrying forever
         if (url === s.clipM && s.clipM !== s.clip) { s.clipM = null; return; }
@@ -278,7 +315,7 @@ function mountScrollWorld(container, config) {
     for (let i = 0; i < NSEG; i++) {
       const s = SEGMENTS[i];
       // AIBE: nearby segments load right away, but only their lite clip until every lite clip is in
-      if (y > s.start - 1.6 * vh && y < s.end + 1.6 * vh && (!s.tier || allLite())) loadClip(s);
+      if (y > s.start - 1.6 * vh && y < s.end + 1.6 * vh && (!s.tier || allLite()) && (readyFired || s.idx < HQ_FIRST)) loadClip(s);
       const local = clamp((y - s.start) / (s.end - s.start), 0, 1);
       s.target = s.linger ? lingerEase(local, s.linger) : local;
       let outside = 0;
@@ -387,8 +424,21 @@ function mountScrollWorld(container, config) {
   // bandwidth, and a fast scroller finds the clips already in memory.
   function preloadTick() {
     if (!alive || reduce) return;
+    if (!readyFired && HQ_FIRST) {
+      for (let i = 0; i < HQ_FIRST; i++) { const seg = SEGMENTS[i]; if (!seg.loading && seg.clip && nextTier(seg)) loadClip(seg); }
+      return;
+    }
     let inFlight = 0;
     for (const s of SEGMENTS) if (s.loading) inFlight++;
+    // 1) the scenes the visitor is about to see come first, straight in full quality
+    for (let i = curSeg; i < Math.min(NSEG, curSeg + 3); i++) {
+      const seg = SEGMENTS[i];
+      if (!seg.clip || seg.tier === 'hq') continue;
+      if (!seg.tier) seg.forceHQ = true;
+      if (!seg.loading && inFlight < 2) { loadClip(seg); inFlight++; }
+    }
+    if (inFlight >= 2) return;
+    // 2) then a quick lite pass for everything else, 3) then full quality for the rest
     const max = allLite() ? 2 : 4;   // lite clips are small: fetch more of them at once
     if (inFlight >= max) return;
     const order = [];
@@ -405,6 +455,7 @@ function mountScrollWorld(container, config) {
       if (++inFlight >= max) break;
     }
   }
+  if (reduce) setTimeout(fireReady, 0); else preloadTick();
   const preloadTimer = setInterval(preloadTick, 250);
   ac.signal.addEventListener('abort', () => clearInterval(preloadTimer));
 

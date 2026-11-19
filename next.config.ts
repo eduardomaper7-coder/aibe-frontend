@@ -6,7 +6,18 @@ const nextConfig = {
   eslint: { ignoreDuringBuilds: true },
 
   async headers() {
-    return [];
+    return [
+      // Home animation clips + engine are versioned by ?v= (CLIP_VERSION / ENGINE_VERSION in
+      // AibeScrollWorld.tsx), so browsers can keep them for a year: repeat visits load instantly.
+      {
+        source: "/world/vid/:path*",
+        headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],
+      },
+      {
+        source: "/world/scrub-engine.js",
+        headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],
+      },
+    ];
   },
 
   async redirects() {

@@ -1,25 +1,16 @@
-"use client";
-
-import { useEffect, useRef } from "react";
-import Script from "next/script";
 import { Outfit } from "next/font/google";
 import { ArrowRight, Bot, Check, TrendingUp } from "lucide-react";
 import AibeHomeContact from "./AibeHomeContact";
 import Footer from "./Footer";
+import WorldLifecycle from "./WorldLifecycle";
 
 // Rounded geometric sans that matches the aibe wordmark
 const outfit = Outfit({ subsets: ["latin"], weight: ["400", "500", "600", "700"], variable: "--font-outfit", display: "swap" });
 
 type Locale = "es" | "en";
 
-declare global {
-  interface Window {
-    mountScrollWorld?: (el: HTMLElement, config: unknown) => (() => void) | undefined;
-  }
-}
-
 const W = "/world";
-const ENGINE_VERSION = "2026-11-17j";
+const ENGINE_VERSION = "2026-11-18c";
 // bump when the clips in public/world/vid are re-encoded, so browsers fetch the new files
 const CLIP_VERSION = "2";
 const IDS = ["personas", "reto", "agentes", "marketing", "resultado", "aibe"] as const;
@@ -75,85 +66,91 @@ const AFTER: Record<Locale, {
   },
 };
 
+// Loading screen: wait until the first scenes are in full quality, but never longer than this.
+const MAX_WAIT_MS = 5000;
+const HQ_FIRST = 3; // scene 1 + transition + scene 2
+
 const UI: Record<Locale, { hint: string; top: string; primary: string; secondary: string }> = {
   es: { hint: "desliza para entrar", top: "Hablemos", primary: "Hablemos de tu negocio →", secondary: "Ver Marketing digital" },
   en: { hint: "scroll to fly in", top: "Let's talk", primary: "Let's talk about your business →", secondary: "See digital marketing" },
 };
 
-export default function AibeScrollWorld({ locale }: { locale: string }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const loc: Locale = locale === "en" ? "en" : "es";
-
-  const mount = () => {
-    const el = ref.current;
-    if (!el || !window.mountScrollWorld || el.dataset.mounted) return;
-    el.dataset.mounted = "1";
-    const mk = `/${loc}/marketing-digital`;
-    const copy = COPY[loc];
-    const phone = window.matchMedia("(max-width: 860px), (hover: none) and (pointer: coarse)").matches;
-    const destroy = window.mountScrollWorld(el, {
-      brand: { name: "aibe", href: `/${loc}` },
-      cta: { label: UI[loc].top, href: "#contacto" },
-      hint: UI[loc].hint,
-      diveScroll: phone ? 1.1 : 1.3,
-      connScroll: phone ? 0.75 : 0.9,
-      sections: IDS.map((id, i) => ({
-        id,
-        ...copy[i],
-        still: `${W}/${id}.webp`,
-        stillMobile: `${W}/${id}-m.webp`,
-        clip: `${W}/vid/${id}.mp4?v=${CLIP_VERSION}`,
-        clipMobile: `${W}/vid/${id}-m.mp4?v=${CLIP_VERSION}`,
-        clipLite: `${W}/vid/${id}-lite.mp4?v=${CLIP_VERSION}`,
-        clipLiteMobile: `${W}/vid/${id}-m-lite.mp4?v=${CLIP_VERSION}`,
-        accent: id === "aibe" ? "#19D3FF" : "#0077FF",
-        ...(i === 0 ? (phone ? { scroll: 0.9, linger: 0.15 } : { scroll: 1.6, linger: 0.4 }) : {}),
-        ...(i === IDS.length - 1
-          ? {
-              scroll: 1.8,
-              linger: 0.5,
-              cta: {
-                primary: { label: UI[loc].primary, href: "#contacto" },
-                secondary: { label: UI[loc].secondary, href: mk },
-              },
-            }
-          : {}),
-      })),
-      // Forward-only transitions between scenes. Each one starts on the previous
-      // scene clip's real last frame and ends on the next one's first frame.
-      connectors: [1, 2, 3, 4, 5].map((n) => `${W}/vid/conn${n}.mp4?v=${CLIP_VERSION}`),
-      connectorsMobile: [1, 2, 3, 4, 5].map((n) => `${W}/vid/conn${n}-m.mp4?v=${CLIP_VERSION}`),
-      // small first-pass clips, loaded before the full-quality ones (see engine loadClip)
-      connectorsLite: [1, 2, 3, 4, 5].map((n) => `${W}/vid/conn${n}-lite.mp4?v=${CLIP_VERSION}`),
-      connectorsLiteMobile: [1, 2, 3, 4, 5].map((n) => `${W}/vid/conn${n}-m-lite.mp4?v=${CLIP_VERSION}`),
-    });
-    (el as HTMLDivElement & { _destroy?: () => void })._destroy = destroy || undefined;
+function buildConfig(loc: Locale) {
+  const mk = `/${loc}/marketing-digital`;
+  const copy = COPY[loc];
+  return {
+    brand: { name: "aibe", href: `/${loc}` },
+    cta: { label: UI[loc].top, href: "#contacto" },
+    hint: UI[loc].hint,
+    hqFirst: HQ_FIRST,
+    sections: IDS.map((id, i) => ({
+      id,
+      ...copy[i],
+      still: `${W}/${id}.webp`,
+      stillMobile: `${W}/${id}-m.webp`,
+      clip: `${W}/vid/${id}.mp4?v=${CLIP_VERSION}`,
+      clipMobile: `${W}/vid/${id}-m.mp4?v=${CLIP_VERSION}`,
+      clipLite: `${W}/vid/${id}-lite.mp4?v=${CLIP_VERSION}`,
+      clipLiteMobile: `${W}/vid/${id}-m-lite.mp4?v=${CLIP_VERSION}`,
+      accent: id === "aibe" ? "#19D3FF" : "#0077FF",
+      ...(i === IDS.length - 1
+        ? {
+            scroll: 1.8,
+            linger: 0.5,
+            cta: {
+              primary: { label: UI[loc].primary, href: "#contacto" },
+              secondary: { label: UI[loc].secondary, href: mk },
+            },
+          }
+        : {}),
+    })),
+    // Forward-only transitions between scenes. Each one starts on the previous
+    // scene clip's real last frame and ends on the next one's first frame.
+    connectors: [1, 2, 3, 4, 5].map((n) => `${W}/vid/conn${n}.mp4?v=${CLIP_VERSION}`),
+    connectorsMobile: [1, 2, 3, 4, 5].map((n) => `${W}/vid/conn${n}-m.mp4?v=${CLIP_VERSION}`),
+    // small first-pass clips, loaded before the full-quality ones (see engine loadClip)
+    connectorsLite: [1, 2, 3, 4, 5].map((n) => `${W}/vid/conn${n}-lite.mp4?v=${CLIP_VERSION}`),
+    connectorsLiteMobile: [1, 2, 3, 4, 5].map((n) => `${W}/vid/conn${n}-m-lite.mp4?v=${CLIP_VERSION}`),
   };
+}
 
-  // When the content after the flight reaches the top, switch the engine chrome to a plain header.
-  useEffect(() => {
-    const world = ref.current;
-    const after = document.querySelector(".aibe-after");
-    if (!world || !after) return;
-    // Only once the engine has built the flight; before that the content below would sit at the top.
-    const onScroll = () => world.classList.toggle("is-after", world.classList.contains("sw-root") && after.getBoundingClientRect().top < 90);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    onScroll();
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+/**
+ * Boot script, inlined in the server HTML right after #world. It runs while the page is still
+ * parsing — long before React hydrates (≈6 s on a mid-range phone) — so the loading screen,
+ * the engine and the first downloads all start immediately.
+ */
+function bootSource(loc: Locale) {
+  const data = JSON.stringify({ base: buildConfig(loc), engine: `${W}/scrub-engine.js?v=${ENGINE_VERSION}`, maxWait: MAX_WAIT_MS });
+  return `(function(){
+var C=${data.replace(/</g, "\\u003c")};
+var loader=document.getElementById('aibe-loader'),bar=loader&&loader.querySelector('.al-bar i'),done=false;
+function finish(){if(done)return;done=true;if(loader){loader.classList.add('is-done');setTimeout(function(){if(loader&&loader.parentNode)loader.parentNode.removeChild(loader);},700);}window.scrollTo(0,0);}
+setTimeout(finish,C.maxWait);
+function go(){
+  var el=document.getElementById('world');
+  if(!el||el.classList.contains('sw-root')||!window.mountScrollWorld){finish();return;}
+  var phone=window.matchMedia('(max-width: 860px), (hover: none) and (pointer: coarse)').matches;
+  var cfg=JSON.parse(JSON.stringify(C.base));
+  cfg.diveScroll=phone?1.1:1.3; cfg.connScroll=phone?0.75:0.9;
+  cfg.hqFirst=phone?1:3; // phones: wait for scene 1 only; the rest streams in ahead of the visitor
+  cfg.sections[0].scroll=phone?0.9:1.6; cfg.sections[0].linger=phone?0.15:0.4;
+  el.addEventListener('sw:progress',function(e){if(bar)bar.style.transform='scaleX('+Math.max(0.06,Math.min(1,e.detail))+')';});
+  el.addEventListener('sw:ready',function(){if(bar)bar.style.transform='scaleX(1)';setTimeout(finish,300);});
+  window.__swDestroy=window.mountScrollWorld(el,cfg);
+  var after=null; // the sections below are parsed after this script: look them up lazily
+  window.__swOnScroll=function(){after=after||document.querySelector('.aibe-after');if(after)el.classList.toggle('is-after',el.classList.contains('sw-root')&&after.getBoundingClientRect().top<90);};
+  window.addEventListener('scroll',window.__swOnScroll,{passive:true});
+}
+if(window.mountScrollWorld)go();else{var s=document.createElement('script');s.src=C.engine;s.onload=go;s.onerror=finish;document.body.appendChild(s);}
+})();`;
+}
 
-  useEffect(() => {
-    const el = ref.current as (HTMLDivElement & { _destroy?: () => void }) | null;
-    mount();
-    return () => {
-      el?._destroy?.();
-      if (el) delete el.dataset.mounted;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loc]);
+export default function AibeScrollWorld({ locale }: { locale: string }) {
+  const loc: Locale = locale === "en" ? "en" : "es";
+  const boot = bootSource(loc);
 
   return (
-    <div className={outfit.variable}>
+    <div className={`aibe-home ${outfit.variable}`}>
       <style>{`
         #world.sw-root{--sw-bg:#EEF4FB;--sw-ink:#001E4B;--sw-ink-soft:#3A4F72;--sw-accent:#0077FF;
           --sw-font-display:var(--font-outfit), ui-rounded, "Segoe UI", system-ui, sans-serif;--sw-font-body:var(--font-outfit), system-ui, sans-serif;}
@@ -215,7 +212,20 @@ export default function AibeScrollWorld({ locale }: { locale: string }) {
         /* Before the engine mounts: show scene 1's poster full-screen and keep the sections below
            hidden, so the first paint (and a slow connection) never shows an empty gap or the wrong section. */
         #world:not(.sw-root){height:100vh;height:100lvh;background:#EEF4FB url(${W}/personas.webp) center 42%/cover no-repeat;}
-        #world:not(.sw-root) ~ .aibe-after{display:none;}
+        .aibe-home:has(#world:not(.sw-root)) .aibe-after{display:none;}
+        /* Loading screen (brand navy, logo, thin progress bar). Scroll is locked while it shows. */
+        html:has(#aibe-loader:not(.is-done)){overflow:hidden!important;}
+        #aibe-loader{position:fixed;inset:0;z-index:100000;display:grid;place-items:center;
+          background:radial-gradient(60% 50% at 75% 15%,rgba(0,119,255,.45),transparent 70%),radial-gradient(50% 45% at 15% 95%,rgba(25,211,255,.22),transparent 70%),#001E4B;
+          transition:opacity .55s ease,visibility .55s ease;}
+        #aibe-loader.is-done{opacity:0;visibility:hidden;}
+        #aibe-loader .al-inner{display:grid;justify-items:center;gap:28px;}
+        #aibe-loader img{width:min(220px,56vw);height:auto;animation:al-breathe 2.4s ease-in-out infinite;}
+        #aibe-loader .al-bar{display:block;width:min(200px,50vw);height:3px;border-radius:3px;overflow:hidden;background:rgba(255,255,255,.14);}
+        #aibe-loader .al-bar i{display:block;height:100%;border-radius:3px;transform:scaleX(.06);transform-origin:left center;
+          background:linear-gradient(90deg,#0077FF,#19D3FF);transition:transform .45s cubic-bezier(.2,.7,.2,1);}
+        @keyframes al-breathe{0%,100%{opacity:.85;transform:scale(1)}50%{opacity:1;transform:scale(1.025)}}
+        @media (prefers-reduced-motion:reduce){#aibe-loader img{animation:none;}}
         @media (max-width:860px){ #world:not(.sw-root){background-image:url(${W}/personas-m.webp);background-position:center 44%;} }
         .aibe-after{position:relative;z-index:45;background:#fff;color:#001E4B;font-family:var(--font-outfit),system-ui,sans-serif;}
         .asv{position:relative;overflow:hidden;padding:clamp(88px,11vw,150px) clamp(18px,5vw,64px);
@@ -255,11 +265,24 @@ export default function AibeScrollWorld({ locale }: { locale: string }) {
         }
       `}</style>
       {/* bump ENGINE_VERSION whenever public/world/scrub-engine.js changes, so browsers drop the cached copy */}
-      <Script src={`${W}/scrub-engine.js?v=${ENGINE_VERSION}`} strategy="afterInteractive" onReady={mount} />
+      <link rel="preload" as="script" href={`${W}/scrub-engine.js?v=${ENGINE_VERSION}`} />
       {/* Scene 1 poster is the landing view: fetch it with the page, not after the engine script */}
       <link rel="preload" as="image" href={`${W}/personas.webp`} media="(min-width: 861px)" />
       <link rel="preload" as="image" href={`${W}/personas-m.webp`} media="(max-width: 860px)" />
-      <div id="world" ref={ref} />
+      {/* The loader and #world belong to the engine, not React: rendered via innerHTML so hydration
+          never touches what the boot script builds inside them. */}
+      <div
+        className="world-host"
+        suppressHydrationWarning
+        dangerouslySetInnerHTML={{
+          __html:
+            `<div id="aibe-loader" role="status" aria-live="polite" aria-label="${loc === "en" ? "Loading" : "Cargando"}">` +
+            `<div class="al-inner"><img src="${W}/aibe-logo-dark-v2.webp" alt="aibe" width="240" height="63"><span class="al-bar"><i></i></span></div></div>` +
+            `<div id="world"></div>`,
+        }}
+      />
+      <script dangerouslySetInnerHTML={{ __html: boot }} />
+      <WorldLifecycle bootSrc={boot} />
 
       <div className="aibe-after">
         <section className="asv">
