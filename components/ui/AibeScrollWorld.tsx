@@ -10,7 +10,7 @@ const outfit = Outfit({ subsets: ["latin"], weight: ["300", "400", "500", "600",
 type Locale = "es" | "en";
 
 const W = "/world";
-const ENGINE_VERSION = "2026-11-19e";
+const ENGINE_VERSION = "2026-11-19f";
 // bump when the clips in public/world/vid are re-encoded, so browsers fetch the new files
 const CLIP_VERSION = "2";
 const IDS = ["personas", "reto", "agentes", "marketing", "resultado", "aibe"] as const;

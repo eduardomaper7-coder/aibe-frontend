@@ -231,6 +231,10 @@ function mountScrollWorld(container, config) {
   const CATCH = 9;                                                        // ease towards the target (1/s)
   let vy = window.scrollY || window.pageYOffset || 0, lastT = performance.now();
   const HOLD_MAX_MS = 6000;   // desktop: longest the flight waits for a clip before moving on
+  // AIBE: while the visitor is actively scrolling, phones don't start new downloads or swap clips
+  // (both compete with the scrubbing and caused stutter on a first visit); they resume when idle.
+  let lastScrollAt = 0, lastRealY = -1;
+  const scrollingNow = () => performance.now() - lastScrollAt < 350;
   let laidOutW = window.innerWidth;   // width the current layout was computed at (see onResize)
 
   function layout() {
@@ -282,7 +286,7 @@ function mountScrollWorld(container, config) {
                                 : ((mob && s.clipM) ? s.clipM : s.clip);
     if (!url) { if (tier === 'lite') { s.liteFailed = true; loadClip(s); } return; }
     s.loading = true;
-    const getBlob = hqOnly()
+    const getBlob = true
       ? new Promise((res, rej) => {
           const x = new XMLHttpRequest();
           x.open('GET', url); x.responseType = 'blob';
@@ -307,8 +311,8 @@ function mountScrollWorld(container, config) {
       }))
       .then(blob => {
         if (!alive) return;
-        const v = makeVideo(blob);
         const old = s.video;
+        const v = old ? null : makeVideo(blob);   // an upgrade builds its <video> only when it swaps in
         if (!old) {
           v.addEventListener('loadedmetadata', () => {
             s.ready = true;
@@ -323,6 +327,11 @@ function mountScrollWorld(container, config) {
           s.el.appendChild(v); s.video = v; s.hasClip = true;
         } else {
           // Upgrade: keep showing the lite clip until the HQ one shows the same frame.
+          // On phones, never swap a clip that's on screen while the finger is moving.
+          const swapIn = () => {
+            if (!alive) return;
+            if (isMobile() && s.visible && scrollingNow()) { setTimeout(swapIn, 200); return; }
+          const v = makeVideo(blob);
           v.style.opacity = '0';
           s.el.appendChild(v);
           v.addEventListener('loadedmetadata', () => { try { v.currentTime = old.currentTime; } catch (e) {} }, { once: true });
@@ -333,6 +342,8 @@ function mountScrollWorld(container, config) {
             if (old.src && old.src.startsWith('blob:')) URL.revokeObjectURL(old.src);
             old.remove();
           }, { once: true });
+          };
+          swapIn();
         }
         s.tier = tier;
         s.loading = false;
@@ -408,6 +419,7 @@ function mountScrollWorld(container, config) {
     {
       let realY = window.scrollY || window.pageYOffset || 0;
       const now = performance.now(), dt = Math.min(0.05, (now - lastT) / 1000); lastT = now;
+      if (realY !== lastRealY) { lastRealY = realY; lastScrollAt = now; }
       if (hqOnly() && readyFired) {
         // first segment ahead whose HQ clip isn't on screen-ready yet → hold just before it
         let holdAt = null;
@@ -507,6 +519,9 @@ function mountScrollWorld(container, config) {
       }
       return;
     }
+    const phone = isMobile();
+    if (phone && scrollingNow()) return;
+    const cap = phone ? 1 : 2;
     let inFlight = 0;
     for (const s of SEGMENTS) if (s.loading) inFlight++;
     // 1) the scenes the visitor is about to see come first, straight in full quality
@@ -514,11 +529,11 @@ function mountScrollWorld(container, config) {
       const seg = SEGMENTS[i];
       if (!seg.clip || seg.tier === 'hq') continue;
       if (!seg.tier) seg.forceHQ = true;
-      if (!seg.loading && inFlight < 2) { loadClip(seg); inFlight++; }
+      if (!seg.loading && inFlight < cap) { loadClip(seg); inFlight++; }
     }
-    if (inFlight >= 2) return;
+    if (inFlight >= cap) return;
     // 2) then a quick lite pass for everything else, 3) then full quality for the rest
-    const max = allLite() ? 2 : 4;   // lite clips are small: fetch more of them at once
+    const max = phone ? (allLite() ? 1 : 2) : (allLite() ? 2 : 4);   // lite clips are small: fetch more of them at once
     if (inFlight >= max) return;
     const order = [];
     for (let i = curSeg; i < NSEG; i++) order.push(i);
