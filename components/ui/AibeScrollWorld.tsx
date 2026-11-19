@@ -10,7 +10,7 @@ const outfit = Outfit({ subsets: ["latin"], weight: ["400", "500", "600", "700"]
 type Locale = "es" | "en";
 
 const W = "/world";
-const ENGINE_VERSION = "2026-11-19d";
+const ENGINE_VERSION = "2026-11-19e";
 // bump when the clips in public/world/vid are re-encoded, so browsers fetch the new files
 const CLIP_VERSION = "2";
 const IDS = ["personas", "reto", "agentes", "marketing", "resultado", "aibe"] as const;
@@ -85,6 +85,8 @@ function buildConfig(loc: Locale) {
     hqFirst: HQ_FIRST,
     // loading screen also waits for a lite clip in every scene → no stills, ever
     waitLite: true,
+    // desktop: full quality only (no blurry lite pass); the flight waits for each clip instead
+    desktopHQOnly: true,
     // top speed of the flight (viewport-heights/s): fast scrolling plays sped-up instead of jumping
     maxSpeed: 1.6,
     sections: IDS.map((id, i) => ({

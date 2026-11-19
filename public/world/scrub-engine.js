@@ -124,7 +124,7 @@ function mountScrollWorld(container, config) {
   function segReady(seg) {
     if (!seg.clip) return true;
     if (seg.idx < HQ_FIRST) return seg.tier === 'hq' && seg.ready;
-    if (!WAIT_LITE) return true;
+    if (!WAIT_LITE || hqOnly()) return true;
     return (!!seg.tier && seg.ready) || !!seg.liteFailed;
   }
   function emitProgress() {
@@ -230,6 +230,7 @@ function mountScrollWorld(container, config) {
   const MAX_SPEED = (config.maxSpeed != null ? config.maxSpeed : 1.6);   // viewport-heights per second
   const CATCH = 9;                                                        // ease towards the target (1/s)
   let vy = window.scrollY || window.pageYOffset || 0, lastT = performance.now();
+  const HOLD_MAX_MS = 6000;   // desktop: longest the flight waits for a clip before moving on
   let laidOutW = window.innerWidth;   // width the current layout was computed at (see onResize)
 
   function layout() {
@@ -253,9 +254,12 @@ function mountScrollWorld(container, config) {
   // even a fast scroller sees motion instead of jumping stills), then the full-quality clip,
   // which is swapped in on the exact same frame once it has painted.
   function allLite() { return SEGMENTS.every(x => x.tier || x.liteFailed || !x.clip); }
+  // AIBE: desktop never uses the lite tier (config.desktopHQOnly) — only phones do.
+  const DESKTOP_HQ_ONLY = !!config.desktopHQOnly;
+  const hqOnly = () => DESKTOP_HQ_ONLY && !isMobile();
   function nextTier(s) {
     if (s.tier === 'hq') return null;
-    if (s.idx < HQ_FIRST || s.forceHQ) return 'hq';
+    if (s.idx < HQ_FIRST || s.forceHQ || hqOnly()) return 'hq';
     if (!s.tier && !s.liteFailed && (s.lite || s.liteM)) return 'lite';
     return 'hq';
   }
@@ -278,7 +282,17 @@ function mountScrollWorld(container, config) {
                                 : ((mob && s.clipM) ? s.clipM : s.clip);
     if (!url) { if (tier === 'lite') { s.liteFailed = true; loadClip(s); } return; }
     s.loading = true;
-    fetch(url).then(r => {
+    const getBlob = hqOnly()
+      ? new Promise((res, rej) => {
+          const x = new XMLHttpRequest();
+          x.open('GET', url); x.responseType = 'blob';
+          x.onprogress = (e) => { if (e.lengthComputable) { s.dl = e.loaded / e.total; if (!readyFired) emitProgress(); } };
+          x.onload = () => (x.status >= 200 && x.status < 300) ? res(x.response) : rej(new Error(String(x.status)));
+          x.onerror = () => rej(new Error('net'));
+          x.send();
+        })
+      : null;
+    (getBlob || fetch(url).then(r => {
         if (!r.ok) throw new Error('404');
         const total = +r.headers.get('content-length') || 0;
         if (!r.body || !total || !r.body.getReader) return r.blob();
@@ -290,7 +304,7 @@ function mountScrollWorld(container, config) {
           return pump();
         });
         return pump();
-      })
+      }))
       .then(blob => {
         if (!alive) return;
         const v = makeVideo(blob);
@@ -392,8 +406,21 @@ function mountScrollWorld(container, config) {
   function raf() {
     if (!alive) return;
     {
-      const realY = window.scrollY || window.pageYOffset || 0;
+      let realY = window.scrollY || window.pageYOffset || 0;
       const now = performance.now(), dt = Math.min(0.05, (now - lastT) / 1000); lastT = now;
+      if (hqOnly() && readyFired) {
+        // first segment ahead whose HQ clip isn't on screen-ready yet → hold just before it
+        let holdAt = null;
+        for (const seg of SEGMENTS) {
+          if (!seg.clip || seg.passHold) continue;
+          if (!(seg.tier === 'hq' && seg.ready)) { holdAt = seg; break; }
+        }
+        if (holdAt && realY > holdAt.start - 2) {
+          if (!holdAt.holdSince) holdAt.holdSince = now;
+          if (now - holdAt.holdSince > HOLD_MAX_MS) holdAt.passHold = true;   // safety: never wait forever
+          else realY = Math.max(0, holdAt.start - 2);
+        }
+      }
       const d = realY - vy;
       if (reduce || Math.abs(d) < 0.5) { if (vy !== realY) { vy = realY; read(); } }
       else {
@@ -475,7 +502,7 @@ function mountScrollWorld(container, config) {
       for (let i = 0; i < NSEG && busy < cap; i++) {
         const seg = SEGMENTS[i];
         if (seg.loading || !seg.clip || seg.tier) continue;          // each segment: one clip during the loader
-        if (i >= HQ_FIRST && !WAIT_LITE) break;
+        if (i >= HQ_FIRST && (!WAIT_LITE || hqOnly())) break;
         loadClip(seg); busy++;
       }
       return;
