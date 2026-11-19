@@ -5,7 +5,7 @@ import Footer from "./Footer";
 import WorldLifecycle from "./WorldLifecycle";
 
 // Rounded geometric sans that matches the aibe wordmark
-const outfit = Outfit({ subsets: ["latin"], weight: ["400", "500", "600", "700"], variable: "--font-outfit", display: "swap" });
+const outfit = Outfit({ subsets: ["latin"], weight: ["300", "400", "500", "600", "700"], variable: "--font-outfit", display: "swap" });
 
 type Locale = "es" | "en";
 
@@ -225,13 +225,19 @@ export default function AibeScrollWorld({ locale }: { locale: string }) {
           background:radial-gradient(60% 50% at 75% 15%,rgba(0,119,255,.45),transparent 70%),radial-gradient(50% 45% at 15% 95%,rgba(25,211,255,.22),transparent 70%),#001E4B;
           transition:opacity .55s ease,visibility .55s ease;}
         #aibe-loader.is-done{opacity:0;visibility:hidden;}
-        #aibe-loader .al-inner{display:grid;justify-items:center;gap:28px;}
+        #aibe-loader .al-inner{display:grid;justify-items:center;gap:0;text-align:center;padding:0 24px;}
+        #aibe-loader .al-slogan{margin:26px 0 34px;font-family:var(--font-outfit),system-ui,sans-serif;font-weight:300;
+          font-size:clamp(1.05rem,1.6vw,1.35rem);letter-spacing:.04em;line-height:1.4;color:rgba(255,255,255,.82);
+          opacity:0;transform:translateY(8px);animation:al-reveal .9s cubic-bezier(.2,.7,.2,1) .35s forwards;}
+        #aibe-loader .al-slogan em{font-style:normal;font-weight:500;
+          background:linear-gradient(90deg,#4FA8FF 0%,#19D3FF 100%);-webkit-background-clip:text;background-clip:text;color:transparent;}
+        @keyframes al-reveal{to{opacity:1;transform:none}}
         #aibe-loader img{width:min(220px,56vw);height:auto;animation:al-breathe 2.4s ease-in-out infinite;}
         #aibe-loader .al-bar{display:block;width:min(200px,50vw);height:3px;border-radius:3px;overflow:hidden;background:rgba(255,255,255,.14);}
         #aibe-loader .al-bar i{display:block;height:100%;border-radius:3px;transform:scaleX(.06);transform-origin:left center;
           background:linear-gradient(90deg,#0077FF,#19D3FF);transition:transform .45s cubic-bezier(.2,.7,.2,1);}
         @keyframes al-breathe{0%,100%{opacity:.85;transform:scale(1)}50%{opacity:1;transform:scale(1.025)}}
-        @media (prefers-reduced-motion:reduce){#aibe-loader img{animation:none;}}
+        @media (prefers-reduced-motion:reduce){#aibe-loader img{animation:none;}#aibe-loader .al-slogan{animation:none;opacity:1;transform:none;}}
         @media (max-width:860px){ #world:not(.sw-root){background-image:url(${W}/personas-m.webp);background-position:center 44%;} }
         .aibe-after{position:relative;z-index:45;background:#fff;color:#001E4B;font-family:var(--font-outfit),system-ui,sans-serif;}
         .asv{position:relative;overflow:hidden;padding:clamp(88px,11vw,150px) clamp(18px,5vw,64px);
@@ -283,7 +289,9 @@ export default function AibeScrollWorld({ locale }: { locale: string }) {
         dangerouslySetInnerHTML={{
           __html:
             `<div id="aibe-loader" role="status" aria-live="polite" aria-label="${loc === "en" ? "Loading" : "Cargando"}">` +
-            `<div class="al-inner"><img src="${W}/aibe-logo-dark-v2.webp" alt="aibe" width="240" height="63"><span class="al-bar"><i></i></span></div></div>` +
+            `<div class="al-inner"><img src="${W}/aibe-logo-dark-v2.webp" alt="aibe" width="240" height="63">` +
+            `<p class="al-slogan">${loc === "en" ? "Technology with a <em>human touch</em>." : "Tecnología con <em>sentido humano</em>."}</p>` +
+            `<span class="al-bar"><i></i></span></div></div>` +
             `<div id="world"></div>`,
         }}
       />
