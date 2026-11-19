@@ -10,7 +10,7 @@ const outfit = Outfit({ subsets: ["latin"], weight: ["300", "400", "500", "600",
 type Locale = "es" | "en";
 
 const W = "/world";
-const ENGINE_VERSION = "2026-11-19f";
+const ENGINE_VERSION = "2026-11-19i";
 // bump when the clips in public/world/vid are re-encoded, so browsers fetch the new files
 const CLIP_VERSION = "2";
 const IDS = ["personas", "reto", "agentes", "marketing", "resultado", "aibe"] as const;
@@ -87,6 +87,8 @@ function buildConfig(loc: Locale) {
     waitLite: true,
     // desktop: full quality only (no blurry lite pass); the flight waits for each clip instead
     desktopHQOnly: true,
+    // the sections after the flight follow the animation's position, not the raw scroll
+    follow: ".aibe-after",
     // top speed of the flight (viewport-heights/s): fast scrolling plays sped-up instead of jumping
     maxSpeed: 1.6,
     sections: IDS.map((id, i) => ({
@@ -143,6 +145,8 @@ function go(){
   el.addEventListener('sw:progress',function(e){if(bar)bar.style.transform='scaleX('+Math.max(0.06,Math.min(1,e.detail))+')';});
   el.addEventListener('sw:ready',function(){if(bar)bar.style.transform='scaleX(1)';setTimeout(finish,300);});
   window.__swDestroy=window.mountScrollWorld(el,cfg);
+  // in-page links (#contacto…) jump straight there instead of flying through every scene
+  document.addEventListener('click',function(e){var a=e.target&&e.target.closest&&e.target.closest('a[href^="#"]');if(a){el.dispatchEvent(new CustomEvent('sw:snap-next'));setTimeout(function(){el.dispatchEvent(new CustomEvent('sw:snap'));},150);}},true);
   var after=null; // the sections below are parsed after this script: look them up lazily
   window.__swOnScroll=function(){after=after||document.querySelector('.aibe-after');if(after)el.classList.toggle('is-after',el.classList.contains('sw-root')&&after.getBoundingClientRect().top<90);};
   window.addEventListener('scroll',window.__swOnScroll,{passive:true});
@@ -162,7 +166,7 @@ export default function AibeScrollWorld({ locale }: { locale: string }) {
           --sw-font-display:var(--font-outfit), ui-rounded, "Segoe UI", system-ui, sans-serif;--sw-font-body:var(--font-outfit), system-ui, sans-serif;}
         /* globals.css sets height:100% + overflow-x:hidden on html/body, which turns body into
            the scroll container; the scrub engine needs the window to scroll. Home only. */
-        html,body{height:auto!important;overflow-x:clip!important;scroll-behavior:auto!important;}
+        html,body{height:auto!important;overflow-x:clip!important;scroll-behavior:auto!important;overflow-anchor:none;}
         body{background:#EEF4FB;}
         #world .sw-brand__mark{display:none!important;}
         #world .sw-brand__name{font-size:0!important;width:120px;height:40px;background:url(${W}/aibe-logo-v2.webp) left center/contain no-repeat;}

@@ -231,12 +231,27 @@ function mountScrollWorld(container, config) {
   const CATCH = 9;                                                        // ease towards the target (1/s)
   let vy = window.scrollY || window.pageYOffset || 0, lastT = performance.now();
   const HOLD_MAX_MS = 6000;   // desktop: longest the flight waits for a clip before moving on
+  let followEl = null;
+  // the page can ask the flight to jump straight to the real scroll position (e.g. an in-page
+  // link to the contact form): no catching-up animation through every scene
+  function snapNow() {
+    SEGMENTS.forEach(seg => { seg.passHold = true; });   // an explicit jump must land: no clip waits
+    vy = window.scrollY || window.pageYOffset || 0; read();
+    if (followEl) followEl.style.transform = '';
+  }
+  container.addEventListener('sw:snap', snapNow);
+  // 'sw:snap-next': snap on the very next scroll event (the in-page jump the page is about to make),
+  // so the content never shows offset, even for a frame
+  let snapNext = 0;
+  container.addEventListener('sw:snap-next', () => { snapNext = performance.now(); });
+  on('scroll', () => { if (snapNext && performance.now() - snapNext < 1500) { snapNext = 0; snapNow(); } }, { passive: true });
   // AIBE: while the visitor is actively scrolling, phones don't start new downloads or swap clips
   // (both compete with the scrubbing and caused stutter on a first visit); they resume when idle.
   let lastScrollAt = 0, lastRealY = -1;
   const scrollingNow = () => performance.now() - lastScrollAt < 350;
   let laidOutW = window.innerWidth;   // width the current layout was computed at (see onResize)
 
+  let prevVh = 0;
   function layout() {
     vh = window.innerHeight;
     laidOutW = window.innerWidth;
@@ -245,7 +260,9 @@ function mountScrollWorld(container, config) {
     SEGMENTS.forEach(s => { s.start = off * vh; off += s.w; s.end = off * vh; });
     totalW = off;
     track.style.height = (totalW * vh + vh) + 'px';   // +1vh so the last flight completes
-    vy = window.scrollY || window.pageYOffset || 0;
+    // keep the flight where it was (rescaled if the viewport height changed) — never snap it here
+    if (prevVh && prevVh !== vh) vy = vy / prevVh * vh;
+    prevVh = vh;
     read();
   }
 
@@ -441,6 +458,13 @@ function mountScrollWorld(container, config) {
         if (Math.abs(step) > vmax) step = Math.sign(d) * vmax;
         vy += step;
         read();
+      }
+      // AIBE: content placed after the flight (config.follow) moves with the virtual position too,
+      // so it can't slide in before the animation has actually finished.
+      if (followEl || (config.follow && (followEl = document.querySelector(config.follow)))) {
+        const off = (window.scrollY || window.pageYOffset || 0) - vy;
+        const t = Math.abs(off) > 0.5 ? `translate3d(0,${off.toFixed(1)}px,0)` : '';
+        if (followEl.style.transform !== t) followEl.style.transform = t;
       }
     }
     const eps = isMobile() ? 0.02 : 0.008;   // coarser seek step on phones = fewer decodes
