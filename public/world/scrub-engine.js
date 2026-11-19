@@ -121,10 +121,11 @@ function mountScrollWorld(container, config) {
   // AIBE: with config.waitLite, "ready" also needs a (lite) clip for every other segment, so once
   // the loading screen lifts there is motion everywhere and a fast scroller never meets a still.
   const WAIT_LITE = !!config.waitLite;
+  const WAIT_LITE_COUNT = Math.min(config.waitLiteCount || NSEG, NSEG);   // AIBE: how many segments the loader waits for
   function segReady(seg) {
     if (!seg.clip) return true;
     if (seg.idx < HQ_FIRST) return seg.tier === 'hq' && seg.ready;
-    if (!WAIT_LITE || hqOnly()) return true;
+    if (!WAIT_LITE || hqOnly() || seg.idx >= WAIT_LITE_COUNT) return true;
     return (!!seg.tier && seg.ready) || !!seg.liteFailed;
   }
   function emitProgress() {
@@ -135,7 +136,7 @@ function mountScrollWorld(container, config) {
       const ok = segReady(seg);
       if (!ok) done = false;
       const part = ok ? 1 : (seg.dl || 0) * 0.95;
-      if (seg.idx < HQ_FIRST) hq += part; else if (WAIT_LITE) { lite += part; nLite++; }
+      if (seg.idx < HQ_FIRST) hq += part; else if (WAIT_LITE && seg.idx < WAIT_LITE_COUNT) { lite += part; nLite++; }
     }
     // full-quality clips are much heavier: weight them accordingly in the bar
     const p = HQ_FIRST && nLite ? 0.7 * (hq / HQ_FIRST) + 0.3 * (lite / nLite)
@@ -347,7 +348,7 @@ function mountScrollWorld(container, config) {
           // On phones, never swap a clip that's on screen while the finger is moving.
           const swapIn = () => {
             if (!alive) return;
-            if (isMobile() && s.visible && scrollingNow()) { setTimeout(swapIn, 200); return; }
+            if (s.visible && scrollingNow()) { setTimeout(swapIn, 200); return; }
           const v = makeVideo(blob);
           v.style.opacity = '0';
           s.el.appendChild(v);
@@ -437,19 +438,6 @@ function mountScrollWorld(container, config) {
       let realY = window.scrollY || window.pageYOffset || 0;
       const now = performance.now(), dt = Math.min(0.05, (now - lastT) / 1000); lastT = now;
       if (realY !== lastRealY) { lastRealY = realY; lastScrollAt = now; }
-      if (hqOnly() && readyFired) {
-        // first segment ahead whose HQ clip isn't on screen-ready yet → hold just before it
-        let holdAt = null;
-        for (const seg of SEGMENTS) {
-          if (!seg.clip || seg.passHold) continue;
-          if (!(seg.tier === 'hq' && seg.ready)) { holdAt = seg; break; }
-        }
-        if (holdAt && realY > holdAt.start - 2) {
-          if (!holdAt.holdSince) holdAt.holdSince = now;
-          if (now - holdAt.holdSince > HOLD_MAX_MS) holdAt.passHold = true;   // safety: never wait forever
-          else realY = Math.max(0, holdAt.start - 2);
-        }
-      }
       const d = realY - vy;
       if (reduce || Math.abs(d) < 0.5) { if (vy !== realY) { vy = realY; read(); } }
       else {
@@ -538,7 +526,7 @@ function mountScrollWorld(container, config) {
       for (let i = 0; i < NSEG && busy < cap; i++) {
         const seg = SEGMENTS[i];
         if (seg.loading || !seg.clip || seg.tier) continue;          // each segment: one clip during the loader
-        if (i >= HQ_FIRST && (!WAIT_LITE || hqOnly())) break;
+        if (i >= HQ_FIRST && (!WAIT_LITE || hqOnly() || i >= WAIT_LITE_COUNT)) break;
         loadClip(seg); busy++;
       }
       return;
@@ -548,11 +536,11 @@ function mountScrollWorld(container, config) {
     const cap = phone ? 1 : 2;
     let inFlight = 0;
     for (const s of SEGMENTS) if (s.loading) inFlight++;
-    // 1) the scenes the visitor is about to see come first, straight in full quality
-    for (let i = curSeg; i < Math.min(NSEG, curSeg + 3); i++) {
+    // 1) the scenes the visitor is about to reach first get SOMETHING to play — their quick
+    //    first-pass clip (≈0.6 MB phone / 1.5 MB desktop), not the 4–5 MB full-quality one
+    for (let i = curSeg; i < Math.min(NSEG, curSeg + 4); i++) {
       const seg = SEGMENTS[i];
-      if (!seg.clip || seg.tier === 'hq') continue;
-      if (!seg.tier) seg.forceHQ = true;
+      if (!seg.clip || seg.tier) continue;
       if (!seg.loading && inFlight < cap) { loadClip(seg); inFlight++; }
     }
     if (inFlight >= cap) return;

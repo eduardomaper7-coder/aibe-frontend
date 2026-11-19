@@ -10,9 +10,9 @@ const outfit = Outfit({ subsets: ["latin"], weight: ["300", "400", "500", "600",
 type Locale = "es" | "en";
 
 const W = "/world";
-const ENGINE_VERSION = "2026-11-19i";
+const ENGINE_VERSION = "2026-11-20b";
 // bump when the clips in public/world/vid are re-encoded, so browsers fetch the new files
-const CLIP_VERSION = "2";
+const CLIP_VERSION = "3";
 const IDS = ["personas", "reto", "agentes", "marketing", "resultado", "aibe"] as const;
 
 const COPY: Record<Locale, { label: string; eyebrow: string; title: string; body: string; tags: string[] }[]> = {
@@ -67,7 +67,7 @@ const AFTER: Record<Locale, {
 };
 
 // Loading screen: wait until the first scenes are in full quality, but never longer than this.
-const MAX_WAIT_MS = 7000;
+const MAX_WAIT_MS = 6000;
 const HQ_FIRST = 3; // scene 1 + transition + scene 2
 
 const UI: Record<Locale, { hint: string; top: string; primary: string; secondary: string }> = {
@@ -85,12 +85,12 @@ function buildConfig(loc: Locale) {
     hqFirst: HQ_FIRST,
     // loading screen also waits for a lite clip in every scene → no stills, ever
     waitLite: true,
-    // desktop: full quality only (no blurry lite pass); the flight waits for each clip instead
-    desktopHQOnly: true,
+    // the loading screen waits for scene 1 in full quality + a first-pass clip of the next 2 segments
+    waitLiteCount: 3,
     // the sections after the flight follow the animation's position, not the raw scroll
     follow: ".aibe-after",
     // top speed of the flight (viewport-heights/s): fast scrolling plays sped-up instead of jumping
-    maxSpeed: 1.6,
+    maxSpeed: 1.2,
     sections: IDS.map((id, i) => ({
       id,
       ...copy[i],
@@ -140,7 +140,9 @@ function go(){
   var phone=window.matchMedia('(max-width: 860px), (hover: none) and (pointer: coarse)').matches;
   var cfg=JSON.parse(JSON.stringify(C.base));
   cfg.diveScroll=phone?1.1:1.3; cfg.connScroll=phone?0.75:0.9;
-  cfg.hqFirst=phone?1:3; // phones: wait for scene 1 only; the rest streams in ahead of the visitor
+  // phones: scene 1 in full quality before entering; desktop: its 720p first pass (≈1.5 MB vs 4.9 MB),
+  // upgraded to full quality while the visitor reads the first headline
+  cfg.hqFirst=phone?1:0;
   cfg.sections[0].scroll=phone?0.9:1.6; cfg.sections[0].linger=phone?0.15:0.4;
   el.addEventListener('sw:progress',function(e){if(bar)bar.style.transform='scaleX('+Math.max(0.06,Math.min(1,e.detail))+')';});
   el.addEventListener('sw:ready',function(){if(bar)bar.style.transform='scaleX(1)';setTimeout(finish,300);});
