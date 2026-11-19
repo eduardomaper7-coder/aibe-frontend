@@ -110,22 +110,37 @@ function mountScrollWorld(container, config) {
   // is told when they're ready, so a loading screen can wait for exactly that.
   const HQ_FIRST = Math.min(config.hqFirst || 0, NSEG);
   let readyFired = false;
+  // the page can end the loading phase early (its loading screen timed out): switch to normal loading
+  container.addEventListener('sw:release', () => fireReady());
+  container._sw = { segments: SEGMENTS }; // debugging aid (read-only use)
   function fireReady() {
     if (readyFired) return;
     readyFired = true;
     container.dispatchEvent(new CustomEvent('sw:ready'));
   }
+  // AIBE: with config.waitLite, "ready" also needs a (lite) clip for every other segment, so once
+  // the loading screen lifts there is motion everywhere and a fast scroller never meets a still.
+  const WAIT_LITE = !!config.waitLite;
+  function segReady(seg) {
+    if (!seg.clip) return true;
+    if (seg.idx < HQ_FIRST) return seg.tier === 'hq' && seg.ready;
+    if (!WAIT_LITE) return true;
+    return (!!seg.tier && seg.ready) || !!seg.liteFailed;
+  }
   function emitProgress() {
     if (readyFired) return;
-    if (!HQ_FIRST) { fireReady(); return; }
-    let p = 0, done = true;
-    for (let i = 0; i < HQ_FIRST; i++) {
-      const seg = SEGMENTS[i];
-      const ok = (seg.tier === 'hq' && seg.ready) || !seg.clip;
+    if (!HQ_FIRST && !WAIT_LITE) { fireReady(); return; }
+    let hq = 0, lite = 0, nLite = 0, done = true;
+    for (const seg of SEGMENTS) {
+      const ok = segReady(seg);
       if (!ok) done = false;
-      p += ok ? 1 : (seg.dl || 0) * 0.95;
+      const part = ok ? 1 : (seg.dl || 0) * 0.95;
+      if (seg.idx < HQ_FIRST) hq += part; else if (WAIT_LITE) { lite += part; nLite++; }
     }
-    container.dispatchEvent(new CustomEvent('sw:progress', { detail: p / HQ_FIRST }));
+    // full-quality clips are much heavier: weight them accordingly in the bar
+    const p = HQ_FIRST && nLite ? 0.7 * (hq / HQ_FIRST) + 0.3 * (lite / nLite)
+            : HQ_FIRST ? hq / HQ_FIRST : lite / Math.max(1, nLite);
+    container.dispatchEvent(new CustomEvent('sw:progress', { detail: p }));
     if (done) fireReady();
   }
 
@@ -209,6 +224,12 @@ function mountScrollWorld(container, config) {
   const lingerEase = (x, L) => { L = clamp(L); const c = x - 0.5; return (1 - L) * x + L * (4 * c * c * c + 0.5); };
   let vh = window.innerHeight, stageX = 0, totalW = 0, activeIndex = -1, ticking = false;
   let curSeg = 0; // AIBE: segment currently on screen (drives the background preloader)
+  // AIBE: the animation follows a virtual scroll position (vy) that chases the real one with a
+  // soft ease and a top speed. A normal scroll feels the same (just smoother); a hard flick plays
+  // the flight sped-up but continuous instead of jumping, and gives upcoming clips time to arrive.
+  const MAX_SPEED = (config.maxSpeed != null ? config.maxSpeed : 1.6);   // viewport-heights per second
+  const CATCH = 9;                                                        // ease towards the target (1/s)
+  let vy = window.scrollY || window.pageYOffset || 0, lastT = performance.now();
   let laidOutW = window.innerWidth;   // width the current layout was computed at (see onResize)
 
   function layout() {
@@ -219,6 +240,7 @@ function mountScrollWorld(container, config) {
     SEGMENTS.forEach(s => { s.start = off * vh; off += s.w; s.end = off * vh; });
     totalW = off;
     track.style.height = (totalW * vh + vh) + 'px';   // +1vh so the last flight completes
+    vy = window.scrollY || window.pageYOffset || 0;
     read();
   }
 
@@ -264,7 +286,7 @@ function mountScrollWorld(container, config) {
         const pump = () => reader.read().then(({ done, value }) => {
           if (done) return new Blob(chunks, { type: 'video/mp4' });
           chunks.push(value); got += value.length; s.dl = got / total;
-          if (s.idx < HQ_FIRST) emitProgress();
+          if (!readyFired) emitProgress();
           return pump();
         });
         return pump();
@@ -274,7 +296,13 @@ function mountScrollWorld(container, config) {
         const v = makeVideo(blob);
         const old = s.video;
         if (!old) {
-          v.addEventListener('loadedmetadata', () => { s.ready = true; read(); emitProgress(); });
+          v.addEventListener('loadedmetadata', () => {
+            s.ready = true;
+            // AIBE: seek right away so the clip has painted a real frame BEFORE it scrolls into view
+            // (otherwise its poster — for transitions, the next scene's still — flashes for a moment)
+            try { v.currentTime = Math.max(0.001, (s.cur || 0) * (v.duration || 0)); } catch (e) {}
+            read(); emitProgress();
+          });
           // Hide the still poster only once a real frame has painted (iOS paints nothing
           // for a seeked-but-never-played muted video).
           v.addEventListener('seeked', () => { s.el.classList.add('has-clip'); }, { once: true });
@@ -297,7 +325,7 @@ function mountScrollWorld(container, config) {
       }).catch(() => {
         s.loading = false;
         if (s.idx < HQ_FIRST) setTimeout(emitProgress, 0);
-        if (tier === 'lite') { s.liteFailed = true; return; }
+        if (tier === 'lite') { s.liteFailed = true; if (!readyFired) setTimeout(emitProgress, 0); return; }
         // A missing mobile encode falls back to the desktop clip instead of retrying forever
         if (url === s.clipM && s.clipM !== s.clip) { s.clipM = null; return; }
         if (!s.video) s.clip = null; // nothing at all: keep the still, stop retrying
@@ -306,7 +334,7 @@ function mountScrollWorld(container, config) {
   }
 
   function read() {
-    const y = window.scrollY || window.pageYOffset;
+    const y = vy;
     const fade = CROSSFADE * vh;
     let ci = 0;
     for (let i = 0; i < NSEG; i++) if (y >= SEGMENTS[i].start) ci = i;
@@ -363,6 +391,19 @@ function mountScrollWorld(container, config) {
 
   function raf() {
     if (!alive) return;
+    {
+      const realY = window.scrollY || window.pageYOffset || 0;
+      const now = performance.now(), dt = Math.min(0.05, (now - lastT) / 1000); lastT = now;
+      const d = realY - vy;
+      if (reduce || Math.abs(d) < 0.5) { if (vy !== realY) { vy = realY; read(); } }
+      else {
+        let step = d * Math.min(1, CATCH * dt);
+        const vmax = MAX_SPEED * vh * dt;
+        if (Math.abs(step) > vmax) step = Math.sign(d) * vmax;
+        vy += step;
+        read();
+      }
+    }
     const eps = isMobile() ? 0.02 : 0.008;   // coarser seek step on phones = fewer decodes
     for (let i = 0; i < NSEG; i++) {
       const s = SEGMENTS[i];
@@ -424,8 +465,19 @@ function mountScrollWorld(container, config) {
   // bandwidth, and a fast scroller finds the clips already in memory.
   function preloadTick() {
     if (!alive || reduce) return;
-    if (!readyFired && HQ_FIRST) {
-      for (let i = 0; i < HQ_FIRST; i++) { const seg = SEGMENTS[i]; if (!seg.loading && seg.clip && nextTier(seg)) loadClip(seg); }
+    if (!readyFired && (HQ_FIRST || WAIT_LITE)) {
+      let busy = 0;
+      for (const seg of SEGMENTS) if (seg.loading) busy++;
+      // the full-quality opening scenes get most of the bandwidth until they're in
+      let hqPending = false;
+      for (let i = 0; i < HQ_FIRST; i++) if (!segReady(SEGMENTS[i])) hqPending = true;
+      const cap = hqPending ? HQ_FIRST + 1 : 4;
+      for (let i = 0; i < NSEG && busy < cap; i++) {
+        const seg = SEGMENTS[i];
+        if (seg.loading || !seg.clip || seg.tier) continue;          // each segment: one clip during the loader
+        if (i >= HQ_FIRST && !WAIT_LITE) break;
+        loadClip(seg); busy++;
+      }
       return;
     }
     let inFlight = 0;

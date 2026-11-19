@@ -10,7 +10,7 @@ const outfit = Outfit({ subsets: ["latin"], weight: ["400", "500", "600", "700"]
 type Locale = "es" | "en";
 
 const W = "/world";
-const ENGINE_VERSION = "2026-11-18c";
+const ENGINE_VERSION = "2026-11-19d";
 // bump when the clips in public/world/vid are re-encoded, so browsers fetch the new files
 const CLIP_VERSION = "2";
 const IDS = ["personas", "reto", "agentes", "marketing", "resultado", "aibe"] as const;
@@ -67,7 +67,7 @@ const AFTER: Record<Locale, {
 };
 
 // Loading screen: wait until the first scenes are in full quality, but never longer than this.
-const MAX_WAIT_MS = 5000;
+const MAX_WAIT_MS = 7000;
 const HQ_FIRST = 3; // scene 1 + transition + scene 2
 
 const UI: Record<Locale, { hint: string; top: string; primary: string; secondary: string }> = {
@@ -83,6 +83,10 @@ function buildConfig(loc: Locale) {
     cta: { label: UI[loc].top, href: "#contacto" },
     hint: UI[loc].hint,
     hqFirst: HQ_FIRST,
+    // loading screen also waits for a lite clip in every scene → no stills, ever
+    waitLite: true,
+    // top speed of the flight (viewport-heights/s): fast scrolling plays sped-up instead of jumping
+    maxSpeed: 1.6,
     sections: IDS.map((id, i) => ({
       id,
       ...copy[i],
@@ -124,7 +128,7 @@ function bootSource(loc: Locale) {
   return `(function(){
 var C=${data.replace(/</g, "\\u003c")};
 var loader=document.getElementById('aibe-loader'),bar=loader&&loader.querySelector('.al-bar i'),done=false;
-function finish(){if(done)return;done=true;if(loader){loader.classList.add('is-done');setTimeout(function(){if(loader&&loader.parentNode)loader.parentNode.removeChild(loader);},700);}window.scrollTo(0,0);}
+function finish(){if(done)return;done=true;var w=document.getElementById('world');if(w)w.dispatchEvent(new CustomEvent('sw:release'));if(loader){loader.classList.add('is-done');setTimeout(function(){if(loader&&loader.parentNode)loader.parentNode.removeChild(loader);},700);}window.scrollTo(0,0);}
 setTimeout(finish,C.maxWait);
 function go(){
   var el=document.getElementById('world');
