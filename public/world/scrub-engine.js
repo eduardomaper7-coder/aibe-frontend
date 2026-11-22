@@ -233,6 +233,7 @@ function mountScrollWorld(container, config) {
   let vy = window.scrollY || window.pageYOffset || 0, lastT = performance.now();
   const HOLD_MAX_MS = 6000;   // desktop: longest the flight waits for a clip before moving on
   let followEl = null;
+  let nativeBelow = false;   // true while scrolling the content after the flight (native scroll)
   // the page can ask the flight to jump straight to the real scroll position (e.g. an in-page
   // link to the contact form): no catching-up animation through every scene
   function snapNow() {
@@ -438,8 +439,15 @@ function mountScrollWorld(container, config) {
       let realY = window.scrollY || window.pageYOffset || 0;
       const now = performance.now(), dt = Math.min(0.05, (now - lastT) / 1000); lastT = now;
       if (realY !== lastRealY) { lastRealY = realY; lastScrollAt = now; }
+      // AIBE: past the end of the flight (the sections below it), once the animation has caught up,
+      // scrolling is native — no easing, no inertia. Leaving that area upwards re-enables the easing.
+      const endY = SEGMENTS[NSEG - 1].end;
+      if (realY < endY) nativeBelow = false;
+      else if (!nativeBelow && Math.abs(realY - vy) < 2) nativeBelow = true;
+      if (nativeBelow) { if (vy !== realY) { vy = realY; read(); } }
       const d = realY - vy;
-      if (reduce || Math.abs(d) < 0.5) { if (vy !== realY) { vy = realY; read(); } }
+      if (nativeBelow) {}
+      else if (reduce || Math.abs(d) < 0.5) { if (vy !== realY) { vy = realY; read(); } }
       else {
         let step = d * Math.min(1, CATCH * dt);
         const vmax = MAX_SPEED * vh * dt;
