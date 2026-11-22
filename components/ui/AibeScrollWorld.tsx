@@ -10,9 +10,9 @@ const outfit = Outfit({ subsets: ["latin"], weight: ["300", "400", "500", "600",
 type Locale = "es" | "en";
 
 const W = "/world";
-const ENGINE_VERSION = "2026-11-20b";
+const ENGINE_VERSION = "2026-11-22a";
 // bump when the clips in public/world/vid are re-encoded, so browsers fetch the new files
-const CLIP_VERSION = "3";
+const CLIP_VERSION = "4";
 const IDS = ["personas", "reto", "agentes", "marketing", "resultado", "aibe"] as const;
 
 const COPY: Record<Locale, { label: string; eyebrow: string; title: string; body: string; tags: string[] }[]> = {
@@ -66,13 +66,13 @@ const AFTER: Record<Locale, {
   },
 };
 
-// Loading screen: wait until the first scenes are in full quality, but never longer than this.
-const MAX_WAIT_MS = 6000;
-const HQ_FIRST = 3; // scene 1 + transition + scene 2
+// Loading screen: waits until the WHOLE animation is downloaded in full quality. After this long,
+// a discreet "enter now" button appears for very slow connections (the download keeps going).
+const ENTER_NOW_AFTER_MS = 20000;
 
-const UI: Record<Locale, { hint: string; top: string; primary: string; secondary: string }> = {
-  es: { hint: "desliza para entrar", top: "Hablemos", primary: "Hablemos de tu negocio →", secondary: "Ver Marketing digital" },
-  en: { hint: "scroll to fly in", top: "Let's talk", primary: "Let's talk about your business →", secondary: "See digital marketing" },
+const UI: Record<Locale, { hint: string; top: string; primary: string; secondary: string; loading: string; enterNow: string }> = {
+  es: { hint: "desliza para entrar", top: "Hablemos", primary: "Hablemos de tu negocio →", secondary: "Ver Marketing digital", loading: "Preparando la experiencia", enterNow: "Entrar ya" },
+  en: { hint: "scroll to fly in", top: "Let's talk", primary: "Let's talk about your business →", secondary: "See digital marketing", loading: "Preparing the experience", enterNow: "Enter now" },
 };
 
 function buildConfig(loc: Locale) {
@@ -82,24 +82,20 @@ function buildConfig(loc: Locale) {
     brand: { name: "aibe", href: `/${loc}` },
     cta: { label: UI[loc].top, href: "#contacto" },
     hint: UI[loc].hint,
-    hqFirst: HQ_FIRST,
-    // loading screen also waits for a lite clip in every scene → no stills, ever
-    waitLite: true,
-    // the loading screen waits for scene 1 in full quality + a first-pass clip of the next 2 segments
-    waitLiteCount: 3,
+    // the loading screen waits for EVERY segment (6 scenes + 5 transitions) in full quality
+    hqFirst: 11,
     // the sections after the flight follow the animation's position, not the raw scroll
     follow: ".aibe-after",
     // top speed of the flight (viewport-heights/s): fast scrolling plays sped-up instead of jumping
-    maxSpeed: 1.2,
+    maxSpeed: 1.8,
     sections: IDS.map((id, i) => ({
       id,
       ...copy[i],
       still: `${W}/${id}.webp`,
       stillMobile: `${W}/${id}-m.webp`,
-      clip: `${W}/vid/${id}.mp4?v=${CLIP_VERSION}`,
-      clipMobile: `${W}/vid/${id}-m.mp4?v=${CLIP_VERSION}`,
-      clipLite: `${W}/vid/${id}-lite.mp4?v=${CLIP_VERSION}`,
-      clipLiteMobile: `${W}/vid/${id}-m-lite.mp4?v=${CLIP_VERSION}`,
+      // "{EXT}" becomes ".av1.mp4" or ".mp4" once the boot script knows what the device decodes smoothly
+      clip: `${W}/vid/${id}{EXT}?v=${CLIP_VERSION}`,
+      clipMobile: `${W}/vid/${id}-m{EXT}?v=${CLIP_VERSION}`,
       accent: id === "aibe" ? "#19D3FF" : "#0077FF",
       ...(i === IDS.length - 1
         ? {
@@ -114,11 +110,8 @@ function buildConfig(loc: Locale) {
     })),
     // Forward-only transitions between scenes. Each one starts on the previous
     // scene clip's real last frame and ends on the next one's first frame.
-    connectors: [1, 2, 3, 4, 5].map((n) => `${W}/vid/conn${n}.mp4?v=${CLIP_VERSION}`),
-    connectorsMobile: [1, 2, 3, 4, 5].map((n) => `${W}/vid/conn${n}-m.mp4?v=${CLIP_VERSION}`),
-    // small first-pass clips, loaded before the full-quality ones (see engine loadClip)
-    connectorsLite: [1, 2, 3, 4, 5].map((n) => `${W}/vid/conn${n}-lite.mp4?v=${CLIP_VERSION}`),
-    connectorsLiteMobile: [1, 2, 3, 4, 5].map((n) => `${W}/vid/conn${n}-m-lite.mp4?v=${CLIP_VERSION}`),
+    connectors: [1, 2, 3, 4, 5].map((n) => `${W}/vid/conn${n}{EXT}?v=${CLIP_VERSION}`),
+    connectorsMobile: [1, 2, 3, 4, 5].map((n) => `${W}/vid/conn${n}-m{EXT}?v=${CLIP_VERSION}`),
   };
 }
 
@@ -128,30 +121,44 @@ function buildConfig(loc: Locale) {
  * the engine and the first downloads all start immediately.
  */
 function bootSource(loc: Locale) {
-  const data = JSON.stringify({ base: buildConfig(loc), engine: `${W}/scrub-engine.js?v=${ENGINE_VERSION}`, maxWait: MAX_WAIT_MS });
+  const data = JSON.stringify({ base: buildConfig(loc), engine: `${W}/scrub-engine.js?v=${ENGINE_VERSION}`, enterNowAfter: ENTER_NOW_AFTER_MS });
   return `(function(){
 var C=${data.replace(/</g, "\\u003c")};
-var loader=document.getElementById('aibe-loader'),bar=loader&&loader.querySelector('.al-bar i'),done=false;
+var loader=document.getElementById('aibe-loader'),bar=loader&&loader.querySelector('.al-bar i'),pct=loader&&loader.querySelector('.al-pct'),btn=loader&&loader.querySelector('.al-enter'),done=false;
 function finish(){if(done)return;done=true;var w=document.getElementById('world');if(w)w.dispatchEvent(new CustomEvent('sw:release'));if(loader){loader.classList.add('is-done');setTimeout(function(){if(loader&&loader.parentNode)loader.parentNode.removeChild(loader);},700);}window.scrollTo(0,0);}
-setTimeout(finish,C.maxWait);
+// very slow connection: offer a way in after a while (the download carries on in the background)
+setTimeout(function(){if(!done&&btn)btn.classList.add('is-on');},C.enterNowAfter);
+if(btn)btn.addEventListener('click',finish);
+function setP(p){p=Math.max(0,Math.min(1,p));if(bar)bar.style.transform='scaleX('+Math.max(0.04,p)+')';if(pct)pct.textContent=Math.round(p*100)+' %';}
+// AV1 is ~70% lighter at the same quality. Use it where the browser says it plays smoothly
+// (on phones: only with hardware decoding); otherwise the optimised H.264 files.
+function pickExt(phone,cb){
+  var type='video/mp4; codecs="av01.0.08M.08"';
+  var v=document.createElement('video');
+  if(!v.canPlayType||!v.canPlayType(type)||!navigator.mediaCapabilities||!navigator.mediaCapabilities.decodingInfo){cb('.mp4');return;}
+  var t=setTimeout(function(){cb('.mp4');cb=function(){};},800);
+  navigator.mediaCapabilities.decodingInfo({type:'file',video:{contentType:type,width:phone?1080:1920,height:phone?1920:1080,bitrate:2500000,framerate:24}})
+    .then(function(r){clearTimeout(t);cb(r&&r.supported&&r.smooth&&(!phone||r.powerEfficient)?'.av1.mp4':'.mp4');cb=function(){};})
+    .catch(function(){clearTimeout(t);cb('.mp4');cb=function(){};});
+}
 function go(){
   var el=document.getElementById('world');
   if(!el||el.classList.contains('sw-root')||!window.mountScrollWorld){finish();return;}
   var phone=window.matchMedia('(max-width: 860px), (hover: none) and (pointer: coarse)').matches;
-  var cfg=JSON.parse(JSON.stringify(C.base));
+  pickExt(phone,function(ext){
+  el.dataset.codec=ext==='.av1.mp4'?'av1':'h264';
+  var cfg=JSON.parse(JSON.stringify(C.base).split('{EXT}').join(ext));
   cfg.diveScroll=phone?1.1:1.3; cfg.connScroll=phone?0.75:0.9;
-  // phones: scene 1 in full quality before entering; desktop: its 720p first pass (≈1.5 MB vs 4.9 MB),
-  // upgraded to full quality while the visitor reads the first headline
-  cfg.hqFirst=phone?1:0;
   cfg.sections[0].scroll=phone?0.9:1.6; cfg.sections[0].linger=phone?0.15:0.4;
-  el.addEventListener('sw:progress',function(e){if(bar)bar.style.transform='scaleX('+Math.max(0.06,Math.min(1,e.detail))+')';});
-  el.addEventListener('sw:ready',function(){if(bar)bar.style.transform='scaleX(1)';setTimeout(finish,300);});
+  el.addEventListener('sw:progress',function(e){setP(e.detail);});
+  el.addEventListener('sw:ready',function(){setP(1);setTimeout(finish,350);});
   window.__swDestroy=window.mountScrollWorld(el,cfg);
   // in-page links (#contacto…) jump straight there instead of flying through every scene
   document.addEventListener('click',function(e){var a=e.target&&e.target.closest&&e.target.closest('a[href^="#"]');if(a){el.dispatchEvent(new CustomEvent('sw:snap-next'));setTimeout(function(){el.dispatchEvent(new CustomEvent('sw:snap'));},150);}},true);
   var after=null; // the sections below are parsed after this script: look them up lazily
   window.__swOnScroll=function(){after=after||document.querySelector('.aibe-after');if(after)el.classList.toggle('is-after',el.classList.contains('sw-root')&&after.getBoundingClientRect().top<90);};
   window.addEventListener('scroll',window.__swOnScroll,{passive:true});
+  });
 }
 if(window.mountScrollWorld)go();else{var s=document.createElement('script');s.src=C.engine;s.onload=go;s.onerror=finish;document.body.appendChild(s);}
 })();`;
@@ -238,6 +245,14 @@ export default function AibeScrollWorld({ locale }: { locale: string }) {
         #aibe-loader .al-slogan em{font-style:normal;font-weight:500;
           background:linear-gradient(90deg,#4FA8FF 0%,#19D3FF 100%);-webkit-background-clip:text;background-clip:text;color:transparent;}
         @keyframes al-reveal{to{opacity:1;transform:none}}
+        #aibe-loader .al-status{margin-top:16px;font-family:var(--font-outfit),system-ui,sans-serif;font-size:.78rem;font-weight:400;
+          letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.5);}
+        #aibe-loader .al-status b{font-weight:500;color:rgba(255,255,255,.85);font-variant-numeric:tabular-nums;letter-spacing:.04em;}
+        #aibe-loader .al-enter{margin-top:26px;padding:10px 20px;border-radius:999px;border:1px solid rgba(255,255,255,.28);background:transparent;
+          color:rgba(255,255,255,.85);font:500 .9rem var(--font-outfit),system-ui,sans-serif;cursor:pointer;
+          opacity:0;visibility:hidden;transition:opacity .5s ease,visibility .5s ease,background .2s;}
+        #aibe-loader .al-enter.is-on{opacity:1;visibility:visible;}
+        #aibe-loader .al-enter:hover{background:rgba(255,255,255,.08);}
         #aibe-loader img{width:min(220px,56vw);height:auto;animation:al-breathe 2.4s ease-in-out infinite;}
         #aibe-loader .al-bar{display:block;width:min(200px,50vw);height:3px;border-radius:3px;overflow:hidden;background:rgba(255,255,255,.14);}
         #aibe-loader .al-bar i{display:block;height:100%;border-radius:3px;transform:scaleX(.06);transform-origin:left center;
@@ -297,7 +312,9 @@ export default function AibeScrollWorld({ locale }: { locale: string }) {
             `<div id="aibe-loader" role="status" aria-live="polite" aria-label="${loc === "en" ? "Loading" : "Cargando"}">` +
             `<div class="al-inner"><img src="${W}/aibe-logo-dark-v2.webp" alt="aibe" width="240" height="63">` +
             `<p class="al-slogan">${loc === "en" ? "Technology with a <em>human touch</em>." : "Tecnología con <em>sentido humano</em>."}</p>` +
-            `<span class="al-bar"><i></i></span></div></div>` +
+            `<span class="al-bar"><i></i></span>` +
+            `<span class="al-status">${UI[loc].loading} · <b class="al-pct">0 %</b></span>` +
+            `<button type="button" class="al-enter">${UI[loc].enterNow} →</button></div></div>` +
             `<div id="world"></div>`,
         }}
       />

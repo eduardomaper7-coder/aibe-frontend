@@ -522,7 +522,7 @@ function mountScrollWorld(container, config) {
       // the full-quality opening scenes get most of the bandwidth until they're in
       let hqPending = false;
       for (let i = 0; i < HQ_FIRST; i++) if (!segReady(SEGMENTS[i])) hqPending = true;
-      const cap = hqPending ? HQ_FIRST + 1 : 4;
+      const cap = hqPending ? Math.min(3, HQ_FIRST + 1) : 4;   // AIBE: 3 parallel downloads is the sweet spot
       for (let i = 0; i < NSEG && busy < cap; i++) {
         const seg = SEGMENTS[i];
         if (seg.loading || !seg.clip || seg.tier) continue;          // each segment: one clip during the loader
